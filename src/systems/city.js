@@ -58,7 +58,7 @@ function refreshJobs(){
 }
 function deliverJob(e,it){
   const j=G.jobs.list.find(x=>x.to===e.id&&x.st===1);if(!j)return false;
-  it("A parcel from the post office? For me? Thank you so much, Pip!",()=>{j.st=2;addSeeds(JOB_PAY.seeds,inBeyond(e.x,e.y)?2:1,0);gainGP(JOB_PAY.gp);
+  it("A parcel from the post office? For me? Thank you so much, Pip!",()=>{j.st=2;G.flags.parcels=(G.flags.parcels||0)+1;addSeeds(JOB_PAY.seeds,inBeyond(e.x,e.y)?2:1,0);gainGP(JOB_PAY.gp);
     toast('Delivered! +'+JOB_PAY.seeds+' seeds','#a6e0ff');SFX.questDone();save();});
   return true;
 }

@@ -24,6 +24,6 @@ function drawJournal(){
     txt(got?f.name:'???',148,y,5,got?'#fff8ec':'#4a3a66');});
   txt('SECRETS '+Object.keys(G.secrets).length+'/'+SECRET_IDS.length,132,132,5,'#d890ff');
   SECRET_IDS.forEach((s,i)=>txt(G.secrets[s.id]?s.name:'???',134,141+i*8,5,G.secrets[s.id]?'#fff8ec':'#4a3a66'));
-  txt('BEST SCORES',132,168,5,'#e8ff70');
-  [['EGG',G.best.egg],['BONK',G.best.bonk],['FIREFLY',G.best.ffly],['RACE',G.best.race?G.best.race+'s':0]].forEach(([n,v],i)=>txt(n+' '+(v||'-'),134,177+i*8,5,v?'#fff8ec':'#4a3a66'));
+  txt('BEST SCORES',132,174,5,'#e8ff70');
+  [['EGG',G.best.egg],['BONK',G.best.bonk],['FIREFLY',G.best.ffly],['RACE',G.best.race?G.best.race+'s':0]].forEach(([n,v],i)=>txt(n+' '+(v||'-'),134,183+i*8,5,v?'#fff8ec':'#4a3a66'));
 }

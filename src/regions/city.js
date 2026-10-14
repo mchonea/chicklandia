@@ -76,7 +76,7 @@ defineRegion({id:'city',name:'CITY',kind:'outdoor',origin:[2,5],grid:[3,2],groun
   'T=====6==6=====T',
   'T==============T',
   'T=[==========[=T',
-  '===============T',
+  '======s========T',
   '===============T',
   '===============T',
   'Tww33wwwwww33wwT',

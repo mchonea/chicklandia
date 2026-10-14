@@ -76,3 +76,10 @@ const BORROWED=[{id:'b_hat',kind:'hat',item:'bhat',owner:'pidge',c:66,r:67,name:
   {id:'b_bell',kind:'collarBell',item:'bbell',owner:'cleo',c:55,r:81,name:"Cleo's bell",flag:'bell'}];
 // cook-off ingredients
 const INGREDIENTS=[{id:'i_pepper',kind:'pepper',item:'pepper',c:9,r:55},{id:'i_salt',kind:'salt',item:'salt',c:6,r:79},{id:'i_mush',kind:'mushroom',item:'mushroom',c:9,r:69}];
+
+// where each quest's friend can be found (the Detective Cap shows these in the quest log)
+const QUEST_LOC={mom:'FARM: coop yard',daisy:'FARM: barnyard',clyde:'FARM: inside the barn',squeaks:'FARM: inside the barn',penny:'FARM: inside the coop',pig:'FARM: orchard',
+  sheep:'FARM: the field',whiskers:'FARM: farmhouse',biscuit:'FARM: farmhouse',duck:'FARM: by the pond',rooster:'FARM: by the Big Fence',granny:'FOREST: her garden',
+  bucky:'FOREST: deep woods',doe:'FOREST: deep woods',mo:'MOUNTAINS: the trail',elda:'MOUNTAINS: snowy peak',pidge:'CITY: post office by the gate',remy:'CITY: market square',
+  pinch:'BEACH: sandy shore',sandy:'BEACH: sandy shore'};
+function questLoc(id){return (QUESTS[id]&&QUESTS[id].loc)||QUEST_LOC[id]||'';}

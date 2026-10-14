@@ -152,7 +152,7 @@ function bump(ix,iy){
   if(tryPush(ix,iy))return;
   if(has('hop')&&tryHop(ix,iy))return;
   if(iy<0&&(WALK.has(CS.x+','+CS.y)||cellAt().kind==='indoor')){for(const ox of [0,-5,5]){const c=Math.floor((P.x+ox)/16),r=Math.floor((P.y-9)/16),d=DOORS[c+','+r];
-    if(d){if(d.b&&!buildingOpen(d.b)){closedSign(d.b);return;}warpTo(d.x,d.y,d.roof?0:1,null,d.roof?null:()=>{if(d.b)enteredBuilding(d.b);});return;}}}
+    if(d){if(d.b&&!buildingOpen(d.b)){closedSign(d.b);return;}warpTo(d.x,d.y,d.roof?0:1,null,()=>{if(d.b)enteredBuilding(d.b);if(d.roof&&regionAt().id==='rooftops')secretFound('rooftops');});return;}}}
   if(ix>0&&tileAt(Math.floor((P.x+8)/16),Math.floor((P.y-2)/16))==='H'){
     if(G.part2){FLY={t:0,dest:'forest'};state='flying';SFX.magic();}
     else if(has('fly'))startEnding();

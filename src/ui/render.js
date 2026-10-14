@@ -151,7 +151,7 @@ function drawHUD(){
     if(rid==='cityin'||rid==='rooftops'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
     const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':'F: FLY',220,18,5,'#ffd83a',{align:'right'});
     // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
-    const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor(30/cs.cols)),h=Math.min(8,Math.floor(27/cs.rows));
+    const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor((31-(cs.cols-1))/cs.cols)),h=Math.min(8,Math.floor((27-(cs.rows-1))/cs.rows));
     for(const c of cs.cells){const cur=CS.x===c.sx&&CS.y===c.sy,vis=G.visited.has(c.sx+','+c.sy);
       ctx.fillStyle=cur?(Math.floor(tick/20)%2?'#ffd83a':'#ffb020'):(vis?'#6a5a90':'#3b2a56');ctx.fillRect(224+(c.sx-cs.x0)*(w+1),3+(c.sy-cs.y0)*(h+1),w,h);}
     return;}
@@ -232,6 +232,8 @@ function drawGrow(){
 function drawQuests(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
   if(questPage===2){drawTrainingPage();return;}
+  if(questPage===3){drawCityPage();return;}
+  if(questPage===4){drawSleuthPage();return;}
   txt(questPage===1?'QUESTS - PART 2':'QUESTS',W/2,12,9,'#ffd83a',{align:'center',shadow:true});
   if(questPage){
     ORDER2.forEach((id,i)=>{const y=25+i*17,q=QUESTS[id],st=G.q[id];
@@ -352,4 +354,33 @@ function MINIMAP_BEYOND(){
   const cells=REGION_LIST.filter(r=>r.beyond&&r.area).flatMap(r=>r.cells);
   const xs=cells.map(c=>c.sx),ys=cells.map(c=>c.sy),x0=Math.min(...xs),y0=Math.min(...ys);
   return _mmCache={cells,x0,y0,cols:Math.max(...xs)-x0+1,rows:Math.max(...ys)-y0+1};
+}
+
+// quest-log pages: 0 farm, 1 part 2, 3 city, 2 training, 4 detective notes (only while a Detective Cap is owned)
+function questPages(){const p=[0];if(G.part2)p.push(1,3);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
+function drawCityPage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
+  txt('QUESTS - CITY',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
+  ORDER3.forEach((id,i)=>{const y=25+i*17,q=QUESTS[id],st=G.q[id],giver=QUEST_GIVER[id]||id;
+    box(10,y,W-20,15,st===2?'#23402a':'#1d1430',st===2?'#94dc64':(st===1?'#ffd83a':'#4a3a66'));
+    const seen=st>0||G.met.has(giver);
+    if(!seen){txt('???',16,y+5,5,'#6a5a90');txt('not met yet',W-16,y+5,5,'#6a5a90',{align:'right'});return;}
+    if(st===0){txt('???',16,y+5,5,'#6a5a90');txt(NAMES[giver]?NAMES[giver].toUpperCase():'',W-16,y+5,5,'#6a5a90',{align:'right'});return;}
+    txt(q.title,16,y+5,5,st===2?'#94dc64':'#fff8ec');
+    txt(st===2?'DONE!':q.prog(),W-16,y+5,5,st===2?'#94dc64':(q.check()?'#ffd83a':'#d8c8f8'),{align:'right'});});
+  const done=EXHIBITS.filter(x=>G.museum[x.id]>=x.need).length;
+  box(10,129,W-20,15,'#1d1430','#c49a5c');txt('MUSEUM',16,134,5,'#c49a5c');txt(done+'/'+EXHIBITS.length+' exhibits',W-16,134,5,'#fff8ec',{align:'right'});
+  box(10,146,W-20,15,'#1d1430','#a6e0ff');txt('PARCELS DELIVERED',16,151,5,'#a6e0ff');txt(''+(G.flags.parcels||0),W-16,151,5,'#fff8ec',{align:'right'});
+  box(10,163,W-20,15,'#1d1430','#ffd83a');txt('ROOFTOP RACE BEST',16,168,5,'#ffd83a');txt(G.best.race?G.best.race+' sec':'-',W-16,168,5,'#fff8ec',{align:'right'});
+  txt('Seeds: '+G.seeds+'     X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
+}
+function drawSleuthPage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#c49a5c');
+  txt('DETECTIVE NOTES',W/2,12,9,'#c49a5c',{align:'center',shadow:true});
+  const ids=['mom',...ORDER,...ORDER2,...ORDER3].filter(id=>G.q[id]===1);
+  if(!ids.length)txt('No open tasks. Go find a friend who needs help!',W/2,100,5,'#b8a8d8',{align:'center'});
+  ids.slice(0,9).forEach((id,i)=>{const y=24+i*20;box(10,y,W-20,18,'#1d1430','#4a3a66');
+    txt(QUESTS[id].title,16,y+3,5,'#fff8ec');txt(QUESTS[id].prog(),W-16,y+3,5,QUESTS[id].check()?'#ffd83a':'#d8c8f8',{align:'right'});
+    txt(questLoc(QUEST_GIVER[id]&&G.q[id]===1&&false?QUEST_GIVER[id]:id),16,y+11,5,'#94dc64');});
+  txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }

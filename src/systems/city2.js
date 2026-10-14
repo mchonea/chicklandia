@@ -113,7 +113,7 @@ function startRace(){
   ents=ents.filter(e=>e.type!=='star'&&e.type!=='flag');
   RACE_STARS.slice(0,10).forEach(([c,r],i)=>addEnt({type:'star',id:'rs'+i,x:(o.c+c)*16+8,y:(o.r+r)*16+12,ph:i*7}));
   addEnt({type:'flag',x:(o.c+32+12)*16+8,y:(o.r+5)*16+12});
-  warpTo((o.c+3)*16+8,(o.r+5)*16+11,0,null,()=>{toast('GO! Collect '+RACE_NEED+' stars and reach the flag!','#ffd83a');SFX.magic();});
+  warpTo((o.c+3)*16+8,(o.r+5)*16+11,0,null,()=>{secretFound('rooftops');toast('GO! Collect '+RACE_NEED+' stars and reach the flag!','#ffd83a');SFX.magic();});
 }
 function endRace(win){
   const r=G.race,secs=Math.max(1,Math.round(r.t/60));G.race=null;
@@ -186,6 +186,7 @@ function makeCityEnts(){
   const fo=roomOrigin('ducks'),b=G.flags.baby,on=!!(b&&b.on&&!b.fail&&!b.done);
   [[6,7],[7,8],[9,7],[10,8]].forEach(([c,r],i)=>{const hx=fo.x+c*16+8,hy=fo.y+r*16+12;
     addEnt({type:'cduck',i,hx,hy,x:on?P.x:hx,y:on?P.y:hy,mode:on?'follow':'home',lost:0,flip:false,ph:i*11});});
+  for(const [id,c,r] of [['seed_harbor',72,73],['seed_park',68,70]])spawnItem(id,'seed',c*16+8,r*16+12);
   placeDecor();
   updateSchedules(true);
 }

@@ -48,6 +48,28 @@ Rank 5 (210) is 81% of Part 1. Rank 7 (390) needs all of Part 1 plus Part 2's re
 
 **Not verified:** how the rank-up fanfare sounds, real-device touch for the Growth Journal page button, and a long human playthrough to tune the GP numbers.
 
+## 0c. Phase 3 (city expansion): built (Oct 14, 2026)
+
+```
+City (region "city", 6 outdoor screens)           Interiors (region "cityin", 13 rooms)      Rooftops (region "rooftops", 3 screens)
+ Gate: Post Office, Rocco's Den  - Main Street - Park     post, rocco, bistro, boutique, seed,       Toy Shop stairs -> start platform
+ Market: Remy's Bistro           - Lane        - Harbor   bakery, toy, cleo, artist, ducks, loft,    Rooftop Race + Pidge's weathervane
+ Main St: Boutique, Seed&Feed, Bakery, Toy Shop            library, museum
+ Park: Library, Museum, gazebo, pond, bandstand
+ Lane: Cleo, Artist, Duck Flat, Pidge's Loft
+ Harbor: piers, Cap'n Pinch's ship ("not ready yet" sign)
+```
+
+**Code map.** Buildings, doors and hours: `src/content/city.js` (BUILDINGS). Shops: `src/content/shops.js` (data) + `src/systems/shops.js` (one reusable catalog screen). City quests, museum exhibits, hiding places: `src/content/quests_city.js`. Treats, special seeds, parcels, museum, library: `src/systems/city.js`. Residents' routines, quest mechanics, Rooftop Race: `src/systems/city2.js`. New tiles: door, ship, crates, roof, bookshelf, museum case. New sprites: `src/entities/sprites_city.js`.
+
+**What is in it.** Shops are open in the daytime and show CLOSED at night (the Bakery opens at sunrise; homes are always open). Boutique: Maggie moved here from the farm (a sign marks her old spot), plus Chef Hat (+1 growth per new food) and Detective Cap (adds a Detective Notes page to the quest log). Seed & Feed: Speedy Sprout, Giant Sunflower, Moonflower (grows only at night, drops a museum petal), +2 garden plots (up to 4 extra). Bakery: three one-day treats that also count as new foods. Toy Shop: replay the 3 minigames, the Rooftop Race (needs Hop + Glide, wins Racing Goggles), and coop decorations. Post Office: 1-2 parcel jobs per in-game day. Library: free hint books, lore, reading nook. Museum: 4 exhibits (shells, feathers, fossils, moon petals). Six home quests: Rocco's Borrowed Things, Cleo's Sunbeam (noon only), Remy's Cook-Off, Pidge's Weathervane (rooftops), Duckling Duty, Pablo's Portraits. Rocco, Cleo, Remy are out by day and home at night; Pidge works at the post office by day and sleeps in the loft.
+
+**Seed budget (Part 2 + city).** *Sources:* Part 2 quests 32, Part 2 hidden seeds 4+2, city quests 28 (4+4+5+5+5+5), museum 21 (5+5+5+6), parcels 2 each (1-2 per day, unlimited), garden. *Sinks:* Sky Tree 21, coop upgrades 18, special seeds 1/3/2 each, extra plots 12, treats 2-3 each (daily), nest decorations 9, Chef Hat 4, Detective Cap 4, snack bowl. Seeds now always have somewhere to go.
+
+**Growth budget added by the city:** quests 6 x 14 = 84, new foods 4 x 4 = 16 (muffin, bun, tart, stew), outfits 3 x 3 = 9, Rooftop Race first win 8, museum exhibits 42, hidden seeds 4, secret (the rooftops) 6, plus 3 per parcel. About 169 on top of Part 1 (246: the four shop outfits are no longer sold on the farm) and Part 2 (182).
+
+**Tests.** `tests/city.js` (with `tests/walk.js`) checks opening hours, entering and leaving every building on foot, buying, special seeds, treats, parcels, museum, all six quests, schedules, the race and the save round trip. `tests/smoke.js` still passes. **Not verified:** touch on a real device, a human playthrough of the quests, the sound of the new interactions.
+
 ## 1. Snapshot
 
 | | |

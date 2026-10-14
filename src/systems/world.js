@@ -149,8 +149,8 @@ function rankFlair(x0,y0,w,h,sc,dir){
   if(G.rank>=9){ctx.fillStyle='#21142b';ctx.fillRect(Math.round(x0+w*sc*0.55),Math.round(y0+h*sc*0.55),4*sc,3*sc);ctx.fillStyle='#ffd83a';ctx.fillRect(Math.round(x0+w*sc*0.55+sc),Math.round(y0+h*sc*0.55+sc),2*sc,sc);}
   if(G.rank>=10&&t%20<10){ctx.fillStyle='#fff8ec';ctx.fillRect(Math.round(x0+((t*7)%(w*sc))),Math.round(y0+((t*5)%(h*sc))),sc,sc);}
 }
-/* ---- closet: 12 slots (none + 11 outfits), 4 across ---- */
-const WARD_COLS=4;
+/* ---- closet: none + every outfit, 3 across ---- */
+const WARD_COLS=3;
 function openWardrobe(){state='wardrobe';SFX.menu();wardSel=Math.max(0,[null,...OUTFITS.map(o=>o.id)].indexOf(G.wear||G.acc));}
 function updateWardrobe(){
   if(pressed.wear||pressed.back||pressed.grow||pressed.quest){state='play';SFX.menu();return;}
@@ -162,23 +162,23 @@ function updateWardrobe(){
 }
 function drawWardrobe(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
-  txt("PIP'S CLOSET",W/2,10,8,'#ffd83a',{align:'center',shadow:true});
-  txt(G.outfits.length+'/'+OUTFITS.length+(G.rank>=7?'  OUTFIT + ACCESSORY':''),W-14,11,5,'#b8a8d8',{align:'right'});
+  txt("PIP'S CLOSET",W/2,8,8,'#ffd83a',{align:'center',shadow:true});
+  txt(G.outfits.length+'/'+OUTFITS.length+' found'+(G.rank>=7?'   OUTFIT + ACCESSORY':''),W/2,18,5,'#b8a8d8',{align:'center'});
   const n=OUTFITS.length+1;
   for(let i=0;i<n;i++){
-    const col=i%WARD_COLS,row=Math.floor(i/WARD_COLS),x=10+col*59,y=24+row*43,o=i?OUTFITS[i-1]:null,id=o?o.id:null,own=!id||G.outfits.includes(id),sel=i===wardSel,on=id?wearing(id):(!G.wear&&!G.acc);
-    if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(x-2,y-2,57,41);}
-    box(x,y,53,37,on?'#3a3010':'#1d1430',on?'#ffd83a':'#4a3a66');
-    if(own){drawPip(stage(),0,0,false,x+14,y+24,1,id);wrap(o?o.name:'NONE',5,26).slice(0,3).forEach((l,j)=>txt(l,x+28,y+5+j*8,5,on?'#ffd83a':'#fff8ec'));}
-    else{txt('?',x+14,y+10,10,'#4a3a66',{align:'center'});txt('???',x+28,y+10,5,'#6a5a90');}
+    const col=i%WARD_COLS,row=Math.floor(i/WARD_COLS),x=12+col*78,y=27+row*34,o=i?OUTFITS[i-1]:null,id=o?o.id:null,own=!id||G.outfits.includes(id),sel=i===wardSel,on=id?wearing(id):(!G.wear&&!G.acc);
+    if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(x-2,y-2,78,34);}
+    box(x,y,74,30,on?'#3a3010':'#1d1430',on?'#ffd83a':'#4a3a66');
+    if(own){drawPip(stage(),0,0,false,x+14,y+28,1,id);wrap(o?o.name:'NONE',5,46).slice(0,3).forEach((l,j)=>txt(l,x+27,y+5+j*8,5,on?'#ffd83a':'#fff8ec'));}
+    else{txt('?',x+14,y+10,10,'#4a3a66',{align:'center'});txt('???',x+27,y+10,5,'#6a5a90');}
   }
   const o=wardSel?OUTFITS[wardSel-1]:null,own=!o||G.outfits.includes(o.id);
-  box(12,160,W-24,54,'#1d1430','#6a5a90');
-  txt(own?(o?o.name:'NO OUTFIT'):'???',20,166,7,'#ffd83a');
+  box(12,166,W-24,52,'#1d1430','#6a5a90');
+  txt(own?(o?o.name:'NO OUTFIT'):'???',20,171,7,'#ffd83a');
   const desc=!o?'Just plain, fluffy Pip.':own?o.desc:(o.how||"Sold at Maggie's Boutique on Main Street in the city ("+o.price+" seeds).");
-  wrap(desc,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,177+i*8,5,'#d8c8f8'));
-  if(o)wrap('BONUS: '+o.bonus,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,195+i*8,5,own?'#94dc64':'#6a8a60'));
-  txt(own?(o?(wearing(o.id)?'Wearing it!':'Z: wear'):'Z: take all off'):'Not found yet',W-20,166,5,own?'#94dc64':'#8a7ab0',{align:'right'});
+  wrap(desc,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,182+i*8,5,'#d8c8f8'));
+  if(o)wrap('BONUS: '+o.bonus,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,199+i*8,5,own?'#94dc64':'#6a8a60'));
+  txt(own?(o?(wearing(o.id)?'Wearing it!':'Z: wear'):'Z: take all off'):'Not found yet',W-20,171,5,own?'#94dc64':'#8a7ab0',{align:'right'});
 }
 
 /* ---- minigames ---- */

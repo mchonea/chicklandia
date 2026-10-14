@@ -20,7 +20,7 @@ function update(){
     case 'festival':updateFestival();break;
     case 'credits':updateCredits();break;
     case 'grow':updateGrow();updateAmbient();break;
-    case 'quests':if(pressed.b){{const pg=G.part2?[0,1,2]:[0,2];questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;
+    case 'quests':if(pressed.b){{const pg=questPages();questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;
     case 'map':updateMap();break;
     case 'flying':updateFlying();break;
     case 'p2intro':updateP2Intro();break;

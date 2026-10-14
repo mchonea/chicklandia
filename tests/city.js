@@ -86,5 +86,10 @@ ok('goggles_are_accessory',ACCESSORY_IDS.includes('goggles'));
 // 14. save round trip keeps the new fields
 save();const sv=JSON.parse(localStorage.getItem('chicklandia_save_v2'));ok('save_has_city_state',!!sv.sacks&&!!sv.museum&&!!sv.jobs&&!!sv.decor&&!!sv.flags.poses);
 c.continueGame();G=c.G;ok('load_keeps_city_state',G.museum.seashell===5&&G.decor.painting===1&&G.best.race>0&&G.outfits.includes('chef'));
+// 15. extras: rooftop secret, city hidden seeds, quest pages
+c.newGame();G=c.G;G.autoMom=0;G.part2=true;['hop','glide'].forEach(s=>G.skills.add(s));reset();startRace();for(let i=0;i<60;i++)c.step(1);ok('rooftops_secret',!!G.secrets.rooftops);G.race=null;
+const sh=ents.find(e=>e.id==='seed_harbor'),g2=G.gp,sp=G.sp2;collect(sh);ok('city_hidden_seed',G.sp2===sp+1&&G.gp===g2+2);
+ok('sleuth_page_needs_cap',!questPages().includes(4));G.outfits.push('detective');ok('sleuth_page_with_cap',questPages().includes(4)&&questPages().includes(3));
+ok('tally_cap',TOTAL_SEEDS2===38);
 R.allPass=Object.values(R).every(v=>v===true);return R;
 })()

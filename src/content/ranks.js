@@ -34,4 +34,4 @@ const FOODS=[
   {id:'cheese',name:'CHEESE',color:'#ffd21e'},{id:'acorn',name:'ACORN',spr:'acorn'},{id:'fish',name:'FISH',color:'#a6d0ff'},
   {id:'snowberry',name:'SNOWBERRY',color:'#fff8ec'},
   {id:'muffin',name:'CORN MUFFIN',spr:'muffin'},{id:'bun',name:'SEED BUN',spr:'sbun'},{id:'tart',name:'BERRY TART',spr:'tart'},{id:'stew',name:'WINNING STEW',color:'#e8a422'}];
-const SECRET_IDS=[{id:'burrow',name:'RABBIT BURROW'},{id:'cellar',name:'FARMHOUSE CELLAR'},{id:'grove',name:'MOONLIT GROVE'}];
+const SECRET_IDS=[{id:'burrow',name:'RABBIT BURROW'},{id:'cellar',name:'FARMHOUSE CELLAR'},{id:'grove',name:'MOONLIT GROVE'},{id:'rooftops',name:'THE ROOFTOPS'}];

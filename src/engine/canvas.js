@@ -2,7 +2,7 @@
 /* =====================================================================
    CHICKLANDIA - a tiny chick's big dream
    ===================================================================== */
-const W=256,H=224,HUD=32,TS=16,VW=256,VH=192,TOTAL_SEEDS=45,TOTAL_SEEDS2=36,DAY=18000;
+const W=256,H=224,HUD=32,TS=16,VW=256,VH=192,TOTAL_SEEDS=45,TOTAL_SEEDS2=38,DAY=18000;
 const FONT='"Press Start 2P", monospace';
 const SAVE_KEY='chicklandia_save_v2';
 

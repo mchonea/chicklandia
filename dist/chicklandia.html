@@ -55,7 +55,7 @@
 /* =====================================================================
    CHICKLANDIA - a tiny chick's big dream
    ===================================================================== */
-const W=256,H=224,HUD=32,TS=16,VW=256,VH=192,TOTAL_SEEDS=45,TOTAL_SEEDS2=36,DAY=18000;
+const W=256,H=224,HUD=32,TS=16,VW=256,VH=192,TOTAL_SEEDS=45,TOTAL_SEEDS2=38,DAY=18000;
 const FONT='"Press Start 2P", monospace';
 const SAVE_KEY='chicklandia_save_v2';
 
@@ -662,7 +662,7 @@ defineRegion({id:'city',name:'CITY',kind:'outdoor',origin:[2,5],grid:[3,2],groun
   'T=====6==6=====T',
   'T==============T',
   'T=[==========[=T',
-  '===============T',
+  '======s========T',
   '===============T',
   '===============T',
   'Tww33wwwwww33wwT',
@@ -1174,6 +1174,7 @@ const SIGNS={'10,9':{name:'SIGN',text:'CHICKEN COOP - Home sweet home! (Press E 
   '45,16':{name:'SIGN',text:'THE BIG FENCE. No chicken has ever flown over it. Beyond it lies... THE WHOLE WIDE WORLD!'}};
 
 SIGNS['28,7']={name:'SIGN',text:"MAGGIE'S BOUTIQUE has moved to MAIN STREET in the city! (Past the forest, in Part 2.)"};
+SIGNS['70,76']={name:'DOCK SIGN',text:"CAP'N PINCH'S SHIP. Not ready to sail yet... but adventure is coming! Come back soon!"};
 
 /* ===== src/content/ranks.js ===== */
 /* content: growth ranks, where growth points (GP) come from, and the Taste Log foods.
@@ -1211,7 +1212,7 @@ const FOODS=[
   {id:'cheese',name:'CHEESE',color:'#ffd21e'},{id:'acorn',name:'ACORN',spr:'acorn'},{id:'fish',name:'FISH',color:'#a6d0ff'},
   {id:'snowberry',name:'SNOWBERRY',color:'#fff8ec'},
   {id:'muffin',name:'CORN MUFFIN',spr:'muffin'},{id:'bun',name:'SEED BUN',spr:'sbun'},{id:'tart',name:'BERRY TART',spr:'tart'},{id:'stew',name:'WINNING STEW',color:'#e8a422'}];
-const SECRET_IDS=[{id:'burrow',name:'RABBIT BURROW'},{id:'cellar',name:'FARMHOUSE CELLAR'},{id:'grove',name:'MOONLIT GROVE'}];
+const SECRET_IDS=[{id:'burrow',name:'RABBIT BURROW'},{id:'cellar',name:'FARMHOUSE CELLAR'},{id:'grove',name:'MOONLIT GROVE'},{id:'rooftops',name:'THE ROOFTOPS'}];
 
 /* ===== src/content/quests_city.js ===== */
 /* content: the six city home quests (same shape as the other quests), plus the museum exhibits and where finds hide. */
@@ -1291,6 +1292,13 @@ const BORROWED=[{id:'b_hat',kind:'hat',item:'bhat',owner:'pidge',c:66,r:67,name:
   {id:'b_bell',kind:'collarBell',item:'bbell',owner:'cleo',c:55,r:81,name:"Cleo's bell",flag:'bell'}];
 // cook-off ingredients
 const INGREDIENTS=[{id:'i_pepper',kind:'pepper',item:'pepper',c:9,r:55},{id:'i_salt',kind:'salt',item:'salt',c:6,r:79},{id:'i_mush',kind:'mushroom',item:'mushroom',c:9,r:69}];
+
+// where each quest's friend can be found (the Detective Cap shows these in the quest log)
+const QUEST_LOC={mom:'FARM: coop yard',daisy:'FARM: barnyard',clyde:'FARM: inside the barn',squeaks:'FARM: inside the barn',penny:'FARM: inside the coop',pig:'FARM: orchard',
+  sheep:'FARM: the field',whiskers:'FARM: farmhouse',biscuit:'FARM: farmhouse',duck:'FARM: by the pond',rooster:'FARM: by the Big Fence',granny:'FOREST: her garden',
+  bucky:'FOREST: deep woods',doe:'FOREST: deep woods',mo:'MOUNTAINS: the trail',elda:'MOUNTAINS: snowy peak',pidge:'CITY: post office by the gate',remy:'CITY: market square',
+  pinch:'BEACH: sandy shore',sandy:'BEACH: sandy shore'};
+function questLoc(id){return (QUESTS[id]&&QUESTS[id].loc)||QUEST_LOC[id]||'';}
 
 /* ===== src/content/shops.js ===== */
 /* content: what every city shop sells or does. Data first, then the SHOPS table that the catalog UI reads. */
@@ -2357,7 +2365,7 @@ function bump(ix,iy){
   if(tryPush(ix,iy))return;
   if(has('hop')&&tryHop(ix,iy))return;
   if(iy<0&&(WALK.has(CS.x+','+CS.y)||cellAt().kind==='indoor')){for(const ox of [0,-5,5]){const c=Math.floor((P.x+ox)/16),r=Math.floor((P.y-9)/16),d=DOORS[c+','+r];
-    if(d){if(d.b&&!buildingOpen(d.b)){closedSign(d.b);return;}warpTo(d.x,d.y,d.roof?0:1,null,d.roof?null:()=>{if(d.b)enteredBuilding(d.b);});return;}}}
+    if(d){if(d.b&&!buildingOpen(d.b)){closedSign(d.b);return;}warpTo(d.x,d.y,d.roof?0:1,null,()=>{if(d.b)enteredBuilding(d.b);if(d.roof&&regionAt().id==='rooftops')secretFound('rooftops');});return;}}}
   if(ix>0&&tileAt(Math.floor((P.x+8)/16),Math.floor((P.y-2)/16))==='H'){
     if(G.part2){FLY={t:0,dest:'forest'};state='flying';SFX.magic();}
     else if(has('fly'))startEnding();
@@ -2676,8 +2684,8 @@ function rankFlair(x0,y0,w,h,sc,dir){
   if(G.rank>=9){ctx.fillStyle='#21142b';ctx.fillRect(Math.round(x0+w*sc*0.55),Math.round(y0+h*sc*0.55),4*sc,3*sc);ctx.fillStyle='#ffd83a';ctx.fillRect(Math.round(x0+w*sc*0.55+sc),Math.round(y0+h*sc*0.55+sc),2*sc,sc);}
   if(G.rank>=10&&t%20<10){ctx.fillStyle='#fff8ec';ctx.fillRect(Math.round(x0+((t*7)%(w*sc))),Math.round(y0+((t*5)%(h*sc))),sc,sc);}
 }
-/* ---- closet: 12 slots (none + 11 outfits), 4 across ---- */
-const WARD_COLS=4;
+/* ---- closet: none + every outfit, 3 across ---- */
+const WARD_COLS=3;
 function openWardrobe(){state='wardrobe';SFX.menu();wardSel=Math.max(0,[null,...OUTFITS.map(o=>o.id)].indexOf(G.wear||G.acc));}
 function updateWardrobe(){
   if(pressed.wear||pressed.back||pressed.grow||pressed.quest){state='play';SFX.menu();return;}
@@ -2689,23 +2697,23 @@ function updateWardrobe(){
 }
 function drawWardrobe(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
-  txt("PIP'S CLOSET",W/2,10,8,'#ffd83a',{align:'center',shadow:true});
-  txt(G.outfits.length+'/'+OUTFITS.length+(G.rank>=7?'  OUTFIT + ACCESSORY':''),W-14,11,5,'#b8a8d8',{align:'right'});
+  txt("PIP'S CLOSET",W/2,8,8,'#ffd83a',{align:'center',shadow:true});
+  txt(G.outfits.length+'/'+OUTFITS.length+' found'+(G.rank>=7?'   OUTFIT + ACCESSORY':''),W/2,18,5,'#b8a8d8',{align:'center'});
   const n=OUTFITS.length+1;
   for(let i=0;i<n;i++){
-    const col=i%WARD_COLS,row=Math.floor(i/WARD_COLS),x=10+col*59,y=24+row*43,o=i?OUTFITS[i-1]:null,id=o?o.id:null,own=!id||G.outfits.includes(id),sel=i===wardSel,on=id?wearing(id):(!G.wear&&!G.acc);
-    if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(x-2,y-2,57,41);}
-    box(x,y,53,37,on?'#3a3010':'#1d1430',on?'#ffd83a':'#4a3a66');
-    if(own){drawPip(stage(),0,0,false,x+14,y+24,1,id);wrap(o?o.name:'NONE',5,26).slice(0,3).forEach((l,j)=>txt(l,x+28,y+5+j*8,5,on?'#ffd83a':'#fff8ec'));}
-    else{txt('?',x+14,y+10,10,'#4a3a66',{align:'center'});txt('???',x+28,y+10,5,'#6a5a90');}
+    const col=i%WARD_COLS,row=Math.floor(i/WARD_COLS),x=12+col*78,y=27+row*34,o=i?OUTFITS[i-1]:null,id=o?o.id:null,own=!id||G.outfits.includes(id),sel=i===wardSel,on=id?wearing(id):(!G.wear&&!G.acc);
+    if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(x-2,y-2,78,34);}
+    box(x,y,74,30,on?'#3a3010':'#1d1430',on?'#ffd83a':'#4a3a66');
+    if(own){drawPip(stage(),0,0,false,x+14,y+28,1,id);wrap(o?o.name:'NONE',5,46).slice(0,3).forEach((l,j)=>txt(l,x+27,y+5+j*8,5,on?'#ffd83a':'#fff8ec'));}
+    else{txt('?',x+14,y+10,10,'#4a3a66',{align:'center'});txt('???',x+27,y+10,5,'#6a5a90');}
   }
   const o=wardSel?OUTFITS[wardSel-1]:null,own=!o||G.outfits.includes(o.id);
-  box(12,160,W-24,54,'#1d1430','#6a5a90');
-  txt(own?(o?o.name:'NO OUTFIT'):'???',20,166,7,'#ffd83a');
+  box(12,166,W-24,52,'#1d1430','#6a5a90');
+  txt(own?(o?o.name:'NO OUTFIT'):'???',20,171,7,'#ffd83a');
   const desc=!o?'Just plain, fluffy Pip.':own?o.desc:(o.how||"Sold at Maggie's Boutique on Main Street in the city ("+o.price+" seeds).");
-  wrap(desc,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,177+i*8,5,'#d8c8f8'));
-  if(o)wrap('BONUS: '+o.bonus,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,195+i*8,5,own?'#94dc64':'#6a8a60'));
-  txt(own?(o?(wearing(o.id)?'Wearing it!':'Z: wear'):'Z: take all off'):'Not found yet',W-20,166,5,own?'#94dc64':'#8a7ab0',{align:'right'});
+  wrap(desc,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,182+i*8,5,'#d8c8f8'));
+  if(o)wrap('BONUS: '+o.bonus,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,199+i*8,5,own?'#94dc64':'#6a8a60'));
+  txt(own?(o?(wearing(o.id)?'Wearing it!':'Z: wear'):'Z: take all off'):'Not found yet',W-20,171,5,own?'#94dc64':'#8a7ab0',{align:'right'});
 }
 
 /* ---- minigames ---- */
@@ -3470,7 +3478,7 @@ function startRace(){
   ents=ents.filter(e=>e.type!=='star'&&e.type!=='flag');
   RACE_STARS.slice(0,10).forEach(([c,r],i)=>addEnt({type:'star',id:'rs'+i,x:(o.c+c)*16+8,y:(o.r+r)*16+12,ph:i*7}));
   addEnt({type:'flag',x:(o.c+32+12)*16+8,y:(o.r+5)*16+12});
-  warpTo((o.c+3)*16+8,(o.r+5)*16+11,0,null,()=>{toast('GO! Collect '+RACE_NEED+' stars and reach the flag!','#ffd83a');SFX.magic();});
+  warpTo((o.c+3)*16+8,(o.r+5)*16+11,0,null,()=>{secretFound('rooftops');toast('GO! Collect '+RACE_NEED+' stars and reach the flag!','#ffd83a');SFX.magic();});
 }
 function endRace(win){
   const r=G.race,secs=Math.max(1,Math.round(r.t/60));G.race=null;
@@ -3543,6 +3551,7 @@ function makeCityEnts(){
   const fo=roomOrigin('ducks'),b=G.flags.baby,on=!!(b&&b.on&&!b.fail&&!b.done);
   [[6,7],[7,8],[9,7],[10,8]].forEach(([c,r],i)=>{const hx=fo.x+c*16+8,hy=fo.y+r*16+12;
     addEnt({type:'cduck',i,hx,hy,x:on?P.x:hx,y:on?P.y:hy,mode:on?'follow':'home',lost:0,flip:false,ph:i*11});});
+  for(const [id,c,r] of [['seed_harbor',72,73],['seed_park',68,70]])spawnItem(id,'seed',c*16+8,r*16+12);
   placeDecor();
   updateSchedules(true);
 }
@@ -3607,7 +3616,7 @@ function refreshJobs(){
 }
 function deliverJob(e,it){
   const j=G.jobs.list.find(x=>x.to===e.id&&x.st===1);if(!j)return false;
-  it("A parcel from the post office? For me? Thank you so much, Pip!",()=>{j.st=2;addSeeds(JOB_PAY.seeds,inBeyond(e.x,e.y)?2:1,0);gainGP(JOB_PAY.gp);
+  it("A parcel from the post office? For me? Thank you so much, Pip!",()=>{j.st=2;G.flags.parcels=(G.flags.parcels||0)+1;addSeeds(JOB_PAY.seeds,inBeyond(e.x,e.y)?2:1,0);gainGP(JOB_PAY.gp);
     toast('Delivered! +'+JOB_PAY.seeds+' seeds','#a6e0ff');SFX.questDone();save();});
   return true;
 }
@@ -3788,8 +3797,8 @@ function drawJournal(){
     txt(got?f.name:'???',148,y,5,got?'#fff8ec':'#4a3a66');});
   txt('SECRETS '+Object.keys(G.secrets).length+'/'+SECRET_IDS.length,132,132,5,'#d890ff');
   SECRET_IDS.forEach((s,i)=>txt(G.secrets[s.id]?s.name:'???',134,141+i*8,5,G.secrets[s.id]?'#fff8ec':'#4a3a66'));
-  txt('BEST SCORES',132,168,5,'#e8ff70');
-  [['EGG',G.best.egg],['BONK',G.best.bonk],['FIREFLY',G.best.ffly],['RACE',G.best.race?G.best.race+'s':0]].forEach(([n,v],i)=>txt(n+' '+(v||'-'),134,177+i*8,5,v?'#fff8ec':'#4a3a66'));
+  txt('BEST SCORES',132,174,5,'#e8ff70');
+  [['EGG',G.best.egg],['BONK',G.best.bonk],['FIREFLY',G.best.ffly],['RACE',G.best.race?G.best.race+'s':0]].forEach(([n,v],i)=>txt(n+' '+(v||'-'),134,183+i*8,5,v?'#fff8ec':'#4a3a66'));
 }
 
 /* ===== src/ui/pause.js ===== */
@@ -3996,7 +4005,7 @@ function drawHUD(){
     if(rid==='cityin'||rid==='rooftops'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
     const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':'F: FLY',220,18,5,'#ffd83a',{align:'right'});
     // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
-    const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor(30/cs.cols)),h=Math.min(8,Math.floor(27/cs.rows));
+    const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor((31-(cs.cols-1))/cs.cols)),h=Math.min(8,Math.floor((27-(cs.rows-1))/cs.rows));
     for(const c of cs.cells){const cur=CS.x===c.sx&&CS.y===c.sy,vis=G.visited.has(c.sx+','+c.sy);
       ctx.fillStyle=cur?(Math.floor(tick/20)%2?'#ffd83a':'#ffb020'):(vis?'#6a5a90':'#3b2a56');ctx.fillRect(224+(c.sx-cs.x0)*(w+1),3+(c.sy-cs.y0)*(h+1),w,h);}
     return;}
@@ -4077,6 +4086,8 @@ function drawGrow(){
 function drawQuests(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
   if(questPage===2){drawTrainingPage();return;}
+  if(questPage===3){drawCityPage();return;}
+  if(questPage===4){drawSleuthPage();return;}
   txt(questPage===1?'QUESTS - PART 2':'QUESTS',W/2,12,9,'#ffd83a',{align:'center',shadow:true});
   if(questPage){
     ORDER2.forEach((id,i)=>{const y=25+i*17,q=QUESTS[id],st=G.q[id];
@@ -4199,6 +4210,35 @@ function MINIMAP_BEYOND(){
   return _mmCache={cells,x0,y0,cols:Math.max(...xs)-x0+1,rows:Math.max(...ys)-y0+1};
 }
 
+// quest-log pages: 0 farm, 1 part 2, 3 city, 2 training, 4 detective notes (only while a Detective Cap is owned)
+function questPages(){const p=[0];if(G.part2)p.push(1,3);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
+function drawCityPage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
+  txt('QUESTS - CITY',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
+  ORDER3.forEach((id,i)=>{const y=25+i*17,q=QUESTS[id],st=G.q[id],giver=QUEST_GIVER[id]||id;
+    box(10,y,W-20,15,st===2?'#23402a':'#1d1430',st===2?'#94dc64':(st===1?'#ffd83a':'#4a3a66'));
+    const seen=st>0||G.met.has(giver);
+    if(!seen){txt('???',16,y+5,5,'#6a5a90');txt('not met yet',W-16,y+5,5,'#6a5a90',{align:'right'});return;}
+    if(st===0){txt('???',16,y+5,5,'#6a5a90');txt(NAMES[giver]?NAMES[giver].toUpperCase():'',W-16,y+5,5,'#6a5a90',{align:'right'});return;}
+    txt(q.title,16,y+5,5,st===2?'#94dc64':'#fff8ec');
+    txt(st===2?'DONE!':q.prog(),W-16,y+5,5,st===2?'#94dc64':(q.check()?'#ffd83a':'#d8c8f8'),{align:'right'});});
+  const done=EXHIBITS.filter(x=>G.museum[x.id]>=x.need).length;
+  box(10,129,W-20,15,'#1d1430','#c49a5c');txt('MUSEUM',16,134,5,'#c49a5c');txt(done+'/'+EXHIBITS.length+' exhibits',W-16,134,5,'#fff8ec',{align:'right'});
+  box(10,146,W-20,15,'#1d1430','#a6e0ff');txt('PARCELS DELIVERED',16,151,5,'#a6e0ff');txt(''+(G.flags.parcels||0),W-16,151,5,'#fff8ec',{align:'right'});
+  box(10,163,W-20,15,'#1d1430','#ffd83a');txt('ROOFTOP RACE BEST',16,168,5,'#ffd83a');txt(G.best.race?G.best.race+' sec':'-',W-16,168,5,'#fff8ec',{align:'right'});
+  txt('Seeds: '+G.seeds+'     X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
+}
+function drawSleuthPage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#c49a5c');
+  txt('DETECTIVE NOTES',W/2,12,9,'#c49a5c',{align:'center',shadow:true});
+  const ids=['mom',...ORDER,...ORDER2,...ORDER3].filter(id=>G.q[id]===1);
+  if(!ids.length)txt('No open tasks. Go find a friend who needs help!',W/2,100,5,'#b8a8d8',{align:'center'});
+  ids.slice(0,9).forEach((id,i)=>{const y=24+i*20;box(10,y,W-20,18,'#1d1430','#4a3a66');
+    txt(QUESTS[id].title,16,y+3,5,'#fff8ec');txt(QUESTS[id].prog(),W-16,y+3,5,QUESTS[id].check()?'#ffd83a':'#d8c8f8',{align:'right'});
+    txt(questLoc(QUEST_GIVER[id]&&G.q[id]===1&&false?QUEST_GIVER[id]:id),16,y+11,5,'#94dc64');});
+  txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
+}
+
 /* ===== src/main.js ===== */
 /* ---------------- loop ---------------- */
 function update(){
@@ -4221,7 +4261,7 @@ function update(){
     case 'festival':updateFestival();break;
     case 'credits':updateCredits();break;
     case 'grow':updateGrow();updateAmbient();break;
-    case 'quests':if(pressed.b){{const pg=G.part2?[0,1,2]:[0,2];questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;
+    case 'quests':if(pressed.b){{const pg=questPages();questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;
     case 'map':updateMap();break;
     case 'flying':updateFlying();break;
     case 'p2intro':updateP2Intro();break;
