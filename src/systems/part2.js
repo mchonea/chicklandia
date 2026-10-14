@@ -80,8 +80,7 @@ function hint2(){
   if(G.coop&&G.coop.lv<4)return "Upgrade your coop! Read the sign next to it.";
   return "Your Dream Coop is finished! What a journey, little one.";
 }
-function areaOf(cs=CS){const k=cs.x+','+cs.y;if(cs.y<2)return'farm';if(k==='0,4'||k==='1,4')return'mountains';if(k==='0,5'||k==='1,5')return'forest';
-  if(k==='2,5'||k==='2,6')return'city';if(k==='0,6'||k==='1,6')return'beach';if(k==='2,4')return'coop';return null;}
+function areaOf(cs=CS){const r=regionAt(cs);return r?r.area:null;}
 const AREA_LABEL={farm:'FARM',forest:'FOREST',mountains:'MOUNTAINS',city:'CITY',beach:'BEACH',coop:'MY COOP'};
 function noteArea(){const a=areaOf();if(a&&a!=='coop'&&!G.areas.includes(a)){G.areas.push(a);if(G.part2)toast('Discovered the '+AREA_LABEL[a]+'!','#94dc64');}}
 

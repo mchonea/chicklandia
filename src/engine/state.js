@@ -32,7 +32,7 @@ function newGame(){
 }
 function save(){
   if(!G)return;titleSave=undefined;
-  try{localStorage.setItem(SAVE_KEY,JSON.stringify({x:P.x,y:P.y,cs:CS,seeds:G.seeds,skills:[...G.skills],hearts:G.hearts,q:G.q,
+  try{localStorage.setItem(SAVE_KEY,JSON.stringify({sv:3,pos:toRegionPos(P.x,P.y),seeds:G.seeds,skills:[...G.skills],hearts:G.hearts,q:G.q,
     items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,
     time:G.time,met:[...G.met],home:G.home,sibs:G.sibs,visited:[...G.visited],won:G.won,
     clock:G.clock,weather:G.weather,outfits:G.outfits,wear:G.wear,best:G.best,cellar:G.cellar,chest:G.chest,
@@ -48,7 +48,8 @@ function continueGame(){
     part2:!!s.part2,areas:s.areas||['farm'],thumb:!!s.thumb,coop:s.coop||null,plots:s.plots||{},mail:Object.assign(G.mail,s.mail),flags:s.flags||{},turtles:s.turtles||[],harvests:s.harvests||0});
   G.wInt=G.weather==='clear'?0:1;
   tiles=MAP.map(r=>r.split(''));for(const k in G.mods){const [c,r]=k.split(',').map(Number);tiles[r][c]=G.mods[k];}
-  P=newPlayer(s.x,s.y);CS=s.cs||{x:0,y:0};camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
+  {const p=s.pos?fromRegionPos(s.pos):{x:s.x,y:s.y};P=newPlayer(p.x,p.y);CS=s.pos?{x:Math.floor(p.x/256),y:Math.floor((p.y-1)/192)}:(s.cs||{x:0,y:0});if(!cellAt(CS)){P=newPlayer(56,76);CS={x:0,y:0};}}
+  camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
   G.train=Object.assign({},s.train||{});migrateSave(s);
   migrateSeeds(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();state='play';fade=1;fadeColor='#000';
 }

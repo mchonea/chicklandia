@@ -119,9 +119,11 @@ TILE.signO=mk(16,16,x=>{P_(x,'k',7,8,3,7);P_(x,'B',8,8,1,6);P_(x,'k',1,2,14,8);P
 TILE.stakes=mk(16,16,x=>{});
 TILE.goldroof=mk(16,16,x=>{P_(x,'Q',0,0,16,16);for(let j=0;j<16;j+=4){P_(x,'q',0,j,16,3);for(let i=((j/4)%2)*4;i<16;i+=8)P_(x,'Q',i,j,1,3);}P_(x,'w',2,1,2,1);P_(x,'w',10,9,2,1);});
 function groundFor(c,r,h){
-  if(r>=48&&r<60&&c<32)return TILE.snow[h%2];
-  if(c>=32&&r>=60)return TILE.cobble;
-  if(r>=72&&c<32)return TILE.sand[h%2];
+  switch(groundOf(c,r)){
+    case 'snow':return TILE.snow[h%2];
+    case 'cobble':return TILE.cobble;
+    case 'sand':return TILE.sand[h%2];
+  }
   return TILE.grass[h%3];
 }
 TILE.exit=mk(16,16,x=>{x.drawImage(TILE.floor,0,0);P_(x,'k',1,0,14,16);P_(x,'#ffe7a0',2,10,12,6);P_(x,'#fff6d0',3,13,10,3);P_(x,'#3a2416',2,0,12,10);});

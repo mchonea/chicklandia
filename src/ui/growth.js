@@ -76,7 +76,7 @@ let FAINT_FAR=false;
 function updateFaint(){
   FT++;
   if(FT<=50){fade=FT/50;fadeColor='#000';}
-  if(FT===50){const far=G.part2&&P.y>=48*16,sp=far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
+  if(FT===50){const far=G.part2&&inBeyond(),sp=far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
     P=newPlayer(sp.x,sp.y);CS={x:Math.floor(sp.x/256),y:Math.floor(sp.y/192)};camX=CS.x*256;camY=CS.y*192;G.hearts=maxHearts();resetEnemies();TRAIL=[];FAINT_FAR=far;
     for(const d of ents)if(d.type==='duckling'&&d.mode==='follow'){d.x=P.x;d.y=P.y;}}
   if(FT>50)fade=Math.max(0,1-(FT-50)/50);

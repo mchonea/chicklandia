@@ -12,8 +12,8 @@ function nightAmt(){
 }
 function duskAmt(){return Math.max(0,1-Math.abs(dayT()-0.58)/0.07);}
 function dawnAmt(){const t=dayT(),u=t>=0.9?t-1:t;return Math.max(0,1-Math.abs(u-0.03)/0.05);}
-function isOutdoor(){const k=CS.x+','+CS.y;return WALK.has(k)||k==='2,3';}
-function isCave(){return CS.y===3&&CS.x<2;}
+function isOutdoor(){const c=cellAt();return !!c&&(c.kind==='outdoor'||c.kind==='grove');}
+function isCave(){const c=cellAt();return !!c&&c.kind==='cave';}
 function rainAmt(){return (G.weather==='rain'||G.weather==='storm')?G.wInt:0;}
 function rollWeather(){
   const r=Math.random(),w=r<0.5?'clear':r<0.68?'cloudy':r<0.92?'rain':'storm';
@@ -27,10 +27,9 @@ function onPuddle(){
 function pickTrack(){
   if(state==='egg'||MG)return'mini';
   if(state==='map'||state==='flying'||state==='p2intro')return'grove';
-  if(CS.y===3)return CS.x===2?'grove':'cave';
-  if(CS.y===2||(CS.y===4&&CS.x===2))return'indoor';
+  {const c=cellAt();if(c){if(c.kind==='grove')return'grove';if(c.kind==='cave')return'cave';if(c.kind==='indoor')return'indoor';}}
   if(nightAmt()>0.45)return'night';
-  if(CS.y>=4)return areaOf();
+  {const a=areaOf();if(a&&a!=='farm')return a;}
   if(CS.x===0&&CS.y===1)return'pond';
   return'farm';
 }

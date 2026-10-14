@@ -126,7 +126,7 @@ function updateWarp(){
   if(WARP.t<=16){fade=WARP.t/16;fadeColor='#000';}
   if(WARP.t===16){P.x=WARP.x;P.y=WARP.y;P.dir=WARP.dir;P.kt=0;P.hop=null;P.z=0;
     CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;
-    if(CS.y<2||CS.y>=4)G.visited.add(CS.x+','+CS.y);resetEnemies();TRAIL=[];
+    G.visited.add(CS.x+','+CS.y);resetEnemies();TRAIL=[];
     for(const d of ents)if((d.type==='duckling'||d.type==='follower')&&d.mode==='follow'){d.x=P.x;d.y=P.y;}
     noteArea();if(WARP.after)WARP.after();save();}
   if(WARP.t>16)fade=Math.max(0,1-(WARP.t-16)/16);
@@ -216,7 +216,7 @@ function updItem(e){
 function collect(e){
   e.dead=true;G.collected.add(e.id);
   switch(e.kind){
-    case 'seed':addSeeds(1,e.y>=48*16?2:1);SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffd83a');toast('Found a hidden seed!');break;
+    case 'seed':addSeeds(1,inBeyond(e.x,e.y)?2:1);SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffd83a');toast('Found a hidden seed!');break;
     case 'bell':G.items.bell=1;SFX.quest();toast("Found Daisy's bell!");break;
     case 'apple':G.items.apple++;SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'APPLE '+Math.min(3,G.items.apple)+'/3','#ff8080');break;
     case 'bone':G.items.bone=1;SFX.quest();toast("Found Biscuit's bone!");break;
@@ -253,12 +253,12 @@ function checkEdges(){
   if(ft==='^'){warpTo(128,747,1,()=>{if(!G.met.has('bunbun'))toast('A secret burrow!');});return;}
   if(ft==='Y'){warpTo(384,747,1,()=>{if(!G.cellar){placeBlocks();toast('Push blocks onto the gold plates!');}});return;}
   if(ft==='@'){
-    if(CS.y===3){warpTo(216,139,0);return;}
+    if(regionAt().id==='secrets'){warpTo(216,139,0);return;}
     if(nightAmt()>0.3){warpTo(648,731,1,()=>{SFX.magic();toast('The Moonlit Grove...','#d890ff');});return;}
     if(P.bubbleCd<=0){P.bubbleCd=240;float(P.x,P.y-24,'These mushrooms look magical...','#d890ff');}
   }
   if(!WALK.has(CS.x+','+CS.y)){
-    if(tileAt(fc,Math.floor(P.y/16))==='X'){const e=CS.y===4?coopExit():(CS.y===2?EXITS:EXITS3)[CS.x];if(e)warpTo(e.x,e.y,0);}
+    if(tileAt(fc,Math.floor(P.y/16))==='X'){const cl=cellAt(),e=cl.region.id==='coop'?coopExit():(cl.region.id==='rooms'?EXITS:EXITS3)[cl.gx];if(e)warpTo(e.x,e.y,0);}
     return;}
   const L=CS.x*256,R=L+256,T=CS.y*192,B=T+192;let d=null;
   if(P.x-4<L)d=[-1,0];else if(P.x+4>R)d=[1,0];else if(P.y-6<T)d=[0,-1];else if(P.y>B)d=[0,1];
