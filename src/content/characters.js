@@ -1,0 +1,35 @@
+'use strict';
+/* content: the cast. Each entry becomes an NPC in makeEnts(). part 1 = farm, part 2 = beyond. */
+const CHARACTERS=[
+  // ---- farm ----
+  {id:'mom',name:'MAMA HEN',spr:'hen',c:6,r:4,voice:560,w:14},
+  {id:'daisy',name:'DAISY',spr:'cow',c:19,r:8,voice:170,w:18},
+  {id:'pig',name:'PORKCHOP',spr:'pig',c:40,r:4,voice:240,w:14},
+  {id:'penny',name:'PENNY',spr:'penny',c:8,r:29,voice:820,w:14},
+  {id:'clyde',name:'CLYDE',spr:'horse',c:18,r:33,voice:150,w:16},
+  {id:'squeaks',name:'SQUEAKS',spr:'mouse',c:29,r:33,voice:1200,w:10},
+  {id:'nibbles',name:'NIBBLES',spr:'chef',c:36,r:27,voice:1100,w:10},
+  {id:'biscuit',name:'BISCUIT',spr:'dog',c:41,r:32,voice:300,w:14},
+  {id:'whiskers',name:'WHISKERS',spr:'cat',c:40,r:30,voice:500,w:12},
+  {id:'maggie',name:'MAGGIE',spr:'magpie',c:28,r:7,voice:1400,w:12},
+  {id:'bunbun',name:'BUN-BUN',spr:'rabbit',c:8,r:39,voice:1000,w:12},
+  {id:'hootie',name:'HOOTIE',spr:'owl',c:40,r:40,voice:350,w:12},
+  {id:'duck',name:'MRS. QUACKERS',spr:'duck',c:12,r:21,voice:760,w:14},
+  {id:'sheep',name:'WOOLLY',spr:'sheepBow',c:21,r:20,voice:420,w:14},
+  {id:'rooster',name:'SIR CLUCKINGTON',spr:'rooster',c:36,r:15,voice:330,w:14},
+  {id:'sheep2',name:'SHEEP',spr:'sheep',c:19,r:21,voice:380,w:14,deco:true},
+  {id:'sheep3',name:'SHEEP',spr:'sheep',c:23,r:19,voice:460,w:14,deco:true},
+  // ---- beyond the farm ----
+  {id:'granny',name:'GRANNY SHELL',spr:'tortoise',c:4,r:63,voice:200,w:16},
+  {id:'bucky',name:'BUCKY',spr:'beaver',c:22,r:67,voice:500,w:12},
+  {id:'doe',name:'DOE',spr:'deer',c:27,r:66,voice:650,w:16},
+  {id:'mo',name:'MO',spr:'marmot',c:10,r:52,voice:900,w:10},
+  {id:'elda',name:'ELDA',spr:'eagle',c:20,r:52,voice:450,w:12},
+  {id:'pidge',name:'POSTMASTER PIDGE',spr:'pigeon',c:35,r:65,voice:800,w:10},
+  {id:'rocco',name:'ROCCO',spr:'raccoon',c:43,r:68,voice:420,w:12},
+  {id:'remy',name:'CHEF REMY',spr:'chef',c:40,r:77,voice:1100,w:10},
+  {id:'cleo',name:'CLEO',spr:'catO',c:35,r:78,voice:520,w:12},
+  {id:'maggie2',name:'MAGGIE',spr:'magpie',c:43,r:78,voice:1400,w:12,note:'temporary city branch of the boutique until Phase 3'},
+  {id:'pinch',name:'CAPN PINCH',spr:'crab',c:13,r:75,voice:350,w:12},
+  {id:'sandy',name:'LIFEGUARD SANDY',spr:'gull',c:6,r:74,voice:900,w:10},
+];

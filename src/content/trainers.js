@@ -1,0 +1,31 @@
+'use strict';
+/* content: skill trainers (trainings that unlock locked skills) */
+const TRAIN={
+  hop:{phase:1,who:'clyde',whoName:'CLYDE',skill:'HOP',title:'Hurdle Training',avail:()=>G.q.clyde===2,item:'horseshoe',need:3,noun:'horseshoes',
+    spawn:[['hs0',9,6],['hs1',28,15],['hs2',46,5]],
+    lock:"Help CLYDE the horse in the barn, and he'll teach you to HOP!",
+    intro:["Neeeigh! Say, did I ever tell you? I was the county's champion HURDLE jumper!","I could teach you to HOP over hay bales like a pro. But first, a warm-up!","I lost my 3 lucky HORSESHOES around the farm. Find them, and I'll show you how to hop!"],
+    remind:()=>Math.min(3,G.items.horseshoe)+"/3 lucky horseshoes. One's by the coop, one's in the field, and one's in the orchard!",
+    done:["My lucky horseshoes! Now watch closely... bend your knees... and SPRING!","There! Now you can learn HOP in your Growth Tree. Press E. Go get 'em, champ!"],
+    hint:()=>"Clyde's lucky horseshoes are by the coop, in the field, and in the orchard."},
+  flap:{phase:1,who:'rooster',whoName:'SIR CLUCK',skill:'WING FLAP',title:'Wind Training',avail:()=>G.q.rooster>=1,item:'puff',need:5,noun:'dandelion puffs',puffs:true,
+    lock:"Talk to SIR CLUCKINGTON by the Big Fence. He'll train your wings!",
+    intro:["Hold on there, kid. To blow those leaves away, you'll need a mighty WING FLAP.","A wing flap takes strong, quick wings! Training time!","Dandelion puffs are blowing all over the field. Catch 5 of 'em before the wind carries 'em off!"],
+    remind:()=>Math.min(5,G.items.puff)+"/5 dandelion puffs. Chase 'em down in the field!",
+    done:["Ha! Quick as the wind! Now flap like THIS... WHOOSH!","You're ready. Learn WING FLAP in your Growth Tree, then go find my feathers!"],
+    hint:()=>"Catch the dandelion puffs blowing around the field for Sir Cluckington."},
+  swim:{phase:2,who:'sandy',whoName:'SANDY',skill:'SWIM',title:'Lifeguard Training',avail:()=>G.q.sandy===2,item:'ring',need:3,noun:'life rings',
+    spawn:[['ring0',14,77],['ring1',27,75],['ring2',30,79]],
+    lock:"Help LIFEGUARD SANDY at the beach, and she'll teach you to SWIM!",
+    intro:["Squawk! You saved those turtles. But can you SWIM, junior lifeguard?","Every lifeguard needs swim training! First, find my 3 lost LIFE RINGS.","They floated off somewhere around the beach and the tide pools!"],
+    remind:()=>Math.min(3,G.items.ring)+"/3 life rings. Check the beach and the tide pools!",
+    done:["My life rings! Okay: kick your feet, paddle your wings, and keep your beak up!","Now you can learn SWIM in your Sky Tree. Press E. Squawk!"],
+    hint:()=>"Lifeguard Sandy's life rings are on the beach and in the tide pools."},
+  super:{phase:2,who:'bucky',whoName:'BUCKY',skill:'SUPER PECK',title:'Stump Smashing',avail:()=>G.q.bucky===2,item:'stump',need:3,noun:'stumps',
+    stumps:[['stump0',3,66],['stump1',29,63],['stump2',17,64]],
+    lock:"Help BUCKY the beaver in the deep woods, and he'll teach you SUPER PECK!",
+    intro:["Hey hey! Wanna know the secret to my super-strong teeth? PRACTICE!","There are 3 old tree stumps in the forest that need clearing out. Peck 'em to splinters!","Do that, and I'll teach you the SUPER PECK!"],
+    remind:()=>Math.min(3,G.items.stump)+"/3 stumps smashed. They're around the forest edge and the deep woods!",
+    done:["Look at those splinters! You've got the power, kid!","Now you can learn SUPER PECK in your Sky Tree. Press E!"],
+    hint:()=>"Smash the 3 old tree stumps in the forest for Bucky."}
+};

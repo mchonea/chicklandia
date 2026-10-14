@@ -655,11 +655,6 @@ function solidTile(ch,forPlayer=true){
   return SOLID.has(ch);
 }
 
-const HIDDEN={'44,2':{id:'feather_crate',kind:'feather'},'44,3':{id:'seed_crate',kind:'seed'},
-  '14,21':{id:'seed_rock',kind:'seed'},'23,22':{id:'feather_leaf',kind:'feather'},'35,20':{id:'seed_leaf',kind:'seed'}};
-const SIGNS={'10,9':{name:'SIGN',text:'CHICKEN COOP - Home sweet home! (Press E to open your Growth Tree.)'},
-  '45,16':{name:'SIGN',text:'THE BIG FENCE. No chicken has ever flown over it. Beyond it lies... THE WHOLE WIDE WORLD!'}};
-
 function drawTile(ch,c,r,sx,sy,wf){
   const h=hash2(c,r);let img;
   switch(ch){
@@ -763,6 +758,362 @@ function drawTile(ch,c,r,sx,sy,wf){
   ctx.drawImage(img,sx,sy);
 }
 
+
+/* ===== src/content/skills.js ===== */
+/* content: skills (Growth Tree + Sky Tree) and growth-stage names. Data only. */
+const SKILLS=[
+  {id:'down',name:'FLUFFY DOWN',cost:2,req:[],x:30,y:70,desc:'Grow extra fluffy feathers. +1 heart!',learn:'+1 heart! So fluffy!'},
+  {id:'quick',name:'QUICK FEET',cost:2,req:[],x:30,y:118,desc:'Scurry around the farm much faster.',learn:'You scurry faster now!'},
+  {id:'peck',name:'STRONG PECK',cost:3,req:['down'],x:78,y:70,desc:'Smash rocks and crates, shake apple trees, and give foxes a real OUCH.',learn:'Smash rocks, crates & shake apple trees!'},
+  {id:'hop',name:'HOP',cost:3,req:['quick'],x:78,y:118,desc:'Walk into a hay bale to hop right over it. Taught by Clyde the horse.',learn:'Walk into hay bales to hop over them!'},
+  {id:'tough',name:'TOUGH FEATHERS',cost:4,req:['peck'],x:126,y:70,desc:'Sturdier feathers that shrug off bumps. +1 heart!',learn:'+1 heart! Tough as nails!'},
+  {id:'flutter',name:'FLUTTER',cost:4,req:['hop'],x:126,y:118,desc:'Flap your little wings to glide right over water.',learn:'You can flutter over water now!'},
+  {id:'flap',name:'WING FLAP',cost:5,req:['tough','flutter'],x:176,y:94,desc:'Press X to gust away leaves and geese! Taught by Sir Cluckington.',learn:'Press X to WING FLAP!'},
+  {id:'fly',name:'FLIGHT',cost:7,req:['flap'],x:226,y:94,desc:'Real, true FLIGHT! Head to the Big Fence and soar right over it!',learn:'You can FLY! Go to the Big Fence!'}
+];
+const SKILLS2=[
+  {id:'swim',name:'SWIM',cost:4,req:[],x:44,y:72,desc:'Paddle through deep rivers and the ocean! Taught by Lifeguard Sandy.',learn:'You can swim in deep water!'},
+  {id:'glide',name:'GLIDE',cost:4,req:[],x:44,y:120,desc:'Spread your wings and glide right over chasms and gaps.',learn:'You can glide over chasms!'},
+  {id:'super',name:'SUPER PECK',cost:5,req:['glide'],x:120,y:120,desc:'A peck so mighty it smashes huge boulders! Taught by Bucky the beaver.',learn:'SUPER PECK smashes boulders!'},
+  {id:'golden',name:'GOLDEN WINGS',cost:8,req:['swim','super'],x:204,y:96,desc:'Shimmering golden wings! +1 heart and even faster feet.',learn:'+1 heart and speed! So shiny!'}
+];
+const STAGE_NAMES=['TEENY PEEP','LITTLE CHICK','GROWING CHICK','BIG CHICK','ALMOST A CHICKEN'];
+
+/* ===== src/content/outfits.js ===== */
+/* content: outfits and the shop list. Data only (icons are drawn in systems/world.js). */
+const OUTFITS=[
+  {id:'straw',name:'STRAW HAT',price:2,bonus:'Garden grows 50% faster. Worms, carrots, apples & acorns may drop a seed.',desc:'A classic farm look. Keeps the sun off your fluff.'},
+  {id:'astronaut',name:'ASTRONAUT',price:2,bonus:'Helmet light: big glow at night and in caves. Moon-bounce hops!',desc:'One small peck for a chick, one giant leap for chicken-kind!'},
+  {id:'shades',name:'COOL SHADES',price:3,bonus:'Too cool: outfits and coop upgrades cost 1 less seed.',desc:'Too cool for the coop.'},
+  {id:'ninja',name:'NINJA',price:6,bonus:'Stealth: foxes and geese barely notice you. A bit faster, too!',desc:'Silent. Swift. Fluffy. The shadow of the farm.'},
+  {id:'bow',name:'PINK BOW',bonus:'Family love: +1 heart.',how:'Win Egg Catch with your big sister.',desc:'A gift from Penny.'},
+  {id:'ears',name:'BUNNY EARS',bonus:'Hoppity: move 20% faster.',how:'Win a game in a secret burrow.',desc:'Hop hop hooray!'},
+  {id:'crown',name:'GOLDEN CROWN',bonus:'Royal reward: +1 seed from every quest.',how:'Find a hidden treasure chest.',desc:'Fit for the ruler of all Chicklandia!'},
+  {id:'pirate',name:'PIRATE',bonus:'Treasure sense: hidden treasures and secrets sparkle.',how:'Win a game under the moon.',desc:'Arr! Yo ho ho and a bucket of seeds!'}];
+const SHOP=['straw','astronaut','shades','ninja'];
+const OUTFIT_RENAME={crown:'ninja',explorer:'crown',bandana:'astronaut',cape:'pirate'};
+
+/* ===== src/content/quests_farm.js ===== */
+/* content: Part 1 quests (condition/progress/hint functions + dialogue lines) */
+const NAMES={mom:'Mama Hen',daisy:'Daisy',pig:'Porkchop',duck:'Mrs. Quackers',sheep:'Woolly',rooster:'Sir Cluckington',
+  penny:'Penny',clyde:'Clyde',squeaks:'Squeaks',biscuit:'Biscuit',whiskers:'Whiskers'};
+const QUESTS={
+  mom:{title:'Breakfast Worms',check:()=>G.items.worm>=3,prog:()=>Math.min(3,G.items.worm)+'/3 worms'},
+  daisy:{title:'The Lost Bell',check:()=>G.items.bell>0,prog:()=>G.items.bell?'bell found!':'find the bell',reward:3,
+    intro:["Moooo... Oh, hello there, little one.","I lost my favorite bell! I think it rolled into the hay pen just north of here.","Those bales are much too tall for a chick... but if you learned to HOP, you could jump right over them!"],
+    remind:()=>"My bell is in the hay pen north of here. "+(has('hop')?"Walk into a hay bale to HOP over it!":"Clyde the horse in the barn is a champion jumper. He could teach you to HOP!"),
+    done:["You found my bell! *ding ding* Moooo-velous!","Here, take 3 seeds, sweetie!"],
+    after:()=>["*ding ding* I'm the best-dressed cow on the whole farm!"],
+    hint:()=>has('hop')?"Daisy's bell is in the hay pen. HOP over the bales by walking into them!":"Daisy's bell is behind those tall hay bales. Clyde the horse in the barn can teach you to HOP!"},
+  pig:{title:'Apple Snack',check:()=>G.items.apple>=3,prog:()=>Math.min(3,G.items.apple)+'/3 apples',reward:3,
+    intro:["Oink! I'm sooo hungry... I want APPLES!","But they're all stuck way up in the trees. I tried climbing. Pigs can't climb.","A STRONG PECK on an apple tree might shake one loose! Bring me 3, pretty please?"],
+    remind:()=>Math.min(3,G.items.apple)+"/3 apples. "+(has('peck')?"Give the apple trees a good peck!":"You'll need STRONG PECK from your Growth Tree."),
+    done:["*CRUNCH* *MUNCH* *SLURP* Oink oink! Best. Day. EVER!","Here, have 3 seeds!"],
+    after:()=>["I'm gonna go roll in the mud now. Don't judge."],
+    hint:()=>has('peck')?"Porkchop wants apples. Peck the apple trees in the orchard!":"Porkchop wants apples. You'll need a STRONG PECK to shake the trees."},
+  duck:{title:'Lost Ducklings',check:()=>G.home.length>=3,prog:()=>G.home.length+'/3 home',reward:4,
+    intro:["Quack! Oh dear, oh dear, oh dear!","My three ducklings paddled out to the islands, and now they're too scared to swim back!","If you could FLUTTER over the water, they'd follow you right home!"],
+    remind:()=>G.home.length+"/3 ducklings home. "+(has('flutter')?"Flutter over the pond and lead them back to me!":"Learn FLUTTER to cross the water."),
+    done:["All my babies are home safe! Quack quack hooray!","You're a brave little chick. Take 4 seeds!"],
+    after:()=>["The ducklings say they want to be just like you when they grow up!"],
+    hint:()=>has('flutter')?"Mrs. Quackers' ducklings are on the pond islands. Flutter out and lead them home!":"Mrs. Quackers' ducklings are stuck on the pond islands. Learn FLUTTER!"},
+  sheep:{title:'Fox Trouble',check:()=>G.foxGone,prog:()=>G.foxGone?'fox scared off!':'scare off the fox',reward:4,
+    intro:["Baaa! A sneaky FOX keeps chasing my flock around this field!","Your little pecks would just tickle him...","But a STRONG PECK might scare him off for good! Be careful, he bites!"],
+    remind:()=>has('peck')?"That fox is still prowling around! Peck him 3 times with your Strong Peck!":"Get STRONG PECK first, or that fox will just laugh at you!",
+    done:["Baaa-rilliant! That fox won't be back any time soon!","Here are 4 seeds, my fluffy hero!"],
+    after:()=>["Now we can munch grass in peace. Baaa."],
+    hint:()=>has('peck')?"Woolly's fox is prowling the field. Give him 3 strong pecks!":"Woolly needs help with a fox. You'll need STRONG PECK."},
+  rooster:{title:'Golden Feathers',check:()=>G.items.feather>=3,prog:()=>Math.min(3,G.items.feather)+'/3 feathers',reward:4,
+    intro:["COCK-A-DOODLE-HALT! Who goes there?",{me:"I'm going to learn to fly... right over the Big Fence!"},"Ha! Many a chicken has dreamed that dream.","Prove you've got pluck! Find my 3 GOLDEN FEATHERS. The wind scattered them across the farm.","I saw one land in an orchard crate, one float out to a pond island, and one blow under some leaves in the field."],
+    remind:()=>Math.min(3,G.items.feather)+"/3 golden feathers. Check the orchard crates, the pond islands, and the leaf piles in the field!",
+    done:["My golden feathers! You've got real pluck, kid.","Take these 4 seeds."],
+    post:["And listen close... Once you learn FLIGHT, get past that grumpy goose and fly over the BIG FENCE!"],
+    after:()=>[has('fly')?"What are you waiting for? Fly over that Big Fence, kid!":(G.gooseGone?"Learn FLIGHT, then head for the Big Fence!":"A WING FLAP will blow that grumpy goose clean away. Then learn FLIGHT!")],
+    hint:()=>"Sir Cluckington's golden feathers: a crate in the orchard, a pond island, and a leaf pile in the field."},
+  penny:{title:'Hide and Seek',check:()=>G.sibs.length>=3,prog:()=>G.sibs.length+'/3 found',reward:3,
+    intro:["Pip! There you are!","I'm playing hide-and-seek with the triplets, but I can't find ANY of them!","Peep, Cheep and Tweet could be hiding anywhere. Will you help me find them?","Tweet loves climbing up high in the barn. Cheep hides in bushes. And Peep is always sneaking into the farmhouse!"],
+    remind:()=>G.sibs.length+"/3 found. Tweet climbs up high in the barn, Cheep hides in the field bushes, and Peep sneaks into the farmhouse!",
+    done:["You found all three! You're the best seeker on the whole farm, Pip!","I saved 3 seeds for you. Here!"],
+    after:()=>["Next time, I'm hiding and YOU'RE counting!"],
+    hint:()=>"The triplets are hiding! Tweet is up in the barn loft, Cheep is in the field bushes, and Peep is in the farmhouse."},
+  clyde:{title:'Carrot Crunch',check:()=>G.items.carrot>=3,prog:()=>Math.min(3,G.items.carrot)+'/3 carrots',reward:3,
+    intro:["Neeeigh... Hello there, small fluffy friend.","I've been in this stall all day, and my tummy is rumbling.","There's a carrot patch in the barnyard. Could you peck 3 carrots out of the ground for old Clyde?"],
+    remind:()=>Math.min(3,G.items.carrot)+"/3 carrots. The carrot patch is in the barnyard, south-east of the barn. Just peck them!",
+    done:["*crunch crunch* Neeeigh! Just like the good old days.","Have 3 seeds, little one."],
+    after:()=>["Someday you'll fly higher than I ever jumped, Pip."],
+    hint:()=>"Clyde the horse wants carrots. Peck them out of the patch in the barnyard!"},
+  squeaks:{title:'Mouse Mail',check:()=>G.items.cheese>0,prog:()=>G.items.cheese?'bring cheese to Squeaks':(G.items.letter?'deliver letter to Nibbles':'waiting for reply'),reward:3,
+    intro:["Squeak! Squeak! A visitor!","I wrote a letter to my cousin Nibbles. He's the chef in the farmhouse kitchen.",{t:"Mice are too tiny to go that far. Could you deliver it for me?",fx:()=>{G.items.letter=1;toast("Got Squeaks' letter!");SFX.pick();}}],
+    remind:()=>G.items.letter?"Please take my letter to Nibbles! He lives in the farmhouse kitchen, in the orchard.":"Did Nibbles write back yet?",
+    done:["A letter AND cheese from Nibbles?! Squeak squeak HOORAY!","Here, 3 seeds for the best mail-chick ever!"],
+    onDone:()=>{G.items.cheese=0;},
+    after:()=>["Nibbles says you're the speediest mail carrier he's ever met!"],
+    hint:()=>G.items.letter?"Squeaks' letter goes to Nibbles in the farmhouse kitchen.":"Bring Nibbles' cheese back to Squeaks in the barn."},
+  biscuit:{title:'Buried Bone',check:()=>G.items.bone>0,prog:()=>G.items.bone?'bone found!':'dig up the bone',reward:3,
+    intro:["Woof! Woof! Oh, hi! I'm Biscuit! Wanna play?","I buried my favorite bone somewhere on the farm... and I forgot where! Woof!","Look for little dirt mounds. A STRONG PECK can dig them right up!"],
+    remind:()=>has('peck')?"Find the dirt mounds around the farm and peck them open! I KNOW it's in one of them!":"You'll need a STRONG PECK to dig. Woof!",
+    done:["MY BONE! You found it! *wag wag wag wag*","You're a good chick! Yes you are! Here, 3 seeds!"],
+    after:()=>["*chews bone happily* Woof.","Sniff sniff... I smell a BUNNY under one of the leaf piles in the field! A big gust of wind might uncover it!"],
+    hint:()=>has('peck')?"Biscuit's bone is buried in one of the dirt mounds around the farm. Peck them open!":"Biscuit's bone is buried. You'll need STRONG PECK to dig it up."},
+  whiskers:{title:'Lost Yarn',check:()=>G.items.yarn>0,prog:()=>G.items.yarn?'yarn found!':'find the yarn',reward:3,
+    intro:["Mrrrow. Oh. A chick. How... fluffy.","My ball of yarn rolled up into the barn loft. I'd fetch it myself, but I'm very busy napping.","The loft is behind a wall of hay. Bring it back, and I MIGHT share some seeds."],
+    remind:()=>has('hop')?"My yarn is in the barn loft. Hop over the hay.":"The loft is behind a wall of hay. That show-off horse Clyde could teach you to HOP.",
+    done:["My yarn! *bat bat bat* ...Ahem. I mean, thank you.","Here. 3 seeds. Don't tell the dog I was nice."],
+    after:()=>["Purrr... zzzz...","...mrrp. At night, the mushrooms by your coop glow. Owls like that sort of thing."],
+    hint:()=>"Whiskers' yarn is up in the barn loft, behind the wall of hay."}
+};
+const ORDER=['daisy','clyde','squeaks','penny','pig','sheep','whiskers','biscuit','duck','rooster'];
+const INTRO_HINT={daisy:"Daisy the cow lives in the barnyard, just east of the coop. She looked upset.",
+  clyde:"Clyde the horse lives inside the big red barn. Walk up to the door to go in!",
+  squeaks:"I hear some little squeaks coming from the barn. Somebody needs help!",
+  penny:"Your big sister Penny is inside our coop. Walk up to the little door!",
+  whiskers:"Whiskers the cat lives in the farmhouse, over in the orchard.",
+  biscuit:"Biscuit the dog lives in the farmhouse too. He's always losing things!",
+  pig:"Porkchop the pig lives in the orchard, past the barnyard. I hear his tummy rumbling from here!",
+  sheep:"Woolly the sheep grazes in the field south of the barnyard. Watch out for that fox!",
+  duck:"Mrs. Quackers lives by the pond, south of the coop. She sounded worried.",
+  rooster:"Sir Cluckington struts around by the Big Fence, east of the field."};
+
+/* ===== src/content/quests_beyond.js ===== */
+/* content: Part 2 quests, quest order and hints */
+Object.assign(NAMES,{granny:'Granny Shell',bucky:'Bucky',doe:'Doe',mo:'Mo',elda:'Elda',pidge:'Postmaster Pidge',remy:'Chef Remy',pinch:'Capn Pinch',sandy:'Lifeguard Sandy'});
+const ORDER2=['granny','bucky','pidge','sandy','remy','doe','pinch','elda','mo'];
+const MAIL_TO={rocco:'Rocco by the city fountain',cleo:'Cleo the cat in the market',granny:'Granny Shell in the forest'};
+Object.assign(QUESTS,{
+  granny:{title:'Acorn Hunt',check:()=>G.items.acorn>=3,prog:()=>Math.min(3,G.items.acorn)+'/3 acorns',reward:2,
+    intro:["Well, well... a FLYING chick! Haven't seen one of those in a hundred years. And I'm 112!","I'm Granny Shell. I grow the finest sunflowers in the forest.","My old legs are too slow for acorn hunting, though. Peck the big oak trees and bring me 3 acorns, dearie?"],
+    remind:()=>Math.min(3,G.items.acorn)+"/3 acorns, dearie. Give the big oak trees a good peck!",
+    done:["Ooh, lovely plump acorns! Now let me teach you something special...","This is how you GROW seeds! Plant a seed in soft soil, wait a while, and it grows into a sunflower full of MORE seeds.","Use my garden plots right here whenever you like. Peck a plot to plant or harvest. Here's 2 seeds to start!"],
+    onDone:()=>{G.items.acorn-=3;G.thumb=true;toast('You learned GARDENING!','#94dc64');},
+    after:()=>["Seeds grow twice as fast in the rain. Nature's watering can!",hint2()],
+    hint:()=>"Granny Shell in the forest wants 3 acorns. Peck the big oak trees!"},
+  bucky:{title:'Dam Builder',check:()=>G.items.stick>=4,prog:()=>Math.min(4,G.items.stick)+'/4 sticks',reward:3,
+    intro:["Hey hey! Bucky the beaver here, master builder!","My dam broke in the big storm, and now the river's all wild! I need 4 sturdy STICKS to fix it.","I've seen sticks all over: the forest, the mountain trail, even the beach!"],
+    remind:()=>Math.min(4,G.items.stick)+"/4 sticks. They wash up all over: the forest, the mountain trail, and the beach!",
+    done:["Perfect sticks! *chomp chomp* *slap slap* ...Ta-da! Good as new!","And look, the dam makes a bridge across the river now! Take 3 seeds!"],
+    onDone:()=>{G.items.stick-=4;G.flags.dam=true;[[23,68],[24,68],[23,69],[24,69]].forEach(([c,r])=>setTile(c,r,'3'));shake=6;SFX.brk();},
+    after:()=>[G.coop?"How's the coop treating you? Bucky builds 'em to last!":"Have you seen the COOP SITE sign at the forest edge? Read it, and I'll build you a home for free!"],
+    hint:()=>"Bucky the beaver needs 4 sticks to fix his dam."},
+  doe:{title:'Little Lost Fawn',check:()=>!!G.flags.fawn,prog:()=>G.flags.fawn?'Clover is home!':'find Clover',reward:4,
+    intro:["Oh! Oh dear! Have you seen my fawn, Clover?","She wandered across the river while I napped, and now she can't get back!","If only someone could SWIM across... or if Bucky's dam were fixed, we could walk over!"],
+    remind:()=>has('swim')||G.flags.dam?"Clover is across the river! Go get her, and she'll follow you home!":"Clover is across the river. You'd need to SWIM, or help Bucky fix his dam...",
+    done:["Clover! My little Clover! *nuzzle nuzzle*","Thank you, brave chick. Please take 4 seeds."],
+    after:()=>["Clover wants to be a flying deer now. I blame you. *giggle*"],
+    hint:()=>"Doe's fawn Clover is across the river in the deep woods. Swim, or fix Bucky's dam!"},
+  mo:{title:'Rockslide Rescue',check:()=>!!G.flags.mo,prog:()=>G.flags.mo?'babies free!':'free the babies',reward:4,
+    intro:["Eek! Eek! Help!","A rockslide trapped my two babies behind those boulders!","Those rocks are HUGE. Only a SUPER PECK could crack them!"],
+    remind:()=>has('super')?"Smash one of those boulders with your SUPER PECK!":"Only a SUPER PECK can break those. Bucky the beaver in the forest is the strongest pecker I know!",
+    done:["My babies! *squeak squeak* You're our hero!","Here, have 4 seeds from our winter stash!"],
+    after:()=>["We're digging a new tunnel. Far, FAR away from the rocks!"],
+    hint:()=>"Mo the marmot's babies are trapped behind boulders. Bucky the beaver can teach you SUPER PECK."},
+  elda:{title:"The Eagle's Egg",check:()=>G.items.eagleEgg>0,prog:()=>G.items.eagleEgg?'egg found!':'find the egg',reward:4,
+    intro:["Screeee! A young flyer! Perhaps you can help.","A gust of wind blew my egg right across the great chasm!","I can't leave my nest. Can you GLIDE across and bring it back? Gently!"],
+    remind:()=>has('glide')?"Glide across the chasm and bring back my egg!":"That chasm is too wide to walk. Learn GLIDE in your Sky Tree.",
+    done:["My egg! Not a scratch! You have the heart of an eagle, little one.","Take 4 seeds. Fly high!"],
+    onDone:()=>{G.items.eagleEgg=0;},
+    after:()=>["When my chick hatches, I'll tell it all about the brave little chicken."],
+    hint:()=>"Elda the eagle's egg is across the chasm on the snowy peak. Learn GLIDE!"},
+  pidge:{title:'Special Delivery',check:()=>['rocco','cleo','granny'].every(k=>G.mail[k]===2),prog:()=>['rocco','cleo','granny'].filter(k=>G.mail[k]===2).length+'/3 delivered',reward:3,
+    intro:["Coo! Coo! Postmaster Pidge here! Busiest bird in the city!","I've got 3 letters to deliver, and my wing's in a sling. Could you help a pigeon out?",
+      {t:"One for Rocco by the fountain, one for Cleo the cat in the market, and one for Granny Shell in the forest!",fx:()=>{['rocco','cleo','granny'].forEach(k=>{if(!G.mail[k])G.mail[k]=1;});toast('Got 3 letters to deliver!');SFX.pick();}}],
+    remind:()=>"Still to deliver: "+['rocco','cleo','granny'].filter(k=>G.mail[k]!==2).map(k=>MAIL_TO[k]).join(', ')+".",
+    done:["All delivered? Coo! You're faster than any pigeon I know!","Here's 3 seeds for your trouble!"],
+    after:()=>["Coo! The mail must go through!"],
+    hint:()=>"Postmaster Pidge's letters go to Rocco, Cleo, and Granny Shell."},
+  remy:{title:'Super Soup',check:()=>G.items.acorn>=1&&G.items.fish>0&&G.items.snowberry>0,
+    prog:()=>[G.items.acorn>=1?'acorn':'',G.items.fish?'fish':'',G.items.snowberry?'berry':''].filter(Boolean).join(' ')||'0/3 items',reward:5,
+    intro:["Ah, bonjour! Remy, chef extraordinaire! Cousin of Nibbles, you know.","I'm making my famous Forest-Mountain-Sea Soup, but I'm missing ingredients!","I need 1 ACORN from the forest, 1 SNOWBERRY from the mountains, and 1 FISH from the tide pools!"],
+    remind:()=>"Still need: "+[G.items.acorn>=1?'':'an ACORN (forest oaks)',G.items.snowberry?'':'a SNOWBERRY (mountain bush)',G.items.fish?'':'a FISH (tide pools)'].filter(Boolean).join(', ')+".",
+    done:["Magnifique! *stir stir* *sniff* ...PERFECTION!","For you, my feathered friend: 5 seeds!"],
+    onDone:()=>{G.items.acorn--;G.items.fish=0;G.items.snowberry=0;},
+    after:()=>["Come back any time. The soup is always on!"],
+    hint:()=>"Chef Remy in the city needs an acorn, a snowberry, and a fish."},
+  pinch:{title:'Shell Seeker',check:()=>G.items.shell>=5,prog:()=>Math.min(5,G.items.shell)+'/5 shells',reward:4,
+    intro:["Arr! Cap'n Pinch at yer service! *click click*","A rogue wave washed away me prized seashell collection! Five shells, scattered everywhere!","Some be on the sand, some by the tide pools... and some out in the DEEP water. Can ye SWIM, matey?"],
+    remind:()=>Math.min(5,G.items.shell)+"/5 shells. "+(has('swim')?"Check the sand, the tide pools, and out in the deep water!":"Some be out in deep water. Lifeguard Sandy can teach ye to SWIM!"),
+    done:["Me shells! All five! Yer a true sea chick!","Take 4 seeds, matey!"],
+    after:()=>["Arr, the sea be callin'. Come sail with me some day!"],
+    hint:()=>"Cap'n Pinch at the beach lost 5 shells. Some are in deep water!"},
+  sandy:{title:'Turtle Rescue',check:()=>G.turtles.length>=3,prog:()=>G.turtles.length+'/3 in the sea',reward:3,
+    intro:["Squawk! Lifeguard Sandy here! We've got a situation!","Three baby sea turtles just hatched, but they're wandering the wrong way!","Lead them to the water! They'll follow you if you walk right up to them."],
+    remind:()=>G.turtles.length+"/3 turtles in the sea. Walk up to them, then lead them to the waves!",
+    done:["Squawk! All three babies made it to the sea! Beautiful!","Here's 3 seeds, junior lifeguard!"],
+    after:()=>["Squawk! Remember: no running by the tide pools!"],
+    hint:()=>"Lifeguard Sandy at the beach needs help leading baby turtles to the sea."}
+});
+const INTRO2={granny:"Granny Shell the tortoise lives by her garden in the forest.",bucky:"Bucky the beaver is building something in the deep woods.",
+  pidge:"Postmaster Pidge is the busiest bird in the city.",sandy:"Lifeguard Sandy watches over the beach.",remy:"Chef Remy cooks in the city market.",
+  doe:"A worried deer is pacing in the deep woods.",pinch:"Cap'n Pinch the crab is on the sandy shore.",elda:"An eagle lives up on the snowy peak.",mo:"A marmot is squeaking for help on the mountain trail."};
+
+/* ===== src/content/trainers.js ===== */
+/* content: skill trainers (trainings that unlock locked skills) */
+const TRAIN={
+  hop:{phase:1,who:'clyde',whoName:'CLYDE',skill:'HOP',title:'Hurdle Training',avail:()=>G.q.clyde===2,item:'horseshoe',need:3,noun:'horseshoes',
+    spawn:[['hs0',9,6],['hs1',28,15],['hs2',46,5]],
+    lock:"Help CLYDE the horse in the barn, and he'll teach you to HOP!",
+    intro:["Neeeigh! Say, did I ever tell you? I was the county's champion HURDLE jumper!","I could teach you to HOP over hay bales like a pro. But first, a warm-up!","I lost my 3 lucky HORSESHOES around the farm. Find them, and I'll show you how to hop!"],
+    remind:()=>Math.min(3,G.items.horseshoe)+"/3 lucky horseshoes. One's by the coop, one's in the field, and one's in the orchard!",
+    done:["My lucky horseshoes! Now watch closely... bend your knees... and SPRING!","There! Now you can learn HOP in your Growth Tree. Press E. Go get 'em, champ!"],
+    hint:()=>"Clyde's lucky horseshoes are by the coop, in the field, and in the orchard."},
+  flap:{phase:1,who:'rooster',whoName:'SIR CLUCK',skill:'WING FLAP',title:'Wind Training',avail:()=>G.q.rooster>=1,item:'puff',need:5,noun:'dandelion puffs',puffs:true,
+    lock:"Talk to SIR CLUCKINGTON by the Big Fence. He'll train your wings!",
+    intro:["Hold on there, kid. To blow those leaves away, you'll need a mighty WING FLAP.","A wing flap takes strong, quick wings! Training time!","Dandelion puffs are blowing all over the field. Catch 5 of 'em before the wind carries 'em off!"],
+    remind:()=>Math.min(5,G.items.puff)+"/5 dandelion puffs. Chase 'em down in the field!",
+    done:["Ha! Quick as the wind! Now flap like THIS... WHOOSH!","You're ready. Learn WING FLAP in your Growth Tree, then go find my feathers!"],
+    hint:()=>"Catch the dandelion puffs blowing around the field for Sir Cluckington."},
+  swim:{phase:2,who:'sandy',whoName:'SANDY',skill:'SWIM',title:'Lifeguard Training',avail:()=>G.q.sandy===2,item:'ring',need:3,noun:'life rings',
+    spawn:[['ring0',14,77],['ring1',27,75],['ring2',30,79]],
+    lock:"Help LIFEGUARD SANDY at the beach, and she'll teach you to SWIM!",
+    intro:["Squawk! You saved those turtles. But can you SWIM, junior lifeguard?","Every lifeguard needs swim training! First, find my 3 lost LIFE RINGS.","They floated off somewhere around the beach and the tide pools!"],
+    remind:()=>Math.min(3,G.items.ring)+"/3 life rings. Check the beach and the tide pools!",
+    done:["My life rings! Okay: kick your feet, paddle your wings, and keep your beak up!","Now you can learn SWIM in your Sky Tree. Press E. Squawk!"],
+    hint:()=>"Lifeguard Sandy's life rings are on the beach and in the tide pools."},
+  super:{phase:2,who:'bucky',whoName:'BUCKY',skill:'SUPER PECK',title:'Stump Smashing',avail:()=>G.q.bucky===2,item:'stump',need:3,noun:'stumps',
+    stumps:[['stump0',3,66],['stump1',29,63],['stump2',17,64]],
+    lock:"Help BUCKY the beaver in the deep woods, and he'll teach you SUPER PECK!",
+    intro:["Hey hey! Wanna know the secret to my super-strong teeth? PRACTICE!","There are 3 old tree stumps in the forest that need clearing out. Peck 'em to splinters!","Do that, and I'll teach you the SUPER PECK!"],
+    remind:()=>Math.min(3,G.items.stump)+"/3 stumps smashed. They're around the forest edge and the deep woods!",
+    done:["Look at those splinters! You've got the power, kid!","Now you can learn SUPER PECK in your Sky Tree. Press E!"],
+    hint:()=>"Smash the 3 old tree stumps in the forest for Bucky."}
+};
+
+/* ===== src/content/coop.js ===== */
+/* content: coop sites, upgrades and where the family moves to */
+const SITES={
+  forest:{name:'FOREST',c:11,r:67,sign:[11,69],plots:[[14,67],[14,68],[9,67],[10,67],[9,68],[10,68],[12,66],[13,66]]}};
+// coop sites from older versions, used only to clean up old saves
+const OLD_SITES={mountains:{c:2,r:56,plots:[[5,56],[6,56],[1,56],[6,57],[7,57],[7,56],[2,55],[3,55]]},
+  city:{c:41,r:64,plots:[[40,64],[40,65],[44,64],[45,64],[41,63],[42,63],[43,63],[45,65]]},
+  beach:{c:5,r:76,plots:[[4,76],[4,77],[9,76],[9,77],[4,75],[6,75],[7,75],[10,76]]}};
+// seed tallies: old saves only had one "found" counter that also counted bonus seeds
+function migrateSeeds(s){
+  if(s.sp1!==undefined){G.sp1=s.sp1;G.sp2=s.sp2||0;G.earned=s.earned||0;return;}
+  const f=s.found||0;G.sp1=Math.min(TOTAL_SEEDS,f);G.sp2=G.part2?Math.min(TOTAL_SEEDS2,Math.max(0,f-TOTAL_SEEDS)):0;G.earned=f;
+}
+function addSeeds(n,part,base){G.seeds+=n;G.earned+=n;if(base===undefined)base=n;
+  if(part===2)G.sp2=Math.min(TOTAL_SEEDS2,G.sp2+base);else G.sp1=Math.min(TOTAL_SEEDS,G.sp1+base);}
+function migrateSave(s){
+  if(!s.ov){G.outfits=[...new Set(G.outfits.map(id=>OUTFIT_RENAME[id]||id))];if(G.wear)G.wear=OUTFIT_RENAME[G.wear]||G.wear;}
+  if(G.coop&&OLD_SITES[G.coop.site]){const o=OLD_SITES[G.coop.site];
+    for(let dy=0;dy<2;dy++)for(let dx=0;dx<3;dx++){const k=(o.c+dx)+','+(o.r+dy);delete G.mods[k];tiles[o.r+dy][o.c+dx]=MAP[o.r+dy][o.c+dx];}
+    for(const [c,r] of o.plots){const k=c+','+r;delete G.mods[k];tiles[r][c]=MAP[r][c];delete G.plots['plot_'+c+'_'+r];}
+    G.coop.site='forest';G.coop.fresh=true;}
+}
+const COOP_IN={x:640,y:939};
+const FAMILY_POS={mom:[39,52],penny:[42,53],peep:[37,54],cheep:[38,55],tweet:[41,55]};
+// upgrades unlock as you help animals out here (need = Part 2 quests done), and cost a few seeds
+const UPGRADES=[null,null,{cost:4,need:2,text:'A bigger coop, 2 more garden plots, and MAMA HEN moves in!'},
+  {cost:6,need:5,text:'A family wing, 2 more plots, faster growing, and PENNY & the TRIPLETS move in!'},
+  {cost:8,need:9,text:'The DREAM COOP! A golden roof, 2 more plots, super-fast growing, and a big party!'}];
+
+/* ===== src/content/world_data.js ===== */
+/* content: farm family, dirt mounds, hidden items and signs */
+const SIBS=[
+  {id:'peep',name:'PEEP',spr:'peep',hide:[46,31],home:[4,28],found:"Aww, you found me! I was hiding behind the bed!",homeLine:"Peep peep! Next time I'm hiding under the bed. Don't tell!"},
+  {id:'cheep',name:'CHEEP',spr:'cheep',hide:[17,21],home:[11,28],found:"Nooo! That bush was the PERFECT hiding spot!",homeLine:"Pip, when you can fly, will you take me for a ride?"},
+  {id:'tweet',name:'TWEET',spr:'tweet',hide:[28,27],home:[5,33],found:"How did you get up here?! Okay, okay, I'm going home!",homeLine:"I'm gonna be a big strong chicken just like you, Pip!"}];
+const MOUNDS=[{id:'mound0',c:29,r:21,has:'An old boot!'},{id:'mound1',c:2,r:22,has:'seed'},{id:'mound2',c:45,r:9,has:'A rusty spoon!'},{id:'mound3',c:38,r:21,has:'bone'}];
+const HIDDEN={'44,2':{id:'feather_crate',kind:'feather'},'44,3':{id:'seed_crate',kind:'seed'},
+  '14,21':{id:'seed_rock',kind:'seed'},'23,22':{id:'feather_leaf',kind:'feather'},'35,20':{id:'seed_leaf',kind:'seed'}};
+const SIGNS={'10,9':{name:'SIGN',text:'CHICKEN COOP - Home sweet home! (Press E to open your Growth Tree.)'},
+  '45,16':{name:'SIGN',text:'THE BIG FENCE. No chicken has ever flown over it. Beyond it lies... THE WHOLE WIDE WORLD!'}};
+
+
+/* ===== src/content/characters.js ===== */
+/* content: the cast. Each entry becomes an NPC in makeEnts(). part 1 = farm, part 2 = beyond. */
+const CHARACTERS=[
+  // ---- farm ----
+  {id:'mom',name:'MAMA HEN',spr:'hen',c:6,r:4,voice:560,w:14},
+  {id:'daisy',name:'DAISY',spr:'cow',c:19,r:8,voice:170,w:18},
+  {id:'pig',name:'PORKCHOP',spr:'pig',c:40,r:4,voice:240,w:14},
+  {id:'penny',name:'PENNY',spr:'penny',c:8,r:29,voice:820,w:14},
+  {id:'clyde',name:'CLYDE',spr:'horse',c:18,r:33,voice:150,w:16},
+  {id:'squeaks',name:'SQUEAKS',spr:'mouse',c:29,r:33,voice:1200,w:10},
+  {id:'nibbles',name:'NIBBLES',spr:'chef',c:36,r:27,voice:1100,w:10},
+  {id:'biscuit',name:'BISCUIT',spr:'dog',c:41,r:32,voice:300,w:14},
+  {id:'whiskers',name:'WHISKERS',spr:'cat',c:40,r:30,voice:500,w:12},
+  {id:'maggie',name:'MAGGIE',spr:'magpie',c:28,r:7,voice:1400,w:12},
+  {id:'bunbun',name:'BUN-BUN',spr:'rabbit',c:8,r:39,voice:1000,w:12},
+  {id:'hootie',name:'HOOTIE',spr:'owl',c:40,r:40,voice:350,w:12},
+  {id:'duck',name:'MRS. QUACKERS',spr:'duck',c:12,r:21,voice:760,w:14},
+  {id:'sheep',name:'WOOLLY',spr:'sheepBow',c:21,r:20,voice:420,w:14},
+  {id:'rooster',name:'SIR CLUCKINGTON',spr:'rooster',c:36,r:15,voice:330,w:14},
+  {id:'sheep2',name:'SHEEP',spr:'sheep',c:19,r:21,voice:380,w:14,deco:true},
+  {id:'sheep3',name:'SHEEP',spr:'sheep',c:23,r:19,voice:460,w:14,deco:true},
+  // ---- beyond the farm ----
+  {id:'granny',name:'GRANNY SHELL',spr:'tortoise',c:4,r:63,voice:200,w:16},
+  {id:'bucky',name:'BUCKY',spr:'beaver',c:22,r:67,voice:500,w:12},
+  {id:'doe',name:'DOE',spr:'deer',c:27,r:66,voice:650,w:16},
+  {id:'mo',name:'MO',spr:'marmot',c:10,r:52,voice:900,w:10},
+  {id:'elda',name:'ELDA',spr:'eagle',c:20,r:52,voice:450,w:12},
+  {id:'pidge',name:'POSTMASTER PIDGE',spr:'pigeon',c:35,r:65,voice:800,w:10},
+  {id:'rocco',name:'ROCCO',spr:'raccoon',c:43,r:68,voice:420,w:12},
+  {id:'remy',name:'CHEF REMY',spr:'chef',c:40,r:77,voice:1100,w:10},
+  {id:'cleo',name:'CLEO',spr:'catO',c:35,r:78,voice:520,w:12},
+  {id:'maggie2',name:'MAGGIE',spr:'magpie',c:43,r:78,voice:1400,w:12,note:'temporary city branch of the boutique until Phase 3'},
+  {id:'pinch',name:'CAPN PINCH',spr:'crab',c:13,r:75,voice:350,w:12},
+  {id:'sandy',name:'LIFEGUARD SANDY',spr:'gull',c:6,r:74,voice:900,w:10},
+];
+
+/* ===== src/content/dialogue.js ===== */
+/* content: what the characters with special conversations say.
+   Each TALK entry is (e,{it,me,ask})=>... : it(text,fx) = they speak, me(text) = Pip speaks, ask(text,choices,cb) = a choice.
+   Return false to fall through to the character's quest dialogue. Quest lines live in quests_farm/quests_beyond. */
+const TALK={
+penny:(e,{it,me,ask})=>{
+  if(G.q.penny!==2)return false;
+    ask(G.outfits.includes('bow')?"Egg Catch again? Your best is "+G.best.egg+" eggs!":"Wanna play EGG CATCH? Catch 20 eggs in your basket, and don't let 5 crack! Win, and I'll give you my spare PINK BOW!",
+      ["Let's play!","Later"],i=>{if(i===0)startEgg();});
+},
+maggie:(e,{it,me,ask})=>{
+    if(!e.greeted){e.greeted=1;it("Ooh! Shiny! A customer! Welcome to Maggie's Boutique, darling!");}
+    ask("Care to try something on? Every chick deserves to look FABULOUS.",['Shop','Bye!'],i=>{if(i===0)openShop();});
+},
+bunbun:(e,{it,me,ask})=>{
+    if(!G.met.has('bunbun_hi')){G.met.add('bunbun_hi');it("Whoa! You found my secret burrow! Nobody EVER finds it!");it("I'm Bun-Bun! I love carrots more than anything in the whole world!");}
+    ask("Wanna play CARROT BONK? Carrots pop out of the holes. Peck 12 before time runs out!"+(G.outfits.includes('ears')?" (Best: "+G.best.bonk+")":" Win, and you get my spare BUNNY EARS!"),
+      ['Play!','Not now'],i=>{if(i===0)startMG('bonk','bunbun');});
+},
+hootie:(e,{it,me,ask})=>{
+    if(nightAmt()<0.3){it("Hoo... *yawn*... it's far too bright. Come back when the moon is up, little one.");return true;}
+    if(!G.met.has('hootie_hi')){G.met.add('hootie_hi');it("Hoo-hoo! Welcome to the Moonlit Grove. Very few chicks have ever seen it.");}
+    ask("Care for a game of FIREFLY CATCH? Peck 15 fireflies before the moon goes down!"+(G.outfits.includes('pirate')?" (Best: "+G.best.ffly+")":" Win, and a PIRATE OUTFIT is yours."),
+      ['Play!','Not now'],i=>{if(i===0)startMG('ffly','hootie');});
+},
+nibbles:(e,{it,me,ask})=>{
+    if(G.items.letter){
+      it("Bonjour! A letter from cousin Squeaks? How delightful!");
+      it("*read read* ...Oh ho ho! Let me write back right away.");
+      it("Please bring Squeaks my letter, and this fresh cheese! Merci, little chick!",()=>{G.items.letter=0;G.items.cheese=1;toast('Got cheese for Squeaks!');SFX.pick();save();});
+    }else if(G.items.cheese)it("Hurry, hurry! Bring that cheese to Squeaks in the barn before I eat it myself!");
+    else{it(G.q.squeaks===2?"Squeaks says thank you! You are a very fine mail carrier.":"Bonjour! I am Nibbles, chef of this kitchen. Mind the crumbs, s'il vous plait!");
+      if(!G.cellar)it("Psst... One of the floorboards near the bedroom creaks. I think something is hidden underneath!");}
+},
+mom:(e,{it,me,ask})=>{
+    if(G.q.mom===0){
+      it("Good morning, Pip, my little peep! Did you sleep well?");
+      me("Mama! I want to FLY! Over the Big Fence, to see the whole wide world!");
+      it("Fly?! Oh, my feathers... You're just a teeny tiny chick!");
+      it("To fly, you'll need to grow big and strong. And growing chicks need SEEDS.");
+      it("The animals on the farm will share their seeds if you help them out.");
+      it("But first, breakfast! Peck up 3 wiggly worms from the dirt patches.",()=>{G.q.mom=1;});
+      it("Walk with the ARROW KEYS. Press Z or SPACE to peck!");
+    }else if(G.q.mom===1){
+      if(G.items.worm>=3){
+        it("Yum! What a good little pecker you are!");
+        it("Here, take 4 seeds, sweet pea.",()=>reward(4,'mom'));
+        it("Press E to open your GROWTH TREE. Spend seeds there to learn skills and grow big and strong!");
+        it("Then go help the other animals. Daisy the cow lives in the barnyard, and Clyde the horse is inside the big red barn.");
+        it("Oh, and your big sister Penny is inside our coop. You can walk right in through the little door!");
+      }else it("Find the wiggly worms in the dirt patches and peck them! ("+G.items.worm+"/3)");
+    }else{
+      it("*cuddle* There you go, all your hearts are full!",()=>{G.hearts=maxHearts();SFX.pick();});
+      if(nightAmt()>0.4&&Math.random()<0.5)it("Isn't the night pretty? They say a fairy ring by our coop glows when the moon is out... And you can sleep in your nest inside the coop.");
+      else it(hint());
+    }
+},
+};
+TALK.maggie2=TALK.maggie;
 
 /* ===== src/entities/sprites.js ===== */
 /* ---------------- sprites ---------------- */
@@ -1193,40 +1544,23 @@ function continueGame(){
 
 /* ---------------- entities ---------------- */
 function addEnt(o){ents.push(o);return o;}
-const SIBS=[
-  {id:'peep',name:'PEEP',spr:'peep',hide:[46,31],home:[4,28],found:"Aww, you found me! I was hiding behind the bed!",homeLine:"Peep peep! Next time I'm hiding under the bed. Don't tell!"},
-  {id:'cheep',name:'CHEEP',spr:'cheep',hide:[17,21],home:[11,28],found:"Nooo! That bush was the PERFECT hiding spot!",homeLine:"Pip, when you can fly, will you take me for a ride?"},
-  {id:'tweet',name:'TWEET',spr:'tweet',hide:[28,27],home:[5,33],found:"How did you get up here?! Okay, okay, I'm going home!",homeLine:"I'm gonna be a big strong chicken just like you, Pip!"}];
-const MOUNDS=[{id:'mound0',c:29,r:21,has:'An old boot!'},{id:'mound1',c:2,r:22,has:'seed'},{id:'mound2',c:45,r:9,has:'A rusty spoon!'},{id:'mound3',c:38,r:21,has:'bone'}];
 function at(c,r){return {x:c*16+8,y:r*16+12};}
+function spawnCast(part){
+  for(const c of CHARACTERS)if((c.c!==undefined)&&((c.r>=48)===(part===2)))
+    addEnt({type:'npc',id:c.id,name:c.name,spr:c.spr,...at(c.c,c.r),w:c.w||14,voice:c.voice,solid:true,phase:(Math.random()*60)|0,flip:false,deco:c.deco});
+}
 function makeEnts(){
   ents=[];
   const npc=(id,name,spr,c,r,voice)=>addEnt({type:'npc',id,name,spr,...at(c,r),w:14,voice,solid:true,phase:(Math.random()*60)|0,flip:false});
-  npc('mom','MAMA HEN','hen',6,4,560);
-  npc('daisy','DAISY','cow',19,8,170).w=18;
-  npc('pig','PORKCHOP','pig',40,4,240);
-  npc('penny','PENNY','penny',8,29,820);
-  npc('clyde','CLYDE','horse',18,33,150).w=16;
-  npc('squeaks','SQUEAKS','mouse',29,33,1200).w=10;
-  npc('nibbles','NIBBLES','chef',36,27,1100).w=10;
-  npc('biscuit','BISCUIT','dog',41,32,300);
-  npc('whiskers','WHISKERS','cat',40,30,500).w=12;
+  spawnCast(1);
   SIBS.forEach(s=>{const n=npc(s.id,s.name,s.spr,s.hide[0],s.hide[1],950);n.sib=s;n.w=10;if(G.sibs.includes(s.id)){n.home=true;Object.assign(n,at(...s.home));}});
   // (family may later move to the new coop; see relocateFamily)
   [[26,8],[28,8],[27,9],[29,9]].forEach(([c,r],i)=>{const id='carrot'+i;if(!G.collected.has(id))addEnt({type:'carrot',id,x:c*16+8,y:r*16+11});});
   MOUNDS.forEach(m=>{if(!G.collected.has(m.id))addEnt({type:'mound',id:m.id,x:m.c*16+8,y:m.r*16+11,has:m.has});});
   spawnItem('yarn','yarn',19*16+8,27*16+12);
-  npc('maggie','MAGGIE','magpie',28,7,1400).w=12;
-  npc('bunbun','BUN-BUN','rabbit',8,39,1000).w=12;
-  npc('hootie','HOOTIE','owl',40,40,350).w=12;
   [[4,41],[7,41],[10,41],[5,44],[8,44],[11,44]].forEach(([c,r],i)=>addEnt({type:'hole',id:'hole'+i,x:c*16+8,y:r*16+12,up:0,max:1}));
   addEnt({type:'chest',x:384,y:39*16+12,solid:true,w:16});
   placeBlocks();
-  npc('duck','MRS. QUACKERS','duck',12,21,760);
-  npc('sheep','WOOLLY','sheepBow',21,20,420);
-  npc('rooster','SIR CLUCKINGTON','rooster',36,15,330);
-  npc('sheep2','SHEEP','sheep',19,21,380).deco=true;
-  npc('sheep3','SHEEP','sheep',23,19,460).deco=true;
   [[6,7],[12,7],[7,8],[11,8]].forEach(([c,r],i)=>{const id='worm'+i;if(!G.collected.has(id))addEnt({type:'worm',id,x:c*16+8,y:r*16+11,phase:i*13});});
   spawnItem('bell','bell',28*16+8,2*16+12);
   spawnItem('seed_pen','seed',27*16+8,3*16+12);
@@ -1242,43 +1576,10 @@ function makeEnts(){
   if(!G.gooseGone){const p=at(43,18);addEnt({type:'goose',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:2,sy:1,st:'idle',t:0,kt:0,cool:0,flash:0,flip:false,solid:true,w:14});}
 }
 /* ---- part 2 entities ---- */
-const SITES={
-  forest:{name:'FOREST',c:11,r:67,sign:[11,69],plots:[[14,67],[14,68],[9,67],[10,67],[9,68],[10,68],[12,66],[13,66]]}};
-// coop sites from older versions, used only to clean up old saves
-const OLD_SITES={mountains:{c:2,r:56,plots:[[5,56],[6,56],[1,56],[6,57],[7,57],[7,56],[2,55],[3,55]]},
-  city:{c:41,r:64,plots:[[40,64],[40,65],[44,64],[45,64],[41,63],[42,63],[43,63],[45,65]]},
-  beach:{c:5,r:76,plots:[[4,76],[4,77],[9,76],[9,77],[4,75],[6,75],[7,75],[10,76]]}};
-// seed tallies: old saves only had one "found" counter that also counted bonus seeds
-function migrateSeeds(s){
-  if(s.sp1!==undefined){G.sp1=s.sp1;G.sp2=s.sp2||0;G.earned=s.earned||0;return;}
-  const f=s.found||0;G.sp1=Math.min(TOTAL_SEEDS,f);G.sp2=G.part2?Math.min(TOTAL_SEEDS2,Math.max(0,f-TOTAL_SEEDS)):0;G.earned=f;
-}
-function addSeeds(n,part,base){G.seeds+=n;G.earned+=n;if(base===undefined)base=n;
-  if(part===2)G.sp2=Math.min(TOTAL_SEEDS2,G.sp2+base);else G.sp1=Math.min(TOTAL_SEEDS,G.sp1+base);}
-function migrateSave(s){
-  if(!s.ov){G.outfits=[...new Set(G.outfits.map(id=>OUTFIT_RENAME[id]||id))];if(G.wear)G.wear=OUTFIT_RENAME[G.wear]||G.wear;}
-  if(G.coop&&OLD_SITES[G.coop.site]){const o=OLD_SITES[G.coop.site];
-    for(let dy=0;dy<2;dy++)for(let dx=0;dx<3;dx++){const k=(o.c+dx)+','+(o.r+dy);delete G.mods[k];tiles[o.r+dy][o.c+dx]=MAP[o.r+dy][o.c+dx];}
-    for(const [c,r] of o.plots){const k=c+','+r;delete G.mods[k];tiles[r][c]=MAP[r][c];delete G.plots['plot_'+c+'_'+r];}
-    G.coop.site='forest';G.coop.fresh=true;}
-}
-const COOP_IN={x:640,y:939};
-const FAMILY_POS={mom:[39,52],penny:[42,53],peep:[37,54],cheep:[38,55],tweet:[41,55]};
 function inSite(c,r){const s=G.coop&&SITES[G.coop.site];return !!s&&c>=s.c&&c<s.c+3&&r>=s.r&&r<s.r+2;}
 function makeP2Ents(){
   const npc=(id,name,spr,c,r,voice,w=14)=>addEnt({type:'npc',id,name,spr,...at(c,r),w,voice,solid:true,phase:(Math.random()*60)|0,flip:false});
-  npc('granny','GRANNY SHELL','tortoise',4,63,200,16);
-  npc('bucky','BUCKY','beaver',22,67,500,12);
-  npc('doe','DOE','deer',27,66,650,16);
-  npc('mo','MO','marmot',10,52,900,10);
-  npc('elda','ELDA','eagle',20,52,450,12);
-  npc('pidge','POSTMASTER PIDGE','pigeon',35,65,800,10);
-  npc('rocco','ROCCO','raccoon',43,68,420,12);
-  npc('remy','CHEF REMY','chef',40,77,1100,10);
-  npc('cleo','CLEO','catO',35,78,520,12);
-  npc('maggie2','MAGGIE','magpie',43,78,1400,12); // temporary city branch of the boutique (until Phase 3)
-  npc('pinch','CAPN PINCH','crab',13,75,350,12);
-  npc('sandy','LIFEGUARD SANDY','gull',6,74,900,10);
+  spawnCast(2);
   ['mokid1','mokid2'].forEach((id,i)=>{const n=npc(id,'BABY MARMOT','mokid',G.flags.mo?11+i:5+i*2,G.flags.mo?53:51,1300,6);n.deco2=true;n.solid=false;});
   const fawn=addEnt({type:'follower',kind:'fawn',id:'fawn',x:20*16+8,y:70*16+12,mode:'wait',fi:0,flip:false});
   if(G.flags.fawn){const d=ents.find(e=>e.id==='doe');fawn.mode='home';fawn.x=d.x+16;fawn.y=d.y+2;}
@@ -1380,86 +1681,8 @@ function updateAmbient(){
 }
 
 
-/* ===== src/content/quests.js ===== */
-/* ---------------- quests & dialogue ---------------- */
-const NAMES={mom:'Mama Hen',daisy:'Daisy',pig:'Porkchop',duck:'Mrs. Quackers',sheep:'Woolly',rooster:'Sir Cluckington',
-  penny:'Penny',clyde:'Clyde',squeaks:'Squeaks',biscuit:'Biscuit',whiskers:'Whiskers'};
-const QUESTS={
-  mom:{title:'Breakfast Worms',check:()=>G.items.worm>=3,prog:()=>Math.min(3,G.items.worm)+'/3 worms'},
-  daisy:{title:'The Lost Bell',check:()=>G.items.bell>0,prog:()=>G.items.bell?'bell found!':'find the bell',reward:3,
-    intro:["Moooo... Oh, hello there, little one.","I lost my favorite bell! I think it rolled into the hay pen just north of here.","Those bales are much too tall for a chick... but if you learned to HOP, you could jump right over them!"],
-    remind:()=>"My bell is in the hay pen north of here. "+(has('hop')?"Walk into a hay bale to HOP over it!":"Clyde the horse in the barn is a champion jumper. He could teach you to HOP!"),
-    done:["You found my bell! *ding ding* Moooo-velous!","Here, take 3 seeds, sweetie!"],
-    after:()=>["*ding ding* I'm the best-dressed cow on the whole farm!"],
-    hint:()=>has('hop')?"Daisy's bell is in the hay pen. HOP over the bales by walking into them!":"Daisy's bell is behind those tall hay bales. Clyde the horse in the barn can teach you to HOP!"},
-  pig:{title:'Apple Snack',check:()=>G.items.apple>=3,prog:()=>Math.min(3,G.items.apple)+'/3 apples',reward:3,
-    intro:["Oink! I'm sooo hungry... I want APPLES!","But they're all stuck way up in the trees. I tried climbing. Pigs can't climb.","A STRONG PECK on an apple tree might shake one loose! Bring me 3, pretty please?"],
-    remind:()=>Math.min(3,G.items.apple)+"/3 apples. "+(has('peck')?"Give the apple trees a good peck!":"You'll need STRONG PECK from your Growth Tree."),
-    done:["*CRUNCH* *MUNCH* *SLURP* Oink oink! Best. Day. EVER!","Here, have 3 seeds!"],
-    after:()=>["I'm gonna go roll in the mud now. Don't judge."],
-    hint:()=>has('peck')?"Porkchop wants apples. Peck the apple trees in the orchard!":"Porkchop wants apples. You'll need a STRONG PECK to shake the trees."},
-  duck:{title:'Lost Ducklings',check:()=>G.home.length>=3,prog:()=>G.home.length+'/3 home',reward:4,
-    intro:["Quack! Oh dear, oh dear, oh dear!","My three ducklings paddled out to the islands, and now they're too scared to swim back!","If you could FLUTTER over the water, they'd follow you right home!"],
-    remind:()=>G.home.length+"/3 ducklings home. "+(has('flutter')?"Flutter over the pond and lead them back to me!":"Learn FLUTTER to cross the water."),
-    done:["All my babies are home safe! Quack quack hooray!","You're a brave little chick. Take 4 seeds!"],
-    after:()=>["The ducklings say they want to be just like you when they grow up!"],
-    hint:()=>has('flutter')?"Mrs. Quackers' ducklings are on the pond islands. Flutter out and lead them home!":"Mrs. Quackers' ducklings are stuck on the pond islands. Learn FLUTTER!"},
-  sheep:{title:'Fox Trouble',check:()=>G.foxGone,prog:()=>G.foxGone?'fox scared off!':'scare off the fox',reward:4,
-    intro:["Baaa! A sneaky FOX keeps chasing my flock around this field!","Your little pecks would just tickle him...","But a STRONG PECK might scare him off for good! Be careful, he bites!"],
-    remind:()=>has('peck')?"That fox is still prowling around! Peck him 3 times with your Strong Peck!":"Get STRONG PECK first, or that fox will just laugh at you!",
-    done:["Baaa-rilliant! That fox won't be back any time soon!","Here are 4 seeds, my fluffy hero!"],
-    after:()=>["Now we can munch grass in peace. Baaa."],
-    hint:()=>has('peck')?"Woolly's fox is prowling the field. Give him 3 strong pecks!":"Woolly needs help with a fox. You'll need STRONG PECK."},
-  rooster:{title:'Golden Feathers',check:()=>G.items.feather>=3,prog:()=>Math.min(3,G.items.feather)+'/3 feathers',reward:4,
-    intro:["COCK-A-DOODLE-HALT! Who goes there?",{me:"I'm going to learn to fly... right over the Big Fence!"},"Ha! Many a chicken has dreamed that dream.","Prove you've got pluck! Find my 3 GOLDEN FEATHERS. The wind scattered them across the farm.","I saw one land in an orchard crate, one float out to a pond island, and one blow under some leaves in the field."],
-    remind:()=>Math.min(3,G.items.feather)+"/3 golden feathers. Check the orchard crates, the pond islands, and the leaf piles in the field!",
-    done:["My golden feathers! You've got real pluck, kid.","Take these 4 seeds."],
-    post:["And listen close... Once you learn FLIGHT, get past that grumpy goose and fly over the BIG FENCE!"],
-    after:()=>[has('fly')?"What are you waiting for? Fly over that Big Fence, kid!":(G.gooseGone?"Learn FLIGHT, then head for the Big Fence!":"A WING FLAP will blow that grumpy goose clean away. Then learn FLIGHT!")],
-    hint:()=>"Sir Cluckington's golden feathers: a crate in the orchard, a pond island, and a leaf pile in the field."},
-  penny:{title:'Hide and Seek',check:()=>G.sibs.length>=3,prog:()=>G.sibs.length+'/3 found',reward:3,
-    intro:["Pip! There you are!","I'm playing hide-and-seek with the triplets, but I can't find ANY of them!","Peep, Cheep and Tweet could be hiding anywhere. Will you help me find them?","Tweet loves climbing up high in the barn. Cheep hides in bushes. And Peep is always sneaking into the farmhouse!"],
-    remind:()=>G.sibs.length+"/3 found. Tweet climbs up high in the barn, Cheep hides in the field bushes, and Peep sneaks into the farmhouse!",
-    done:["You found all three! You're the best seeker on the whole farm, Pip!","I saved 3 seeds for you. Here!"],
-    after:()=>["Next time, I'm hiding and YOU'RE counting!"],
-    hint:()=>"The triplets are hiding! Tweet is up in the barn loft, Cheep is in the field bushes, and Peep is in the farmhouse."},
-  clyde:{title:'Carrot Crunch',check:()=>G.items.carrot>=3,prog:()=>Math.min(3,G.items.carrot)+'/3 carrots',reward:3,
-    intro:["Neeeigh... Hello there, small fluffy friend.","I've been in this stall all day, and my tummy is rumbling.","There's a carrot patch in the barnyard. Could you peck 3 carrots out of the ground for old Clyde?"],
-    remind:()=>Math.min(3,G.items.carrot)+"/3 carrots. The carrot patch is in the barnyard, south-east of the barn. Just peck them!",
-    done:["*crunch crunch* Neeeigh! Just like the good old days.","Have 3 seeds, little one."],
-    after:()=>["Someday you'll fly higher than I ever jumped, Pip."],
-    hint:()=>"Clyde the horse wants carrots. Peck them out of the patch in the barnyard!"},
-  squeaks:{title:'Mouse Mail',check:()=>G.items.cheese>0,prog:()=>G.items.cheese?'bring cheese to Squeaks':(G.items.letter?'deliver letter to Nibbles':'waiting for reply'),reward:3,
-    intro:["Squeak! Squeak! A visitor!","I wrote a letter to my cousin Nibbles. He's the chef in the farmhouse kitchen.",{t:"Mice are too tiny to go that far. Could you deliver it for me?",fx:()=>{G.items.letter=1;toast("Got Squeaks' letter!");SFX.pick();}}],
-    remind:()=>G.items.letter?"Please take my letter to Nibbles! He lives in the farmhouse kitchen, in the orchard.":"Did Nibbles write back yet?",
-    done:["A letter AND cheese from Nibbles?! Squeak squeak HOORAY!","Here, 3 seeds for the best mail-chick ever!"],
-    onDone:()=>{G.items.cheese=0;},
-    after:()=>["Nibbles says you're the speediest mail carrier he's ever met!"],
-    hint:()=>G.items.letter?"Squeaks' letter goes to Nibbles in the farmhouse kitchen.":"Bring Nibbles' cheese back to Squeaks in the barn."},
-  biscuit:{title:'Buried Bone',check:()=>G.items.bone>0,prog:()=>G.items.bone?'bone found!':'dig up the bone',reward:3,
-    intro:["Woof! Woof! Oh, hi! I'm Biscuit! Wanna play?","I buried my favorite bone somewhere on the farm... and I forgot where! Woof!","Look for little dirt mounds. A STRONG PECK can dig them right up!"],
-    remind:()=>has('peck')?"Find the dirt mounds around the farm and peck them open! I KNOW it's in one of them!":"You'll need a STRONG PECK to dig. Woof!",
-    done:["MY BONE! You found it! *wag wag wag wag*","You're a good chick! Yes you are! Here, 3 seeds!"],
-    after:()=>["*chews bone happily* Woof.","Sniff sniff... I smell a BUNNY under one of the leaf piles in the field! A big gust of wind might uncover it!"],
-    hint:()=>has('peck')?"Biscuit's bone is buried in one of the dirt mounds around the farm. Peck them open!":"Biscuit's bone is buried. You'll need STRONG PECK to dig it up."},
-  whiskers:{title:'Lost Yarn',check:()=>G.items.yarn>0,prog:()=>G.items.yarn?'yarn found!':'find the yarn',reward:3,
-    intro:["Mrrrow. Oh. A chick. How... fluffy.","My ball of yarn rolled up into the barn loft. I'd fetch it myself, but I'm very busy napping.","The loft is behind a wall of hay. Bring it back, and I MIGHT share some seeds."],
-    remind:()=>has('hop')?"My yarn is in the barn loft. Hop over the hay.":"The loft is behind a wall of hay. That show-off horse Clyde could teach you to HOP.",
-    done:["My yarn! *bat bat bat* ...Ahem. I mean, thank you.","Here. 3 seeds. Don't tell the dog I was nice."],
-    after:()=>["Purrr... zzzz...","...mrrp. At night, the mushrooms by your coop glow. Owls like that sort of thing."],
-    hint:()=>"Whiskers' yarn is up in the barn loft, behind the wall of hay."}
-};
-const ORDER=['daisy','clyde','squeaks','penny','pig','sheep','whiskers','biscuit','duck','rooster'];
-const INTRO_HINT={daisy:"Daisy the cow lives in the barnyard, just east of the coop. She looked upset.",
-  clyde:"Clyde the horse lives inside the big red barn. Walk up to the door to go in!",
-  squeaks:"I hear some little squeaks coming from the barn. Somebody needs help!",
-  penny:"Your big sister Penny is inside our coop. Walk up to the little door!",
-  whiskers:"Whiskers the cat lives in the farmhouse, over in the orchard.",
-  biscuit:"Biscuit the dog lives in the farmhouse too. He's always losing things!",
-  pig:"Porkchop the pig lives in the orchard, past the barnyard. I hear his tummy rumbling from here!",
-  sheep:"Woolly the sheep grazes in the field south of the barnyard. Watch out for that fox!",
-  duck:"Mrs. Quackers lives by the pond, south of the coop. She sounded worried.",
-  rooster:"Sir Cluckington struts around by the Big Fence, east of the field."};
+/* ===== src/systems/dialogue.js ===== */
+/* ---------------- dialogue engine: say/talkTo/hints/rewards. Lines live in src/content/. ---------------- */
 function hint(){
   if(G.part2)return hint2();
   if(G.q.mom<2)return "Peck 3 worms in the dirt patches!";
@@ -1488,63 +1711,7 @@ function talkTo(e){
     return;
   }
   const ask=(t,choices,cb)=>L.push({who:e,text:t,choices,cb});
-  if(e.id==='penny'&&G.q.penny===2){
-    ask(G.outfits.includes('bow')?"Egg Catch again? Your best is "+G.best.egg+" eggs!":"Wanna play EGG CATCH? Catch 20 eggs in your basket, and don't let 5 crack! Win, and I'll give you my spare PINK BOW!",
-      ["Let's play!","Later"],i=>{if(i===0)startEgg();});
-    say(L);return;
-  }
-  if(e.id==='maggie'||e.id==='maggie2'){
-    if(!e.greeted){e.greeted=1;it("Ooh! Shiny! A customer! Welcome to Maggie's Boutique, darling!");}
-    ask("Care to try something on? Every chick deserves to look FABULOUS.",['Shop','Bye!'],i=>{if(i===0)openShop();});
-    say(L);return;
-  }
-  if(e.id==='bunbun'){
-    if(!G.met.has('bunbun_hi')){G.met.add('bunbun_hi');it("Whoa! You found my secret burrow! Nobody EVER finds it!");it("I'm Bun-Bun! I love carrots more than anything in the whole world!");}
-    ask("Wanna play CARROT BONK? Carrots pop out of the holes. Peck 12 before time runs out!"+(G.outfits.includes('ears')?" (Best: "+G.best.bonk+")":" Win, and you get my spare BUNNY EARS!"),
-      ['Play!','Not now'],i=>{if(i===0)startMG('bonk','bunbun');});
-    say(L);return;
-  }
-  if(e.id==='hootie'){
-    if(nightAmt()<0.3){it("Hoo... *yawn*... it's far too bright. Come back when the moon is up, little one.");say(L);return;}
-    if(!G.met.has('hootie_hi')){G.met.add('hootie_hi');it("Hoo-hoo! Welcome to the Moonlit Grove. Very few chicks have ever seen it.");}
-    ask("Care for a game of FIREFLY CATCH? Peck 15 fireflies before the moon goes down!"+(G.outfits.includes('pirate')?" (Best: "+G.best.ffly+")":" Win, and a PIRATE OUTFIT is yours."),
-      ['Play!','Not now'],i=>{if(i===0)startMG('ffly','hootie');});
-    say(L);return;
-  }
-  if(e.id==='nibbles'){
-    if(G.items.letter){
-      it("Bonjour! A letter from cousin Squeaks? How delightful!");
-      it("*read read* ...Oh ho ho! Let me write back right away.");
-      it("Please bring Squeaks my letter, and this fresh cheese! Merci, little chick!",()=>{G.items.letter=0;G.items.cheese=1;toast('Got cheese for Squeaks!');SFX.pick();save();});
-    }else if(G.items.cheese)it("Hurry, hurry! Bring that cheese to Squeaks in the barn before I eat it myself!");
-    else{it(G.q.squeaks===2?"Squeaks says thank you! You are a very fine mail carrier.":"Bonjour! I am Nibbles, chef of this kitchen. Mind the crumbs, s'il vous plait!");
-      if(!G.cellar)it("Psst... One of the floorboards near the bedroom creaks. I think something is hidden underneath!");}
-    say(L);return;
-  }
-  if(e.id==='mom'){
-    if(G.q.mom===0){
-      it("Good morning, Pip, my little peep! Did you sleep well?");
-      me("Mama! I want to FLY! Over the Big Fence, to see the whole wide world!");
-      it("Fly?! Oh, my feathers... You're just a teeny tiny chick!");
-      it("To fly, you'll need to grow big and strong. And growing chicks need SEEDS.");
-      it("The animals on the farm will share their seeds if you help them out.");
-      it("But first, breakfast! Peck up 3 wiggly worms from the dirt patches.",()=>{G.q.mom=1;});
-      it("Walk with the ARROW KEYS. Press Z or SPACE to peck!");
-    }else if(G.q.mom===1){
-      if(G.items.worm>=3){
-        it("Yum! What a good little pecker you are!");
-        it("Here, take 4 seeds, sweet pea.",()=>reward(4,'mom'));
-        it("Press E to open your GROWTH TREE. Spend seeds there to learn skills and grow big and strong!");
-        it("Then go help the other animals. Daisy the cow lives in the barnyard, and Clyde the horse is inside the big red barn.");
-        it("Oh, and your big sister Penny is inside our coop. You can walk right in through the little door!");
-      }else it("Find the wiggly worms in the dirt patches and peck them! ("+G.items.worm+"/3)");
-    }else{
-      it("*cuddle* There you go, all your hearts are full!",()=>{G.hearts=maxHearts();SFX.pick();});
-      if(nightAmt()>0.4&&Math.random()<0.5)it("Isn't the night pretty? They say a fairy ring by our coop glows when the moon is out... And you can sleep in your nest inside the coop.");
-      else it(hint());
-    }
-    say(L);return;
-  }
+  const spec=TALK[e.id];if(spec&&spec(e,{it,me,ask})!==false){say(L);return;}
   if(trainTalk(e,it)){say(L);return;}
   const q=QUESTS[e.id];if(!q)return;
   const pushLine=l=>typeof l==='string'?it(l):(l.me?me(l.me):it(l.t,l.fx));
@@ -1988,19 +2155,8 @@ function drawEnvFX(){
 }
 
 /* ---- Pip with outfits ---- */
-const OUTFITS=[
-  {id:'straw',name:'STRAW HAT',price:2,bonus:'Garden grows 50% faster. Worms, carrots, apples & acorns may drop a seed.',desc:'A classic farm look. Keeps the sun off your fluff.'},
-  {id:'astronaut',name:'ASTRONAUT',price:2,bonus:'Helmet light: big glow at night and in caves. Moon-bounce hops!',desc:'One small peck for a chick, one giant leap for chicken-kind!'},
-  {id:'shades',name:'COOL SHADES',price:3,bonus:'Too cool: outfits and coop upgrades cost 1 less seed.',desc:'Too cool for the coop.'},
-  {id:'ninja',name:'NINJA',price:6,bonus:'Stealth: foxes and geese barely notice you. A bit faster, too!',desc:'Silent. Swift. Fluffy. The shadow of the farm.'},
-  {id:'bow',name:'PINK BOW',bonus:'Family love: +1 heart.',how:'Win Egg Catch with your big sister.',desc:'A gift from Penny.'},
-  {id:'ears',name:'BUNNY EARS',bonus:'Hoppity: move 20% faster.',how:'Win a game in a secret burrow.',desc:'Hop hop hooray!'},
-  {id:'crown',name:'GOLDEN CROWN',bonus:'Royal reward: +1 seed from every quest.',how:'Find a hidden treasure chest.',desc:'Fit for the ruler of all Chicklandia!'},
-  {id:'pirate',name:'PIRATE',bonus:'Treasure sense: hidden treasures and secrets sparkle.',how:'Win a game under the moon.',desc:'Arr! Yo ho ho and a bucket of seeds!'}];
-const SHOP=['straw','astronaut','shades','ninja'];
 const WEAR_ICON={straw:OUTFIT_SPR.straw,astronaut:makeSprite(['.ccc.','c.w.c','c...c','.ccc.']),shades:OUTFIT_SPR.shadesF,ninja:makeSprite(['kkkkk','rrrrr','kkkkk']),
   bow:OUTFIT_SPR.bow,ears:OUTFIT_SPR.ears,crown:OUTFIT_SPR.crown,pirate:makeSprite(['.kkkk.','kkwwkk','qqqqqq'])};
-const OUTFIT_RENAME={crown:'ninja',explorer:'crown',bandana:'astronaut',cape:'pirate'};
 function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear){
   if(wear===undefined)wear=G?G.wear:null;
   const base=chickSprite(st,dir===3?2:dir,fr,flap,has('golden')),spr=dir===3?flipOf(base):base,hd=base.head;
@@ -2196,74 +2352,6 @@ function updateSleep(){
 /* =====================================================================
    PART 2: BEYOND THE FARM
    ===================================================================== */
-Object.assign(NAMES,{granny:'Granny Shell',bucky:'Bucky',doe:'Doe',mo:'Mo',elda:'Elda',pidge:'Postmaster Pidge',remy:'Chef Remy',pinch:'Capn Pinch',sandy:'Lifeguard Sandy'});
-const ORDER2=['granny','bucky','pidge','sandy','remy','doe','pinch','elda','mo'];
-const MAIL_TO={rocco:'Rocco by the city fountain',cleo:'Cleo the cat in the market',granny:'Granny Shell in the forest'};
-Object.assign(QUESTS,{
-  granny:{title:'Acorn Hunt',check:()=>G.items.acorn>=3,prog:()=>Math.min(3,G.items.acorn)+'/3 acorns',reward:2,
-    intro:["Well, well... a FLYING chick! Haven't seen one of those in a hundred years. And I'm 112!","I'm Granny Shell. I grow the finest sunflowers in the forest.","My old legs are too slow for acorn hunting, though. Peck the big oak trees and bring me 3 acorns, dearie?"],
-    remind:()=>Math.min(3,G.items.acorn)+"/3 acorns, dearie. Give the big oak trees a good peck!",
-    done:["Ooh, lovely plump acorns! Now let me teach you something special...","This is how you GROW seeds! Plant a seed in soft soil, wait a while, and it grows into a sunflower full of MORE seeds.","Use my garden plots right here whenever you like. Peck a plot to plant or harvest. Here's 2 seeds to start!"],
-    onDone:()=>{G.items.acorn-=3;G.thumb=true;toast('You learned GARDENING!','#94dc64');},
-    after:()=>["Seeds grow twice as fast in the rain. Nature's watering can!",hint2()],
-    hint:()=>"Granny Shell in the forest wants 3 acorns. Peck the big oak trees!"},
-  bucky:{title:'Dam Builder',check:()=>G.items.stick>=4,prog:()=>Math.min(4,G.items.stick)+'/4 sticks',reward:3,
-    intro:["Hey hey! Bucky the beaver here, master builder!","My dam broke in the big storm, and now the river's all wild! I need 4 sturdy STICKS to fix it.","I've seen sticks all over: the forest, the mountain trail, even the beach!"],
-    remind:()=>Math.min(4,G.items.stick)+"/4 sticks. They wash up all over: the forest, the mountain trail, and the beach!",
-    done:["Perfect sticks! *chomp chomp* *slap slap* ...Ta-da! Good as new!","And look, the dam makes a bridge across the river now! Take 3 seeds!"],
-    onDone:()=>{G.items.stick-=4;G.flags.dam=true;[[23,68],[24,68],[23,69],[24,69]].forEach(([c,r])=>setTile(c,r,'3'));shake=6;SFX.brk();},
-    after:()=>[G.coop?"How's the coop treating you? Bucky builds 'em to last!":"Have you seen the COOP SITE sign at the forest edge? Read it, and I'll build you a home for free!"],
-    hint:()=>"Bucky the beaver needs 4 sticks to fix his dam."},
-  doe:{title:'Little Lost Fawn',check:()=>!!G.flags.fawn,prog:()=>G.flags.fawn?'Clover is home!':'find Clover',reward:4,
-    intro:["Oh! Oh dear! Have you seen my fawn, Clover?","She wandered across the river while I napped, and now she can't get back!","If only someone could SWIM across... or if Bucky's dam were fixed, we could walk over!"],
-    remind:()=>has('swim')||G.flags.dam?"Clover is across the river! Go get her, and she'll follow you home!":"Clover is across the river. You'd need to SWIM, or help Bucky fix his dam...",
-    done:["Clover! My little Clover! *nuzzle nuzzle*","Thank you, brave chick. Please take 4 seeds."],
-    after:()=>["Clover wants to be a flying deer now. I blame you. *giggle*"],
-    hint:()=>"Doe's fawn Clover is across the river in the deep woods. Swim, or fix Bucky's dam!"},
-  mo:{title:'Rockslide Rescue',check:()=>!!G.flags.mo,prog:()=>G.flags.mo?'babies free!':'free the babies',reward:4,
-    intro:["Eek! Eek! Help!","A rockslide trapped my two babies behind those boulders!","Those rocks are HUGE. Only a SUPER PECK could crack them!"],
-    remind:()=>has('super')?"Smash one of those boulders with your SUPER PECK!":"Only a SUPER PECK can break those. Bucky the beaver in the forest is the strongest pecker I know!",
-    done:["My babies! *squeak squeak* You're our hero!","Here, have 4 seeds from our winter stash!"],
-    after:()=>["We're digging a new tunnel. Far, FAR away from the rocks!"],
-    hint:()=>"Mo the marmot's babies are trapped behind boulders. Bucky the beaver can teach you SUPER PECK."},
-  elda:{title:"The Eagle's Egg",check:()=>G.items.eagleEgg>0,prog:()=>G.items.eagleEgg?'egg found!':'find the egg',reward:4,
-    intro:["Screeee! A young flyer! Perhaps you can help.","A gust of wind blew my egg right across the great chasm!","I can't leave my nest. Can you GLIDE across and bring it back? Gently!"],
-    remind:()=>has('glide')?"Glide across the chasm and bring back my egg!":"That chasm is too wide to walk. Learn GLIDE in your Sky Tree.",
-    done:["My egg! Not a scratch! You have the heart of an eagle, little one.","Take 4 seeds. Fly high!"],
-    onDone:()=>{G.items.eagleEgg=0;},
-    after:()=>["When my chick hatches, I'll tell it all about the brave little chicken."],
-    hint:()=>"Elda the eagle's egg is across the chasm on the snowy peak. Learn GLIDE!"},
-  pidge:{title:'Special Delivery',check:()=>['rocco','cleo','granny'].every(k=>G.mail[k]===2),prog:()=>['rocco','cleo','granny'].filter(k=>G.mail[k]===2).length+'/3 delivered',reward:3,
-    intro:["Coo! Coo! Postmaster Pidge here! Busiest bird in the city!","I've got 3 letters to deliver, and my wing's in a sling. Could you help a pigeon out?",
-      {t:"One for Rocco by the fountain, one for Cleo the cat in the market, and one for Granny Shell in the forest!",fx:()=>{['rocco','cleo','granny'].forEach(k=>{if(!G.mail[k])G.mail[k]=1;});toast('Got 3 letters to deliver!');SFX.pick();}}],
-    remind:()=>"Still to deliver: "+['rocco','cleo','granny'].filter(k=>G.mail[k]!==2).map(k=>MAIL_TO[k]).join(', ')+".",
-    done:["All delivered? Coo! You're faster than any pigeon I know!","Here's 3 seeds for your trouble!"],
-    after:()=>["Coo! The mail must go through!"],
-    hint:()=>"Postmaster Pidge's letters go to Rocco, Cleo, and Granny Shell."},
-  remy:{title:'Super Soup',check:()=>G.items.acorn>=1&&G.items.fish>0&&G.items.snowberry>0,
-    prog:()=>[G.items.acorn>=1?'acorn':'',G.items.fish?'fish':'',G.items.snowberry?'berry':''].filter(Boolean).join(' ')||'0/3 items',reward:5,
-    intro:["Ah, bonjour! Remy, chef extraordinaire! Cousin of Nibbles, you know.","I'm making my famous Forest-Mountain-Sea Soup, but I'm missing ingredients!","I need 1 ACORN from the forest, 1 SNOWBERRY from the mountains, and 1 FISH from the tide pools!"],
-    remind:()=>"Still need: "+[G.items.acorn>=1?'':'an ACORN (forest oaks)',G.items.snowberry?'':'a SNOWBERRY (mountain bush)',G.items.fish?'':'a FISH (tide pools)'].filter(Boolean).join(', ')+".",
-    done:["Magnifique! *stir stir* *sniff* ...PERFECTION!","For you, my feathered friend: 5 seeds!"],
-    onDone:()=>{G.items.acorn--;G.items.fish=0;G.items.snowberry=0;},
-    after:()=>["Come back any time. The soup is always on!"],
-    hint:()=>"Chef Remy in the city needs an acorn, a snowberry, and a fish."},
-  pinch:{title:'Shell Seeker',check:()=>G.items.shell>=5,prog:()=>Math.min(5,G.items.shell)+'/5 shells',reward:4,
-    intro:["Arr! Cap'n Pinch at yer service! *click click*","A rogue wave washed away me prized seashell collection! Five shells, scattered everywhere!","Some be on the sand, some by the tide pools... and some out in the DEEP water. Can ye SWIM, matey?"],
-    remind:()=>Math.min(5,G.items.shell)+"/5 shells. "+(has('swim')?"Check the sand, the tide pools, and out in the deep water!":"Some be out in deep water. Lifeguard Sandy can teach ye to SWIM!"),
-    done:["Me shells! All five! Yer a true sea chick!","Take 4 seeds, matey!"],
-    after:()=>["Arr, the sea be callin'. Come sail with me some day!"],
-    hint:()=>"Cap'n Pinch at the beach lost 5 shells. Some are in deep water!"},
-  sandy:{title:'Turtle Rescue',check:()=>G.turtles.length>=3,prog:()=>G.turtles.length+'/3 in the sea',reward:3,
-    intro:["Squawk! Lifeguard Sandy here! We've got a situation!","Three baby sea turtles just hatched, but they're wandering the wrong way!","Lead them to the water! They'll follow you if you walk right up to them."],
-    remind:()=>G.turtles.length+"/3 turtles in the sea. Walk up to them, then lead them to the waves!",
-    done:["Squawk! All three babies made it to the sea! Beautiful!","Here's 3 seeds, junior lifeguard!"],
-    after:()=>["Squawk! Remember: no running by the tide pools!"],
-    hint:()=>"Lifeguard Sandy at the beach needs help leading baby turtles to the sea."}
-});
-const INTRO2={granny:"Granny Shell the tortoise lives by her garden in the forest.",bucky:"Bucky the beaver is building something in the deep woods.",
-  pidge:"Postmaster Pidge is the busiest bird in the city.",sandy:"Lifeguard Sandy watches over the beach.",remy:"Chef Remy cooks in the city market.",
-  doe:"A worried deer is pacing in the deep woods.",pinch:"Cap'n Pinch the crab is on the sandy shore.",elda:"An eagle lives up on the snowy peak.",mo:"A marmot is squeaking for help on the mountain trail."};
 function allP2Done(){return ORDER2.every(id=>G.q[id]===2);}
 function hint2(){
   if(!G.coop)return "There's a COOP SITE sign in the forest. You can build your very own home there!";
@@ -2279,35 +2367,6 @@ const AREA_LABEL={farm:'FARM',forest:'FOREST',mountains:'MOUNTAINS',city:'CITY',
 function noteArea(){const a=areaOf();if(a&&a!=='coop'&&!G.areas.includes(a)){G.areas.push(a);if(G.part2)toast('Discovered the '+AREA_LABEL[a]+'!','#94dc64');}}
 
 /* ---- skill trainers: some skills need a special lesson before you can buy them ---- */
-const TRAIN={
-  hop:{phase:1,who:'clyde',whoName:'CLYDE',skill:'HOP',title:'Hurdle Training',avail:()=>G.q.clyde===2,item:'horseshoe',need:3,noun:'horseshoes',
-    spawn:[['hs0',9,6],['hs1',28,15],['hs2',46,5]],
-    lock:"Help CLYDE the horse in the barn, and he'll teach you to HOP!",
-    intro:["Neeeigh! Say, did I ever tell you? I was the county's champion HURDLE jumper!","I could teach you to HOP over hay bales like a pro. But first, a warm-up!","I lost my 3 lucky HORSESHOES around the farm. Find them, and I'll show you how to hop!"],
-    remind:()=>Math.min(3,G.items.horseshoe)+"/3 lucky horseshoes. One's by the coop, one's in the field, and one's in the orchard!",
-    done:["My lucky horseshoes! Now watch closely... bend your knees... and SPRING!","There! Now you can learn HOP in your Growth Tree. Press E. Go get 'em, champ!"],
-    hint:()=>"Clyde's lucky horseshoes are by the coop, in the field, and in the orchard."},
-  flap:{phase:1,who:'rooster',whoName:'SIR CLUCK',skill:'WING FLAP',title:'Wind Training',avail:()=>G.q.rooster>=1,item:'puff',need:5,noun:'dandelion puffs',puffs:true,
-    lock:"Talk to SIR CLUCKINGTON by the Big Fence. He'll train your wings!",
-    intro:["Hold on there, kid. To blow those leaves away, you'll need a mighty WING FLAP.","A wing flap takes strong, quick wings! Training time!","Dandelion puffs are blowing all over the field. Catch 5 of 'em before the wind carries 'em off!"],
-    remind:()=>Math.min(5,G.items.puff)+"/5 dandelion puffs. Chase 'em down in the field!",
-    done:["Ha! Quick as the wind! Now flap like THIS... WHOOSH!","You're ready. Learn WING FLAP in your Growth Tree, then go find my feathers!"],
-    hint:()=>"Catch the dandelion puffs blowing around the field for Sir Cluckington."},
-  swim:{phase:2,who:'sandy',whoName:'SANDY',skill:'SWIM',title:'Lifeguard Training',avail:()=>G.q.sandy===2,item:'ring',need:3,noun:'life rings',
-    spawn:[['ring0',14,77],['ring1',27,75],['ring2',30,79]],
-    lock:"Help LIFEGUARD SANDY at the beach, and she'll teach you to SWIM!",
-    intro:["Squawk! You saved those turtles. But can you SWIM, junior lifeguard?","Every lifeguard needs swim training! First, find my 3 lost LIFE RINGS.","They floated off somewhere around the beach and the tide pools!"],
-    remind:()=>Math.min(3,G.items.ring)+"/3 life rings. Check the beach and the tide pools!",
-    done:["My life rings! Okay: kick your feet, paddle your wings, and keep your beak up!","Now you can learn SWIM in your Sky Tree. Press E. Squawk!"],
-    hint:()=>"Lifeguard Sandy's life rings are on the beach and in the tide pools."},
-  super:{phase:2,who:'bucky',whoName:'BUCKY',skill:'SUPER PECK',title:'Stump Smashing',avail:()=>G.q.bucky===2,item:'stump',need:3,noun:'stumps',
-    stumps:[['stump0',3,66],['stump1',29,63],['stump2',17,64]],
-    lock:"Help BUCKY the beaver in the deep woods, and he'll teach you SUPER PECK!",
-    intro:["Hey hey! Wanna know the secret to my super-strong teeth? PRACTICE!","There are 3 old tree stumps in the forest that need clearing out. Peck 'em to splinters!","Do that, and I'll teach you the SUPER PECK!"],
-    remind:()=>Math.min(3,G.items.stump)+"/3 stumps smashed. They're around the forest edge and the deep woods!",
-    done:["Look at those splinters! You've got the power, kid!","Now you can learn SUPER PECK in your Sky Tree. Press E!"],
-    hint:()=>"Smash the 3 old tree stumps in the forest for Bucky."}
-};
 function trainCount(k){return G.items[TRAIN[k].item]||0;}
 function trainMsg(k){const t=TRAIN[k],st=G.train[k]||0;
   if(st===1)return t.whoName+"'s training: "+Math.min(t.need,trainCount(k))+'/'+t.need+' '+t.noun+(trainCount(k)>=t.need?' - go tell them!':'');
@@ -2348,10 +2407,6 @@ function talkP2(e,it){
 }
 /* ---- coop sites ---- */
 function siteFor(c,r){for(const k in SITES){const s=SITES[k];if(s.sign[0]===c&&s.sign[1]===r)return k;}return null;}
-// upgrades unlock as you help animals out here (need = Part 2 quests done), and cost a few seeds
-const UPGRADES=[null,null,{cost:4,need:2,text:'A bigger coop, 2 more garden plots, and MAMA HEN moves in!'},
-  {cost:6,need:5,text:'A family wing, 2 more plots, faster growing, and PENNY & the TRIPLETS move in!'},
-  {cost:8,need:9,text:'The DREAM COOP! A golden roof, 2 more plots, super-fast growing, and a big party!'}];
 function p2Done(){return ORDER2.filter(id=>G.q[id]===2).length;}
 function siteSign(id,c,r){
   const who={x:c*16+8,y:r*16,name:'COOP SITE'},L=[];
@@ -2611,25 +2666,8 @@ function drawHaz(e,sx,sy){
 
 /* ===== src/ui/growth.js ===== */
 /* ---------------- growth tree ---------------- */
-const SKILLS=[
-  {id:'down',name:'FLUFFY DOWN',cost:2,req:[],x:30,y:70,desc:'Grow extra fluffy feathers. +1 heart!',learn:'+1 heart! So fluffy!'},
-  {id:'quick',name:'QUICK FEET',cost:2,req:[],x:30,y:118,desc:'Scurry around the farm much faster.',learn:'You scurry faster now!'},
-  {id:'peck',name:'STRONG PECK',cost:3,req:['down'],x:78,y:70,desc:'Smash rocks and crates, shake apple trees, and give foxes a real OUCH.',learn:'Smash rocks, crates & shake apple trees!'},
-  {id:'hop',name:'HOP',cost:3,req:['quick'],x:78,y:118,desc:'Walk into a hay bale to hop right over it. Taught by Clyde the horse.',learn:'Walk into hay bales to hop over them!'},
-  {id:'tough',name:'TOUGH FEATHERS',cost:4,req:['peck'],x:126,y:70,desc:'Sturdier feathers that shrug off bumps. +1 heart!',learn:'+1 heart! Tough as nails!'},
-  {id:'flutter',name:'FLUTTER',cost:4,req:['hop'],x:126,y:118,desc:'Flap your little wings to glide right over water.',learn:'You can flutter over water now!'},
-  {id:'flap',name:'WING FLAP',cost:5,req:['tough','flutter'],x:176,y:94,desc:'Press X to gust away leaves and geese! Taught by Sir Cluckington.',learn:'Press X to WING FLAP!'},
-  {id:'fly',name:'FLIGHT',cost:7,req:['flap'],x:226,y:94,desc:'Real, true FLIGHT! Head to the Big Fence and soar right over it!',learn:'You can FLY! Go to the Big Fence!'}
-];
-const SKILLS2=[
-  {id:'swim',name:'SWIM',cost:4,req:[],x:44,y:72,desc:'Paddle through deep rivers and the ocean! Taught by Lifeguard Sandy.',learn:'You can swim in deep water!'},
-  {id:'glide',name:'GLIDE',cost:4,req:[],x:44,y:120,desc:'Spread your wings and glide right over chasms and gaps.',learn:'You can glide over chasms!'},
-  {id:'super',name:'SUPER PECK',cost:5,req:['glide'],x:120,y:120,desc:'A peck so mighty it smashes huge boulders! Taught by Bucky the beaver.',learn:'SUPER PECK smashes boulders!'},
-  {id:'golden',name:'GOLDEN WINGS',cost:8,req:['swim','super'],x:204,y:96,desc:'Shimmering golden wings! +1 heart and even faster feet.',learn:'+1 heart and speed! So shiny!'}
-];
 let growPage=0;
 const TREE=()=>growPage?SKILLS2:SKILLS;
-const STAGE_NAMES=['TEENY PEEP','LITTLE CHICK','GROWING CHICK','BIG CHICK','ALMOST A CHICKEN'];
 function openGrow(){state='grow';SFX.menu();growMsg=null;growPage=G.part2?1:0;growSel=0;const i=TREE().findIndex(s=>!has(s.id)&&s.req.every(has));if(i>=0)growSel=i;}
 function skillState(s){if(has(s.id))return'learned';if(!s.req.every(has))return'locked';if(TRAIN[s.id]&&G.train[s.id]!==2)return'train';return'open';}
 function updateGrow(){

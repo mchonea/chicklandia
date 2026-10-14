@@ -56,40 +56,23 @@ function continueGame(){
 
 /* ---------------- entities ---------------- */
 function addEnt(o){ents.push(o);return o;}
-const SIBS=[
-  {id:'peep',name:'PEEP',spr:'peep',hide:[46,31],home:[4,28],found:"Aww, you found me! I was hiding behind the bed!",homeLine:"Peep peep! Next time I'm hiding under the bed. Don't tell!"},
-  {id:'cheep',name:'CHEEP',spr:'cheep',hide:[17,21],home:[11,28],found:"Nooo! That bush was the PERFECT hiding spot!",homeLine:"Pip, when you can fly, will you take me for a ride?"},
-  {id:'tweet',name:'TWEET',spr:'tweet',hide:[28,27],home:[5,33],found:"How did you get up here?! Okay, okay, I'm going home!",homeLine:"I'm gonna be a big strong chicken just like you, Pip!"}];
-const MOUNDS=[{id:'mound0',c:29,r:21,has:'An old boot!'},{id:'mound1',c:2,r:22,has:'seed'},{id:'mound2',c:45,r:9,has:'A rusty spoon!'},{id:'mound3',c:38,r:21,has:'bone'}];
 function at(c,r){return {x:c*16+8,y:r*16+12};}
+function spawnCast(part){
+  for(const c of CHARACTERS)if((c.c!==undefined)&&((c.r>=48)===(part===2)))
+    addEnt({type:'npc',id:c.id,name:c.name,spr:c.spr,...at(c.c,c.r),w:c.w||14,voice:c.voice,solid:true,phase:(Math.random()*60)|0,flip:false,deco:c.deco});
+}
 function makeEnts(){
   ents=[];
   const npc=(id,name,spr,c,r,voice)=>addEnt({type:'npc',id,name,spr,...at(c,r),w:14,voice,solid:true,phase:(Math.random()*60)|0,flip:false});
-  npc('mom','MAMA HEN','hen',6,4,560);
-  npc('daisy','DAISY','cow',19,8,170).w=18;
-  npc('pig','PORKCHOP','pig',40,4,240);
-  npc('penny','PENNY','penny',8,29,820);
-  npc('clyde','CLYDE','horse',18,33,150).w=16;
-  npc('squeaks','SQUEAKS','mouse',29,33,1200).w=10;
-  npc('nibbles','NIBBLES','chef',36,27,1100).w=10;
-  npc('biscuit','BISCUIT','dog',41,32,300);
-  npc('whiskers','WHISKERS','cat',40,30,500).w=12;
+  spawnCast(1);
   SIBS.forEach(s=>{const n=npc(s.id,s.name,s.spr,s.hide[0],s.hide[1],950);n.sib=s;n.w=10;if(G.sibs.includes(s.id)){n.home=true;Object.assign(n,at(...s.home));}});
   // (family may later move to the new coop; see relocateFamily)
   [[26,8],[28,8],[27,9],[29,9]].forEach(([c,r],i)=>{const id='carrot'+i;if(!G.collected.has(id))addEnt({type:'carrot',id,x:c*16+8,y:r*16+11});});
   MOUNDS.forEach(m=>{if(!G.collected.has(m.id))addEnt({type:'mound',id:m.id,x:m.c*16+8,y:m.r*16+11,has:m.has});});
   spawnItem('yarn','yarn',19*16+8,27*16+12);
-  npc('maggie','MAGGIE','magpie',28,7,1400).w=12;
-  npc('bunbun','BUN-BUN','rabbit',8,39,1000).w=12;
-  npc('hootie','HOOTIE','owl',40,40,350).w=12;
   [[4,41],[7,41],[10,41],[5,44],[8,44],[11,44]].forEach(([c,r],i)=>addEnt({type:'hole',id:'hole'+i,x:c*16+8,y:r*16+12,up:0,max:1}));
   addEnt({type:'chest',x:384,y:39*16+12,solid:true,w:16});
   placeBlocks();
-  npc('duck','MRS. QUACKERS','duck',12,21,760);
-  npc('sheep','WOOLLY','sheepBow',21,20,420);
-  npc('rooster','SIR CLUCKINGTON','rooster',36,15,330);
-  npc('sheep2','SHEEP','sheep',19,21,380).deco=true;
-  npc('sheep3','SHEEP','sheep',23,19,460).deco=true;
   [[6,7],[12,7],[7,8],[11,8]].forEach(([c,r],i)=>{const id='worm'+i;if(!G.collected.has(id))addEnt({type:'worm',id,x:c*16+8,y:r*16+11,phase:i*13});});
   spawnItem('bell','bell',28*16+8,2*16+12);
   spawnItem('seed_pen','seed',27*16+8,3*16+12);
@@ -105,43 +88,10 @@ function makeEnts(){
   if(!G.gooseGone){const p=at(43,18);addEnt({type:'goose',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:2,sy:1,st:'idle',t:0,kt:0,cool:0,flash:0,flip:false,solid:true,w:14});}
 }
 /* ---- part 2 entities ---- */
-const SITES={
-  forest:{name:'FOREST',c:11,r:67,sign:[11,69],plots:[[14,67],[14,68],[9,67],[10,67],[9,68],[10,68],[12,66],[13,66]]}};
-// coop sites from older versions, used only to clean up old saves
-const OLD_SITES={mountains:{c:2,r:56,plots:[[5,56],[6,56],[1,56],[6,57],[7,57],[7,56],[2,55],[3,55]]},
-  city:{c:41,r:64,plots:[[40,64],[40,65],[44,64],[45,64],[41,63],[42,63],[43,63],[45,65]]},
-  beach:{c:5,r:76,plots:[[4,76],[4,77],[9,76],[9,77],[4,75],[6,75],[7,75],[10,76]]}};
-// seed tallies: old saves only had one "found" counter that also counted bonus seeds
-function migrateSeeds(s){
-  if(s.sp1!==undefined){G.sp1=s.sp1;G.sp2=s.sp2||0;G.earned=s.earned||0;return;}
-  const f=s.found||0;G.sp1=Math.min(TOTAL_SEEDS,f);G.sp2=G.part2?Math.min(TOTAL_SEEDS2,Math.max(0,f-TOTAL_SEEDS)):0;G.earned=f;
-}
-function addSeeds(n,part,base){G.seeds+=n;G.earned+=n;if(base===undefined)base=n;
-  if(part===2)G.sp2=Math.min(TOTAL_SEEDS2,G.sp2+base);else G.sp1=Math.min(TOTAL_SEEDS,G.sp1+base);}
-function migrateSave(s){
-  if(!s.ov){G.outfits=[...new Set(G.outfits.map(id=>OUTFIT_RENAME[id]||id))];if(G.wear)G.wear=OUTFIT_RENAME[G.wear]||G.wear;}
-  if(G.coop&&OLD_SITES[G.coop.site]){const o=OLD_SITES[G.coop.site];
-    for(let dy=0;dy<2;dy++)for(let dx=0;dx<3;dx++){const k=(o.c+dx)+','+(o.r+dy);delete G.mods[k];tiles[o.r+dy][o.c+dx]=MAP[o.r+dy][o.c+dx];}
-    for(const [c,r] of o.plots){const k=c+','+r;delete G.mods[k];tiles[r][c]=MAP[r][c];delete G.plots['plot_'+c+'_'+r];}
-    G.coop.site='forest';G.coop.fresh=true;}
-}
-const COOP_IN={x:640,y:939};
-const FAMILY_POS={mom:[39,52],penny:[42,53],peep:[37,54],cheep:[38,55],tweet:[41,55]};
 function inSite(c,r){const s=G.coop&&SITES[G.coop.site];return !!s&&c>=s.c&&c<s.c+3&&r>=s.r&&r<s.r+2;}
 function makeP2Ents(){
   const npc=(id,name,spr,c,r,voice,w=14)=>addEnt({type:'npc',id,name,spr,...at(c,r),w,voice,solid:true,phase:(Math.random()*60)|0,flip:false});
-  npc('granny','GRANNY SHELL','tortoise',4,63,200,16);
-  npc('bucky','BUCKY','beaver',22,67,500,12);
-  npc('doe','DOE','deer',27,66,650,16);
-  npc('mo','MO','marmot',10,52,900,10);
-  npc('elda','ELDA','eagle',20,52,450,12);
-  npc('pidge','POSTMASTER PIDGE','pigeon',35,65,800,10);
-  npc('rocco','ROCCO','raccoon',43,68,420,12);
-  npc('remy','CHEF REMY','chef',40,77,1100,10);
-  npc('cleo','CLEO','catO',35,78,520,12);
-  npc('maggie2','MAGGIE','magpie',43,78,1400,12); // temporary city branch of the boutique (until Phase 3)
-  npc('pinch','CAPN PINCH','crab',13,75,350,12);
-  npc('sandy','LIFEGUARD SANDY','gull',6,74,900,10);
+  spawnCast(2);
   ['mokid1','mokid2'].forEach((id,i)=>{const n=npc(id,'BABY MARMOT','mokid',G.flags.mo?11+i:5+i*2,G.flags.mo?53:51,1300,6);n.deco2=true;n.solid=false;});
   const fawn=addEnt({type:'follower',kind:'fawn',id:'fawn',x:20*16+8,y:70*16+12,mode:'wait',fi:0,flip:false});
   if(G.flags.fawn){const d=ents.find(e=>e.id==='doe');fawn.mode='home';fawn.x=d.x+16;fawn.y=d.y+2;}

@@ -24,11 +24,6 @@ function solidTile(ch,forPlayer=true){
   return SOLID.has(ch);
 }
 
-const HIDDEN={'44,2':{id:'feather_crate',kind:'feather'},'44,3':{id:'seed_crate',kind:'seed'},
-  '14,21':{id:'seed_rock',kind:'seed'},'23,22':{id:'feather_leaf',kind:'feather'},'35,20':{id:'seed_leaf',kind:'seed'}};
-const SIGNS={'10,9':{name:'SIGN',text:'CHICKEN COOP - Home sweet home! (Press E to open your Growth Tree.)'},
-  '45,16':{name:'SIGN',text:'THE BIG FENCE. No chicken has ever flown over it. Beyond it lies... THE WHOLE WIDE WORLD!'}};
-
 function drawTile(ch,c,r,sx,sy,wf){
   const h=hash2(c,r);let img;
   switch(ch){
