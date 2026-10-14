@@ -1,24 +1,53 @@
 'use strict';
-/* region: city */
-// = cobblestone  a roof  U brick  Q lit window  l awning  | lamp  $ fountain  [ bench
-defineRegion({id:'city',name:'CITY',kind:'outdoor',origin:[2,5],grid:[1,2],ground:'cobble',beyond:true,
+/* region: city  (6 outdoor screens)
+     City Gate (2,5) - Main Street (3,5) - City Park (4,5)
+     Market Square (2,6) - Residential Lane (3,6) - Harbor Docks (4,6)
+   = cobblestone  a roof  U brick  Q lit window  l awning  | lamp  $ fountain  [ bench
+   1 building door (see content/city.js)  5 ship  6 crates  3 planks  w deep water  T tree  . grass  W pond  , flowers */
+defineRegion({id:'city',name:'CITY',kind:'outdoor',origin:[2,5],grid:[3,2],ground:'cobble',beyond:true,
  screens:[
- [ // city gate
+ [ // city gate: post office (left door) and Rocco's den (right door)
   'aaaaaaaaaaaaaaaa',
   'aaaaaaaaaaaaaaaa',
-  'UQUUQUlllUQUUQUa',
+  'UQ1UQUlllUQ1UQUa',
   '=|=====[=====|aa',
   '==============aa',
-  '==============aa',
-  '==============aa',
+  '================',
+  '================',
   '=|====$$====|=aa',
   '======$$======aa',
   '=[==========[=aa',
   'aaaaaaa==aaaaaaa',
   'aaaaaaa==aaaaaaa'],
- [ // market square
+ [ // main street: boutique, seed & feed, bakery, toy shop
+  'aaaaaaaaaaaaaaaa',
+  'aaaaaaaaaaaaaaaa',
+  'UQ1UUQ1UUQ1UUQ1U',
+  '===|===|===|====',
+  '================',
+  '================',
+  '================',
+  '=[============[=',
+  '================',
+  '=|============|=',
   'aaaaaaa==aaaaaaa',
-  'UUQUUU|==|UUQUUU',
+  'aaaaaaa==aaaaaaa'],
+ [ // city park: library, museum, pond, gazebo, bandstand
+  'aaaaaaTTTTaaaaaa',
+  'aaaaaaTTTTaaaaaa',
+  'UQU1UQ,..,UQU1UQ',
+  'T.,...aaaa....,T',
+  '=....,aaaa.,...T',
+  '======3333=====T',
+  '======3333.,..,T',
+  'T....,.==.,....T',
+  'TWWW...==...,..T',
+  'TWWWW..==..3333T',
+  'TTT....==....TTT',
+  'TTTTTTT==TTTTTTT'],
+ [ // market square: Remy's bistro
+  'aaaaaaa==aaaaaaa',
+  'UU1UUU|==|UUQUUU',
   '================',
   '=lll===lll===lll',
   '=kkk===kkk===kkk',
@@ -28,4 +57,30 @@ defineRegion({id:'city',name:'CITY',kind:'outdoor',origin:[2,5],grid:[1,2],groun
   '=====[==[=======',
   '================',
   '================',
-  'aaaaaaaaaaaaaaaa']]});
+  'aaaaaaaaaaaaaaaa'],
+ [ // residential lane: Cleo, the artist, the duck family, Pidge
+  'aaaaaaa==aaaaaaa',
+  'aaaaaaa==aaaaaaa',
+  'UQ1UQ1U==UQ1UQ1U',
+  '================',
+  '=|============|=',
+  '================',
+  '================',
+  '=[============[=',
+  '================',
+  '=|============|=',
+  'aaaaaaaaaaaaaaaa',
+  'aaaaaaaaaaaaaaaa'],
+ [ // harbor docks: Cap'n Pinch's ship is tied up at the pier
+  'TTTTTTT==TTTTTTT',
+  'T=====6==6=====T',
+  'T==============T',
+  'T=[==========[=T',
+  '===============T',
+  '===============T',
+  '===============T',
+  'Tww33wwwwww33wwT',
+  'Tww33w5555w33wwT',
+  'Tww33w5555w33wwT',
+  'Tww33wwwwww33wwT',
+  'TTTTTTTTTTTTTTTT']]});

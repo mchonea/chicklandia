@@ -150,8 +150,8 @@ function checkPlates(){
 function bump(ix,iy){
   if(tryPush(ix,iy))return;
   if(has('hop')&&tryHop(ix,iy))return;
-  if(iy<0&&WALK.has(CS.x+','+CS.y)){for(const ox of [0,-5,5]){const c=Math.floor((P.x+ox)/16),r=Math.floor((P.y-9)/16),d=DOORS[c+','+r];
-    if(d){warpTo(d.x,d.y,1);return;}}}
+  if(iy<0&&(WALK.has(CS.x+','+CS.y)||cellAt().kind==='indoor')){for(const ox of [0,-5,5]){const c=Math.floor((P.x+ox)/16),r=Math.floor((P.y-9)/16),d=DOORS[c+','+r];
+    if(d){if(d.b&&!buildingOpen(d.b)){closedSign(d.b);return;}warpTo(d.x,d.y,d.roof?0:1,null,d.roof?null:()=>{if(d.b)enteredBuilding(d.b);});return;}}}
   if(ix>0&&tileAt(Math.floor((P.x+8)/16),Math.floor((P.y-2)/16))==='H'){
     if(G.part2){FLY={t:0,dest:'forest'};state='flying';SFX.magic();}
     else if(has('fly'))startEnding();
@@ -259,7 +259,7 @@ function checkEdges(){
     if(P.bubbleCd<=0){P.bubbleCd=240;float(P.x,P.y-24,'These mushrooms look magical...','#d890ff');}
   }
   if(!WALK.has(CS.x+','+CS.y)){
-    if(tileAt(fc,Math.floor(P.y/16))==='X'){const cl=cellAt(),e=cl.region.id==='coop'?coopExit():(cl.region.id==='rooms'?EXITS:EXITS3)[cl.gx];if(e)warpTo(e.x,e.y,0);}
+    if(tileAt(fc,Math.floor(P.y/16))==='X'){const cl=cellAt(),e=cl.region.id==='coop'?coopExit():cl.region.id==='cityin'?BUILDING_BY_ROOM[cl.id].out:(cl.region.id==='rooms'?EXITS:EXITS3)[cl.gx];if(e)warpTo(e.x,e.y,0);}
     return;}
   const L=CS.x*256,R=L+256,T=CS.y*192,B=T+192;let d=null;
   if(P.x-4<L)d=[-1,0];else if(P.x+4>R)d=[1,0];else if(P.y-6<T)d=[0,-1];else if(P.y>B)d=[0,1];

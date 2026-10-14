@@ -247,6 +247,13 @@ TILE.bench=mk(16,16,x=>{x.drawImage(TILE.cobble,0,0);P_(x,'k',1,4,14,7);P_(x,'b'
 TILE.signO=mk(16,16,x=>{P_(x,'k',7,8,3,7);P_(x,'B',8,8,1,6);P_(x,'k',1,2,14,8);P_(x,'t',2,3,12,6);P_(x,'T',3,4,9,1);P_(x,'T',3,6,7,1);});
 TILE.stakes=mk(16,16,x=>{});
 TILE.goldroof=mk(16,16,x=>{P_(x,'Q',0,0,16,16);for(let j=0;j<16;j+=4){P_(x,'q',0,j,16,3);for(let i=((j/4)%2)*4;i<16;i+=8)P_(x,'Q',i,j,1,3);}P_(x,'w',2,1,2,1);P_(x,'w',10,9,2,1);});
+// city tiles
+TILE.brickDoor=mk(16,16,x=>{x.drawImage(TILE.brick,0,0);P_(x,'k',3,2,10,14);P_(x,'b',4,3,8,13);P_(x,'B',4,8,8,1);P_(x,'T',5,4,6,3);P_(x,'T',5,10,6,4);P_(x,'q',10,9,1,1);P_(x,'#e8c8a0',2,1,12,1);});
+TILE.ship=mk(16,16,x=>{P_(x,'k',0,0,16,16);P_(x,'B',0,1,16,14);for(let j=3;j<14;j+=4)P_(x,'b',0,j,16,1);P_(x,'T',0,1,16,1);P_(x,'k',5,6,6,6);P_(x,'c',6,7,4,4);P_(x,'#e8c8a0',7,7,1,4);});
+TILE.stackCrate=mk(16,16,x=>{x.drawImage(TILE.cobble,0,0);P_(x,'k',1,5,14,10);P_(x,'b',2,6,12,8);P_(x,'T',2,6,12,1);P_(x,'B',7,6,1,8);P_(x,'k',3,0,10,6);P_(x,'t',4,1,8,4);P_(x,'T',4,1,8,1);});
+TILE.roofWalk=mk(16,16,x=>{P_(x,'#d8805c',0,0,16,16);for(let j=0;j<16;j+=4){P_(x,'#b85c3c',0,j+3,16,1);for(let i=((j/4)%2)*4;i<16;i+=8)P_(x,'#b85c3c',i,j,1,3);}P_(x,'#f0a080',0,0,16,1);});
+TILE.shelf=mk(16,16,x=>{P_(x,'B',0,0,16,16);P_(x,'k',0,0,16,1);P_(x,'k',0,7,16,1);P_(x,'k',0,15,16,1);const cs=['r','u','y','g','p','o'];for(let i=0;i<6;i++){P_(x,cs[i],1+i*2+(i>2?1:0),1,2,6);P_(x,cs[(i+2)%6],1+i*2+(i>2?1:0),8,2,7);}});
+TILE.pedestal=mk(16,16,x=>{x.drawImage(TILE.floor,0,0);P_(x,'k',2,7,12,9);P_(x,'e',3,8,10,7);P_(x,'E',3,13,10,2);P_(x,'k',3,1,10,7);P_(x,'c',4,2,8,5);P_(x,'w',5,2,1,2);});
 function groundFor(c,r,h){
   switch(groundOf(c,r)){
     case 'snow':return TILE.snow[h%2];
@@ -277,6 +284,17 @@ const REGIONS={},REGION_LIST=[],CELL={},WALK=new Set();
 let MW=0,MH=0,MAP=[];
 const AREA_IDS=['farm','mountains','coop','forest','city','beach'];
 function defineRegion(d){REGIONS[d.id]=d;REGION_LIST.push(d);}
+// map-making helpers for region files. grid(fill, ops): ['r',c0,r0,c1,r1,ch] fills a rectangle, ['p',c,r,ch] sets one tile.
+function grid(fill,ops=[],w=16,h=12){
+  const g=[...Array(h)].map(()=>Array(w).fill(fill));
+  for(const o of ops){if(o[0]==='r'){for(let r=o[2];r<=o[4];r++)for(let c=o[1];c<=o[3];c++)g[r][c]=o[5];}else g[o[2]][o[1]]=o[3];}
+  return g.map(r=>r.join(''));
+}
+// a one-screen room: walls on top and bottom, windows, an exit at the bottom; floor spans cols 2-13, rows 3-10
+function room(ops=[],floor='_'){
+  const base=['################','################','##i###i##i###i##',...Array(8).fill('##'+floor.repeat(12)+'##'),'#######XX#######'];
+  return grid('#',[['r',0,0,15,11,'#'],...base.flatMap((row,r)=>[...row].map((ch,c)=>['p',c,r,ch])),...ops]);
+}
 function buildWorld(){
   let maxX=0,maxY=0;
   for(const r of REGION_LIST){
@@ -284,7 +302,8 @@ function buildWorld(){
     for(let gy=0;gy<r.grid[1];gy++)for(let gx=0;gx<r.grid[0];gx++){
       const i=gy*r.grid[0]+gx,cx=r.origin[0]+gx,cy=r.origin[1]+gy;
       if(CELL[cx+','+cy])console.warn('region overlap at',cx,cy,r.id);
-      const cell={region:r,sx:cx,sy:cy,gx,gy,i,rows:r.screens[i],kind:(r.kinds&&r.kinds[i])||r.kind,label:r.labels&&r.labels[i]};
+      const sc=r.screens[i];if(!sc)continue;const meta=Array.isArray(sc)?{}:sc;
+      const cell={region:r,sx:cx,sy:cy,gx,gy,i,rows:Array.isArray(sc)?sc:sc.rows,meta,id:meta.id,kind:meta.kind||(r.kinds&&r.kinds[i])||r.kind,label:meta.label||(r.labels&&r.labels[i])};
       CELL[cx+','+cy]=cell;r.cells.push(cell);maxX=Math.max(maxX,cx);maxY=Math.max(maxY,cy);
       if(cell.kind==='outdoor')WALK.add(cx+','+cy);
     }
@@ -566,26 +585,55 @@ defineRegion({id:'forest',name:'FOREST',kind:'outdoor',origin:[0,5],grid:[2,1],g
   'TTTTTTTTTTTTTTTT']]});
 
 /* ===== src/regions/city.js ===== */
-/* region: city */
-// = cobblestone  a roof  U brick  Q lit window  l awning  | lamp  $ fountain  [ bench
-defineRegion({id:'city',name:'CITY',kind:'outdoor',origin:[2,5],grid:[1,2],ground:'cobble',beyond:true,
+/* region: city  (6 outdoor screens)
+     City Gate (2,5) - Main Street (3,5) - City Park (4,5)
+     Market Square (2,6) - Residential Lane (3,6) - Harbor Docks (4,6)
+   = cobblestone  a roof  U brick  Q lit window  l awning  | lamp  $ fountain  [ bench
+   1 building door (see content/city.js)  5 ship  6 crates  3 planks  w deep water  T tree  . grass  W pond  , flowers */
+defineRegion({id:'city',name:'CITY',kind:'outdoor',origin:[2,5],grid:[3,2],ground:'cobble',beyond:true,
  screens:[
- [ // city gate
+ [ // city gate: post office (left door) and Rocco's den (right door)
   'aaaaaaaaaaaaaaaa',
   'aaaaaaaaaaaaaaaa',
-  'UQUUQUlllUQUUQUa',
+  'UQ1UQUlllUQ1UQUa',
   '=|=====[=====|aa',
   '==============aa',
-  '==============aa',
-  '==============aa',
+  '================',
+  '================',
   '=|====$$====|=aa',
   '======$$======aa',
   '=[==========[=aa',
   'aaaaaaa==aaaaaaa',
   'aaaaaaa==aaaaaaa'],
- [ // market square
+ [ // main street: boutique, seed & feed, bakery, toy shop
+  'aaaaaaaaaaaaaaaa',
+  'aaaaaaaaaaaaaaaa',
+  'UQ1UUQ1UUQ1UUQ1U',
+  '===|===|===|====',
+  '================',
+  '================',
+  '================',
+  '=[============[=',
+  '================',
+  '=|============|=',
   'aaaaaaa==aaaaaaa',
-  'UUQUUU|==|UUQUUU',
+  'aaaaaaa==aaaaaaa'],
+ [ // city park: library, museum, pond, gazebo, bandstand
+  'aaaaaaTTTTaaaaaa',
+  'aaaaaaTTTTaaaaaa',
+  'UQU1UQ,..,UQU1UQ',
+  'T.,...aaaa....,T',
+  '=....,aaaa.,...T',
+  '======3333=====T',
+  '======3333.,..,T',
+  'T....,.==.,....T',
+  'TWWW...==...,..T',
+  'TWWWW..==..3333T',
+  'TTT....==....TTT',
+  'TTTTTTT==TTTTTTT'],
+ [ // market square: Remy's bistro
+  'aaaaaaa==aaaaaaa',
+  'UU1UUU|==|UUQUUU',
   '================',
   '=lll===lll===lll',
   '=kkk===kkk===kkk',
@@ -595,7 +643,33 @@ defineRegion({id:'city',name:'CITY',kind:'outdoor',origin:[2,5],grid:[1,2],groun
   '=====[==[=======',
   '================',
   '================',
-  'aaaaaaaaaaaaaaaa']]});
+  'aaaaaaaaaaaaaaaa'],
+ [ // residential lane: Cleo, the artist, the duck family, Pidge
+  'aaaaaaa==aaaaaaa',
+  'aaaaaaa==aaaaaaa',
+  'UQ1UQ1U==UQ1UQ1U',
+  '================',
+  '=|============|=',
+  '================',
+  '================',
+  '=[============[=',
+  '================',
+  '=|============|=',
+  'aaaaaaaaaaaaaaaa',
+  'aaaaaaaaaaaaaaaa'],
+ [ // harbor docks: Cap'n Pinch's ship is tied up at the pier
+  'TTTTTTT==TTTTTTT',
+  'T=====6==6=====T',
+  'T==============T',
+  'T=[==========[=T',
+  '===============T',
+  '===============T',
+  '===============T',
+  'Tww33wwwwww33wwT',
+  'Tww33w5555w33wwT',
+  'Tww33w5555w33wwT',
+  'Tww33wwwwww33wwT',
+  'TTTTTTTTTTTTTTTT']]});
 
 /* ===== src/regions/beach.js ===== */
 /* region: beach */
@@ -629,6 +703,36 @@ defineRegion({id:'beach',name:'BEACH',kind:'outdoor',origin:[0,6],grid:[2,1],gro
   'wwwwwwwwwwwwwww2',
   'wwwwwwwwwwwwwwww']]});
 
+/* ===== src/regions/cityin.js ===== */
+/* region: city interiors (13 one-screen rooms). Doors and shop hours live in content/city.js (BUILDINGS).
+   Room legend: _ floor  k counter (the shopkeeper stands on it)  t table  e bed  f fireplace/oven  P plant  n nest  o rug
+   y hay  0 barrel  9 bookshelf  4 museum case  1 door  X exit.  Grid is 5 wide: row 1 = post, rocco, bistro, boutique, seed. */
+defineRegion({id:'cityin',name:'CITY',kind:'indoor',origin:[5,4],grid:[5,3],ground:'grass',beyond:true,
+ screens:[
+ {id:'post',label:'POST OFFICE',rows:room([['r',3,4,12,4,'k'],['p',2,3,'P'],['p',13,3,'P'],['r',6,8,9,9,'o'],['p',3,7,'t'],['p',12,7,'t']])},
+ {id:'rocco',label:"ROCCO'S DEN",rows:room([['r',3,3,4,4,'y'],['p',12,3,'y'],['p',12,4,'y'],['r',6,6,9,6,'t'],['p',3,8,'n'],['p',4,8,'n'],['r',7,9,8,9,'o']])},
+ {id:'bistro',label:"REMY'S BISTRO",rows:room([['r',3,4,8,4,'k'],['p',12,3,'f'],['p',13,3,'f'],['p',4,7,'t'],['p',5,7,'t'],['p',10,7,'t'],['p',11,7,'t'],['r',6,8,9,9,'o']])},
+ {id:'boutique',label:"MAGGIE'S BOUTIQUE",rows:room([['r',4,4,11,4,'k'],['p',2,3,'P'],['p',13,3,'P'],['r',5,7,10,8,'o'],['p',3,9,'P'],['p',12,9,'P']])},
+ {id:'seed',label:'SEED & FEED',rows:room([['r',3,4,9,4,'k'],['r',11,3,12,4,'y'],['p',13,3,'0'],['p',2,10,'0'],['p',13,10,'0']])},
+ {id:'bakery',label:'BAKERY',rows:room([['r',3,4,12,4,'k'],['p',13,3,'f'],['p',4,8,'t'],['p',11,8,'t'],['r',6,7,9,8,'o']])},
+ {id:'toy',label:'TOY SHOP & ARCADE',rows:room([['r',3,4,8,4,'k'],['p',13,2,'1'],['p',2,3,'P'],['r',5,10,10,10,'o']])},
+ {id:'cleo',label:"CLEO'S APARTMENT",rows:room([['p',3,3,'e'],['p',4,3,'e'],['r',6,6,9,6,'t'],['r',7,8,10,9,'o'],['p',12,3,'P'],['p',13,3,'P']])},
+ {id:'artist',label:"THE ARTIST'S STUDIO",rows:room([['p',3,3,'P'],['p',13,3,'P'],['p',3,9,'t'],['p',4,9,'t'],['r',5,7,10,8,'o']])},
+ {id:'ducks',label:'THE DUCK FLAT',rows:room([['p',3,3,'n'],['p',4,3,'n'],['p',12,3,'n'],['p',13,3,'n'],['r',6,7,9,8,'o']])},
+ {id:'loft',label:"PIDGE'S LOFT",rows:room([['p',3,3,'n'],['p',4,3,'n'],['p',5,3,'n'],['r',10,4,12,4,'t'],['p',13,3,'P'],['r',6,8,9,9,'o']])},
+ {id:'library',label:'LIBRARY',rows:room([['r',2,3,13,3,'9'],['r',2,4,2,8,'9'],['r',13,4,13,8,'9'],['r',6,6,9,6,'k'],['r',3,8,5,9,'o'],['p',10,9,'P']])},
+ {id:'museum',label:'MUSEUM',rows:room([['p',3,4,'4'],['p',6,4,'4'],['p',9,4,'4'],['p',12,4,'4'],['p',2,3,'P'],['p',13,3,'P'],['r',5,7,10,8,'o']])},
+ null,null]});
+
+/* ===== src/regions/rooftops.js ===== */
+/* region: the city rooftops (3 screens). Reached by the stairs in the Toy Shop. Gaps need GLIDE, hay walls need HOP.
+   8 roof you can walk on   z gap (chasm)   h hay wall   1 stairs back down   Rooftop Race + Pidge's weathervane live here. */
+defineRegion({id:'rooftops',name:'ROOFTOPS',kind:'outdoor',origin:[5,7],grid:[3,1],ground:'cobble',beyond:true,music:'city',
+ screens:[
+ grid('z',[['r',1,2,5,9,'8'],['r',9,3,15,8,'8'],['r',11,3,11,8,'h'],['p',3,2,'1']]),
+ grid('z',[['r',0,3,6,8,'8'],['r',3,3,3,8,'h'],['r',10,3,15,8,'8'],['r',12,3,12,8,'h']]),
+ grid('z',[['r',0,3,5,8,'8'],['r',9,2,14,9,'8']])]});
+
 /* ===== src/world/tilemap.js ===== */
 /* ---------------- tile map: built from the regions, plus door/solid/hidden data ---------------- */
 // F fence  H big fence  T tree  A apple tree  W water  h hay bale  R rock  C crate  L leaf pile
@@ -646,7 +750,7 @@ const EXITS=[{x:56,y:76},{x:328,y:76},{x:568,y:76}];
 buildWorld();
 let tiles=MAP.map(r=>r.split(''));
 function tileAt(c,r){if(c<0||r<0||c>=MW||r>=MH)return'F';return tiles[r][c];}
-const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$['.split(''));
+const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456'.split(''));
 const FLOORISH=new Set('_:XoP'.split(''));
 function solidTile(ch,forPlayer=true){
   if(ch==='W')return !(forPlayer&&has('flutter'));
@@ -709,6 +813,12 @@ function drawTile(ch,c,r,sx,sy,wf){
     case '3':img=TILE.planks;break;
     case 'x':img=TILE.dam[wf];break;
     case 'a':img=TILE.roofC;break;
+    case '1':img=TILE.brickDoor;break;
+    case '5':img=TILE.ship;break;
+    case '6':img=TILE.stackCrate;break;
+    case '8':img=TILE.roofWalk;break;
+    case '9':img=TILE.shelf;break;
+    case '4':img=TILE.pedestal;break;
     case 'U':img=TILE.brick;break;
     case 'Q':{ctx.drawImage(TILE.brickWin,sx,sy);if(nightAmt()>0.35){ctx.fillStyle='#ffd870';ctx.fillRect(sx+4,sy+4,3,3);ctx.fillRect(sx+8,sy+4,4,3);ctx.fillRect(sx+4,sy+8,3,4);ctx.fillRect(sx+8,sy+8,4,4);}return;}
     case 'l':img=TILE.awning;break;
@@ -1006,6 +1116,47 @@ const FAMILY_POS={mom:[39,52],penny:[42,53],peep:[37,54],cheep:[38,55],tweet:[41
 const UPGRADES=[null,null,{cost:4,need:2,text:'A bigger coop, 2 more garden plots, and MAMA HEN moves in!'},
   {cost:6,need:5,text:'A family wing, 2 more plots, faster growing, and PENNY & the TRIPLETS move in!'},
   {cost:8,need:9,text:'The DREAM COOP! A golden roof, 2 more plots, super-fast growing, and a big party!'}];
+
+/* ===== src/content/city.js ===== */
+/* content: the city's buildings. door = [col,row] of the door tile in the shared tile grid (the tile Pip bumps).
+   room = id of the interior room (src/regions/cityin.js).  hours: 'day' | 'dawn' (bakery opens at sunrise) | 'always'.
+   Closed buildings show a CLOSED sign and cannot be entered; homes are always open (the owners are just out or asleep). */
+const BUILDINGS=[
+  {id:'post',sign:'POST',name:'POST OFFICE',door:[34,62],room:'post',hours:'day'},
+  {id:'rocco',sign:'DEN',name:"ROCCO'S DEN",door:[43,62],room:'rocco',hours:'always'},
+  {id:'bistro',sign:'BISTRO',name:"REMY'S BISTRO",door:[34,73],room:'bistro',hours:'always'},
+  {id:'boutique',sign:'BOUTIQUE',name:"MAGGIE'S BOUTIQUE",door:[50,62],room:'boutique',hours:'day'},
+  {id:'seed',sign:'FEED',name:'SEED & FEED',door:[54,62],room:'seed',hours:'day'},
+  {id:'bakery',sign:'BAKERY',name:'BAKERY',door:[58,62],room:'bakery',hours:'dawn'},
+  {id:'toy',sign:'TOYS',name:'TOY SHOP',door:[62,62],room:'toy',hours:'day'},
+  {id:'library',sign:'LIBRARY',name:'LIBRARY',door:[67,62],room:'library',hours:'day'},
+  {id:'museum',sign:'MUSEUM',name:'MUSEUM',door:[77,62],room:'museum',hours:'day'},
+  {id:'cleo',sign:'CLEO',name:"CLEO'S FLAT",door:[50,74],room:'cleo',hours:'always'},
+  {id:'artist',sign:'ARTIST',name:'ARTIST STUDIO',door:[53,74],room:'artist',hours:'always'},
+  {id:'ducks',sign:'DUCKS',name:'DUCK FLAT',door:[59,74],room:'ducks',hours:'always'},
+  {id:'loft',sign:'LOFT',name:"PIDGE'S LOFT",door:[62,74],room:'loft',hours:'always'}];
+// the rooftop stairs (inside the toy shop) and back
+const ROOF_STAIRS={toyDoor:[(5+1)*16+13,(4+1)*12+2],roofDoor:[(5)*16+3,(7)*12+2]};
+const BUILDING_AT={},BUILDING_BY_ROOM={};
+function roomCell(id){return REGION_LIST.find(r=>r.id==='cityin').cells.find(c=>c.id===id);}
+function roomOrigin(id){const c=roomCell(id);return {x:c.sx*256,y:c.sy*192};}
+function roomEntry(id){const o=roomOrigin(id);return {x:o.x+128,y:o.y+171};}      // where Pip appears, just inside the exit
+for(const b of BUILDINGS){
+  b.out={x:b.door[0]*16+8,y:(b.door[1]+1)*16+11};      // where Pip stands outside the door
+  b.in=roomEntry(b.room);BUILDING_AT[b.door[0]+','+b.door[1]]=b;BUILDING_BY_ROOM[b.room]=b;
+  DOORS[b.door[0]+','+b.door[1]]={x:b.in.x,y:b.in.y,b};
+}
+// rooftop stairs: toy shop door -> roof start platform, roof stairs -> toy shop
+{const t=ROOF_STAIRS.toyDoor,r=ROOF_STAIRS.roofDoor;
+  DOORS[t[0]+','+t[1]]={x:r[0]*16+8,y:(r[1]+3)*16+11,roof:true};
+  DOORS[r[0]+','+r[1]]={x:t[0]*16+8,y:(t[1]+1)*16+11,roof:true};}
+// is a building open right now?
+function buildingOpen(b){
+  if(b.hours==='always')return true;
+  const t=dayT();
+  if(b.hours==='dawn')return t>=0.97||t<0.58;
+  return t>=0.06&&t<0.57;
+}
 
 /* ===== src/content/world_data.js ===== */
 /* content: farm family, dirt mounds, hidden items and signs */
@@ -1351,6 +1502,44 @@ SPR.peep=decorate(chickSprite(0,0,0,false),x=>{P_(x,'k',6,0,3,2);P_(x,'Y',7,0,1,
 SPR.cheep=decorate(chickSprite(0,0,0,false),x=>{P_(x,'k',8,0,6,4);P_(x,'u',9,1,2,2);P_(x,'u',12,1,1,2);P_(x,'U',11,2,1,1);});
 SPR.tweet=decorate(chickSprite(0,0,0,false),x=>{P_(x,'k',4,0,7,3);P_(x,'l',5,1,5,1);P_(x,'G',7,0,1,1);});
 
+
+/* ===== src/entities/sprites_city.js ===== */
+/* ---------------- city sprites: new residents, collectibles, shop goods ---------------- */
+SPR.goat=makeSprite(['.T......T.','.TT....TT.','..wwwwww..','.wwkwwkww.','.wwwwwwww.','..wwppww..','...wwww...','...wBBw...','..wwwwww..','.wwwwwwww.','.wwwwwwww.','.wwwwwwww.','..ww..ww..','..TT..TT..']);
+SPR.badger=makeSprite(['..www.....','.wwwww....','...kkkk...','..kwkkwk..','.kwwkkwwk.','.kwkkkkwk.','..kkppkk..','..eeeeee..','.eewwwwee.','.eewwwwee.','.eeeeeeee.','..ee..ee..','..kk..kk..']);
+SPR.ferret=makeSprite(['..tt..tt..','.tTTttTTt.','.tkTttTkt.','.tttnnttt.','..ttppntt.','...tttt...','..tTttTt..','.ttTttTtt.','.ttttttttt','..tt..tt..','..TT..TT..']);
+SPR.peacock=makeSprite(['....uu.......','...uUuU..G.G.','..uuuuuu.GUUG','..ukuuuuGUGUG','.ouuuuuuGGUGG','...uuuuu.GUGG','..uUuuuUuGGG.','.uuuuuuuuG...','.uuuuuuuu....','..uu..uu.....','..oo..oo.....']);
+SPR.owlGlasses=decorate(SPR.owl,x=>{P_(x,'k',2,4,4,1);P_(x,'k',7,4,4,1);P_(x,'k',5,4,2,1);});
+SPR.curator=decorate(SPR.tortoise,x=>{P_(x,'q',8,3,1,1);P_(x,'k',8,2,3,1);P_(x,'k',8,4,3,1);});
+// things Rocco "borrowed"
+SPR.hat=makeSprite(['..UUUU..','.UUUUUU.','UUUUUUUU','kkkkkkkk']);
+SPR.whisk=makeSprite(['.e.e.e.','.e.e.e.','..eee..','...b...','...b...']);
+SPR.collarBell=makeSprite(['..q..','.qqq.','qqkqq','qqqqq','..k..']);
+// cook-off ingredients
+SPR.pepper=makeSprite(['...G...','..rrr..','.rrRrr.','.rrrrr.','..rrr..']);
+SPR.salt=makeSprite(['..ww..','.wwww.','.wcww.','wwwwww','.eeee.']);
+SPR.mushroom=makeSprite(['..rrr..','.rwrwr.','rrrrrrr','..nnn..','..nnn..']);
+// museum finds
+SPR.plume=makeSprite(['....cc','...cuC','..cuCc','.cuCc.','cuCc..','Cc....']);
+SPR.fossil=makeSprite(['.ee.ee.','eeEeeEe','.eeEee.','..eEe..','.eE.Ee.','eE...Ee']);
+SPR.petal=makeSprite(['.ppp.','pPPpp','pPppP','.ppp.','..p..']);
+SPR.seashell=makeSprite(['..c...','.cwc..','cwcwc.','cccwcc','.cccc.']);
+// shop goods
+SPR.muffin=makeSprite(['.yyyy.','yYyyYy','yyyyyy','.bbbb.','.bBBb.']);
+SPR.sbun=makeSprite(['.tttt.','tTtttT','tttttt','ttnntt','.tttt.']);
+SPR.tart=makeSprite(['.rrrr.','rRrrRr','rrrrrr','.tttt.','.TTTT.']);
+SPR.sprout=makeSprite(['..l.l.','.lGlG.','..GG..','.bbbb.','.bBBb.']);
+SPR.giant=makeSprite(['.yyyyy.','yYYYYYy','yYBBBYy','yYBBBYy','.yYYYy.','...G...','..lG...']);
+SPR.moonSeed=makeSprite(['..uuu.','.uUwuu','uuUuuu','.uuuu.','..uu..']);
+SPR.token=makeSprite(['.qqqq.','qQqqQq','qqkkqq','qQqqQq','.qqqq.']);
+SPR.parcel=makeSprite(['tttttt','tTTTTt','tTrrTt','tTTTTt','tttttt']);
+SPR.star=makeSprite(['..y..','..y..','yyyyy','.yyy.','yy.yy']);
+SPR.vane=makeSprite(['..k...','.kkk..','kkkkk.','..b...','..b...','..b...','.bbb..']);
+SPR.vaneFixed=makeSprite(['..k.kk','.kkkkkk','kkkkkkk','..b..k.','..b....','..b....','.bbb...']);
+SPR.easel=makeSprite(['.bbbbbbb.','bwwwwwwwb','bwwwwwwwb','bwwwwwwwb','bwwwwwwwb','.b.....b.','.b.....b.','bb.....bb']);
+SPR.flag=makeSprite(['kkkkkk','krkwwk','kwkrwk','krkwrk','k.....','k.....','k.....','k.....']);
+SPR.book=makeSprite(['.rrrrr','rwwwwr','rwkkwr','rwwwwr','.rrrrr']);
+SPR.sunbeam=null;
 
 /* ===== src/engine/settings.js ===== */
 /* ---------------- settings (saved separately from game progress) ---------------- */
@@ -1810,6 +1999,12 @@ function updateTalk(){
 }
 
 
+/* ---- city doors ---- */
+function closedSign(b){
+  SFX.deny();say([{who:{x:b.door[0]*16+8,y:b.door[1]*16,name:'SIGN'},text:b.name+': CLOSED. '+(b.hours==='dawn'?'Open from sunrise until evening!':'Come back in the daytime!')}]);
+}
+function enteredBuilding(b){if(!G.flags.visited)G.flags.visited={};if(!G.flags.visited[b.id]){G.flags.visited[b.id]=1;}}
+
 /* ===== src/systems/actions.js ===== */
 /* ---------------- player actions ---------------- */
 function frontPoint(){const [dx,dy]=DIRV[P.dir];return {x:P.x+dx*10,y:P.y-4+dy*10,dx,dy};}
@@ -1962,8 +2157,8 @@ function checkPlates(){
 function bump(ix,iy){
   if(tryPush(ix,iy))return;
   if(has('hop')&&tryHop(ix,iy))return;
-  if(iy<0&&WALK.has(CS.x+','+CS.y)){for(const ox of [0,-5,5]){const c=Math.floor((P.x+ox)/16),r=Math.floor((P.y-9)/16),d=DOORS[c+','+r];
-    if(d){warpTo(d.x,d.y,1);return;}}}
+  if(iy<0&&(WALK.has(CS.x+','+CS.y)||cellAt().kind==='indoor')){for(const ox of [0,-5,5]){const c=Math.floor((P.x+ox)/16),r=Math.floor((P.y-9)/16),d=DOORS[c+','+r];
+    if(d){if(d.b&&!buildingOpen(d.b)){closedSign(d.b);return;}warpTo(d.x,d.y,d.roof?0:1,null,d.roof?null:()=>{if(d.b)enteredBuilding(d.b);});return;}}}
   if(ix>0&&tileAt(Math.floor((P.x+8)/16),Math.floor((P.y-2)/16))==='H'){
     if(G.part2){FLY={t:0,dest:'forest'};state='flying';SFX.magic();}
     else if(has('fly'))startEnding();
@@ -2071,7 +2266,7 @@ function checkEdges(){
     if(P.bubbleCd<=0){P.bubbleCd=240;float(P.x,P.y-24,'These mushrooms look magical...','#d890ff');}
   }
   if(!WALK.has(CS.x+','+CS.y)){
-    if(tileAt(fc,Math.floor(P.y/16))==='X'){const cl=cellAt(),e=cl.region.id==='coop'?coopExit():(cl.region.id==='rooms'?EXITS:EXITS3)[cl.gx];if(e)warpTo(e.x,e.y,0);}
+    if(tileAt(fc,Math.floor(P.y/16))==='X'){const cl=cellAt(),e=cl.region.id==='coop'?coopExit():cl.region.id==='cityin'?BUILDING_BY_ROOM[cl.id].out:(cl.region.id==='rooms'?EXITS:EXITS3)[cl.gx];if(e)warpTo(e.x,e.y,0);}
     return;}
   const L=CS.x*256,R=L+256,T=CS.y*192,B=T+192;let d=null;
   if(P.x-4<L)d=[-1,0];else if(P.x+4>R)d=[1,0];else if(P.y-6<T)d=[0,-1];else if(P.y>B)d=[0,1];
@@ -3150,6 +3345,10 @@ function drawWorld(){
     if(G.puddle>0.05&&(r<24||(r>=60&&r<84))&&'.,d=~'.includes(ch)&&hash2(c,r)%9===0){const pw=Math.round(10*G.puddle)+2,ph=Math.round(5*G.puddle)+1;
       ctx.fillStyle='#5d8fd8';ctx.fillRect((sx+8-pw/2)|0,(sy+9-ph/2)|0,pw,ph);ctx.fillStyle='#a6d0ff';ctx.fillRect((sx+9-pw/2)|0,(sy+9-ph/2)|0,Math.max(1,pw-3),1);}
   }
+  for(const b of BUILDINGS){const px=b.door[0]*16+8-cx,py=b.door[1]*16-cy+HUD;if(px<-24||px>W+24||py<HUD-16||py>H)continue;
+    const open=buildingOpen(b),lab=open?b.sign:'CLOSED',w=Math.ceil(measure(lab,5))+6;
+    ctx.fillStyle='#21142b';ctx.fillRect(Math.round(px-w/2),py-10,w,10);ctx.fillStyle=open?'#f2dca0':'#ffc8c8';ctx.fillRect(Math.round(px-w/2)+1,py-9,w-2,8);
+    txt(lab,px,py-8,5,open?'#5e3a1c':'#c02020',{align:'center'});}
   if(G.coop&&G.coop.lv>=4&&regionAt().id==='coop'){const cols=['#e03838','#ffd83a','#3a86e8','#94dc64','#ff6fae'];
     for(let i=0;i<30;i++){const bx=34+i*6.4,by=HUD+48+Math.round(Math.sin(i/2.5)*2);ctx.fillStyle=cols[i%5];ctx.fillRect(bx|0,by,5,2);ctx.fillRect((bx+1)|0,by+2,3,2);ctx.fillRect((bx+2)|0,by+4,1,1);}
     if(tick%8===0)parts.push({x:camX+40+Math.random()*176,y:camY+50,vx:(Math.random()-.5)*0.4,vy:0.4+Math.random()*0.4,g:0,life:120,c:cols[(Math.random()*5)|0]});}
@@ -3263,9 +3462,14 @@ function drawHUD(){
   if(G.wear&&WEAR_ICON[G.wear]){const ic=WEAR_ICON[G.wear];drawImg(ic,60,26-ic.height);}
   {const cl=cellAt();if(cl&&cl.region.id==='rooms'){txt('INSIDE',232,7,5,'#b8a8d8',{align:'center'});txt(cl.label,232,18,5,'#ffd83a',{align:'center'});return;}
    if(cl&&cl.region.id==='secrets'){txt('SECRET!',232,7,5,'#d890ff',{align:'center'});txt(cl.label,232,18,5,'#ffd83a',{align:'center'});return;}}
-  if(inBeyond()){const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':'F: FLY',220,18,5,'#ffd83a',{align:'right'});
-    for(let y=4;y<7;y++)for(let x=0;x<3;x++){const cur=CS.x===x&&CS.y===y,vis=G.visited.has(x+','+y);
-      ctx.fillStyle=cur?(Math.floor(tick/20)%2?'#ffd83a':'#ffb020'):(vis?'#6a5a90':'#3b2a56');ctx.fillRect(224+x*10,3+(y-4)*9,9,8);}
+  if(inBeyond()){
+    const cl0=cellAt(),rid=cl0.region.id;
+    if(rid==='cityin'||rid==='rooftops'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
+    const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':'F: FLY',220,18,5,'#ffd83a',{align:'right'});
+    // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
+    const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor(30/cs.cols)),h=Math.min(8,Math.floor(27/cs.rows));
+    for(const c of cs.cells){const cur=CS.x===c.sx&&CS.y===c.sy,vis=G.visited.has(c.sx+','+c.sy);
+      ctx.fillStyle=cur?(Math.floor(tick/20)%2?'#ffd83a':'#ffb020'):(vis?'#6a5a90':'#3b2a56');ctx.fillRect(224+(c.sx-cs.x0)*(w+1),3+(c.sy-cs.y0)*(h+1),w,h);}
     return;}
   for(let y=0;y<2;y++)for(let x=0;x<3;x++){const cur=CS.x===x&&CS.y===y,vis=G.visited.has(x+','+y);
     ctx.fillStyle=cur?(Math.floor(tick/20)%2?'#ffd83a':'#ffb020'):(vis?'#6a5a90':'#3b2a56');ctx.fillRect(214+x*12,7+y*9,11,8);}
@@ -3455,6 +3659,14 @@ function render(){
   if(fade>0){dctx.globalAlpha=fade;dctx.fillStyle=fadeColor;dctx.fillRect(OX,OY,W*K,H*K);dctx.globalAlpha=1;}
 }
 
+
+let _mmCache=null;
+function MINIMAP_BEYOND(){
+  if(_mmCache)return _mmCache;
+  const cells=REGION_LIST.filter(r=>r.beyond&&r.area).flatMap(r=>r.cells);
+  const xs=cells.map(c=>c.sx),ys=cells.map(c=>c.sy),x0=Math.min(...xs),y0=Math.min(...ys);
+  return _mmCache={cells,x0,y0,cols:Math.max(...xs)-x0+1,rows:Math.max(...ys)-y0+1};
+}
 
 /* ===== src/main.js ===== */
 /* ---------------- loop ---------------- */

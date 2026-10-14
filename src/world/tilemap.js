@@ -15,7 +15,7 @@ const EXITS=[{x:56,y:76},{x:328,y:76},{x:568,y:76}];
 buildWorld();
 let tiles=MAP.map(r=>r.split(''));
 function tileAt(c,r){if(c<0||r<0||c>=MW||r>=MH)return'F';return tiles[r][c];}
-const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$['.split(''));
+const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456'.split(''));
 const FLOORISH=new Set('_:XoP'.split(''));
 function solidTile(ch,forPlayer=true){
   if(ch==='W')return !(forPlayer&&has('flutter'));
@@ -78,6 +78,12 @@ function drawTile(ch,c,r,sx,sy,wf){
     case '3':img=TILE.planks;break;
     case 'x':img=TILE.dam[wf];break;
     case 'a':img=TILE.roofC;break;
+    case '1':img=TILE.brickDoor;break;
+    case '5':img=TILE.ship;break;
+    case '6':img=TILE.stackCrate;break;
+    case '8':img=TILE.roofWalk;break;
+    case '9':img=TILE.shelf;break;
+    case '4':img=TILE.pedestal;break;
     case 'U':img=TILE.brick;break;
     case 'Q':{ctx.drawImage(TILE.brickWin,sx,sy);if(nightAmt()>0.35){ctx.fillStyle='#ffd870';ctx.fillRect(sx+4,sy+4,3,3);ctx.fillRect(sx+8,sy+4,4,3);ctx.fillRect(sx+4,sy+8,3,4);ctx.fillRect(sx+8,sy+8,4,4);}return;}
     case 'l':img=TILE.awning;break;

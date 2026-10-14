@@ -118,6 +118,13 @@ TILE.bench=mk(16,16,x=>{x.drawImage(TILE.cobble,0,0);P_(x,'k',1,4,14,7);P_(x,'b'
 TILE.signO=mk(16,16,x=>{P_(x,'k',7,8,3,7);P_(x,'B',8,8,1,6);P_(x,'k',1,2,14,8);P_(x,'t',2,3,12,6);P_(x,'T',3,4,9,1);P_(x,'T',3,6,7,1);});
 TILE.stakes=mk(16,16,x=>{});
 TILE.goldroof=mk(16,16,x=>{P_(x,'Q',0,0,16,16);for(let j=0;j<16;j+=4){P_(x,'q',0,j,16,3);for(let i=((j/4)%2)*4;i<16;i+=8)P_(x,'Q',i,j,1,3);}P_(x,'w',2,1,2,1);P_(x,'w',10,9,2,1);});
+// city tiles
+TILE.brickDoor=mk(16,16,x=>{x.drawImage(TILE.brick,0,0);P_(x,'k',3,2,10,14);P_(x,'b',4,3,8,13);P_(x,'B',4,8,8,1);P_(x,'T',5,4,6,3);P_(x,'T',5,10,6,4);P_(x,'q',10,9,1,1);P_(x,'#e8c8a0',2,1,12,1);});
+TILE.ship=mk(16,16,x=>{P_(x,'k',0,0,16,16);P_(x,'B',0,1,16,14);for(let j=3;j<14;j+=4)P_(x,'b',0,j,16,1);P_(x,'T',0,1,16,1);P_(x,'k',5,6,6,6);P_(x,'c',6,7,4,4);P_(x,'#e8c8a0',7,7,1,4);});
+TILE.stackCrate=mk(16,16,x=>{x.drawImage(TILE.cobble,0,0);P_(x,'k',1,5,14,10);P_(x,'b',2,6,12,8);P_(x,'T',2,6,12,1);P_(x,'B',7,6,1,8);P_(x,'k',3,0,10,6);P_(x,'t',4,1,8,4);P_(x,'T',4,1,8,1);});
+TILE.roofWalk=mk(16,16,x=>{P_(x,'#d8805c',0,0,16,16);for(let j=0;j<16;j+=4){P_(x,'#b85c3c',0,j+3,16,1);for(let i=((j/4)%2)*4;i<16;i+=8)P_(x,'#b85c3c',i,j,1,3);}P_(x,'#f0a080',0,0,16,1);});
+TILE.shelf=mk(16,16,x=>{P_(x,'B',0,0,16,16);P_(x,'k',0,0,16,1);P_(x,'k',0,7,16,1);P_(x,'k',0,15,16,1);const cs=['r','u','y','g','p','o'];for(let i=0;i<6;i++){P_(x,cs[i],1+i*2+(i>2?1:0),1,2,6);P_(x,cs[(i+2)%6],1+i*2+(i>2?1:0),8,2,7);}});
+TILE.pedestal=mk(16,16,x=>{x.drawImage(TILE.floor,0,0);P_(x,'k',2,7,12,9);P_(x,'e',3,8,10,7);P_(x,'E',3,13,10,2);P_(x,'k',3,1,10,7);P_(x,'c',4,2,8,5);P_(x,'w',5,2,1,2);});
 function groundFor(c,r,h){
   switch(groundOf(c,r)){
     case 'snow':return TILE.snow[h%2];

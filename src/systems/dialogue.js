@@ -61,3 +61,9 @@ function updateTalk(){
   }
 }
 
+
+/* ---- city doors ---- */
+function closedSign(b){
+  SFX.deny();say([{who:{x:b.door[0]*16+8,y:b.door[1]*16,name:'SIGN'},text:b.name+': CLOSED. '+(b.hours==='dawn'?'Open from sunrise until evening!':'Come back in the daytime!')}]);
+}
+function enteredBuilding(b){if(!G.flags.visited)G.flags.visited={};if(!G.flags.visited[b.id]){G.flags.visited[b.id]=1;}}
