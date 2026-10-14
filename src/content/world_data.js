@@ -10,3 +10,4 @@ const HIDDEN={'44,2':{id:'feather_crate',kind:'feather'},'44,3':{id:'seed_crate'
 const SIGNS={'10,9':{name:'SIGN',text:'CHICKEN COOP - Home sweet home! (Press E to open your Growth Tree.)'},
   '45,16':{name:'SIGN',text:'THE BIG FENCE. No chicken has ever flown over it. Beyond it lies... THE WHOLE WIDE WORLD!'}};
 
+SIGNS['28,7']={name:'SIGN',text:"MAGGIE'S BOUTIQUE has moved to MAIN STREET in the city! (Past the forest, in Part 2.)"};

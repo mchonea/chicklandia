@@ -24,6 +24,7 @@ function drawWorld(){
     if(G.puddle>0.05&&(r<24||(r>=60&&r<84))&&'.,d=~'.includes(ch)&&hash2(c,r)%9===0){const pw=Math.round(10*G.puddle)+2,ph=Math.round(5*G.puddle)+1;
       ctx.fillStyle='#5d8fd8';ctx.fillRect((sx+8-pw/2)|0,(sy+9-ph/2)|0,pw,ph);ctx.fillStyle='#a6d0ff';ctx.fillRect((sx+9-pw/2)|0,(sy+9-ph/2)|0,Math.max(1,pw-3),1);}
   }
+  drawSunbeam(cx,cy);
   for(const b of BUILDINGS){const px=b.door[0]*16+8-cx,py=b.door[1]*16-cy+HUD;if(px<-24||px>W+24||py<HUD-16||py>H)continue;
     const open=buildingOpen(b),lab=open?b.sign:'CLOSED',w=Math.ceil(measure(lab,5))+6;
     ctx.fillStyle='#21142b';ctx.fillRect(Math.round(px-w/2),py-10,w,10);ctx.fillStyle=open?'#f2dca0':'#ffc8c8';ctx.fillRect(Math.round(px-w/2)+1,py-9,w-2,8);
@@ -87,6 +88,7 @@ function drawEnt(e){
     case 'bowl':{if(!has('fly'))break;ctx.fillStyle='#21142b';ctx.fillRect(sx-6,sy-6,12,7);ctx.fillStyle='#c49a5c';ctx.fillRect(sx-5,sy-5,10,5);ctx.fillStyle='#9a6234';ctx.fillRect(sx-5,sy-2,10,2);
       ctx.fillStyle='#e8c88a';ctx.fillRect(sx-3,sy-7,2,2);ctx.fillRect(sx,sy-8,2,2);ctx.fillRect(sx+2,sy-7,2,2);ctx.fillRect(sx-4,sy-6,2,1);
       if(tick%90<8){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-9,1,1);}break;}
+    case 'fmound':case 'star':case 'flag':case 'vane':case 'cduck':case 'decor':case 'exhibit':case 'easel':case 'nook':drawCityEnt(e,sx,sy);break;
     case 'worm':{const s=SPR.worm[Math.floor((tick+e.phase)/12)%2];drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'carrot':{const s=SPR.carrot,w=Math.floor((tick+e.x)/40)%2;drawImg(s,sx-(s.width>>1)+w,sy+2-s.height);break;}
     case 'mound':{const s=SPR.mound;drawImg(s,sx-(s.width>>1),sy+2-s.height);if(senseNear(e.x,e.y)&&(e.has==='seed'||e.has==='bone')&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx-1,sy-8,2,2);ctx.fillRect(sx+4,sy-5,1,1);}break;}
@@ -98,7 +100,10 @@ function drawEnt(e){
       const wet='wW'.includes(tileAt(Math.floor(e.x/16),Math.floor((e.y-2)/16)));if(!wet)shadow(sx,sy+1,8);
       const hop=e.mode==='follow'&&P.moving?Math.floor(tick/6)%2:0;drawImg(s,sx-(s.width>>1),sy+2-s.height-hop+(wet?3:0));ctx.globalAlpha=1;break;}
     case 'plot':{const st=G.plots[e.id];if(!st){if(G.thumb&&tick%90<45){ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillRect(sx-1,sy-6,2,2);}break;}
-      const s=SPR.plant[st.p>=1?2:st.p>=0.33?1:0];drawImg(s,sx-(s.width>>1),sy+1-s.height);
+      const s=SPR.plant[st.p>=1?2:st.p>=0.33?1:0],pk=st.k||'plain',big=pk==='giant'?(0.7+0.5*Math.min(1,st.p)):1;
+      if(big!==1){ctx.drawImage(s,Math.round(sx-s.width*big/2),Math.round(sy+1-s.height*big),Math.round(s.width*big),Math.round(s.height*big));}else drawImg(s,sx-(s.width>>1),sy+1-s.height);
+      if(pk==='moon'){ctx.fillStyle='rgba(150,170,255,'+(st.p>=1?0.5:0.25)+')';ctx.fillRect(sx-5,sy-s.height-1,10,s.height);}
+      if(pk==='speedy'&&tick%20<10){ctx.fillStyle='#ffd83a';ctx.fillRect(sx+4,sy-s.height+2,1,2);}
       if(st.p>=1&&(tick+((e.x*3)|0))%40<6){ctx.fillStyle='#fff';ctx.fillRect(sx+3,sy-s.height,1,1);}break;}
     case 'fishspot':{const w=Math.round(Math.sin(tick/20)*4);ctx.fillStyle='rgba(20,40,90,0.55)';ctx.fillRect(sx-4+w,sy-6,8,3);ctx.fillRect(sx+4+w,sy-7,2,5);
       if(tick%80<6){ctx.fillStyle='#fff';ctx.fillRect(sx+w,sy-9,1,1);}break;}
@@ -320,10 +325,12 @@ function render(){
     if(state==='grow'){TQ=[];drawGrow();}
     else if(state==='quests'){TQ=[];drawQuests();}
     else if(state==='pause'){TQ=[];drawPause();}
+    else if(state==='catalog'){TQ=[];drawCatalog();}
+    else if(state==='plant')drawPlant();
     else if(state==='rankup'){TQ=[];drawRankUp();}
     else if(state==='shop'){TQ=[];drawShop();}
     else if(state==='wardrobe'){TQ=[];drawWardrobe();}
-    else{drawMG();drawToast();if(state==='talk')drawBubble();}
+    else{drawMG();drawRaceHUD();drawToast();if(state==='talk')drawBubble();}
   }
   dctx.setTransform(1,0,0,1,0,0);dctx.fillStyle='#0d0814';dctx.fillRect(0,0,cv.width,cv.height);
   dctx.imageSmoothingEnabled=false;dctx.drawImage(pix,OX,OY,W*K,H*K);

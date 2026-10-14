@@ -97,8 +97,10 @@ function drawEnvFX(){
 }
 
 /* ---- Pip with outfits ---- */
+
 const WEAR_ICON={straw:OUTFIT_SPR.straw,astronaut:makeSprite(['.ccc.','c.w.c','c...c','.ccc.']),shades:OUTFIT_SPR.shadesF,ninja:makeSprite(['kkkkk','rrrrr','kkkkk']),
   bow:OUTFIT_SPR.bow,ears:OUTFIT_SPR.ears,crown:OUTFIT_SPR.crown,pirate:makeSprite(['.kkkk.','kkwwkk','qqqqqq'])};
+Object.assign(WEAR_ICON,WEAR_ICON_EXTRA);
 function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
   if(wear===undefined){wear=G?G.wear:null;acc=G?G.acc:null;}else if(acc===undefined)acc=null;
   const base=chickSprite(st,dir===3?2:dir,fr,flap,has('golden')),spr=dir===3?flipOf(base):base,hd=base.head;
@@ -112,7 +114,7 @@ function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
   if(G&&G.rank>=10&&st>=6&&wear!==undefined&&G.wear===wear){ctx.fillStyle='rgba(255,216,58,0.22)';ctx.beginPath();ctx.arc(x0+w*sc/2,y0+h*sc/2,w*sc*0.8,0,7);ctx.fill();}
   ctx.drawImage(spr,x0,y0,w*sc,h*sc);
   if(G&&st>=6&&G.rank>=8&&G.wear===wear)rankFlair(x0,y0,w,h,sc,dir);
-  const O=OUTFIT_SPR,HAT={straw:5,pirate:5,astronaut:8},lift=(acc&&wear&&HAT[wear]||0)*sc;
+  const O=OUTFIT_SPR,HAT={straw:5,pirate:5,astronaut:8,chef:6,detective:4},lift=(acc&&wear&&HAT[wear]||0)*sc;
   const wearItem=(wear,lift)=>{switch(wear){
     case 'straw':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
     case 'pirate':{const o=O.pirate;D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);
@@ -127,15 +129,18 @@ function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
       ctx.fillStyle='#fff';ctx.fillRect(Math.round(hx-R*0.6),Math.round(hy-R*0.5),sc,2*sc);
       ctx.fillStyle=PAL.E;ctx.fillRect(Math.round(hx-sc/2),Math.round(hy-R-6*sc),sc,3*sc);ctx.fillStyle=PAL.r;ctx.fillRect(Math.round(hx-sc),Math.round(hy-R-7*sc),2*sc,2*sc);
       if(dir===0){ctx.fillStyle='#d8dce8';ctx.fillRect(Math.round(hx-R*0.9),Math.round(hy+R+2*sc),Math.round(R*1.8),2*sc);ctx.fillStyle=PAL.u;ctx.fillRect(Math.round(hx-sc),Math.round(hy+R+2*sc),2*sc,2*sc);}break;}
+    case 'chef':case 'detective':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
+    case 'goggles':{if(dir===1)break;const ey=y0+Math.floor(hd.y)*sc-sc;
+      if(dir===0){const o=O.gogF;D(o,hx-o.width*sc/2,ey);}else{const o=O.gogS,ex=x0+mx(hd.x-hd.r*0.35)*sc;D(o,ex-o.width*sc/2,ey,dir===3);}break;}
     case 'crown':case 'ears':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+2*sc-lift);break;}
     case 'bow':{const o=O.bow,off=dir===2?-R*0.5:R*0.45;D(o,hx+off-o.width*sc/2,top-2*sc-lift*0.6);break;}
     case 'shades':{if(dir===1)break;const ey=y0+Math.floor(hd.y)*sc-sc;
       if(dir===0){const o=O.shadesF;D(o,hx-o.width*sc/2,ey);}
       else{const o=O.shadesS,ex=x0+mx(hd.x-hd.r*0.35)*sc;D(o,ex-o.width*sc/2,ey,dir===3);}break;}
   }};
-  if(acc==='shades')wearItem(acc,0);
+  if(acc==='shades'||acc==='goggles')wearItem(acc,0);
   wearItem(wear,0);
-  if(acc&&acc!=='shades')wearItem(acc,lift);
+  if(acc&&acc!=='shades'&&acc!=='goggles')wearItem(acc,lift);
 }
 function rankFlair(x0,y0,w,h,sc,dir){
   const t=tick;
@@ -144,62 +149,33 @@ function rankFlair(x0,y0,w,h,sc,dir){
   if(G.rank>=9){ctx.fillStyle='#21142b';ctx.fillRect(Math.round(x0+w*sc*0.55),Math.round(y0+h*sc*0.55),4*sc,3*sc);ctx.fillStyle='#ffd83a';ctx.fillRect(Math.round(x0+w*sc*0.55+sc),Math.round(y0+h*sc*0.55+sc),2*sc,sc);}
   if(G.rank>=10&&t%20<10){ctx.fillStyle='#fff8ec';ctx.fillRect(Math.round(x0+((t*7)%(w*sc))),Math.round(y0+((t*5)%(h*sc))),sc,sc);}
 }
-function openShop(){state='shop';shopSel=0;shopMsg=null;SFX.menu();}
-function updateShop(){
-  if(pressed.back||pressed.wear||pressed.quest||pressed.grow){state='play';SFX.menu();return;}
-  const n=SHOP.length+1;
-  if(pressed.up){shopSel=(shopSel+n-1)%n;shopMsg=null;SFX.menu();}
-  if(pressed.down){shopSel=(shopSel+1)%n;shopMsg=null;SFX.menu();}
-  if(!pressed.a)return;
-  if(shopSel===SHOP.length){state='play';SFX.menu();return;}
-  const o=OUTFITS.find(x=>x.id===SHOP[shopSel]);
-  if(G.outfits.includes(o.id)){setWear(o.id);shopMsg={s:wearing(o.id)?'Wearing it! Gorgeous!':'Taken off.',c:'#94dc64'};SFX.pick();save();}
-  else if(G.seeds<priceOf(o)){const k=priceOf(o)-G.seeds;shopMsg={s:'You need '+k+' more seed'+(k>1?'s':'')+', darling.',c:'#ff8080'};SFX.deny();}
-  else{G.seeds-=priceOf(o);grantOutfit(o.id);setWear(o.id,true);shopMsg={s:'Sold! You look FABULOUS!',c:'#ffd83a'};SFX.cash();save();}
-}
-function drawShop(){
-  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff6fae');
-  drawImg(SPR.magpie,12,8);txt("MAGGIE'S BOUTIQUE",W/2+8,12,7,'#ff9cd0',{align:'center',shadow:true});
-  drawImg(SPR.seed,196,26);txt('x'+G.seeds,206,28,7,'#fff8ec');
-  SHOP.concat(['leave']).forEach((id,i)=>{const y=40+i*20,sel=i===shopSel;
-    box(12,y,130,17,sel?'#3b2a56':'#1d1430',sel?'#fff8ec':'#4a3a66');
-    if(id==='leave'){txt('LEAVE SHOP',20,y+6,5,'#d8c8f8');return;}
-    const o=OUTFITS.find(x=>x.id===id),own=G.outfits.includes(id);
-    txt(o.name,20,y+6,5,own?'#94dc64':'#fff8ec');
-    if(own)txt(G.wear===id?'ON':'OWN',136,y+6,5,'#94dc64',{align:'right'});
-    else{drawImg(SPR.seed,120,y+4);txt(''+priceOf(o),136,y+6,5,G.seeds>=priceOf(o)?'#fff8ec':'#ff8080',{align:'right'});}});
-  box(150,40,94,100,'#2e2048','#6a5a90');
-  const id=shopSel<SHOP.length?SHOP[shopSel]:G.wear;
-  drawPip(stage(),[0,2,1,3][Math.floor(tick/50)%4],Math.floor(tick/12)%2,false,197,128,3,id);
-  box(12,148,W-24,66,'#1d1430','#6a5a90');
-  if(shopSel<SHOP.length){const o=OUTFITS.find(x=>x.id===SHOP[shopSel]);txt(o.name,20,154,7,'#ff9cd0');wrap(o.desc,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,165+i*8,5,'#d8c8f8'));wrap('BONUS: '+o.bonus,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,183+i*8,5,'#94dc64'));}
-  else txt('Come back soon, darling!',20,160,6,'#d8c8f8');
-  if(shopMsg)txt(shopMsg.s,20,202,5,shopMsg.c);else txt('Z: buy / wear     ESC: leave',20,202,5,'#8a7ab0');
-}
-function openWardrobe(){state='wardrobe';SFX.menu();wardSel=Math.max(0,[null,...OUTFITS.map(o=>o.id)].indexOf(G.wear));}
+/* ---- closet: 12 slots (none + 11 outfits), 4 across ---- */
+const WARD_COLS=4;
+function openWardrobe(){state='wardrobe';SFX.menu();wardSel=Math.max(0,[null,...OUTFITS.map(o=>o.id)].indexOf(G.wear||G.acc));}
 function updateWardrobe(){
   if(pressed.wear||pressed.back||pressed.grow||pressed.quest){state='play';SFX.menu();return;}
-  const n=9;let m=false;
+  const n=OUTFITS.length+1;let m=false;
   if(pressed.left){wardSel=(wardSel+n-1)%n;m=true;}if(pressed.right){wardSel=(wardSel+1)%n;m=true;}
-  if(pressed.up){wardSel=(wardSel+n-3)%n;m=true;}if(pressed.down){wardSel=(wardSel+3)%n;m=true;}
+  if(pressed.up){wardSel=(wardSel+n-WARD_COLS)%n;m=true;}if(pressed.down){wardSel=(wardSel+WARD_COLS)%n;m=true;}
   if(m)SFX.menu();
   if(pressed.a){const id=wardSel?OUTFITS[wardSel-1].id:null;if(id&&!G.outfits.includes(id))SFX.deny();else{setWear(id);SFX.pick();save();}}
 }
 function drawWardrobe(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
   txt("PIP'S CLOSET",W/2,10,8,'#ffd83a',{align:'center',shadow:true});
-  txt(G.outfits.length+'/8'+(G.rank>=7?'  OUTFIT + ACCESSORY':''),W-14,11,5,'#b8a8d8',{align:'right'});
-  for(let i=0;i<9;i++){
-    const col=i%3,row=Math.floor(i/3),x=12+col*78,y=24+row*44,o=i?OUTFITS[i-1]:null,id=o?o.id:null,own=!id||G.outfits.includes(id),sel=i===wardSel,on=id?wearing(id):(!G.wear&&!G.acc);
-    if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(x-2,y-2,78,44);}
-    box(x,y,74,40,on?'#3a3010':'#1d1430',on?'#ffd83a':'#4a3a66');
-    if(own){drawPip(stage(),0,0,false,x+17,y+36,1,id);wrap(o?o.name:'NO OUTFIT',5,40).forEach((l,j)=>txt(l,x+33,y+10+j*9,5,on?'#ffd83a':'#fff8ec'));}
-    else{txt('?',x+17,y+14,10,'#4a3a66',{align:'center'});txt('???',x+33,y+14,5,'#6a5a90');}
+  txt(G.outfits.length+'/'+OUTFITS.length+(G.rank>=7?'  OUTFIT + ACCESSORY':''),W-14,11,5,'#b8a8d8',{align:'right'});
+  const n=OUTFITS.length+1;
+  for(let i=0;i<n;i++){
+    const col=i%WARD_COLS,row=Math.floor(i/WARD_COLS),x=10+col*59,y=24+row*43,o=i?OUTFITS[i-1]:null,id=o?o.id:null,own=!id||G.outfits.includes(id),sel=i===wardSel,on=id?wearing(id):(!G.wear&&!G.acc);
+    if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(x-2,y-2,57,41);}
+    box(x,y,53,37,on?'#3a3010':'#1d1430',on?'#ffd83a':'#4a3a66');
+    if(own){drawPip(stage(),0,0,false,x+14,y+24,1,id);wrap(o?o.name:'NONE',5,26).slice(0,3).forEach((l,j)=>txt(l,x+28,y+5+j*8,5,on?'#ffd83a':'#fff8ec'));}
+    else{txt('?',x+14,y+10,10,'#4a3a66',{align:'center'});txt('???',x+28,y+10,5,'#6a5a90');}
   }
   const o=wardSel?OUTFITS[wardSel-1]:null,own=!o||G.outfits.includes(o.id);
   box(12,160,W-24,54,'#1d1430','#6a5a90');
   txt(own?(o?o.name:'NO OUTFIT'):'???',20,166,7,'#ffd83a');
-  const desc=!o?'Just plain, fluffy Pip.':own?o.desc:(o.how||"Sold at Maggie's Boutique in the barnyard ("+o.price+" seeds).");
+  const desc=!o?'Just plain, fluffy Pip.':own?o.desc:(o.how||"Sold at Maggie's Boutique on Main Street in the city ("+o.price+" seeds).");
   wrap(desc,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,177+i*8,5,'#d8c8f8'));
   if(o)wrap('BONUS: '+o.bonus,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,195+i*8,5,own?'#94dc64':'#6a8a60'));
   txt(own?(o?(wearing(o.id)?'Wearing it!':'Z: wear'):'Z: take all off'):'Not found yet',W-20,166,5,own?'#94dc64':'#8a7ab0',{align:'right'});
@@ -213,7 +189,7 @@ function startMG(type,npc){
 function updateMG(){
   const m=MG;m.t++;
   if(m.type==='bonk'){
-    const holes=ents.filter(e=>e.type==='hole');for(const h of holes)if(h.up>0)h.up--;
+    const holes=ents.filter(e=>e.type==='hole'&&onCur(e));for(const h of holes)if(h.up>0)h.up--;
     if(Math.random()<0.035+m.t/1800*0.035){const free=holes.filter(h=>h.up<=0);
       if(free.length){const h=free[(Math.random()*free.length)|0];h.up=h.max=Math.round(80-m.t/1800*35);h.gold=Math.random()<0.12;SFX.pop();}}
   }else{
@@ -230,7 +206,7 @@ function endMG(){
   if(win){SFX.questDone();
     minigameGP(key,true);
     if(!G.outfits.includes(prize)){grantOutfit(prize);
-      L.push({who:npc,text:key==='bonk'?"WOW! You bonked "+m.score+" carrots! You win my spare BUNNY EARS!":"Hoo-hoo! Splendid! "+m.score+" fireflies! A pirate captain left this PIRATE OUTFIT in my tree long ago. It's yours! Arr!",
+      L.push({who:npc,text:m.npc==='fizz'?"You won with "+m.score+" points! Take the prize, it's yours!":key==='bonk'?"WOW! You bonked "+m.score+" carrots! You win my spare BUNNY EARS!":"Hoo-hoo! Splendid! "+m.score+" fireflies! A pirate captain left this PIRATE OUTFIT in my tree long ago. It's yours! Arr!",
         fx:()=>toast('Got the '+(prize==='ears'?'BUNNY EARS':'PIRATE OUTFIT')+'! Press C to wear.')});}
     else L.push({who:npc,text:"You won again! Score: "+m.score+". Best: "+G.best[key]+"!"});}
   else{SFX.deny();L.push({who:npc,text:(key==='bonk'?"Time's up! You got ":"The moon is setting! You caught ")+m.score+". Talk to me to try again!"});}
@@ -241,7 +217,7 @@ function drawMG(){
   box(52,H-22,152,16,'#1d1430','#e8ff70');
   txt((MG.type==='bonk'?'CARROTS ':'FIREFLIES ')+MG.score+'/'+MG.goal+'   '+left+'s',W/2,H-17,6,'#e8ff70',{align:'center'});
 }
-function startEgg(){EG={px:128,eggs:[],splats:[],score:0,miss:0,t:0,next:50,over:0,win:false};state='egg';SFX.magic();}
+function startEgg(host){EG={host:host||'penny',px:128,eggs:[],splats:[],score:0,miss:0,t:0,next:50,over:0,win:false};state='egg';SFX.magic();}
 function updateEgg(){
   const e=EG;
   if(e.over){e.over++;if(e.over>150||(e.over>40&&pressed.a))endEgg();return;}
@@ -256,7 +232,7 @@ function updateEgg(){
   if(e.score>=20){e.over=1;e.win=true;SFX.questDone();}else if(e.miss>=5){e.over=1;SFX.deny();}
 }
 function endEgg(){
-  const e=EG;EG=null;state='play';const penny=ents.find(n=>n.id==='penny'),L=[];G.best.egg=Math.max(G.best.egg,e.score);
+  const e=EG;EG=null;state='play';const penny=ents.find(n=>n.id===e.host),L=[];G.best.egg=Math.max(G.best.egg,e.score);
   if(e.win){minigameGP('egg',true);if(!G.outfits.includes('bow')){grantOutfit('bow');
       L.push({who:penny,text:"WOW! "+e.score+" eggs! You're amazing, Pip! Here, take my spare PINK BOW!",fx:()=>{toast('Got the PINK BOW! Press C to wear.');SFX.quest();}});}
     else L.push({who:penny,text:"You did it again! "+e.score+" eggs. Egg-cellent!"});}

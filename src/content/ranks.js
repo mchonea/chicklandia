@@ -32,5 +32,6 @@ const GP={quest1:10,quest2:12,quest3:14,training:8,skill:5,taste:4,mgFirst:8,mgR
 const FOODS=[
   {id:'worm',name:'WORM',spr:'worm0'},{id:'carrot',name:'CARROT',spr:'carrot'},{id:'apple',name:'APPLE',spr:'apple'},
   {id:'cheese',name:'CHEESE',color:'#ffd21e'},{id:'acorn',name:'ACORN',spr:'acorn'},{id:'fish',name:'FISH',color:'#a6d0ff'},
-  {id:'snowberry',name:'SNOWBERRY',color:'#fff8ec'}];
+  {id:'snowberry',name:'SNOWBERRY',color:'#fff8ec'},
+  {id:'muffin',name:'CORN MUFFIN',spr:'muffin'},{id:'bun',name:'SEED BUN',spr:'sbun'},{id:'tart',name:'BERRY TART',spr:'tart'},{id:'stew',name:'WINNING STEW',color:'#e8a422'}];
 const SECRET_IDS=[{id:'burrow',name:'RABBIT BURROW'},{id:'cellar',name:'FARMHOUSE CELLAR'},{id:'grove',name:'MOONLIT GROVE'}];

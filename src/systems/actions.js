@@ -5,6 +5,7 @@ function action(){
   const f=frontPoint();
   for(const e of ents){if(e.type!=='npc'||!onCur(e))continue;
     if(Math.abs(f.x-e.x)<e.w/2+7&&f.y>e.y-20&&f.y<e.y+7){talkTo(e);return;}}
+  for(const e of ents){if(e.type==='nook'&&onCur(e)&&Math.abs(f.x-e.x)<16&&Math.abs(f.y-(e.y-4))<12){useNook();return;}}
   for(const e of ents){if(e.type==='bowl'&&has('fly')&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){useBowl(e);return;}}
   for(const e of ents){if(e.type==='chest'&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){openChest();return;}}
   for(const e of ents){if(e.type==='plot'&&onCur(e)&&Math.abs(f.x-e.x)<11&&Math.abs(f.y-(e.y-5))<11){P.peckT=10;usePlot(e);return;}}
@@ -22,7 +23,7 @@ function peck(f){
   if(MG&&MG.type==='ffly')for(const e of ents){if(e.type==='ffly'&&Math.abs(e.x-f.x)<15&&Math.abs(e.y-8-f.y)<15){
     e.dead=true;MG.score++;SFX.chirp();puff(e.x,e.y-8,6,['#e8ff70','#fff8ec'],0.8,0);float(e.x,e.y-16,''+MG.score,'#e8ff70');return;}}
   for(const e of ents){
-    if(hazardPeck(e,f,pr))return;
+    if(hazardPeck(e,f,pr)||cityPeck(e,f,pr))return;
     if(e.type==='worm'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
       e.dead=true;G.collected.add(e.id);G.items.worm++;tasteFood('worm');SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#9a6234']);strawBonus(e.x,e.y);
       float(e.x,e.y-14,'WORM '+Math.min(G.items.worm,3)+'/3','#f6a6b6');
@@ -128,7 +129,7 @@ function updateWarp(){
   if(WARP.t===16){P.x=WARP.x;P.y=WARP.y;P.dir=WARP.dir;P.kt=0;P.hop=null;P.z=0;
     CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;
     G.visited.add(CS.x+','+CS.y);resetEnemies();TRAIL=[];
-    for(const d of ents)if((d.type==='duckling'||d.type==='follower')&&d.mode==='follow'){d.x=P.x;d.y=P.y;}
+    for(const d of ents)if((d.type==='duckling'||d.type==='follower'||d.type==='cduck')&&d.mode==='follow'){d.x=P.x;d.y=P.y;}
     noteArea();if(WARP.after)WARP.after();save();}
   if(WARP.t>16)fade=Math.max(0,1-(WARP.t-16)/16);
   if(WARP.t>=32){const th=WARP.then;WARP=null;state='play';fade=0;if(th)th();}
@@ -228,6 +229,9 @@ function collect(e){
     case 'shell':G.items.shell++;SFX.pick();float(e.x,e.y-16,'SHELL '+Math.min(5,G.items.shell)+'/5','#f6a6b6');break;
     case 'eagleEgg':G.items.eagleEgg=1;SFX.quest();toast("Found Elda's egg! Carry it gently...");break;
     case 'yarn':G.items.yarn=1;SFX.quest();toast("Found Whiskers' yarn!");break;
+    case 'hat':case 'whisk':case 'collarBell':{const b=BORROWED.find(x=>x.kind===e.kind);G.items[b.item]=1;SFX.quest();toast('Found '+b.name+'! Return it.','#ff9cd0');break;}
+    case 'pepper':case 'salt':case 'mushroom':G.items[e.kind]=1;SFX.pick();toast('Got '+({pepper:'MOUNTAIN PEPPER',salt:'SEA SALT',mushroom:'a FOREST MUSHROOM'})[e.kind]+'!','#ff9cd0');break;
+    case 'seashell':case 'plume':case 'fossil':G.hold[e.kind]++;SFX.pick();toast('Found '+({seashell:'a pretty SEASHELL',plume:'a rare FEATHER',fossil:'a FOSSIL'})[e.kind]+'! Take it to the museum.','#c49a5c');break;
     case 'feather':G.items.feather++;SFX.quest();toast('Golden feather! ('+Math.min(3,G.items.feather)+'/3)');break;
   }
   puff(e.x,e.y-6,8,['#ffd21e','#fff8ec'],1,0);save();
@@ -240,6 +244,7 @@ function updateEnts(){
   for(const e of ents){
     if(e.type==='duckling'){updDuckling(e);continue;}
     if(e.type==='follower'){updFollower(e);continue;}
+    if(e.type==='cduck'){updCduck(e);continue;}
     if(e.type==='block'&&e.sl){const s=e.sl;s.t++;const p=Math.min(1,s.t/8);e.x=lerp(s.x0,e.bc*16+8,p);e.y=lerp(s.y0,e.br*16+16,p);if(s.t>=8){e.sl=null;checkPlates();}continue;}
     if(!onCur(e)&&!(e.type==='fox'&&e.gone)&&!(e.type==='goose'&&e.blown))continue;
     if(e.type==='fox')updFox(e);else if(e.type==='goose')updGoose(e);else if(e.type==='item')updItem(e);else if(e.type==='puff')updPuff(e);
@@ -279,6 +284,8 @@ function updatePlay(){
   if(G.autoMom>0&&--G.autoMom===0){const m=ents.find(e=>e.id==='mom');if(m){talkTo(m);return;}}
   if(pressed.pause||pressed.back){openPause();return;}
   if(checkRankUp())return;
+  if(tick%30===0){updateSchedules(false);checkBuffExpiry();}
+  updateSunbeam();updateBabysit();updateRace();
   if(pressed.grow){openGrow();return;}
   if(pressed.quest){state='quests';questPage=G.part2?1:0;SFX.menu();return;}
   if(pressed.wear){openWardrobe();return;}

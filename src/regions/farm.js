@@ -26,7 +26,7 @@ defineRegion({id:'farm',name:'FARM',kind:'outdoor',origin:[0,0],grid:[3,2],groun
   'T...d.....hhhhhT',
   '..,.d......,....',
   'dddddddddddddddd',
-  'T.,....dd...,..T',
+  'T.,....dd..s..,T'.replace('s','s'),
   'T......dd.VVVVuT',
   'T...,..dd.VVVV.T',
   'T.u....dd.....,T',

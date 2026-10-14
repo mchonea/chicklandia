@@ -34,4 +34,7 @@ SPR.vaneFixed=makeSprite(['..k.kk','.kkkkkk','kkkkkkk','..b..k.','..b....','..b.
 SPR.easel=makeSprite(['.bbbbbbb.','bwwwwwwwb','bwwwwwwwb','bwwwwwwwb','bwwwwwwwb','.b.....b.','.b.....b.','bb.....bb']);
 SPR.flag=makeSprite(['kkkkkk','krkwwk','kwkrwk','krkwrk','k.....','k.....','k.....','k.....']);
 SPR.book=makeSprite(['.rrrrr','rwwwwr','rwkkwr','rwwwwr','.rrrrr']);
-SPR.sunbeam=null;
+SPR.plant0=SPR.plant[2];
+Object.assign(OUTFIT_SPR,{chef:makeSprite(['..www..','.wwwww.','wwwwwww','wwwwwww','.wwwww.','kkkkkkk']),detective:makeSprite(['..tttt..','.tTTTTt.','tTtTtTtt','TTTTTTTT','kkkkkkkk']),
+  gogF:makeSprite(['uuuuuuuu','uccuucu','.uu..uu.'],false),gogS:makeSprite(['uuuu','ucuu','.uu.'],false)});
+const WEAR_ICON_EXTRA={chef:OUTFIT_SPR.chef,detective:OUTFIT_SPR.detective,goggles:OUTFIT_SPR.gogF};

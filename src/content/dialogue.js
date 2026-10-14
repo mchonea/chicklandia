@@ -20,8 +20,8 @@ penny:(e,{it,me,ask})=>{
       ["Let's play!","Later"],i=>{if(i===0)startEgg();});
 },
 maggie:(e,{it,me,ask})=>{
-    if(!e.greeted){e.greeted=1;it("Ooh! Shiny! A customer! Welcome to Maggie's Boutique, darling!");}
-    ask("Care to try something on? Every chick deserves to look FABULOUS.",['Shop','Bye!'],i=>{if(i===0)openShop();});
+    if(!e.greeted){e.greeted=1;it("Ooh! Shiny! A customer! Welcome to my NEW boutique on Main Street, darling!");}
+    ask("Care to try something on? Every chick deserves to look FABULOUS.",['Shop','Bye!'],i=>{if(i===0)openCatalog('boutique');});
 },
 bunbun:(e,{it,me,ask})=>{
     if(!G.met.has('bunbun_hi')){G.met.add('bunbun_hi');it("Whoa! You found my secret burrow! Nobody EVER finds it!");it("I'm Bun-Bun! I love carrots more than anything in the whole world!");}
@@ -67,4 +67,20 @@ mom:(e,{it,me,ask})=>{
     }
 },
 };
-TALK.maggie2=TALK.maggie;
+
+// ---- the city ----
+Object.assign(TALK,{
+  grumble:(e,{it,ask})=>{ask("Hmph. Morning, sprout. Seeds, sprouts and plots. What'll it be?",['Shop','Bye'],i=>{if(i===0)openCatalog('seed');});},
+  bramble:(e,{it,ask})=>{ask("Fresh from the oven, dearie! Try a warm treat. It's good for the whole day!",['Shop','Bye'],i=>{if(i===0)openCatalog('bakery');});},
+  fizz:(e,{it,ask})=>{ask("Welcome to the Toy Shop and Arcade! Games, prizes and a secret rooftop race!",['Play','Bye'],i=>{if(i===0)openCatalog('toy');});},
+  olive:(e,{it,ask})=>{if(!G.flags.libraryHi){G.flags.libraryHi=1;it("Hoo! Welcome to the library. I'm Olive, cousin of Hootie.");it("Take any guide you like. They're free! And the rug over there is a lovely reading nook.");}
+    ask("What would you like to read today?",['Books','Bye'],i=>{if(i===0)openCatalog('library');});},
+  sheldon:(e,{it,ask})=>{if(!G.flags.museumHi){G.flags.museumHi=1;it("Welcome to the Museum! I'm Sheldon. My sister is Granny Shell, you know. We are both very slow and very wise.");it("Bring me shells, feathers, fossils and moon petals. Every full exhibit earns a reward!");}
+    ask(museumFull()?"The whole museum shines because of you, Pip!":"Have you found anything for the exhibits?",['Exhibits','Bye'],i=>{if(i===0)openCatalog('museum');});},
+  pablo:(e,{it,me,ask})=>{if(G.q.portrait!==1)return false;return tryPose(e,it);},
+  nibbles2:(e,{it})=>{it(G.q.cookoff===2?"Remy's winning stew! Magnifique! I visit every day just to smell it.":"Bonjour, little chick! I'm visiting my cousin Remy. The bistro smells wonderful, no?");},
+  pidge:(e,{it,ask})=>{
+    if(e.chatNow){e.chatNow=false;return false;}
+    if(regionAt().id!=='cityin')return false;
+    ask("Coo! Postmaster Pidge here. Looking for a delivery job?",['Job board','Chat'],i=>{if(i===0)openCatalog('post');else{e.chatNow=true;talkTo(e);}});}
+});

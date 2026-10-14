@@ -66,5 +66,5 @@ Object.assign(QUESTS,{
     hint:()=>"Lifeguard Sandy at the beach needs help leading baby turtles to the sea."}
 });
 const INTRO2={granny:"Granny Shell the tortoise lives by her garden in the forest.",bucky:"Bucky the beaver is building something in the deep woods.",
-  pidge:"Postmaster Pidge is the busiest bird in the city.",sandy:"Lifeguard Sandy watches over the beach.",remy:"Chef Remy cooks in the city market.",
+  pidge:"Postmaster Pidge works at the post office by the city gate.",sandy:"Lifeguard Sandy watches over the beach.",remy:"Chef Remy cooks in the city market.",
   doe:"A worried deer is pacing in the deep woods.",pinch:"Cap'n Pinch the crab is on the sandy shore.",elda:"An eagle lives up on the snowy peak.",mo:"A marmot is squeaking for help on the mountain trail."};

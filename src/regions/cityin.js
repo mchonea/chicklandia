@@ -10,7 +10,7 @@ defineRegion({id:'cityin',name:'CITY',kind:'indoor',origin:[5,4],grid:[5,3],grou
  {id:'boutique',label:"MAGGIE'S BOUTIQUE",rows:room([['r',4,4,11,4,'k'],['p',2,3,'P'],['p',13,3,'P'],['r',5,7,10,8,'o'],['p',3,9,'P'],['p',12,9,'P']])},
  {id:'seed',label:'SEED & FEED',rows:room([['r',3,4,9,4,'k'],['r',11,3,12,4,'y'],['p',13,3,'0'],['p',2,10,'0'],['p',13,10,'0']])},
  {id:'bakery',label:'BAKERY',rows:room([['r',3,4,12,4,'k'],['p',13,3,'f'],['p',4,8,'t'],['p',11,8,'t'],['r',6,7,9,8,'o']])},
- {id:'toy',label:'TOY SHOP & ARCADE',rows:room([['r',3,4,8,4,'k'],['p',13,2,'1'],['p',2,3,'P'],['r',5,10,10,10,'o']])},
+ {id:'toy',label:'TOY SHOP & ARCADE',rows:room([['r',3,4,8,4,'k'],['p',13,2,'1'],['p',2,3,'P']])},
  {id:'cleo',label:"CLEO'S APARTMENT",rows:room([['p',3,3,'e'],['p',4,3,'e'],['r',6,6,9,6,'t'],['r',7,8,10,9,'o'],['p',12,3,'P'],['p',13,3,'P']])},
  {id:'artist',label:"THE ARTIST'S STUDIO",rows:room([['p',3,3,'P'],['p',13,3,'P'],['p',3,9,'t'],['p',4,9,'t'],['r',5,7,10,8,'o']])},
  {id:'ducks',label:'THE DUCK FLAT',rows:room([['p',3,3,'n'],['p',4,3,'n'],['p',12,3,'n'],['p',13,3,'n'],['r',6,7,9,8,'o']])},

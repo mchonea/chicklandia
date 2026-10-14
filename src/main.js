@@ -10,12 +10,13 @@ function update(){
     case 'title':updateTitle();break;
     case 'play':G.time++;updatePlay();break;
     case 'talk':G.time++;updateTalk();updateAmbient();break;
-    case 'shop':updateShop();break;
     case 'wardrobe':updateWardrobe();break;
     case 'egg':updateEgg();break;
     case 'sleep':updateSleep();break;
     case 'pause':updatePause();break;
     case 'rankup':updateRankUp();break;
+    case 'catalog':updateCatalog();break;
+    case 'plant':updatePlant();break;
     case 'festival':updateFestival();break;
     case 'credits':updateCredits();break;
     case 'grow':updateGrow();updateAmbient();break;

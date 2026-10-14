@@ -12,7 +12,7 @@ function hint(){
   if(!has('fly'))return "You've grown so much! Keep spending seeds in your Growth Tree until you learn FLIGHT!";
   return "Go on, fly over that Big Fence! Mama is so proud of you!";
 }
-function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,ORDER2.includes(id)?2:1,base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
+function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id))?2:1,ORDER3.includes(id)?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
 function say(lines,onEnd){lines.forEach(l=>l.text=tt(l.text));dlg={lines,i:0,shown:0,onEnd};state='talk';}
 function talkTo(e){
   const L=[];const it=(t,fx)=>L.push({who:e,text:t,fx});const me=t=>L.push({who:'me',text:t});
@@ -20,6 +20,7 @@ function talkTo(e){
   G.met.add(e.id);
   if(e.deco){it(['Baa.','Baaa?','*munch munch*','Baa baa!'][(Math.random()*4)|0]);say(L);return;}
   if(talkP2(e,it)){say(L);return;}
+  if(deliverJob(e,it)||returnBorrowed(e,it)){say(L);return;}
   if(e.sib){
     if(e.home){it(e.sib.homeLine);say(L);return;}
     if(G.q.penny===0){it("Shhh! We're playing hide-and-seek! Go talk to Penny in the coop if you want to play!");say(L);return;}
@@ -31,11 +32,12 @@ function talkTo(e){
   const ask=(t,choices,cb)=>L.push({who:e,text:t,choices,cb});
   const spec=TALK[e.id];if(spec&&spec(e,{it,me,ask})!==false){say(L);return;}
   if(trainTalk(e,it)){say(L);return;}
-  const q=QUESTS[e.id];if(!q)return;
+  let qid=QUEST_OF[e.id]||e.id;if(FOLLOWUP[e.id]&&G.q[e.id]===2&&G.q[FOLLOWUP[e.id]]!==2)qid=FOLLOWUP[e.id];
+  const q=QUESTS[qid];if(!q)return;
   const pushLine=l=>typeof l==='string'?it(l):(l.me?me(l.me):it(l.t,l.fx));
-  const doneLines=()=>{q.done.forEach((l,i)=>it(l,i===q.done.length-1?()=>{if(q.onDone)q.onDone();reward(q.reward,e.id);}:null));(q.post||[]).forEach(pushLine);};
-  if(G.q[e.id]===0){q.intro.forEach(pushLine);G.q[e.id]=1;if(q.check())doneLines();}
-  else if(G.q[e.id]===1){if(q.check())doneLines();else it(q.remind());}
+  const doneLines=()=>{q.done.forEach((l,i)=>it(l,i===q.done.length-1?()=>{if(q.onDone)q.onDone();reward(q.reward,qid);}:null));(q.post||[]).forEach(pushLine);};
+  if(G.q[qid]===0){q.intro.forEach(pushLine);G.q[qid]=1;if(q.check())doneLines();}
+  else if(G.q[qid]===1){if(q.check())doneLines();else it(q.remind());}
   else q.after().forEach(pushLine);
   say(L);
 }
@@ -66,4 +68,4 @@ function updateTalk(){
 function closedSign(b){
   SFX.deny();say([{who:{x:b.door[0]*16+8,y:b.door[1]*16,name:'SIGN'},text:b.name+': CLOSED. '+(b.hours==='dawn'?'Open from sunrise until evening!':'Come back in the daytime!')}]);
 }
-function enteredBuilding(b){if(!G.flags.visited)G.flags.visited={};if(!G.flags.visited[b.id]){G.flags.visited[b.id]=1;}}
+function enteredBuilding(b){if(!G.flags.visited)G.flags.visited={};if(!G.flags.visited[b.id]){G.flags.visited[b.id]=1;}if(b.id==='artist')G.flags.posed=false;}

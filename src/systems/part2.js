@@ -9,8 +9,10 @@ function hint2(){
   for(const k in TRAIN){const t=TRAIN[k];if(t.phase===2&&G.train[k]===1)return t.hint();}
   for(const id of ORDER2){if(G.q[id]===0)return INTRO2[id];}
   for(const id of ORDER2){if(G.q[id]===1)return QUESTS[id].hint();}
+  for(const id of ORDER3){if(G.q[id]===1&&QUESTS[id].check())return "Go tell "+NAMES[QUEST_GIVER[id]||id]+" the good news!";}
+  for(const id of ORDER3){if(G.q[id]===1)return QUESTS[id].hint();}
   if(G.coop&&G.coop.lv<4)return "Upgrade your coop! Read the sign next to it.";
-  if(!G.flags.festival)return festivalReady()?"Talk to Granny Shell in the forest: it's time for the festival!":"Almost there! Keep growing: garden harvests, secrets and the snack bowl all help. Then see Granny Shell.";
+  if(!G.flags.festival)return festivalReady()?"Talk to Granny Shell in the forest: it's time for the festival!":"Almost there! Keep growing: the city has shops and homes to explore, and garden harvests and the snack bowl help too.";
   return "Your Dream Coop is finished! What a journey, little one.";
 }
 function areaOf(cs=CS){const r=regionAt(cs);return r?r.area:null;}
@@ -51,8 +53,8 @@ function talkP2(e,it){
     it(e.id==='granny'?"A letter? For me? Oh my, it's from my old friend Pidge!":e.id==='rocco'?"A letter? Is it a reward? ...Oh. It's my library fine. Thanks, I guess.":"Mail? For moi? *purr* It's from my secret admirer!",
       ()=>{G.mail[e.id]=2;const n=['rocco','cleo','granny'].filter(k=>G.mail[k]===2).length;toast('Letter delivered! ('+n+'/3)');SFX.pick();save();});
     return true;}
-  if(e.id==='rocco'){it(["Psst. Wanna buy a slightly used banana peel? No? Suit yourself.","I'm not stealing, I'm BORROWING. Forever.","Nice wings, kid. Very shiny."][(Math.random()*3)|0]);return true;}
-  if(e.id==='cleo'){it(["Welcome to the city, country chick. Try the fish tacos.","Remy's soup is the best in town. Don't tell him I said so.","I nap in a different sunbeam every hour. It's a lot of work."][(Math.random()*3)|0]);return true;}
+  if(e.id==='rocco'&&G.q.rocco===2){it(["Psst. Wanna buy a slightly used banana peel? No? Suit yourself.","I'm not stealing, I'm BORROWING. Forever.","Nice wings, kid. Very shiny."][(Math.random()*3)|0]);return true;}
+  if(e.id==='cleo'&&G.q.cleo===2){it(["Welcome to the city, country chick. Try the fish tacos.","Remy's soup is the best in town. Don't tell him I said so.","I nap in a different sunbeam every hour. It's a lot of work."][(Math.random()*3)|0]);return true;}
   if(e.deco2){it(G.flags.mo?"Eek! Thank you, thank you!":"Eek! We're stuck! Help!");return true;}
   return false;
 }
@@ -88,15 +90,20 @@ function upgradeCoop(){
 }
 /* ---- garden plots ---- */
 const GROW=5400;
-function plotRate(e){let r=wearing('straw')?1.5:1;if(e.coop&&G.coop){if(G.coop.lv>=4)r=2;else if(G.coop.lv>=3)r=1.5;}if(rainAmt()>0.5)r*=2;return r;}
+function plotRate(e){const st=G.plots[e.id],kind=SEED_TYPES[(st&&st.k)||'plain'];
+  if(kind.night&&nightAmt()<0.5)return 0;
+  let r=wearing('straw')?1.5:1;if(e.coop&&G.coop){if(G.coop.lv>=4)r=2;else if(G.coop.lv>=3)r=1.5;}
+  if(buffActive('bun'))r*=1.25;if(rainAmt()>0.5)r*=2;return r*kind.grow;}
 function updatePlots(){for(const e of ents)if(e.type==='plot'){const s=G.plots[e.id];if(s&&s.p<1)s.p=Math.min(1,s.p+plotRate(e)/GROW);}}
 function usePlot(e){
   if(!G.thumb){say([{who:'me',text:"This soil looks so soft... Maybe Granny Shell knows how to grow things?"}]);return;}
   const s=G.plots[e.id];
-  if(!s){if(G.seeds<1){SFX.deny();float(e.x,e.y-16,'Need a seed!','#ff8080');return;}
-    G.seeds--;G.plots[e.id]={p:0};SFX.pop();puff(e.x,e.y-4,6,['#9a6234','#94dc64'],0.8,0.05);float(e.x,e.y-16,'Planted!','#94dc64');save();return;}
-  if(s.p<1){float(e.x,e.y-16,'Growing... '+Math.floor(s.p*100)+'%','#94dc64');SFX.menu();return;}
-  const yield_=3+(G.rank>=6?1:0);delete G.plots[e.id];addSeeds(yield_,2,0);G.harvests++;gainGP(GP.harvest);SFX.seed();puff(e.x,e.y-10,10,['#ffd83a','#fff8ec'],1.2,0.05);float(e.x,e.y-18,'+'+yield_+' SEEDS!','#ffd83a');save();
+  if(!s){const opts=plantChoices();if(!opts.length){SFX.deny();float(e.x,e.y-16,'Need a seed!','#ff8080');return;}
+    if(opts.length===1)plantSeed(e,opts[0]);else openPlantMenu(e,opts);return;}
+  const kd=SEED_TYPES[s.k||'plain'];
+  if(s.p<1){float(e.x,e.y-16,(kd.night&&nightAmt()<0.5?'Sleeping until night... ':'Growing... ')+Math.floor(s.p*100)+'%','#94dc64');SFX.menu();return;}
+  const yield_=kd.yield+(G.rank>=6?1:0);if(kd.petal){G.hold.petal++;toast('A rare MOON PETAL! Take it to the museum.','#e8a0d0');}
+  delete G.plots[e.id];addSeeds(yield_,2,0);G.harvests++;gainGP(GP.harvest);SFX.seed();puff(e.x,e.y-10,10,['#ffd83a','#fff8ec'],1.2,0.05);float(e.x,e.y-18,'+'+yield_+' SEEDS!','#ffd83a');save();
 }
 /* ---- followers (fawn & baby turtles) ---- */
 function followerCount(){return ents.filter(d=>(d.type==='duckling'||d.type==='follower')&&d.mode==='follow').length;}
