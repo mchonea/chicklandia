@@ -19,6 +19,7 @@
  "content/trainers.js",
  "content/coop.js",
  "content/world_data.js",
+ "content/ranks.js",
  "content/characters.js",
  "content/dialogue.js",
  "entities/sprites.js",
@@ -32,7 +33,10 @@
  "systems/world.js",
  "systems/part2.js",
  "systems/hazards.js",
+ "systems/ranks.js",
+ "systems/festival.js",
  "ui/growth.js",
+ "ui/journal.js",
  "ui/pause.js",
  "ui/render.js",
  "main.js"

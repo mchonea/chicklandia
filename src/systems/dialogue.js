@@ -2,6 +2,7 @@
 /* ---------------- dialogue engine: say/talkTo/hints/rewards. Lines live in src/content/. ---------------- */
 function hint(){
   if(G.part2)return hint2();
+  if(G.q.mom===2&&rankFull()&&nextRank().gateHint)return nextRank().gateHint;
   if(G.q.mom<2)return "Peck 3 worms in the dirt patches!";
   if(G.skills.size===0)return "Press E to open your Growth Tree and spend your seeds!";
   for(const k in TRAIN){const t=TRAIN[k];if(t.phase===1&&G.train[k]===1)return t.hint();}
@@ -11,7 +12,7 @@ function hint(){
   if(!has('fly'))return "You've grown so much! Keep spending seeds in your Growth Tree until you learn FLIGHT!";
   return "Go on, fly over that Big Fence! Mama is so proud of you!";
 }
-function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,ORDER2.includes(id)?2:1,base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');save();}
+function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,ORDER2.includes(id)?2:1,base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
 function say(lines,onEnd){lines.forEach(l=>l.text=tt(l.text));dlg={lines,i:0,shown:0,onEnd};state='talk';}
 function talkTo(e){
   const L=[];const it=(t,fx)=>L.push({who:e,text:t,fx});const me=t=>L.push({who:'me',text:t});
@@ -51,6 +52,7 @@ function updateTalk(){
     if(Math.floor(d.shown)!==before&&before%3===0&&line.text[before]!==' '){const sp=speakerPos(line.who);SFX.blip(sp.voice+((before*37)%60));}
     if(pressed.a)d.shown=line.text.length;
   }else if(line.choices){
+    if(pressed.back){dlg=null;state='play';SFX.menu();return;}
     if(pressed.left||pressed.right||pressed.up||pressed.down){d.sel=(d.sel||0)^1;SFX.menu();}
     if(pressed.a){const cb=line.cb,sel=d.sel||0;dlg=null;state='play';SFX.pick();if(cb)cb(sel);}
   }else if(pressed.a||pressed.back){

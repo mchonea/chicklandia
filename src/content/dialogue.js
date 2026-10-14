@@ -3,6 +3,17 @@
    Each TALK entry is (e,{it,me,ask})=>... : it(text,fx) = they speak, me(text) = Pip speaks, ask(text,choices,cb) = a choice.
    Return false to fall through to the character's quest dialogue. Quest lines live in quests_farm/quests_beyond. */
 const TALK={
+granny:(e,{it,me,ask})=>{
+  if(G.q.granny!==2||G.flags.festival)return false;
+  if(festivalReady()){
+    it("Pip, dearie... look how much you've grown!");
+    it("I've waited 112 years to see a chick like you. It's time for the COMING-OF-AGE FESTIVAL!");
+    ask('Are you ready?',['Ready!','Not yet'],i=>{if(i===0)startFestival();});return;}
+  if(allP2Done()&&G.coop&&G.coop.lv>=4){
+    it("Your dream coop is lovely, dearie! But you're not quite full-grown yet.");
+    it("Keep growing: help friends, find secrets, tend your garden, and munch seeds at the snack bowl!");return;}
+  return false;
+},
 penny:(e,{it,me,ask})=>{
   if(G.q.penny!==2)return false;
     ask(G.outfits.includes('bow')?"Egg Catch again? Your best is "+G.best.egg+" eggs!":"Wanna play EGG CATCH? Catch 20 eggs in your basket, and don't let 5 crack! Win, and I'll give you my spare PINK BOW!",
@@ -27,7 +38,7 @@ nibbles:(e,{it,me,ask})=>{
     if(G.items.letter){
       it("Bonjour! A letter from cousin Squeaks? How delightful!");
       it("*read read* ...Oh ho ho! Let me write back right away.");
-      it("Please bring Squeaks my letter, and this fresh cheese! Merci, little chick!",()=>{G.items.letter=0;G.items.cheese=1;toast('Got cheese for Squeaks!');SFX.pick();save();});
+      it("Please bring Squeaks my letter, and this fresh cheese! Merci, little chick!",()=>{G.items.letter=0;G.items.cheese=1;tasteFood('cheese');toast('Got cheese for Squeaks!');SFX.pick();save();});
     }else if(G.items.cheese)it("Hurry, hurry! Bring that cheese to Squeaks in the barn before I eat it myself!");
     else{it(G.q.squeaks===2?"Squeaks says thank you! You are a very fine mail carrier.":"Bonjour! I am Nibbles, chef of this kitchen. Mind the crumbs, s'il vous plait!");
       if(!G.cellar)it("Psst... One of the floorboards near the bedroom creaks. I think something is hidden underneath!");}

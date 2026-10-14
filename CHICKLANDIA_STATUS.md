@@ -10,6 +10,44 @@
 - Hazards and secret spots live in `src/systems/hazards.js`. Pause menu in `src/ui/pause.js`.
 - Not yet verified: real-device touch for the new pause button, audio volume by ear, walking (not teleporting) to each new secret spot.
 
+## 0b. Phase 2 (growth backbone): built (Oct 14, 2026)
+
+Pip now grows through **growth points (GP)**. Data: `src/content/ranks.js` (ranks, GP values, Taste Log foods). Logic: `src/systems/ranks.js` (GP, rank-up scene, snack bowl, treasure sense), `src/systems/festival.js` (finale + credits), `src/ui/journal.js` (Growth Journal, 3rd page of the Growth screen: press X/B to flip).
+
+| Rank | Name | GP | Story gate | Perk |
+|---|---|---|---|---|
+| 1 | Teeny Peep | 0 | | |
+| 2 | Little Chick | 40 | | +5% speed |
+| 3 | Growing Chick | 100 | | hidden things twinkle when close |
+| 4 | Big Chick | 170 | | +1 heart |
+| 5 | Almost a Chicken | 210 | learned Flight | fly-map trip takes half as long |
+| 6 | Young Chicken | 300 | | harvests +1 seed; new white-feather sprite |
+| 7 | Grown-Up Chicken | 390 | Coming-of-Age Festival | +1 heart, accessory slot; adult sprite |
+| 8-10 | Village Hero / Captain of the Seas / Legend | 650 / 850 / 1100 | later expansions | sash / badge / aura drawn already; perks later |
+
+**Where growth comes from** (as built): quest 10 (Part 1) / 12 (Part 2); training 8; skill 5; first taste of a food 4; minigame first win 8, repeat 2 (max 3 a day); secret area 6; hidden seed 2; new outfit 3; coop upgrade 6; garden harvest 1; snack bowl 1 per seed (the bowl is in both coops once Flight is learned).
+
+**Growth budget (all of it, no garden/snack):**
+
+| | Part 1 | Part 2 |
+|---|---|---|
+| Quests | 11 x 10 = 110 | 9 x 12 = 108 |
+| Trainings | 2 x 8 = 16 | 2 x 8 = 16 |
+| Skills | 8 x 5 = 40 | 4 x 5 = 20 |
+| Taste Log | worm, carrot, apple, cheese = 16 | acorn, fish, snowberry = 12 |
+| Minigames (first win) | 3 x 8 = 24 | |
+| Secret areas | 3 x 6 = 18 | |
+| Hidden seeds | 5 x 2 = 10 | 4 x 2 = 8 |
+| Outfits | 8 x 3 = 24 | |
+| Coop upgrades | | 3 x 6 = 18 |
+| **Total** | **258** | **182** |
+
+Rank 5 (210) is 81% of Part 1. Rank 7 (390) needs all of Part 1 plus Part 2's required content (quests 108 + coop 18 = 126), so skipping Part 2's optional content still works; the garden and snack bowl fill any gap. **Festival trigger:** all 9 Part 2 quests, coop level 4, 390+ GP, then talk to Granny Shell. If points come before the story event the HUD bar flashes FULL! and the hint system names the event.
+
+**Save:** progress keeps `chicklandia_save_v2`; new fields gp, rank, taste, secrets, mgFirst, mgDay, acc. Old saves get retroactive growth on load (quests, trainings, skills, outfits, minigames, secrets, hidden seeds, coop, harvests) and a "You've grown!" message.
+
+**Not verified:** how the rank-up fanfare sounds, real-device touch for the Growth Journal page button, and a long human playthrough to tune the GP numbers.
+
 ## 1. Snapshot
 
 | | |

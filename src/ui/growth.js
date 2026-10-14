@@ -1,13 +1,14 @@
 'use strict';
 /* ---------------- growth tree ---------------- */
 let growPage=0;
-const TREE=()=>growPage?SKILLS2:SKILLS;
+const TREE=()=>growPage===1?SKILLS2:SKILLS;
 function openGrow(){state='grow';SFX.menu();growMsg=null;growPage=G.part2?1:0;growSel=0;const i=TREE().findIndex(s=>!has(s.id)&&s.req.every(has));if(i>=0)growSel=i;}
 function skillState(s){if(has(s.id))return'learned';if(!s.req.every(has))return'locked';if(TRAIN[s.id]&&G.train[s.id]!==2)return'train';return'open';}
 function updateGrow(){
   if(lvlAnim>0)lvlAnim--;
   if(pressed.grow||pressed.back||pressed.quest){state='play';SFX.menu();return;}
-  if(pressed.b&&G.part2){growPage^=1;growSel=0;growMsg=null;SFX.menu();return;}
+  if(pressed.b){const pg=G.part2?[0,1,2]:[0,2];growPage=pg[(pg.indexOf(growPage)+1)%pg.length];growSel=0;growMsg=null;SFX.menu();return;}
+  if(growPage===2)return;
   const SKILLS=TREE();
   const cur=SKILLS[growSel];
   const dirs=[['up',0,-1],['down',0,1],['left',-1,0],['right',1,0]];
@@ -21,7 +22,7 @@ function updateGrow(){
     else if(st==='locked'){growMsg={s:'Learn '+cur.req.filter(r=>!has(r)).map(r=>SKILLS.find(x=>x.id===r).name).join(' & ')+' first!',c:'#ff8080'};SFX.deny();}
     else if(st==='train'){growMsg={s:trainMsg(cur.id),c:'#ff9cd0'};SFX.deny();}
     else if(G.seeds<cur.cost){growMsg={s:'You need '+(cur.cost-G.seeds)+' more seed'+(cur.cost-G.seeds>1?'s':'')+'. Help the animals!',c:'#ff8080'};SFX.deny();}
-    else{G.seeds-=cur.cost;G.skills.add(cur.id);G.hearts=maxHearts();lvlAnim=110;SFX.lvl();growMsg={s:cur.learn,c:'#ffd83a'};toast(cur.name+': '+cur.learn);save();}
+    else{G.seeds-=cur.cost;G.skills.add(cur.id);gainGP(GP.skill);G.hearts=maxHearts();lvlAnim=110;SFX.lvl();growMsg={s:cur.learn,c:'#ffd83a'};toast(cur.name+': '+cur.learn);save();}
   }
 }
 

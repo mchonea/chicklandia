@@ -10,6 +10,7 @@ function hint2(){
   for(const id of ORDER2){if(G.q[id]===0)return INTRO2[id];}
   for(const id of ORDER2){if(G.q[id]===1)return QUESTS[id].hint();}
   if(G.coop&&G.coop.lv<4)return "Upgrade your coop! Read the sign next to it.";
+  if(!G.flags.festival)return festivalReady()?"Talk to Granny Shell in the forest: it's time for the festival!":"Almost there! Keep growing: garden harvests, secrets and the snack bowl all help. Then see Granny Shell.";
   return "Your Dream Coop is finished! What a journey, little one.";
 }
 function areaOf(cs=CS){const r=regionAt(cs);return r?r.area:null;}
@@ -32,7 +33,7 @@ function trainTalk(e,it){
   for(const k in TRAIN){const t=TRAIN[k];if(t.who!==e.id)continue;
     const st=G.train[k]||0;if(st===2||has(k)||!t.avail())return false;
     if(st===0){t.intro.forEach((l,i)=>it(l,i===t.intro.length-1?()=>{G.train[k]=1;spawnTrain(k);toast(t.title+' started!','#ff9cd0');SFX.magic();save();}:null));return true;}
-    if(trainCount(k)>=t.need){t.done.forEach((l,i)=>it(l,i===t.done.length-1?()=>{G.train[k]=2;G.items[t.item]=0;SFX.lvl();
+    if(trainCount(k)>=t.need){t.done.forEach((l,i)=>it(l,i===t.done.length-1?()=>{G.train[k]=2;G.items[t.item]=0;SFX.lvl();gainGP(GP.training);
       toast('You can now learn '+t.skill+'! Press E','#ff9cd0');save();}:null));return true;}
     it(t.remind());return true;}
   return false;
@@ -79,7 +80,7 @@ function upgradeCoop(){
   const u=UPGRADES[G.coop.lv+1];
   const cost=upCost(u);
   if(G.seeds<cost){SFX.deny();say([{who:'me',text:"I need "+(cost-G.seeds)+" more seeds for that upgrade. Better get gardening!"}]);return;}
-  G.seeds-=cost;G.coop.lv++;applyCoop(false);shake=8;SFX.lvl();
+  G.seeds-=cost;G.coop.lv++;gainGP(GP.coop);applyCoop(false);shake=8;SFX.lvl();
   const S=SITES[G.coop.site];for(let i=0;i<40;i++)puff((S.c+1.5)*16,(S.r+1)*16,1,['#ffd83a','#fff8ec','#ff6fae','#a6e0ff'],2.4,0.05);
   const lv=G.coop.lv;toast('COOP LEVEL '+lv+'!');save();
   const msg=lv===2?"Mama Hen moved into my coop! She's inside right now!":lv===3?"Penny and the triplets moved in! The whole family is together again!":"A GOLDEN ROOF! It's my DREAM COOP! Everyone's inside for a party!";
@@ -95,7 +96,7 @@ function usePlot(e){
   if(!s){if(G.seeds<1){SFX.deny();float(e.x,e.y-16,'Need a seed!','#ff8080');return;}
     G.seeds--;G.plots[e.id]={p:0};SFX.pop();puff(e.x,e.y-4,6,['#9a6234','#94dc64'],0.8,0.05);float(e.x,e.y-16,'Planted!','#94dc64');save();return;}
   if(s.p<1){float(e.x,e.y-16,'Growing... '+Math.floor(s.p*100)+'%','#94dc64');SFX.menu();return;}
-  delete G.plots[e.id];addSeeds(3,2,0);G.harvests++;SFX.seed();puff(e.x,e.y-10,10,['#ffd83a','#fff8ec'],1.2,0.05);float(e.x,e.y-18,'+3 SEEDS!','#ffd83a');save();
+  const yield_=3+(G.rank>=6?1:0);delete G.plots[e.id];addSeeds(yield_,2,0);G.harvests++;gainGP(GP.harvest);SFX.seed();puff(e.x,e.y-10,10,['#ffd83a','#fff8ec'],1.2,0.05);float(e.x,e.y-18,'+'+yield_+' SEEDS!','#ffd83a');save();
 }
 /* ---- followers (fawn & baby turtles) ---- */
 function followerCount(){return ents.filter(d=>(d.type==='duckling'||d.type==='follower')&&d.mode==='follow').length;}
@@ -139,7 +140,7 @@ function updateMap(){
 }
 function updateFlying(){
   FLY.t++;if(FLY.t%14===0)SFX.flap();
-  if(FLY.t>=110){const d=destOf(FLY.dest),name=AREA_LABEL[FLY.dest];state='play';FLY=null;
+  if(FLY.t>=(G.rank>=5?55:110)){const d=destOf(FLY.dest),name=AREA_LABEL[FLY.dest];state='play';FLY=null;
     warpTo(d.x,d.y,0,null,()=>toast('Welcome to the '+name+'!','#94dc64'));}
 }
 function drawMap(){

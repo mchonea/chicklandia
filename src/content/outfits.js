@@ -9,5 +9,6 @@ const OUTFITS=[
   {id:'ears',name:'BUNNY EARS',bonus:'Hoppity: move 20% faster.',how:'Win a game in a secret burrow.',desc:'Hop hop hooray!'},
   {id:'crown',name:'GOLDEN CROWN',bonus:'Royal reward: +1 seed from every quest.',how:'Find a hidden treasure chest.',desc:'Fit for the ruler of all Chicklandia!'},
   {id:'pirate',name:'PIRATE',bonus:'Treasure sense: hidden treasures and secrets sparkle.',how:'Win a game under the moon.',desc:'Arr! Yo ho ho and a bucket of seeds!'}];
+const ACCESSORY_IDS=['bow','shades','ears','crown'];   // fit the accessory slot that opens at rank 7
 const SHOP=['straw','astronaut','shades','ninja'];
 const OUTFIT_RENAME={crown:'ninja',explorer:'crown',bandana:'astronaut',cape:'pirate'};

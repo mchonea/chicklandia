@@ -8,20 +8,27 @@ let growSel=0,lvlAnim=0,growMsg=null,titleSel=0,FT=0,END=null,questPage=0;
 
 function has(s){return G&&G.skills.has(s);}
 function level(){return 1+G.skills.size;}
-function stage(){return Math.min(4,Math.floor((level()-1)/2));}
-function wearing(id){return !!G&&G.wear===id;}
-function maxHearts(){return 3+(has('down')?1:0)+(has('tough')?1:0)+(has('golden')?1:0)+(wearing('bow')?1:0);}
-function speed(){return ((has('quick')?1.45:1.05)+(has('golden')?0.2:0))*(wearing('ears')?1.2:1)+(wearing('ninja')?0.12:0);}
+function stage(){return G?stageOfRank(G.rank):0;}
+function wearing(id){return !!G&&(G.wear===id||G.acc===id);}
+function maxHearts(){return 3+(has('down')?1:0)+(has('tough')?1:0)+(has('golden')?1:0)+(wearing('bow')?1:0)+(G.rank>=4?1:0)+(G.rank>=7?1:0);}
+function speed(){return ((has('quick')?1.45:1.05)+(has('golden')?0.2:0))*(wearing('ears')?1.2:1)*(G.rank>=2?1.05:1)+(wearing('ninja')?0.12:0);}
 function priceOf(o){return Math.max(1,o.price-(wearing('shades')?1:0));}
 function upCost(u){return Math.max(1,u.cost-(wearing('shades')?1:0));}
-function setWear(id){G.wear=id;G.hearts=Math.min(G.hearts,maxHearts());}
+// outfits: one slot until rank 7, then an outfit slot plus an accessory slot. setWear(id) toggles; setWear(null) takes everything off.
+function setWear(id,forceOn){
+  if(!id){G.wear=null;G.acc=null;}
+  else if(!forceOn&&wearing(id)){if(G.wear===id)G.wear=null;if(G.acc===id)G.acc=null;}
+  else if(G.rank<7){G.wear=id;G.acc=null;}
+  else if(ACCESSORY_IDS.includes(id))G.acc=id;
+  else G.wear=id;
+  G.hearts=Math.min(G.hearts,maxHearts());}
 function strawBonus(x,y){if(wearing('straw')&&Math.random()<0.25){G.seeds++;G.earned++;SFX.seed();float(x,y-26,'+1 SEED (hat!)','#ffd83a');}}
 
 function freshState(){
   return {seeds:0,skills:new Set(),hearts:3,q:{mom:0,daisy:0,pig:0,duck:0,sheep:0,rooster:0,penny:0,clyde:0,squeaks:0,biscuit:0,whiskers:0,
       granny:0,bucky:0,doe:0,mo:0,elda:0,pidge:0,remy:0,pinch:0,sandy:0},
     items:{worm:0,bell:0,apple:0,feather:0,carrot:0,bone:0,yarn:0,letter:0,cheese:0,acorn:0,stick:0,shell:0,fish:0,snowberry:0,eagleEgg:0,horseshoe:0,puff:0,ring:0,stump:0},collected:new Set(),mods:{},picked:{},foxGone:false,gooseGone:false,
-    sp1:0,sp2:0,earned:0,time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
+    sp1:0,sp2:0,earned:0,gp:0,rank:1,taste:{},secrets:{},mgFirst:{},mgDay:{d:-1,n:0},acc:null,accessoryUnlocked:false,snackFirst:false,snackEaten:0,growMsgOnLoad:false,time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
     clock:Math.round(DAY*0.07),weather:'clear',wInt:0,puddle:0,outfits:[],wear:null,best:{egg:0,bonk:0,ffly:0},cellar:false,chest:false,
     part2:false,areas:['farm'],thumb:false,coop:null,plots:{},mail:{rocco:0,cleo:0,granny:0},flags:{},turtles:[],harvests:0,train:{}};
 }
@@ -33,7 +40,7 @@ function newGame(){
 function save(){
   if(!G)return;titleSave=undefined;
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({sv:3,pos:toRegionPos(P.x,P.y),seeds:G.seeds,skills:[...G.skills],hearts:G.hearts,q:G.q,
-    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,
+    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,gp:G.gp,rank:G.rank,taste:G.taste,secrets:G.secrets,mgFirst:G.mgFirst,mgDay:G.mgDay,acc:G.acc,accessoryUnlocked:G.accessoryUnlocked,snackFirst:G.snackFirst,snackEaten:G.snackEaten,
     time:G.time,met:[...G.met],home:G.home,sibs:G.sibs,visited:[...G.visited],won:G.won,
     clock:G.clock,weather:G.weather,outfits:G.outfits,wear:G.wear,best:G.best,cellar:G.cellar,chest:G.chest,
     part2:G.part2,areas:G.areas,thumb:G.thumb,coop:G.coop,plots:G.plots,mail:G.mail,flags:G.flags,turtles:G.turtles,harvests:G.harvests,train:G.train,ov:2}));}catch(e){}
@@ -51,7 +58,8 @@ function continueGame(){
   {const p=s.pos?fromRegionPos(s.pos):{x:s.x,y:s.y};P=newPlayer(p.x,p.y);CS=s.pos?{x:Math.floor(p.x/256),y:Math.floor((p.y-1)/192)}:(s.cs||{x:0,y:0});if(!cellAt(CS)){P=newPlayer(56,76);CS={x:0,y:0};}}
   camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
   G.train=Object.assign({},s.train||{});migrateSave(s);
-  migrateSeeds(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();state='play';fade=1;fadeColor='#000';
+  migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();state='play';fade=1;fadeColor='#000';
+  if(G.growMsgOnLoad){G.growMsgOnLoad=false;toast("You've grown! You are now a "+RANKS[G.rank-1].name+'!','#94dc64');}
 }
 
 /* ---------------- entities ---------------- */
@@ -83,6 +91,7 @@ function makeEnts(){
   placeHome();
   for(const k in G.mods){const h=HIDDEN[k];if(h&&!G.collected.has(h.id)){const [c,r]=k.split(',').map(Number);spawnItem(h.id,h.kind,c*16+8,r*16+12);}}
   for(const k in G.picked){const [x,y,kind='apple']=G.picked[k],id=kind+'_'+k;if(!G.collected.has(id))spawnItem(id,kind,x,y);}
+  addEnt({type:'bowl',x:184,y:28*16+12});addEnt({type:'bowl',x:44*16+8,y:52*16+12});
   makeP2Ents();
   if(!G.foxGone){const p=at(27,16);addEnt({type:'fox',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:1,sy:1,hp:3,wt:0,wx:0,wy:0,kt:0,stun:0,cool:0,flash:0,flip:false});}
   if(!G.gooseGone){const p=at(43,18);addEnt({type:'goose',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:2,sy:1,st:'idle',t:0,kt:0,cool:0,flash:0,flip:false,solid:true,w:14});}

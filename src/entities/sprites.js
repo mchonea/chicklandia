@@ -157,13 +157,20 @@ function chickSprite(stage,dir,frame,flap,gold=false){
     ell(cx-rx-2.6,wy,4.4,2.3,WC);ell(Wd-(cx-rx-2.6),wy,4.4,2.3,WC);
     if(gold){ell(cx-rx-3.4,wy-0.7,2.2,0.8,'n');ell(Wd-(cx-rx-3.4),wy-0.7,2.2,0.8,'n');put(cx-rx-6.6,wy,'w');put(Wd-1-Math.floor(cx-rx-6.6),wy,'w');put(cx-rx-5.6,wy+1,'Q');put(Wd-1-Math.floor(cx-rx-5.6),wy+1,'Q');}
     if(stage>=3){put(cx-rx-6,wy,'w');put(Wd-1-Math.floor(cx-rx-6),wy,'w');}}
-  ell(cx+(side?S*0.06:0),by,rx,ry,'y');
+  const BC=stage>=6?'w':'y';
+  ell(cx+(side?S*0.06:0),by,rx,ry,BC);
+  if(stage===5){for(let y=0;y<Hd;y++)for(let x=0;x<Wd;x++)if(g[y][x]==='y'&&(x*3+y*5)%7<3&&y>by-ry*0.4)g[y][x]='w';}
   if(side&&!flap){ell(cx+S*0.14,by+0.3,rx*0.5,ry*0.6,gold?'Q':'Y');if(gold)put(cx+S*0.14-1,by+ry*0.5,'w');}
   if(!side&&!flap){ell(cx-rx+1.3,by+0.5,1.6,ry*0.62,gold?'Q':'Y');ell(Wd-(cx-rx+1.3),by+0.5,1.6,ry*0.62,gold?'Q':'Y');
     if(gold){put(cx-rx+0.5,by-ry*0.4,'w');put(Wd-1-Math.floor(cx-rx+0.5),by-ry*0.4,'w');}}
   if(side){put(cx+rx+S*0.06-0.5,by-ry*0.5,'Y');put(cx+rx+S*0.06+0.5,by-ry*0.8,'Y');}
-  ell(hx,hy,hr,hr*0.95,'y');
-  if(stage>=2){const t=Math.floor(hy-hr);put(hx-1,t,'r');put(hx,t,'r');put(hx,t-1,'r');if(stage>=3){put(hx+1,t,'r');put(hx-1,t-1,'r');}}
+  ell(hx,hy,hr,hr*0.95,BC);
+  if(stage===5){for(let y=0;y<Hd;y++)for(let x=0;x<Wd;x++)if(g[y][x]==='y'&&y<hy&&(x*5+y*3)%9<2)g[y][x]='w';}
+  if(stage>=2){const t=Math.floor(hy-hr);put(hx-1,t,'r');put(hx,t,'r');put(hx,t-1,'r');if(stage>=3){put(hx+1,t,'r');put(hx-1,t-1,'r');}
+    if(stage>=4){put(hx+1,t-1,'r');put(hx,t-2,'r');put(hx-2,t,'r');}if(stage>=6){put(hx-1,t-2,'r');put(hx+1,t-2,'r');put(hx,t-3,'r');}}
+  if(stage>=6&&dir===0){const wy=Math.floor(hy+hr*0.4)+1;put(Wd/2-1,wy,'r');put(Wd/2,wy,'r');put(Wd/2-1,wy+1,'R');put(Wd/2,wy+1,'R');}
+  if(stage>=6&&side){const tx=cx+rx+S*0.06;for(let k=0;k<4;k++){put(tx+k*0.9,by-ry*0.4-k*1.1,k%2?'q':'Y');put(tx+k*0.9+0.9,by-ry*0.4-k*1.1+0.9,'q');}}
+  if(stage>=5&&!flap&&!side){ell(cx-rx+1.3,by+0.5,1.6,ry*0.62,gold?'Q':stage>=6?'q':'Y');ell(Wd-(cx-rx+1.3),by+0.5,1.6,ry*0.62,gold?'Q':stage>=6?'q':'Y');}
   if(dir===0){const xl=Math.floor(hx-hr*0.45),xr=Wd-1-xl,ey=Math.floor(hy);put(xl,ey,'k');put(xr,ey,'k');
     const by2=Math.floor(hy+hr*0.4);put(Wd/2-1,by2,'o');put(Wd/2,by2,'o');
     if(stage<2){put(xl-1,by2,'p');put(xr+1,by2,'p');}}

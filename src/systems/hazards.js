@@ -116,7 +116,7 @@ function drawHaz(e,sx,sy){
       if(e.stun>0&&e.kt<=0){ctx.fillStyle='#ffd83a';const a=tick/6;ctx.fillRect(sx+Math.round(Math.cos(a)*6),sy-14,2,2);ctx.fillRect(sx+Math.round(Math.cos(a+3.1)*6),sy-14,2,2);}
       break;}
     case 'spot':{
-      const pir=wearing('pirate'),twinkle=tick%48<24;
+      const pir=senseNear(e.x,e.y),twinkle=tick%48<24;
       if(e.skind==='log'){ctx.fillStyle='#21142b';ctx.fillRect(sx-8,sy-8,16,9);ctx.fillStyle='#9a6234';ctx.fillRect(sx-7,sy-7,14,7);ctx.fillStyle='#5e3a1c';ctx.fillRect(sx-7,sy-3,14,3);ctx.fillStyle='#21142b';ctx.fillRect(sx+3,sy-6,4,5);ctx.fillStyle='#c49a5c';ctx.fillRect(sx-6,sy-7,6,1);}
       else if(e.skind==='ice'){const glow=wearing('astronaut')||pir;ctx.fillStyle='#21142b';ctx.fillRect(sx-8,sy-9,16,10);ctx.fillStyle='#e8f0f8';ctx.fillRect(sx-7,sy-8,14,8);ctx.fillStyle='#cfdcec';ctx.fillRect(sx-5,sy-5,10,5);
         ctx.fillStyle=glow?(twinkle?'#a6e0ff':'#6ab4ff'):'#2a3a5a';ctx.fillRect(sx-3,sy-6,6,6);ctx.fillStyle=glow?'#fff8ec':'#21142b';ctx.fillRect(sx-1,sy-4,2,3);}

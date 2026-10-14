@@ -27,10 +27,10 @@ function drawWorld(){
   if(G.coop&&G.coop.lv>=4&&regionAt().id==='coop'){const cols=['#e03838','#ffd83a','#3a86e8','#94dc64','#ff6fae'];
     for(let i=0;i<30;i++){const bx=34+i*6.4,by=HUD+48+Math.round(Math.sin(i/2.5)*2);ctx.fillStyle=cols[i%5];ctx.fillRect(bx|0,by,5,2);ctx.fillRect((bx+1)|0,by+2,3,2);ctx.fillRect((bx+2)|0,by+4,1,1);}
     if(tick%8===0)parts.push({x:camX+40+Math.random()*176,y:camY+50,vx:(Math.random()-.5)*0.4,vy:0.4+Math.random()*0.4,g:0,life:120,c:cols[(Math.random()*5)|0]});}
-  if(wearing('pirate')&&Math.floor(tick/8)%3){ctx.fillStyle=Math.floor(tick/16)%2?'#ffd21e':'#fff8ec';
+  if((wearing('pirate')||rankAtLeast(3))&&Math.floor(tick/8)%3){ctx.fillStyle=Math.floor(tick/16)%2?'#ffd21e':'#fff8ec';
     for(let r=r0;r<=r0+12;r++)for(let c=c0;c<=c0+16;c++){const k=c+','+r,ch=tileAt(c,r),h=HIDDEN[k];
       const secret=(h&&!G.collected.has(h.id)&&'RCL'.includes(ch))||(c===18&&r===16&&ch==='L')||ch==='Z';
-      if(secret){const sx=c*16-cx,sy=r*16-cy+HUD,o=(tick/6+c*3+r)%12|0;ctx.fillRect(sx+2+o,sy+3,1,1);ctx.fillRect((sx+12-o/2)|0,sy+9,1,1);ctx.fillRect(sx+7,sy+1+(o%5),1,1);}}}
+      if(secret&&senseNear(c*16+8,r*16+8)){const sx=c*16-cx,sy=r*16-cy+HUD,o=(tick/6+c*3+r)%12|0;ctx.fillRect(sx+2+o,sy+3,1,1);ctx.fillRect((sx+12-o/2)|0,sy+9,1,1);ctx.fillRect(sx+7,sy+1+(o%5),1,1);}}}
   for(const e of ents)if(e.type==='hole'&&onCur(e)){const hx=Math.round(e.x-cx),hy=Math.round(e.y-cy+HUD);
     ctx.fillStyle=PAL.B;ctx.fillRect(hx-7,hy-5,14,6);ctx.fillStyle='#140a08';ctx.fillRect(hx-6,hy-4,12,4);
     if(e.up>0){const s=e.gold?SPR.carrotG:SPR.carrot,rise=Math.min(7,e.up,e.max-e.up+1),vis=Math.min(s.height,rise+1);
@@ -80,9 +80,12 @@ function drawEnt(e){
       if(state==='play'||state==='talk'){const m=questMarker(e);if(m&&!(dlg&&dlg.lines[dlg.i].who===e))drawImg(m,sx-(m.width>>1),top-m.height-3+Math.round(Math.sin(tick/9)*1.5));}
       break;}
     case 'hive':case 'bees':case 'snowball':case 'crab':case 'spot':drawHaz(e,sx,sy);break;
+    case 'bowl':{if(!has('fly'))break;ctx.fillStyle='#21142b';ctx.fillRect(sx-6,sy-6,12,7);ctx.fillStyle='#c49a5c';ctx.fillRect(sx-5,sy-5,10,5);ctx.fillStyle='#9a6234';ctx.fillRect(sx-5,sy-2,10,2);
+      ctx.fillStyle='#e8c88a';ctx.fillRect(sx-3,sy-7,2,2);ctx.fillRect(sx,sy-8,2,2);ctx.fillRect(sx+2,sy-7,2,2);ctx.fillRect(sx-4,sy-6,2,1);
+      if(tick%90<8){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-9,1,1);}break;}
     case 'worm':{const s=SPR.worm[Math.floor((tick+e.phase)/12)%2];drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'carrot':{const s=SPR.carrot,w=Math.floor((tick+e.x)/40)%2;drawImg(s,sx-(s.width>>1)+w,sy+2-s.height);break;}
-    case 'mound':{const s=SPR.mound;drawImg(s,sx-(s.width>>1),sy+2-s.height);if(wearing('pirate')&&(e.has==='seed'||e.has==='bone')&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx-1,sy-8,2,2);ctx.fillRect(sx+4,sy-5,1,1);}break;}
+    case 'mound':{const s=SPR.mound;drawImg(s,sx-(s.width>>1),sy+2-s.height);if(senseNear(e.x,e.y)&&(e.has==='seed'||e.has==='bone')&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx-1,sy-8,2,2);ctx.fillRect(sx+4,sy-5,1,1);}break;}
     case 'block':{drawImg(SPR.block,sx-8,sy-16);
       if(PLATES.some(([c,r])=>c===e.bc&&r===e.br)&&!e.sl){ctx.fillStyle=Math.floor(tick/15)%2?'#ffd21e':'#fff3a0';ctx.fillRect(sx-5,sy-12,10,1);}break;}
     case 'chest':{const s=G.chest?SPR.chestOpen:SPR.chest;drawImg(s,sx-(s.width>>1),sy+1-s.height);
@@ -125,8 +128,11 @@ function drawHUD(){
   drawImg(SPR.seed,6,17);txt('x'+G.seeds,16,19,7,'#fff8ec');
   drawImg(nightAmt()>0.5?ICO.moon:(duskAmt()>0.3?ICO.dusk:ICO.sun),40,17);
   if(G.weather!=='clear'&&G.wInt>0.3)drawImg(ICO[G.weather],49,17);
-  txt('LV '+level(),74,6,7,'#ffd83a');
-  txt(STAGE_NAMES[stage()],74,19,5,'#b8a8d8');
+  {const rk=RANKS[G.rank-1],nx=nextRank(),full=rankFull();
+   txt(rk.short,74,5,5,'#ffd83a');
+   ctx.fillStyle='#21142b';ctx.fillRect(74,15,80,7);ctx.fillStyle='#3b2a56';ctx.fillRect(75,16,78,5);
+   const fw=Math.round(78*(nx?rankProgress():1));ctx.fillStyle=full?(Math.floor(tick/10)%2?'#fff8ec':'#ffd83a'):'#94dc64';ctx.fillRect(75,16,fw,5);
+   if(full)txt('FULL!',114,24,4,'#fff8ec',{align:'center'});}
   if(!inBeyond()){txt('E:GROW',160,6,6,'#d8c8f8');txt('Q:QUESTS',160,19,6,'#d8c8f8');}
   if(G.wear&&WEAR_ICON[G.wear]){const ic=WEAR_ICON[G.wear];drawImg(ic,60,26-ic.height);}
   {const cl=cellAt();if(cl&&cl.region.id==='rooms'){txt('INSIDE',232,7,5,'#b8a8d8',{align:'center'});txt(cl.label,232,18,5,'#ffd83a',{align:'center'});return;}
@@ -170,12 +176,13 @@ function drawBubble(){
 }
 function drawGrow(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);
+  if(growPage===2){drawJournal();return;}
   box(4,4,W-8,H-8,'#241838',growPage?'#a6e0ff':'#ffd83a');
   const SKILLS=TREE();
   txt(growPage?'SKY TREE':'GROWTH TREE',W/2,10,9,growPage?'#a6e0ff':'#ffd83a',{align:'center',shadow:true});
-  if(G.part2)txt('X: '+(growPage?'farm tree':'sky tree'),W/2,22,5,'#8a7ab0',{align:'center'});
+  txt('X: next page',W/2,22,5,'#8a7ab0',{align:'center'});
   const big=lvlAnim>0?1:0;drawPip(stage(),0,Math.floor(tick/12)%2,lvlAnim>60,28,46,1+big);
-  txt('LV '+level(),48,24,6,'#fff8ec');txt(STAGE_NAMES[stage()],48,34,5,'#b8a8d8');
+  txt(RANKS[G.rank-1].name,48,24,6,'#ffd83a');txt('LV '+level()+'   GROWTH '+G.gp,48,34,5,'#b8a8d8');
   drawImg(SPR.seed,196,22);txt('x'+G.seeds,206,24,7,'#fff8ec');
   for(const s of SKILLS)for(const rq of s.req){const r=SKILLS.find(x=>x.id===rq);const lit=has(rq);
     ctx.fillStyle=lit?'#ffd83a':'#4a3a66';const x0=r.x+13,x1=s.x-13,mx=Math.round((x0+x1)/2);
@@ -295,6 +302,8 @@ function render(){
   else if(state==='egg')drawEgg();
   else if(state==='flying')drawFlying();
   else if(state==='p2intro')drawP2Intro();
+  else if(state==='festival')drawFestival();
+  else if(state==='credits')drawCredits();
   else if(state==='map'){drawWorld();drawEnvFX();drawHUD();TQ=[];drawMap();}
   else{
     drawWorld();drawEnvFX();drawHUD();
@@ -302,6 +311,7 @@ function render(){
     if(state==='grow'){TQ=[];drawGrow();}
     else if(state==='quests'){TQ=[];drawQuests();}
     else if(state==='pause'){TQ=[];drawPause();}
+    else if(state==='rankup'){TQ=[];drawRankUp();}
     else if(state==='shop'){TQ=[];drawShop();}
     else if(state==='wardrobe'){TQ=[];drawWardrobe();}
     else{drawMG();drawToast();if(state==='talk')drawBubble();}

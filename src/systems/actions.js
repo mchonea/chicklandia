@@ -5,6 +5,7 @@ function action(){
   const f=frontPoint();
   for(const e of ents){if(e.type!=='npc'||!onCur(e))continue;
     if(Math.abs(f.x-e.x)<e.w/2+7&&f.y>e.y-20&&f.y<e.y+7){talkTo(e);return;}}
+  for(const e of ents){if(e.type==='bowl'&&has('fly')&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){useBowl(e);return;}}
   for(const e of ents){if(e.type==='chest'&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){openChest();return;}}
   for(const e of ents){if(e.type==='plot'&&onCur(e)&&Math.abs(f.x-e.x)<11&&Math.abs(f.y-(e.y-5))<11){P.peckT=10;usePlot(e);return;}}
   const c=Math.floor(f.x/16),r=Math.floor(f.y/16);
@@ -23,11 +24,11 @@ function peck(f){
   for(const e of ents){
     if(hazardPeck(e,f,pr))return;
     if(e.type==='worm'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
-      e.dead=true;G.collected.add(e.id);G.items.worm++;SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#9a6234']);strawBonus(e.x,e.y);
+      e.dead=true;G.collected.add(e.id);G.items.worm++;tasteFood('worm');SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#9a6234']);strawBonus(e.x,e.y);
       float(e.x,e.y-14,'WORM '+Math.min(G.items.worm,3)+'/3','#f6a6b6');
       if(G.items.worm===3&&G.q.mom===1)toast('Go show Mama Hen!');save();return;}
     if(e.type==='carrot'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
-      e.dead=true;G.collected.add(e.id);G.items.carrot++;SFX.pick();puff(e.x,e.y-4,8,['#f37d22','#2f7d3a','#9a6234']);strawBonus(e.x,e.y);
+      e.dead=true;G.collected.add(e.id);G.items.carrot++;tasteFood('carrot');SFX.pick();puff(e.x,e.y-4,8,['#f37d22','#2f7d3a','#9a6234']);strawBonus(e.x,e.y);
       float(e.x,e.y-14,'CARROT '+Math.min(G.items.carrot,3)+'/3','#f37d22');save();return;}
     if(e.type==='mound'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
       if(!has('peck')){SFX.clunk();float(e.x,e.y-14,'Too hard to dig!');return;}
@@ -44,10 +45,10 @@ function peck(f){
       float(e.x,e.y-18,'STUMP '+Math.min(3,G.items.stump)+'/3','#c49a5c');if(G.items.stump>=3)toast('All stumps smashed! Tell Bucky.','#ff9cd0');save();return;}
     if(e.type==='berry'&&Math.abs(e.x-f.x)<13&&Math.abs(e.y-5-f.y)<13){
       if(G.items.snowberry){float(e.x,e.y-16,'You have a snowberry!');SFX.clunk();}
-      else{G.items.snowberry=1;SFX.pick();puff(e.x,e.y-6,6,['#fff8ec','#2f7d3a']);toast('Picked a SNOWBERRY!');save();}return;}
+      else{G.items.snowberry=1;tasteFood('snowberry');SFX.pick();puff(e.x,e.y-6,6,['#fff8ec','#2f7d3a']);toast('Picked a SNOWBERRY!');save();}return;}
     if(e.type==='fishspot'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<14){
       if(G.items.fish){float(e.x,e.y-16,'You already have a fish!');SFX.clunk();}
-      else{G.items.fish=1;SFX.splash();puff(e.x,e.y-4,10,['#a6d0ff','#fff8ec'],1.2,0.08);toast('Caught a FISH!');save();}return;}
+      else{G.items.fish=1;tasteFood('fish');SFX.splash();puff(e.x,e.y-4,10,['#a6d0ff','#fff8ec'],1.2,0.08);toast('Caught a FISH!');save();}return;}
   }
   const c=Math.floor(f.x/16),r=Math.floor(f.y/16),t=tileAt(c,r);
   if(t==='R'||t==='C'){if(has('peck'))breakTile(c,r,t);else{SFX.clunk();float(c*16+8,r*16,'Too hard!');}}
@@ -216,13 +217,13 @@ function updItem(e){
 function collect(e){
   e.dead=true;G.collected.add(e.id);
   switch(e.kind){
-    case 'seed':addSeeds(1,inBeyond(e.x,e.y)?2:1);SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffd83a');toast('Found a hidden seed!');break;
+    case 'seed':addSeeds(1,inBeyond(e.x,e.y)?2:1);gainGP(GP.hiddenSeed);SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffd83a');toast('Found a hidden seed!');break;
     case 'bell':G.items.bell=1;SFX.quest();toast("Found Daisy's bell!");break;
-    case 'apple':G.items.apple++;SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'APPLE '+Math.min(3,G.items.apple)+'/3','#ff8080');break;
+    case 'apple':G.items.apple++;tasteFood('apple');SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'APPLE '+Math.min(3,G.items.apple)+'/3','#ff8080');break;
     case 'bone':G.items.bone=1;SFX.quest();toast("Found Biscuit's bone!");break;
     case 'horseshoe':G.items.horseshoe++;SFX.pick();float(e.x,e.y-16,'HORSESHOE '+Math.min(3,G.items.horseshoe)+'/3','#d8dce8');if(G.items.horseshoe>=3)toast('Found all 3! Bring them to Clyde.','#ff9cd0');break;
     case 'ring':G.items.ring++;SFX.pick();float(e.x,e.y-16,'LIFE RING '+Math.min(3,G.items.ring)+'/3','#ff8080');if(G.items.ring>=3)toast('Found all 3! Bring them to Sandy.','#ff9cd0');break;
-    case 'acorn':G.items.acorn++;SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'ACORN x'+G.items.acorn,'#c49a5c');break;
+    case 'acorn':G.items.acorn++;tasteFood('acorn');SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'ACORN x'+G.items.acorn,'#c49a5c');break;
     case 'stick':G.items.stick++;SFX.pick();float(e.x,e.y-16,'STICK '+Math.min(4,G.items.stick)+'/4','#c49a5c');break;
     case 'shell':G.items.shell++;SFX.pick();float(e.x,e.y-16,'SHELL '+Math.min(5,G.items.shell)+'/5','#f6a6b6');break;
     case 'eagleEgg':G.items.eagleEgg=1;SFX.quest();toast("Found Elda's egg! Carry it gently...");break;
@@ -250,11 +251,11 @@ function updateEnts(){
 /* ---------------- screen transitions ---------------- */
 function checkEdges(){
   const fc=Math.floor(P.x/16),ft=tileAt(fc,Math.floor((P.y-3)/16));
-  if(ft==='^'){warpTo(128,747,1,()=>{if(!G.met.has('bunbun'))toast('A secret burrow!');});return;}
-  if(ft==='Y'){warpTo(384,747,1,()=>{if(!G.cellar){placeBlocks();toast('Push blocks onto the gold plates!');}});return;}
+  if(ft==='^'){warpTo(128,747,1,()=>{secretFound('burrow');if(!G.met.has('bunbun'))toast('A secret burrow!');});return;}
+  if(ft==='Y'){warpTo(384,747,1,()=>{secretFound('cellar');if(!G.cellar){placeBlocks();toast('Push blocks onto the gold plates!');}});return;}
   if(ft==='@'){
     if(regionAt().id==='secrets'){warpTo(216,139,0);return;}
-    if(nightAmt()>0.3){warpTo(648,731,1,()=>{SFX.magic();toast('The Moonlit Grove...','#d890ff');});return;}
+    if(nightAmt()>0.3){warpTo(648,731,1,()=>{secretFound('grove');SFX.magic();toast('The Moonlit Grove...','#d890ff');});return;}
     if(P.bubbleCd<=0){P.bubbleCd=240;float(P.x,P.y-24,'These mushrooms look magical...','#d890ff');}
   }
   if(!WALK.has(CS.x+','+CS.y)){
@@ -277,6 +278,7 @@ function updatePlay(){
   if(trans){updateTrans();updateAmbient();return;}
   if(G.autoMom>0&&--G.autoMom===0){const m=ents.find(e=>e.id==='mom');if(m){talkTo(m);return;}}
   if(pressed.pause||pressed.back){openPause();return;}
+  if(checkRankUp())return;
   if(pressed.grow){openGrow();return;}
   if(pressed.quest){state='quests';questPage=G.part2?1:0;SFX.menu();return;}
   if(pressed.wear){openWardrobe();return;}

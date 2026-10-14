@@ -40,5 +40,23 @@ c.tp(136,1067);c.step(2);save();const before=[P.x,P.y];c.continueGame();ok('save
 state='title';titleSave=undefined;titleSel=1;fade=0;pressed.a=true;c.step(1);ok('newgame_confirm',titleConfirm===true);titleConfirm=false;
 // 5. pause opens and closes
 state='play';c.continueGame();fade=0;pressed.pause=true;c.step(1);const p1=state;pressed.back=true;c.step(1);ok('pause_toggle',p1==='pause'&&state==='play');
+// 6. Phase 2: growth sources, rank-ups, snack bowl, festival
+c.newGame();G=c.G;G.autoMom=0;fade=0;state='play';c.step(2);
+const gd=f=>{const b=G.gp;f();return G.gp-b;};
+ok('gp_quest',gd(()=>reward(3,'daisy'))===10&&gd(()=>reward(2,'granny'))===12);
+ok('gp_taste_once',gd(()=>{tasteFood('worm');tasteFood('worm');})===4);
+ok('gp_minigame',gd(()=>minigameGP('egg',true))===8&&gd(()=>minigameGP('egg',true))===2);
+ok('gp_outfit_once',gd(()=>{grantOutfit('bow');grantOutfit('bow');})===3);
+G.seeds=10;ok('gp_bowl',gd(()=>{useBowl(c.ents.find(e=>e.type==='bowl'));dlg.lines[0].cb(1);})===5);state='play';dlg=null;
+G.gp=45;c.step(2);ok('rankup_starts',state==='rankup'&&RU.to===2);for(let i=0;i<160;i++)c.step(1);ok('rank_applied',G.rank===2);RU=null;state='play';
+G.rank=4;G.gp=215;G.skills.delete('fly');c.step(2);ok('rank5_needs_flight',state==='play'&&rankFull()===true);
+G.skills.add('fly');c.step(2);ok('rank5_with_flight',state==='rankup'&&RU.to===5);RU=null;state='play';
+G.rank=6;ORDER2.forEach(id=>G.q[id]=2);G.coop={site:'forest',lv:4};G.gp=400;G.part2=true;ok('festival_ready',festivalReady()===true);
+c.talk('granny');dlg.lines[dlg.lines.length-1].cb(0);ok('festival_starts',state==='festival');
+let gd2=0;while(state==='festival'&&gd2++<600){pressed.a=true;c.step(4);}ok('festival_to_rank7',state==='rankup'&&RU.to===7&&G.flags.festival===1);
+for(let i=0;i<160;i++)c.step(1);ok('rank7_perks',G.rank===7&&maxHearts()>=5&&stage()===6);
+setWear('straw',true);setWear('crown');ok('accessory_slot',G.wear==='straw'&&G.acc==='crown'&&wearing('crown'));
+// old save migration: growth is awarded retroactively
+{const sv=JSON.parse(localStorage.getItem('chicklandia_save_v2')||'null');}
 R.allPass=Object.values(R).every(v=>v===true);return R;
 })()
