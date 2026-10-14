@@ -2,6 +2,13 @@
 
 *Review date: October 14, 2026*
 
+## 0. Phase 1 progress (updated Oct 14, 2026)
+
+- **1A (restructure): partly done.** Git repo, `src/` split into plain script files (not ES modules, so the dev shell also works from `file://`), `npm run build` -> `dist/chicklandia.html`, `npm run dev` -> http://localhost:8080, duplicate HTML removed, debug hooks only with `?debug=1`. **Not done:** region-based map, Pip position as `{region,x,y}`, content moved to data files.
+- **1B (fixes F1-F13): done and tested by script in a browser.** Part 2 seed budget is now 32 quest seeds + 4 hidden = 36 (counter max `TOTAL_SEEDS2`). Save keys: `chicklandia_save_v2` (progress; old saves migrate seed tallies) and `chicklandia_settings_v1` (settings). Pause: P/Esc or the menu button.
+- Hazards and secret spots live in `src/systems/hazards.js`. Pause menu in `src/ui/pause.js`.
+- Not yet verified: real-device touch for the new pause button, audio volume by ear, walking (not teleporting) to each new secret spot.
+
 ## 1. Snapshot
 
 | | |
