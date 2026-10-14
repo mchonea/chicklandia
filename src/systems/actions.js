@@ -21,6 +21,7 @@ function peck(f){
   if(MG&&MG.type==='ffly')for(const e of ents){if(e.type==='ffly'&&Math.abs(e.x-f.x)<15&&Math.abs(e.y-8-f.y)<15){
     e.dead=true;MG.score++;SFX.chirp();puff(e.x,e.y-8,6,['#e8ff70','#fff8ec'],0.8,0);float(e.x,e.y-16,''+MG.score,'#e8ff70');return;}}
   for(const e of ents){
+    if(hazardPeck(e,f,pr))return;
     if(e.type==='worm'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
       e.dead=true;G.collected.add(e.id);G.items.worm++;SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#9a6234']);strawBonus(e.x,e.y);
       float(e.x,e.y-14,'WORM '+Math.min(G.items.worm,3)+'/3','#f6a6b6');
@@ -96,6 +97,7 @@ function wingFlap(){
       parts.push({x:c*16+8,y:r*16+10,vx:dx*s+(Math.random()-.5)*1.5,vy:dy*s-Math.random()*1.5,g:0.03,life:40,c:['#ec6c24','#e03838','#c98a00','#9a6234'][i%4]});}
       revealHidden(c,r);save();}
   }
+  hazardFlap(dx,dy);
   for(const e of ents){
     if(!((e.type==='fox'&&!e.gone)||(e.type==='goose'&&!e.blown)))continue;
     const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
@@ -124,7 +126,7 @@ function updateWarp(){
   if(WARP.t<=16){fade=WARP.t/16;fadeColor='#000';}
   if(WARP.t===16){P.x=WARP.x;P.y=WARP.y;P.dir=WARP.dir;P.kt=0;P.hop=null;P.z=0;
     CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;
-    if(CS.y<2)G.visited.add(CS.x+','+CS.y);resetEnemies();TRAIL=[];
+    if(CS.y<2||CS.y>=4)G.visited.add(CS.x+','+CS.y);resetEnemies();TRAIL=[];
     for(const d of ents)if((d.type==='duckling'||d.type==='follower')&&d.mode==='follow'){d.x=P.x;d.y=P.y;}
     noteArea();if(WARP.after)WARP.after();save();}
   if(WARP.t>16)fade=Math.max(0,1-(WARP.t-16)/16);
@@ -214,7 +216,7 @@ function updItem(e){
 function collect(e){
   e.dead=true;G.collected.add(e.id);
   switch(e.kind){
-    case 'seed':G.seeds++;G.found++;SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffd83a');toast('Found a hidden seed!');break;
+    case 'seed':addSeeds(1,e.y>=48*16?2:1);SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffd83a');toast('Found a hidden seed!');break;
     case 'bell':G.items.bell=1;SFX.quest();toast("Found Daisy's bell!");break;
     case 'apple':G.items.apple++;SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'APPLE '+Math.min(3,G.items.apple)+'/3','#ff8080');break;
     case 'bone':G.items.bone=1;SFX.quest();toast("Found Biscuit's bone!");break;
@@ -240,6 +242,7 @@ function updateEnts(){
     if(e.type==='block'&&e.sl){const s=e.sl;s.t++;const p=Math.min(1,s.t/8);e.x=lerp(s.x0,e.bc*16+8,p);e.y=lerp(s.y0,e.br*16+16,p);if(s.t>=8){e.sl=null;checkPlates();}continue;}
     if(!onCur(e)&&!(e.type==='fox'&&e.gone)&&!(e.type==='goose'&&e.blown))continue;
     if(e.type==='fox')updFox(e);else if(e.type==='goose')updGoose(e);else if(e.type==='item')updItem(e);else if(e.type==='puff')updPuff(e);
+    else if(e.type==='bees')updBees(e);else if(e.type==='snowball')updBall(e);else if(e.type==='crab')updCrab(e);
   }
   ents=ents.filter(e=>!e.dead);
 }
@@ -273,6 +276,7 @@ function updateTrans(){
 function updatePlay(){
   if(trans){updateTrans();updateAmbient();return;}
   if(G.autoMom>0&&--G.autoMom===0){const m=ents.find(e=>e.id==='mom');if(m){talkTo(m);return;}}
+  if(pressed.pause||pressed.back){openPause();return;}
   if(pressed.grow){openGrow();return;}
   if(pressed.quest){state='quests';questPage=G.part2?1:0;SFX.menu();return;}
   if(pressed.wear){openWardrobe();return;}

@@ -3,7 +3,7 @@
 const keys={},pressed={};
 const KEYMAP={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',
   KeyZ:'a',Space:'a',KeyJ:'a',Enter:'a',NumpadEnter:'a',KeyX:'b',KeyK:'b',KeyE:'grow',Tab:'grow',KeyG:'grow',KeyQ:'quest',
-  KeyM:'mute',KeyC:'wear',KeyF:'fly',Escape:'back',Backspace:'back'};
+  KeyM:'mute',KeyC:'wear',KeyF:'fly',Escape:'back',KeyP:'pause',Backspace:'back'};
 function press(k){if(!keys[k])pressed[k]=true;keys[k]=true;}
 addEventListener('keydown',e=>{const k=KEYMAP[e.code];initAudio();if(!k)return;e.preventDefault();if(e.repeat&&k!=='up'&&k!=='down'&&k!=='left'&&k!=='right')return;press(k);});
 addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)keys[k]=false;});

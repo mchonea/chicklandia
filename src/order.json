@@ -4,6 +4,7 @@
  "world/tiles.js",
  "regions/world.js",
  "entities/sprites.js",
+ "engine/settings.js",
  "engine/audio.js",
  "engine/input.js",
  "engine/state.js",
@@ -12,7 +13,9 @@
  "systems/actions.js",
  "systems/world.js",
  "systems/part2.js",
+ "systems/hazards.js",
  "ui/growth.js",
+ "ui/pause.js",
  "ui/render.js",
  "main.js"
 ]

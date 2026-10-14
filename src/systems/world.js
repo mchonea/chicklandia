@@ -113,7 +113,7 @@ const WEAR_ICON={straw:OUTFIT_SPR.straw,astronaut:makeSprite(['.ccc.','c.w.c','c
 const OUTFIT_RENAME={crown:'ninja',explorer:'crown',bandana:'astronaut',cape:'pirate'};
 function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear){
   if(wear===undefined)wear=G?G.wear:null;
-  const base=chickSprite(st,dir===3?2:dir,fr,flap),spr=dir===3?flipOf(base):base,hd=base.head;
+  const base=chickSprite(st,dir===3?2:dir,fr,flap,has('golden')),spr=dir===3?flipOf(base):base,hd=base.head;
   const w=spr.width,h=spr.height,x0=Math.round(cx-w*sc/2),y0=Math.round(bottom-h*sc);
   const mx=v=>dir===3?w-v:v,hx=x0+mx(hd.x)*sc,top=y0+hd.top*sc,hy=y0+hd.y*sc,R=hd.r*sc;
   const D=(img,x,y,fl)=>{const im=fl?flipOf(img):img;ctx.drawImage(im,Math.round(x),Math.round(y),im.width*sc,im.height*sc);};
@@ -283,7 +283,7 @@ function drawEgg(){
 /* ---- secrets & sleeping ---- */
 function openChest(){
   if(G.chest){say([{who:'me',text:"It's empty now. But what a treasure it was!"}]);return;}
-  G.chest=true;if(!G.outfits.includes('crown'))G.outfits.push('crown');G.seeds+=3;G.found+=3;SFX.chest();shake=3;
+  G.chest=true;if(!G.outfits.includes('crown'))G.outfits.push('crown');addSeeds(3,1);SFX.chest();shake=3;
   toast('TREASURE! Golden Crown + 3 seeds!');save();
   say([{who:'me',text:"Wow! A real GOLDEN CROWN and 3 seeds! I'm the ruler of Chicklandia! Press C to try on outfits!"}]);
 }

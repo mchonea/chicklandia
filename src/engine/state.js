@@ -3,6 +3,7 @@
 const DIRV=[[0,1],[0,-1],[-1,0],[1,0]];
 let state='title',tick=0,G=null,P=null,CS={x:0,y:0},camX=0,camY=0,trans=null,ents=[],TRAIL=[];
 let parts=[],floats=[],toasts=[],dlg=null,shake=0,fade=0,fadeColor='#000';
+let titleSave,titleConfirm=false,confirmSel=1;
 let growSel=0,lvlAnim=0,growMsg=null,titleSel=0,FT=0,END=null,questPage=0;
 
 function has(s){return G&&G.skills.has(s);}
@@ -14,13 +15,13 @@ function speed(){return ((has('quick')?1.45:1.05)+(has('golden')?0.2:0))*(wearin
 function priceOf(o){return Math.max(1,o.price-(wearing('shades')?1:0));}
 function upCost(u){return Math.max(1,u.cost-(wearing('shades')?1:0));}
 function setWear(id){G.wear=id;G.hearts=Math.min(G.hearts,maxHearts());}
-function strawBonus(x,y){if(wearing('straw')&&Math.random()<0.25){G.seeds++;SFX.seed();float(x,y-26,'+1 SEED (hat!)','#ffd83a');}}
+function strawBonus(x,y){if(wearing('straw')&&Math.random()<0.25){G.seeds++;G.earned++;SFX.seed();float(x,y-26,'+1 SEED (hat!)','#ffd83a');}}
 
 function freshState(){
   return {seeds:0,skills:new Set(),hearts:3,q:{mom:0,daisy:0,pig:0,duck:0,sheep:0,rooster:0,penny:0,clyde:0,squeaks:0,biscuit:0,whiskers:0,
       granny:0,bucky:0,doe:0,mo:0,elda:0,pidge:0,remy:0,pinch:0,sandy:0},
     items:{worm:0,bell:0,apple:0,feather:0,carrot:0,bone:0,yarn:0,letter:0,cheese:0,acorn:0,stick:0,shell:0,fish:0,snowberry:0,eagleEgg:0,horseshoe:0,puff:0,ring:0,stump:0},collected:new Set(),mods:{},picked:{},foxGone:false,gooseGone:false,
-    found:0,time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
+    sp1:0,sp2:0,earned:0,time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
     clock:Math.round(DAY*0.07),weather:'clear',wInt:0,puddle:0,outfits:[],wear:null,best:{egg:0,bonk:0,ffly:0},cellar:false,chest:false,
     part2:false,areas:['farm'],thumb:false,coop:null,plots:{},mail:{rocco:0,cleo:0,granny:0},flags:{},turtles:[],harvests:0,train:{}};
 }
@@ -30,9 +31,9 @@ function newGame(){
   TRAIL=[];parts=[];floats=[];toasts=[];makeEnts();G.autoMom=50;state='play';fade=1;fadeColor='#000';
 }
 function save(){
-  if(!G)return;
+  if(!G)return;titleSave=undefined;
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({x:P.x,y:P.y,cs:CS,seeds:G.seeds,skills:[...G.skills],hearts:G.hearts,q:G.q,
-    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,found:G.found,
+    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,
     time:G.time,met:[...G.met],home:G.home,sibs:G.sibs,visited:[...G.visited],won:G.won,
     clock:G.clock,weather:G.weather,outfits:G.outfits,wear:G.wear,best:G.best,cellar:G.cellar,chest:G.chest,
     part2:G.part2,areas:G.areas,thumb:G.thumb,coop:G.coop,plots:G.plots,mail:G.mail,flags:G.flags,turtles:G.turtles,harvests:G.harvests,train:G.train,ov:2}));}catch(e){}
@@ -41,7 +42,7 @@ function loadSave(){try{const s=localStorage.getItem(SAVE_KEY);return s?JSON.par
 function continueGame(){
   const s=loadSave();if(!s){newGame();return;}
   G=freshState();Object.assign(G,{seeds:s.seeds,skills:new Set(s.skills),hearts:s.hearts,q:Object.assign(G.q,s.q),items:Object.assign(G.items,s.items),collected:new Set(s.collected),
-    mods:s.mods||{},picked:s.picked||{},foxGone:s.foxGone,gooseGone:s.gooseGone,found:s.found,time:s.time,met:new Set(s.met),
+    mods:s.mods||{},picked:s.picked||{},foxGone:s.foxGone,gooseGone:s.gooseGone,time:s.time,met:new Set(s.met),
     home:s.home||[],sibs:s.sibs||[],visited:new Set(s.visited||['0,0']),won:!!s.won,
     clock:s.clock||G.clock,weather:s.weather||'clear',outfits:s.outfits||[],wear:s.wear||null,best:Object.assign(G.best,s.best),cellar:!!s.cellar,chest:!!s.chest,
     part2:!!s.part2,areas:s.areas||['farm'],thumb:!!s.thumb,coop:s.coop||null,plots:s.plots||{},mail:Object.assign(G.mail,s.mail),flags:s.flags||{},turtles:s.turtles||[],harvests:s.harvests||0});
@@ -49,7 +50,7 @@ function continueGame(){
   tiles=MAP.map(r=>r.split(''));for(const k in G.mods){const [c,r]=k.split(',').map(Number);tiles[r][c]=G.mods[k];}
   P=newPlayer(s.x,s.y);CS=s.cs||{x:0,y:0};camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
   G.train=Object.assign({},s.train||{});migrateSave(s);
-  G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();state='play';fade=1;fadeColor='#000';
+  migrateSeeds(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();state='play';fade=1;fadeColor='#000';
 }
 
 /* ---------------- entities ---------------- */
@@ -109,6 +110,13 @@ const SITES={
 const OLD_SITES={mountains:{c:2,r:56,plots:[[5,56],[6,56],[1,56],[6,57],[7,57],[7,56],[2,55],[3,55]]},
   city:{c:41,r:64,plots:[[40,64],[40,65],[44,64],[45,64],[41,63],[42,63],[43,63],[45,65]]},
   beach:{c:5,r:76,plots:[[4,76],[4,77],[9,76],[9,77],[4,75],[6,75],[7,75],[10,76]]}};
+// seed tallies: old saves only had one "found" counter that also counted bonus seeds
+function migrateSeeds(s){
+  if(s.sp1!==undefined){G.sp1=s.sp1;G.sp2=s.sp2||0;G.earned=s.earned||0;return;}
+  const f=s.found||0;G.sp1=Math.min(TOTAL_SEEDS,f);G.sp2=G.part2?Math.min(TOTAL_SEEDS2,Math.max(0,f-TOTAL_SEEDS)):0;G.earned=f;
+}
+function addSeeds(n,part,base){G.seeds+=n;G.earned+=n;if(base===undefined)base=n;
+  if(part===2)G.sp2=Math.min(TOTAL_SEEDS2,G.sp2+base);else G.sp1=Math.min(TOTAL_SEEDS,G.sp1+base);}
 function migrateSave(s){
   if(!s.ov){G.outfits=[...new Set(G.outfits.map(id=>OUTFIT_RENAME[id]||id))];if(G.wear)G.wear=OUTFIT_RENAME[G.wear]||G.wear;}
   if(G.coop&&OLD_SITES[G.coop.site]){const o=OLD_SITES[G.coop.site];
@@ -130,6 +138,7 @@ function makeP2Ents(){
   npc('rocco','ROCCO','raccoon',43,68,420,12);
   npc('remy','CHEF REMY','chef',40,77,1100,10);
   npc('cleo','CLEO','catO',35,78,520,12);
+  npc('maggie2','MAGGIE','magpie',43,78,1400,12); // temporary city branch of the boutique (until Phase 3)
   npc('pinch','CAPN PINCH','crab',13,75,350,12);
   npc('sandy','LIFEGUARD SANDY','gull',6,74,900,10);
   ['mokid1','mokid2'].forEach((id,i)=>{const n=npc(id,'BABY MARMOT','mokid',G.flags.mo?11+i:5+i*2,G.flags.mo?53:51,1300,6);n.deco2=true;n.solid=false;});
@@ -143,6 +152,7 @@ function makeP2Ents(){
   addEnt({type:'berry',x:13*16+8,y:56*16+12,solid:true,w:12});
   addPlot(5,64,false);addPlot(6,64,false);
   if(G.coop){applyCoop(!!G.coop.fresh);delete G.coop.fresh;}
+  makeHazards();
   for(const k in TRAIN)if(G.train[k]===1)spawnTrain(k);
 }
 function addPlot(c,r,coop){const id='plot_'+c+'_'+r;if(!ents.some(e=>e.id===id))addEnt({type:'plot',id,x:c*16+8,y:r*16+12,coop});}
@@ -174,6 +184,7 @@ function placeHome(){
   for(const e of ents)if(e.type==='duckling'&&e.mode==='home'){const k=G.home.indexOf(e.id);e.x=duck.x-16-k*10;e.y=duck.y+2;e.flip=true;}
 }
 function resetEnemies(){
+  resetHazards();
   for(const e of ents){if(e.type==='fox'||e.type==='goose'){if(e.gone||e.blown)continue;e.x=e.hx;e.y=e.hy;e.kt=0;e.stun=0;e.cool=30;e.st='idle';}}
 }
 function onCur(e){return Math.floor(e.x/256)===CS.x&&Math.floor((e.y-1)/192)===CS.y;}

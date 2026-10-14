@@ -3,7 +3,7 @@
    RENDERING
    ===================================================================== */
 let TQ=[];
-function txt(s,x,y,size=7,color='#fff8ec',o={}){TQ.push({s:tt(s),x,y,size,color,align:o.align||'left',shadow:o.shadow,alpha:o.alpha==null?1:o.alpha});}
+function txt(s,x,y,size=7,color='#fff8ec',o={}){if(SET.big&&size<7)size+=1;TQ.push({s:tt(s),x,y,size,color,align:o.align||'left',shadow:o.shadow,alpha:o.alpha==null?1:o.alpha});}
 function measure(s,size){dctx.font=(size*K)+'px '+FONT;return dctx.measureText(s).width/K;}
 function wrap(s,size,maxW){const words=s.split(' '),lines=[];let cur='';
   for(const w of words){const t=cur?cur+' '+w:w;if(cur&&measure(t,size)>maxW){lines.push(cur);cur=w;}else cur=t;}
@@ -64,7 +64,12 @@ function questMarker(e){
   if(G.mail&&G.mail[e.id]===1)return SPR.ques;
   const q=QUESTS[e.id];if(!q)return null;const st=G.q[e.id];
   if(e.id==='mom'){if(st===1&&q.check())return SPR.ques;return null;}
-  if(st===0)return SPR.excl;if(st===1&&q.check())return SPR.ques;return null;
+  if(st===0)return SPR.excl;if(st===1&&q.check())return SPR.ques;return trainerMarker(e);
+}
+function trainerMarker(e){
+  for(const k in TRAIN){const t=TRAIN[k];if(t.who!==e.id||has(k))continue;const st=G.train[k]||0;
+    if(st===0&&t.avail())return SPR.pexcl;if(st===1&&trainCount(k)>=t.need)return SPR.pques;}
+  return null;
 }
 function drawEnt(e){
   const sx=Math.round(e.x-camX),sy=Math.round(e.y-camY+HUD);
@@ -74,6 +79,7 @@ function drawEnt(e){
       if(e.id==='daisy'&&G.q.daisy===2)drawImg(SPR.bell,sx-5,top+10+bob);
       if(state==='play'||state==='talk'){const m=questMarker(e);if(m&&!(dlg&&dlg.lines[dlg.i].who===e))drawImg(m,sx-(m.width>>1),top-m.height-3+Math.round(Math.sin(tick/9)*1.5));}
       break;}
+    case 'hive':case 'bees':case 'snowball':case 'crab':case 'spot':drawHaz(e,sx,sy);break;
     case 'worm':{const s=SPR.worm[Math.floor((tick+e.phase)/12)%2];drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'carrot':{const s=SPR.carrot,w=Math.floor((tick+e.x)/40)%2;drawImg(s,sx-(s.width>>1)+w,sy+2-s.height);break;}
     case 'mound':{const s=SPR.mound;drawImg(s,sx-(s.width>>1),sy+2-s.height);if(wearing('pirate')&&(e.has==='seed'||e.has==='bone')&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx-1,sy-8,2,2);ctx.fillRect(sx+4,sy-5,1,1);}break;}
@@ -121,11 +127,14 @@ function drawHUD(){
   if(G.weather!=='clear'&&G.wInt>0.3)drawImg(ICO[G.weather],49,17);
   txt('LV '+level(),74,6,7,'#ffd83a');
   txt(STAGE_NAMES[stage()],74,19,5,'#b8a8d8');
-  txt('E:GROW',160,6,6,'#d8c8f8');txt('Q:QUESTS',160,19,6,'#d8c8f8');
+  if(CS.y<4){txt('E:GROW',160,6,6,'#d8c8f8');txt('Q:QUESTS',160,19,6,'#d8c8f8');}
   if(G.wear&&WEAR_ICON[G.wear]){const ic=WEAR_ICON[G.wear];drawImg(ic,60,26-ic.height);}
   if(CS.y===2){txt('INSIDE',232,7,5,'#b8a8d8',{align:'center'});txt(ROOM_NAMES[CS.x],232,18,5,'#ffd83a',{align:'center'});return;}
   if(CS.y===3){txt('SECRET!',232,7,5,'#d890ff',{align:'center'});txt(SECRET_NAMES[CS.x],232,18,5,'#ffd83a',{align:'center'});return;}
-  if(CS.y>=4){const a=areaOf();txt(AREA_LABEL[a],232,7,5,'#94dc64',{align:'center'});txt(a==='coop'?'HOME':'F: FLY',232,18,5,'#ffd83a',{align:'center'});return;}
+  if(CS.y>=4){const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':'F: FLY',220,18,5,'#ffd83a',{align:'right'});
+    for(let y=4;y<7;y++)for(let x=0;x<3;x++){const cur=CS.x===x&&CS.y===y,vis=G.visited.has(x+','+y);
+      ctx.fillStyle=cur?(Math.floor(tick/20)%2?'#ffd83a':'#ffb020'):(vis?'#6a5a90':'#3b2a56');ctx.fillRect(224+x*10,3+(y-4)*9,9,8);}
+    return;}
   for(let y=0;y<2;y++)for(let x=0;x<3;x++){const cur=CS.x===x&&CS.y===y,vis=G.visited.has(x+','+y);
     ctx.fillStyle=cur?(Math.floor(tick/20)%2?'#ffd83a':'#ffb020'):(vis?'#6a5a90':'#3b2a56');ctx.fillRect(214+x*12,7+y*9,11,8);}
 }
@@ -201,7 +210,8 @@ function drawGrow(){
 }
 function drawQuests(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
-  txt(questPage?'QUESTS - PART 2':'QUESTS',W/2,12,9,'#ffd83a',{align:'center',shadow:true});
+  if(questPage===2){drawTrainingPage();return;}
+  txt(questPage===1?'QUESTS - PART 2':'QUESTS',W/2,12,9,'#ffd83a',{align:'center',shadow:true});
   if(questPage){
     ORDER2.forEach((id,i)=>{const y=25+i*17,q=QUESTS[id],st=G.q[id];
       box(10,y,W-20,15,st===2?'#23402a':'#1d1430',st===2?'#94dc64':(st===1?'#ffd83a':'#4a3a66'));
@@ -210,7 +220,7 @@ function drawQuests(){
       txt(st===2?'DONE!':q.prog(),W-16,y+5,5,st===2?'#94dc64':(q.check()?'#ffd83a':'#d8c8f8'),{align:'right'});});
     const cy=25+9*17;box(10,cy,W-20,15,G.coop?'#3a3010':'#1d1430',G.coop?'#ffd83a':'#4a3a66');
     txt(G.coop?'MY COOP - LEVEL '+G.coop.lv+'/4':'MY COOP - build it in the forest!',16,cy+5,5,G.coop?'#ffd83a':'#8a7ab0');
-    txt('Harvests: '+G.harvests+'     X: part 1     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});return;}
+    txt('Seeds: '+G.sp2+'/'+TOTAL_SEEDS2+'  Harvests: '+G.harvests+'  X: next page  Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});return;}
   const ids=['mom',...ORDER];
   ids.forEach((id,i)=>{const y=25+i*16,q=QUESTS[id],st=G.q[id];
     box(10,y,W-20,14,st===2?'#23402a':'#1d1430',st===2?'#94dc64':(st===1?'#ffd83a':'#4a3a66'));
@@ -218,8 +228,21 @@ function drawQuests(){
     txt(q.title,16,y+4,5,st===2?'#94dc64':'#fff8ec');
     txt(st===2?'DONE!':q.prog(),W-16,y+4,5,st===2?'#94dc64':(q.check()?'#ffd83a':'#d8c8f8'),{align:'right'});
   });
-  txt('Seeds found: '+G.found+'/'+TOTAL_SEEDS+'     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
+  txt('Seeds found: '+G.sp1+'/'+TOTAL_SEEDS+'   X: next page   Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }
+function drawTrainingPage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
+  txt('SKILL TRAINING',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
+  Object.keys(TRAIN).forEach((k,i)=>{const t=TRAIN[k],y=25+i*34,st=G.train[k]||0,done=has(k);
+    const stat=done?'DONE!':st===2?'Learn it! (E)':st===1?trainCount(k)+'/'+t.need:t.avail()?'Talk to '+t.whoName:'locked';
+    const col=done?'#94dc64':(st>=1||t.avail())?'#ffd83a':'#8a7ab0';
+    box(10,y,W-20,30,done?'#23402a':'#1d1430',done?'#94dc64':st>=1?'#ff9cd0':'#4a3a66');
+    txt(t.title+' ('+t.skill+')',16,y+5,5,'#fff8ec');txt(stat,W-16,y+5,5,col,{align:'right'});
+    const info=done?t.whoName+' taught you!':st===1?trainMsg(k):t.avail()?'Ready! Find '+t.whoName+'.':t.lock;
+    wrapTxt(info,16,y+16,W-34,5,done?'#94dc64':'#b8a8d8');});
+  txt('Pink ! over a friend = training ready    X: next page',W/2,H-12,5,'#b8a8d8',{align:'center'});
+}
+function wrapTxt(s,x,y,w,sz,c){let line='',yy=y;for(const wd of s.split(' ')){const t=line?line+' '+wd:wd;if(measure(t,sz)>w&&line){txt(line,x,yy,sz,c);yy+=8;line=wd;}else line=t;}if(line)txt(line,x,yy,sz,c);}
 function cloud(x,y,s=1){ctx.fillStyle='#fff8ec';ctx.fillRect(x,y+4*s,24*s,6*s);ctx.fillRect(x+4*s,y,10*s,6*s);ctx.fillRect(x+12*s,y+2*s,8*s,4*s);
   ctx.fillStyle='#d8eefc';ctx.fillRect(x+2*s,y+9*s,20*s,1*s);}
 function drawSky(t){
@@ -241,6 +264,9 @@ function drawTitle(){
   txt("Pip the chick's big dream",W/2,60,6,'#21142b',{align:'center'});
   const opts=titleOptions();
   opts.forEach((o,i)=>{const sel=i===titleSel;txt((sel?'> ':'  ')+o,W/2,82+i*13,8,sel?'#fff8ec':'#3b2a56',{align:'center',shadow:sel});});
+  if(titleConfirm){box(36,78,184,62,'#241838','#ffd83a');
+    txt('Start over?',W/2,86,8,'#ffd83a',{align:'center'});txt('Your saved game will be erased.',W/2,102,5,'#fff8ec',{align:'center'});
+    ['Yes','No'].forEach((o,i)=>txt((confirmSel===i?'> ':'  ')+o,W/2-30+i*60,120,8,confirmSel===i?'#fff8ec':'#8a7ab0',{align:'center',shadow:confirmSel===i}));return;}
   txt(TOUCH?'Tap the screen or A to start!':'ARROWS move  Z peck/talk  E grow  C outfits',W/2,214,5,'#21142b',{align:'center'});
 }
 function drawEnding(){
@@ -258,7 +284,7 @@ function drawEnding(){
   if(t>130)txt('Pip flew over the Big Fence!',W/2,34,6,'#21142b',{align:'center'});
   if(t>260){txt('THE END',W/2,50,10,'#fff8ec',{align:'center',shadow:true});}
   if(t>330){const m=Math.floor(G.time/3600),s=Math.floor(G.time/60)%60;
-    txt('Time '+m+':'+String(s).padStart(2,'0')+'   Seeds found '+G.found+'/'+TOTAL_SEEDS+'',W/2,68,5,'#21142b',{align:'center'});}
+    txt('Time '+m+':'+String(s).padStart(2,'0')+'   Seeds found '+G.sp1+'/'+TOTAL_SEEDS,W/2,68,5,'#21142b',{align:'center'});}
   if(t>420&&Math.floor(t/25)%2)txt('Press Z for PART 2!',W/2,80,7,'#3b2a56',{align:'center'});
 }
 
@@ -275,6 +301,7 @@ function render(){
     if(state==='play'||state==='talk'||state==='ending'||state==='faint')drawFloats();
     if(state==='grow'){TQ=[];drawGrow();}
     else if(state==='quests'){TQ=[];drawQuests();}
+    else if(state==='pause'){TQ=[];drawPause();}
     else if(state==='shop'){TQ=[];drawShop();}
     else if(state==='wardrobe'){TQ=[];drawWardrobe();}
     else{drawMG();drawToast();if(state==='talk')drawBubble();}

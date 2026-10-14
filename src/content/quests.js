@@ -89,7 +89,7 @@ function hint(){
   if(!has('fly'))return "You've grown so much! Keep spending seeds in your Growth Tree until you learn FLIGHT!";
   return "Go on, fly over that Big Fence! Mama is so proud of you!";
 }
-function reward(n,id){if(wearing('crown'))n++;G.seeds+=n;G.found+=n;G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');save();}
+function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,ORDER2.includes(id)?2:1,base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');save();}
 function say(lines,onEnd){lines.forEach(l=>l.text=tt(l.text));dlg={lines,i:0,shown:0,onEnd};state='talk';}
 function talkTo(e){
   const L=[];const it=(t,fx)=>L.push({who:e,text:t,fx});const me=t=>L.push({who:'me',text:t});
@@ -101,7 +101,7 @@ function talkTo(e){
     if(e.home){it(e.sib.homeLine);say(L);return;}
     if(G.q.penny===0){it("Shhh! We're playing hide-and-seek! Go talk to Penny in the coop if you want to play!");say(L);return;}
     it(e.sib.found);
-    say(L,()=>{puff(e.x,e.y-6,10,['#ffd83a','#fff8ec']);G.sibs.push(e.id);e.home=true;Object.assign(e,at(...e.sib.home));SFX.chirp();
+    say(L,()=>{puff(e.x,e.y-6,10,['#ffd83a','#fff8ec']);G.sibs.push(e.id);e.home=true;Object.assign(e,at(...((G.coop&&G.coop.lv>=3)?FAMILY_POS[e.id]:e.sib.home)));SFX.chirp();
       toast(G.sibs.length>=3?'Found all 3! Go tell Penny.':'Found '+e.name+'! ('+G.sibs.length+'/3)');save();});
     return;
   }
@@ -111,7 +111,7 @@ function talkTo(e){
       ["Let's play!","Later"],i=>{if(i===0)startEgg();});
     say(L);return;
   }
-  if(e.id==='maggie'){
+  if(e.id==='maggie'||e.id==='maggie2'){
     if(!e.greeted){e.greeted=1;it("Ooh! Shiny! A customer! Welcome to Maggie's Boutique, darling!");}
     ask("Care to try something on? Every chick deserves to look FABULOUS.",['Shop','Bye!'],i=>{if(i===0)openShop();});
     say(L);return;
@@ -181,7 +181,7 @@ function updateTalk(){
   const d=dlg,line=d.lines[d.i];
   if(!line.started){line.started=true;if(line.fx)line.fx();}
   if(d.shown<line.text.length){
-    const before=Math.floor(d.shown);d.shown=Math.min(line.text.length,d.shown+0.85);
+    const before=Math.floor(d.shown);d.shown=Math.min(line.text.length,d.shown+TEXT_SPEED_MUL[SET.speed]);
     if(Math.floor(d.shown)!==before&&before%3===0&&line.text[before]!==' '){const sp=speakerPos(line.who);SFX.blip(sp.voice+((before*37)%60));}
     if(pressed.a)d.shown=line.text.length;
   }else if(line.choices){

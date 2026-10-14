@@ -43,6 +43,8 @@ SPR.seed=makeSprite(['..bb..','.bnbb.','.bnbb.','bbnbbb','bbnbbb','.bnbb.','..bb
 SPR.heart=makeSprite(['.rr.rr.','rwrrrrr','rrrrrrr','.rrrrr.','..rrr..','...r...']);
 SPR.heartE=makeSprite(['.EE.EE.','EEEEEEE','EEEEEEE','.EEEEE.','..EEE..','...E...']);
 SPR.excl=makeSprite(['yy','yy','yy','yy','..','yy']);
+SPR.pexcl=makeSprite(['pp','pp','pp','pp','..','pp']);
+SPR.pques=makeSprite(['.ppp.','pp.pp','...pp','..pp.','..p..','.....','..p..']);
 SPR.ques=makeSprite(['.lll.','ll.ll','...ll','..ll.','..l..','.....','..l..']);
 SPR.horse=makeSprite([
 '....bb....bb....','....bbbBBbbb....','....bbBBBBbb....','...bbbbwwbbbb...','...bkbbwwbbkb...','...bbbbwwbbbb...',
@@ -139,8 +141,8 @@ Object.assign(ICON,{
 });
 /* procedural chick: grows with each stage */
 const chickCache=new Map();
-function chickSprite(stage,dir,frame,flap){
-  const key=stage+'|'+dir+'|'+frame+'|'+flap;let s=chickCache.get(key);if(s)return s;
+function chickSprite(stage,dir,frame,flap,gold=false){
+  const WC=gold?'q':'Y',key=stage+'|'+dir+'|'+frame+'|'+flap+'|'+gold;let s=chickCache.get(key);if(s)return s;
   const side=dir===2,S=12+stage*2,Wd=S+(flap?10:0),Hd=S+1;
   const g=[...Array(Hd)].map(()=>Array(Wd).fill('.'));
   const put=(x,y,c)=>{x=Math.floor(x);y=Math.floor(y);if(x>=0&&y>=0&&x<Wd&&y<Hd)g[y][x]=c;};
@@ -152,11 +154,13 @@ function chickSprite(stage,dir,frame,flap){
     else if(frame){put(cx-3,foot,'o');put(cx+2,foot,'o');}else{put(cx-2,foot,'o');put(cx+1,foot,'o');}
   }
   if(flap){const wy=by-ry*0.4+(frame?-2.5:1.5);
-    ell(cx-rx-2.6,wy,4.4,2.3,'Y');ell(Wd-(cx-rx-2.6),wy,4.4,2.3,'Y');
+    ell(cx-rx-2.6,wy,4.4,2.3,WC);ell(Wd-(cx-rx-2.6),wy,4.4,2.3,WC);
+    if(gold){ell(cx-rx-3.4,wy-0.7,2.2,0.8,'n');ell(Wd-(cx-rx-3.4),wy-0.7,2.2,0.8,'n');put(cx-rx-6.6,wy,'w');put(Wd-1-Math.floor(cx-rx-6.6),wy,'w');put(cx-rx-5.6,wy+1,'Q');put(Wd-1-Math.floor(cx-rx-5.6),wy+1,'Q');}
     if(stage>=3){put(cx-rx-6,wy,'w');put(Wd-1-Math.floor(cx-rx-6),wy,'w');}}
   ell(cx+(side?S*0.06:0),by,rx,ry,'y');
-  if(side&&!flap)ell(cx+S*0.14,by+0.3,rx*0.5,ry*0.6,'Y');
-  if(!side&&!flap){ell(cx-rx+1.3,by+0.5,1.6,ry*0.62,'Y');ell(Wd-(cx-rx+1.3),by+0.5,1.6,ry*0.62,'Y');}
+  if(side&&!flap){ell(cx+S*0.14,by+0.3,rx*0.5,ry*0.6,gold?'Q':'Y');if(gold)put(cx+S*0.14-1,by+ry*0.5,'w');}
+  if(!side&&!flap){ell(cx-rx+1.3,by+0.5,1.6,ry*0.62,gold?'Q':'Y');ell(Wd-(cx-rx+1.3),by+0.5,1.6,ry*0.62,gold?'Q':'Y');
+    if(gold){put(cx-rx+0.5,by-ry*0.4,'w');put(Wd-1-Math.floor(cx-rx+0.5),by-ry*0.4,'w');}}
   if(side){put(cx+rx+S*0.06-0.5,by-ry*0.5,'Y');put(cx+rx+S*0.06+0.5,by-ry*0.8,'Y');}
   ell(hx,hy,hr,hr*0.95,'y');
   if(stage>=2){const t=Math.floor(hy-hr);put(hx-1,t,'r');put(hx,t,'r');put(hx,t-1,'r');if(stage>=3){put(hx+1,t,'r');put(hx-1,t-1,'r');}}
@@ -167,7 +171,7 @@ function chickSprite(stage,dir,frame,flap){
     if(stage<2)put(hx-hr*0.1,byk+1,'p');}
   s=makeSprite(g.map(r=>r.join('')));s.head={x:hx+1,y:hy+1,r:hr,top:hy-hr+1};s.S=S;chickCache.set(key,s);return s;
 }
-function getChick(stage,dir,frame,flap){return dir===3?flipOf(chickSprite(stage,2,frame,flap)):chickSprite(stage,dir,frame,flap);}
+function getChick(stage,dir,frame,flap){const g=has('golden');return dir===3?flipOf(chickSprite(stage,2,frame,flap,g)):chickSprite(stage,dir,frame,flap,g);}
 function decorate(base,fn){return mk(base.width,base.height,x=>{x.drawImage(base,0,0);fn(x);});}
 SPR.penny=decorate(chickSprite(2,0,0,false),x=>{P_(x,'k',10,1,7,5);P_(x,'p',11,2,2,3);P_(x,'p',14,2,2,3);P_(x,'P',13,3,1,1);});
 SPR.peep=decorate(chickSprite(0,0,0,false),x=>{P_(x,'k',6,0,3,2);P_(x,'Y',7,0,1,1);P_(x,'Y',7,1,1,1);});

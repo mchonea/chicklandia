@@ -1,21 +1,23 @@
 'use strict';
 /* ---------------- audio ---------------- */
-let AC=null,master=null,musicGain=null,musicOn=true,noiseBuf=null;
+let AC=null,master=null,sfxBus=null,musicGain=null,musicOn=true,noiseBuf=null;
 function initAudio(){
   if(AC){if(AC.state==='suspended')AC.resume();return;}
   try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=0.55;master.connect(AC.destination);
-    musicGain=AC.createGain();musicGain.gain.value=musicOn?1:0;musicGain.connect(master);
+    sfxBus=AC.createGain();sfxBus.connect(master);
+    musicGain=AC.createGain();musicGain.connect(master);applyVolumes();
     noiseBuf=AC.createBuffer(1,AC.sampleRate,AC.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
     startMusic();}catch(e){AC=null;}
 }
+function applyVolumes(){if(musicGain)musicGain.gain.value=musicOn?SET.music/10:0;if(sfxBus)sfxBus.gain.value=SET.sound/10;}
 function tone(f,d,type='square',v=0.1,slide=0,when=0,dest){
   if(!AC)return;const t=AC.currentTime+Math.max(0,when);const o=AC.createOscillator(),g=AC.createGain();
   o.type=type;o.frequency.setValueAtTime(f,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,f+slide),t+d);
-  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.0008,t+d);o.connect(g);g.connect(dest||master);o.start(t);o.stop(t+d+0.03);
+  g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.0008,t+d);o.connect(g);g.connect(dest||sfxBus);o.start(t);o.stop(t+d+0.03);
 }
 function noise(d,v=0.15,freq=1200){
   if(!AC)return;const t=AC.currentTime;const s=AC.createBufferSource();s.buffer=noiseBuf;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.value=freq;
-  const g=AC.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.001,t+d);s.connect(f);f.connect(g);g.connect(master);s.start(t);s.stop(t+d+0.05);
+  const g=AC.createGain();g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(0.001,t+d);s.connect(f);f.connect(g);g.connect(sfxBus);s.start(t);s.stop(t+d+0.05);
 }
 const SFX={
   peck:()=>tone(900,0.05,'square',0.05,-400),
@@ -101,7 +103,7 @@ function startMusic(){
   nextT=AC.currentTime+0.1;
   // rain: looped filtered noise whose volume follows the weather
   const s=AC.createBufferSource();s.buffer=noiseBuf;s.loop=true;const f=AC.createBiquadFilter();f.type='bandpass';f.frequency.value=2600;f.Q.value=0.5;
-  rainGain=AC.createGain();rainGain.gain.value=0;s.connect(f);f.connect(rainGain);rainGain.connect(master);s.start();
+  rainGain=AC.createGain();rainGain.gain.value=0;s.connect(f);f.connect(rainGain);rainGain.connect(sfxBus);s.start();
   setInterval(()=>{
     if(!AC)return;if(nextT<AC.currentTime-0.2)nextT=AC.currentTime+0.05;
     while(nextT<AC.currentTime+0.3){

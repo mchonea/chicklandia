@@ -60,19 +60,28 @@ function updateEnding(){
 }
 
 /* ---------------- title ---------------- */
-function titleOptions(){return loadSave()?['CONTINUE','NEW GAME']:['NEW GAME'];}
+function titleOptions(){if(titleSave===undefined)titleSave=!!loadSave();return titleSave?['CONTINUE','NEW GAME']:['NEW GAME'];}
 function updateTitle(){
   const opts=titleOptions();
+  if(titleConfirm){
+    if(pressed.up||pressed.down||pressed.left||pressed.right){confirmSel^=1;SFX.menu();}
+    if(pressed.back||pressed.b){titleConfirm=false;SFX.menu();}
+    else if(pressed.a){SFX.pick();titleConfirm=false;if(confirmSel===0)newGame();}
+    return;}
   if(pressed.up||pressed.down){titleSel=(titleSel+1)%opts.length;SFX.menu();}
   titleSel=Math.min(titleSel,opts.length-1);
-  if(pressed.a){SFX.pick();if(opts[titleSel]==='CONTINUE')continueGame();else newGame();}
+  if(pressed.a){SFX.pick();if(opts[titleSel]==='CONTINUE')continueGame();else if(titleSave){titleConfirm=true;confirmSel=1;}else newGame();}
 }
+let FAINT_FAR=false;
 function updateFaint(){
   FT++;
   if(FT<=50){fade=FT/50;fadeColor='#000';}
-  if(FT===50){P=newPlayer(56,76);CS={x:0,y:0};camX=0;camY=0;G.hearts=maxHearts();resetEnemies();TRAIL=[];
+  if(FT===50){const far=G.part2&&P.y>=48*16,sp=far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
+    P=newPlayer(sp.x,sp.y);CS={x:Math.floor(sp.x/256),y:Math.floor(sp.y/192)};camX=CS.x*256;camY=CS.y*192;G.hearts=maxHearts();resetEnemies();TRAIL=[];FAINT_FAR=far;
     for(const d of ents)if(d.type==='duckling'&&d.mode==='follow'){d.x=P.x;d.y=P.y;}}
   if(FT>50)fade=Math.max(0,1-(FT-50)/50);
-  if(FT>=100){state='play';const m=ents.find(e=>e.id==='mom');say([{who:m,text:"Oh my! You came home all tuckered out, sweet pea. Rest up... there, all better!"}]);}
+  if(FT>=100){state='play';const m=ents.find(e=>e.id==='mom');
+    if(!FAINT_FAR&&m&&onCur(m))say([{who:m,text:"Oh my! You came home all tuckered out, sweet pea. Rest up... there, all better!"}]);
+    else say([{who:'me',text:FAINT_FAR?(G.coop?"Phew... I made it back to my coop. I feel much better!":"Phew... I'm back at the forest. I feel much better!"):"Phew... back home. I feel much better!"}]);}
 }
 
