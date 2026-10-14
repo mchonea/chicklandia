@@ -51,6 +51,7 @@
 </div>
 <script>
 'use strict';
+/* ===== src/engine/canvas.js ===== */
 /* =====================================================================
    CHICKLANDIA - a tiny chick's big dream
    ===================================================================== */
@@ -96,6 +97,8 @@ function layoutTouch(){
 }
 addEventListener('resize',resize);resize();
 
+
+/* ===== src/engine/gfx.js ===== */
 /* ---------------- palette & helpers ---------------- */
 const PAL={k:'#21142b',w:'#fff8ec',y:'#ffd83a',Y:'#e8a422',o:'#f37d22',r:'#e03838',R:'#962430',
   p:'#f6a6b6',P:'#d06f8a',b:'#9a6234',B:'#5e3a1c',g:'#5cb84c',G:'#2f7d3a',l:'#94dc64',u:'#3a86e8',
@@ -123,6 +126,8 @@ const flipMap=new WeakMap();
 function flipOf(c){let f=flipMap.get(c);if(f)return f;
   f=mk(c.width,c.height,x=>{x.translate(c.width,0);x.scale(-1,1);x.drawImage(c,0,0);});flipMap.set(c,f);return f;}
 
+
+/* ===== src/world/tiles.js ===== */
 /* ---------------- tiles ---------------- */
 const TILE={};
 function grassBase(x,seed){P_(x,'g',0,0,16,16);const r=mulberry(seed);
@@ -250,6 +255,8 @@ function groundFor(c,r,h){
 }
 TILE.exit=mk(16,16,x=>{x.drawImage(TILE.floor,0,0);P_(x,'k',1,0,14,16);P_(x,'#ffe7a0',2,10,12,6);P_(x,'#fff6d0',3,13,10,3);P_(x,'#3a2416',2,0,12,10);});
 
+
+/* ===== src/regions/world.js ===== */
 /* ---------------- world map ---------------- */
 // F fence  H big fence  T tree  A apple tree  W water  h hay bale  R rock  C crate  L leaf pile
 // b/B/D barn roof/wall/door  v/c/K coop roof/wall/door  s sign  u bush  . grass  , flowers
@@ -672,6 +679,8 @@ function drawTile(ch,c,r,sx,sy,wf){
   ctx.drawImage(img,sx,sy);
 }
 
+
+/* ===== src/entities/sprites.js ===== */
 /* ---------------- sprites ---------------- */
 const SPR={};
 SPR.hen=makeSprite([
@@ -847,6 +856,8 @@ SPR.peep=decorate(chickSprite(0,0,0,false),x=>{P_(x,'k',6,0,3,2);P_(x,'Y',7,0,1,
 SPR.cheep=decorate(chickSprite(0,0,0,false),x=>{P_(x,'k',8,0,6,4);P_(x,'u',9,1,2,2);P_(x,'u',12,1,1,2);P_(x,'U',11,2,1,1);});
 SPR.tweet=decorate(chickSprite(0,0,0,false),x=>{P_(x,'k',4,0,7,3);P_(x,'l',5,1,5,1);P_(x,'G',7,0,1,1);});
 
+
+/* ===== src/engine/audio.js ===== */
 /* ---------------- audio ---------------- */
 let AC=null,master=null,musicGain=null,musicOn=true,noiseBuf=null;
 function initAudio(){
@@ -963,6 +974,8 @@ function startMusic(){
   },60);
 }
 
+
+/* ===== src/engine/input.js ===== */
 /* ---------------- input ---------------- */
 const keys={},pressed={};
 const KEYMAP={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',
@@ -1024,6 +1037,8 @@ const TOUCH_TXT=[[/Walk with the ARROW KEYS\. Press Z or SPACE to peck!/g,'Walk 
   [/\bZ: /g,'A: '],[/\bX: /g,'B: '],[/\b[EQFC]: close/g,'X: close'],[/ESC: leave/g,'X: leave'],[/E:GROW|Q:QUESTS|F: FLY/g,'']];
 function tt(s){if(!TOUCH||typeof s!=='string')return s;for(const [a,b] of TOUCH_TXT)s=s.replace(a,b);return s;}
 
+
+/* ===== src/engine/state.js ===== */
 /* ---------------- game state ---------------- */
 const DIRV=[[0,1],[0,-1],[-1,0],[1,0]];
 let state='title',tick=0,G=null,P=null,CS={x:0,y:0},camX=0,camY=0,trans=null,ents=[],TRAIL=[];
@@ -1203,6 +1218,8 @@ function resetEnemies(){
 }
 function onCur(e){return Math.floor(e.x/256)===CS.x&&Math.floor((e.y-1)/192)===CS.y;}
 
+
+/* ===== src/world/collision.js ===== */
 /* ---------------- collision ---------------- */
 function rectTiles(x,y,w,h,forPlayer){
   const c0=Math.floor(x/16),c1=Math.floor((x+w-0.01)/16),r0=Math.floor(y/16),r1=Math.floor((y+h-0.01)/16);
@@ -1253,6 +1270,8 @@ function updateAmbient(){
   if(shake>0)shake--;
 }
 
+
+/* ===== src/content/quests.js ===== */
 /* ---------------- quests & dialogue ---------------- */
 const NAMES={mom:'Mama Hen',daisy:'Daisy',pig:'Porkchop',duck:'Mrs. Quackers',sheep:'Woolly',rooster:'Sir Cluckington',
   penny:'Penny',clyde:'Clyde',squeaks:'Squeaks',biscuit:'Biscuit',whiskers:'Whiskers'};
@@ -1447,6 +1466,8 @@ function updateTalk(){
   }
 }
 
+
+/* ===== src/systems/actions.js ===== */
 /* ---------------- player actions ---------------- */
 function frontPoint(){const [dx,dy]=DIRV[P.dir];return {x:P.x+dx*10,y:P.y-4+dy*10,dx,dy};}
 function action(){
@@ -1754,6 +1775,8 @@ function updatePlay(){
   updateEnts();if(MG)updateMG();updateAmbient();checkPickups();if(state==='play')checkEdges();
 }
 
+
+/* ===== src/systems/world.js ===== */
 /* =====================================================================
    WORLD SYSTEMS: day & night, weather, outfits, minigames, secrets
    ===================================================================== */
@@ -2056,6 +2079,8 @@ function updateSleep(){
   if(FT>=100){state='play';toast('Good morning! Day '+dayNum());}
 }
 
+
+/* ===== src/systems/part2.js ===== */
 /* =====================================================================
    PART 2: BEYOND THE FARM
    ===================================================================== */
@@ -2342,6 +2367,8 @@ function drawP2Intro(){
   if(P2T>90&&Math.floor(tick/25)%2)txt('Press Z',W/2,200,7,'#fff8ec',{align:'center',shadow:true});
 }
 
+
+/* ===== src/ui/growth.js ===== */
 /* ---------------- growth tree ---------------- */
 const SKILLS=[
   {id:'down',name:'FLUFFY DOWN',cost:2,req:[],x:30,y:70,desc:'Grow extra fluffy feathers. +1 heart!',learn:'+1 heart! So fluffy!'},
@@ -2419,6 +2446,8 @@ function updateFaint(){
   if(FT>=100){state='play';const m=ents.find(e=>e.id==='mom');say([{who:m,text:"Oh my! You came home all tuckered out, sweet pea. Rest up... there, all better!"}]);}
 }
 
+
+/* ===== src/ui/render.js ===== */
 /* =====================================================================
    RENDERING
    ===================================================================== */
@@ -2712,6 +2741,8 @@ function render(){
   if(fade>0){dctx.globalAlpha=fade;dctx.fillStyle=fadeColor;dctx.fillRect(OX,OY,W*K,H*K);dctx.globalAlpha=1;}
 }
 
+
+/* ===== src/main.js ===== */
 /* ---------------- loop ---------------- */
 function update(){
   tick++;
@@ -2748,7 +2779,7 @@ function frame(now){
   render();requestAnimationFrame(frame);
 }
 requestAnimationFrame(frame);
-window.__chick={get G(){return G},get P(){return P},get state(){return state},set state(v){state=v},newGame,continueGame,get ents(){return ents},SKILLS,startPart2,openMap,talk(id){talkTo(ents.find(e=>e.id===id));},step(n=1){for(let i=0;i<n;i++)update();render();},get FLY(){return FLY},get mapSel(){return mapSel},get MG(){return MG},get EG(){return EG},get track(){return curTrack},startEgg,startMG,rollWeather,
+if(/[?&]debug=1(&|$)/.test(location.search))window.__chick={get G(){return G},get P(){return P},get state(){return state},set state(v){state=v},newGame,continueGame,get ents(){return ents},SKILLS,startPart2,openMap,talk(id){talkTo(ents.find(e=>e.id===id));},step(n=1){for(let i=0;i<n;i++)update();render();},get FLY(){return FLY},get mapSel(){return mapSel},get MG(){return MG},get EG(){return EG},get track(){return curTrack},startEgg,startMG,rollWeather,
   tp(x,y){P.x=x;P.y=y;CS={x:Math.floor(x/256),y:Math.floor(y/192)};camX=CS.x*256;camY=CS.y*192;G.visited.add(CS.x+','+CS.y);resetEnemies();}};
 </script>
 </body>

@@ -1,0 +1,18 @@
+[
+ "engine/canvas.js",
+ "engine/gfx.js",
+ "world/tiles.js",
+ "regions/world.js",
+ "entities/sprites.js",
+ "engine/audio.js",
+ "engine/input.js",
+ "engine/state.js",
+ "world/collision.js",
+ "content/quests.js",
+ "systems/actions.js",
+ "systems/world.js",
+ "systems/part2.js",
+ "ui/growth.js",
+ "ui/render.js",
+ "main.js"
+]
