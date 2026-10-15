@@ -93,6 +93,32 @@ Riverside     (0,8)(1,8)  | Meadow Farmlands (2,8)(3,8)
 
 **Tests.** `tests/village.js` (with `tests/walk.js`) checks the closed road, walking to every village spot and pad, gathering and CARRY, both trainers, whistle, building, materials, letters, all 7 move-ins, happiness, seasons, all contest types, the Grand Harvest, rank 8, the Pinch scene and the save round trip. Smoke and city tests still pass. **Not verified:** touch on a device, the sound, a human playthrough, how long a full village takes to build.
 
+## 0e. Phase 5 (Pirate Seas): built (Oct 14, 2026)
+
+```
+Pirate Cove (0,9)(1,9) + Smuggler Caves (0,15)(1,15)      Coral Reef (3,9)(4,9) + Deep Reef underwater (3,11)(4,11)
+Volcano Isle (0,11)(1,11)                                  Lighthouse Rock (0,13)(1,13)      Squawkbeard's flagship (3,13)
+```
+Islands are separated by empty screens, so they can only be reached by ship. There is no fly-map node for them: the ship's sea chart is the travel map.
+
+**Start.** After the village finale (flag `pinchMap`), Cap'n Pinch moves next to his ship at the city harbor. Talk to him: "Set Sail!" opens the seas. The ship menu (Pinch, or the ship at any island's dock) has SET SAIL and three upgrades: Better Sails (8 seeds + 3 sailcloth, unlocks Volcano Isle), Stronger Hull (10 seeds + 4 hull planks, unlocks Lighthouse Rock), Seed Cannon (12 seeds + 2 cannon parts, with a lit lighthouse unlocks Squawkbeard's ship).
+
+**Code map.** Data: `src/content/seas.js` (positions, sail map, upgrades), `src/content/quests_seas.js` (9 quests), `src/regions/seas.js`, music in `src/engine/tracks_seas.js` (5 new tracks), skills in `src/content/skills.js` (SKILLS4), trainers in `trainers.js`. Logic: `src/systems/seas.js` (sailing, upgrades, warps, air, Dash, Cannon Peck), `src/systems/seas2.js` (enemies, puzzles, boss, chase, ending), `src/systems/seas_draw.js`. Art: `src/entities/sprites_seas.js`.
+
+**Sea Tree** (4 skills): Dive (taught by Coral, 3 conch shells), Dash (Shift or the DASH button), Cannon Peck (taught by Ember, 3 powder kegs; hold the peck button, release), Sea Legs (no knockback on the ship deck, and strong currents can't push Pip). The Pirate outfit now also reveals underwater treasure.
+
+**Enemies.** Snappy crabs (cove, caves, reef), gull pirates that swoop (peck or Cannon Peck sends them away for 10 seconds), jellyfish underwater, lava sparks on Volcano Isle. Lava sends Pip back to the last safe spot; hot springs heal.
+
+**Quests (9).** Set Sail (Pinch), X Marks the Spot (Polly, 3 dig spots then a chest), Smugglers' Cave (Sam), Pearls for Coral and The Sunken Bell (Coral; need Dive), Warm Springs and The Seed Cannon (Ember), Light the Lighthouse (Keeper Gus: braziers in order sun, moon, star, wave), Squawkbeard's Treasure (Pinch).
+
+**Boss: Captain Squawkbeard, 3 stages with checkpoints.** 1) he swoops at a marked spot and lands; peck him while he's down. 2) he throws barrels along the deck; Wing Flap blows them back at him. 3) a chase through the sky: Dash into him while dodging cannonballs (needs Dash and Glide). If the hearts run out Pip is fished out and retries only that stage. Winning gives 20 golden seeds, the Ancient Sky Map (`flags.skyMap`, for Phase 6), **Captain of the Seas (rank 9)** and a closing scene.
+
+**Growth budget added by the seas:** quests 9 x 14 = 126, skills 4 x 5 = 20, trainings 2 x 8 = 16, ship upgrades 3 x 6 = 18: about 180. Running fixed total: 838 + 180 = 1018; rank 9 needs 850 (83%), rank 10 needs 1100.
+
+**Seed budget:** sources: quest rewards 5+5+5+5+5+5+5+6+10 = 51, golden seeds 20, polly chest 6. Sinks: Sea Tree 24, ship upgrades 30.
+
+**Tests.** `tests/seas.js` (with `tests/walk.js`): walks Pip from each dock to every pick-up, person, cave crate and underwater item; checks cave and dive warps, air, Dash, Cannon Peck, Sea Legs, enemies, every quest, ship upgrades, the lighthouse puzzle, all three boss stages, the chase, rank 9, the ending and the save round trip. Smoke, city and village tests still pass. **Not verified:** touch on a device (new DASH button), the music by ear, a human playthrough of the boss (difficulty), or how long the seas take.
+
 ## 1. Snapshot
 
 | | |

@@ -3346,7 +3346,7 @@ function hint2(){
   return "Your Dream Coop is finished! What a journey, little one.";
 }
 function areaOf(cs=CS){const r=regionAt(cs);return r?r.area:null;}
-const AREA_LABEL={farm:'FARM',forest:'FOREST',mountains:'MOUNTAINS',city:'CITY',beach:'BEACH',coop:'MY COOP',village:'VILLAGE'};
+const AREA_LABEL={farm:'FARM',forest:'FOREST',mountains:'MOUNTAINS',city:'CITY',beach:'BEACH',coop:'MY COOP',village:'VILLAGE',cove:'PIRATE COVE',reef:'CORAL REEF',volcano:'VOLCANO ISLE',lighthouse:'LIGHTHOUSE',fortress:'THE FLAGSHIP'};
 function noteArea(){const a=areaOf();if(a&&a!=='coop'&&!G.areas.includes(a)){G.areas.push(a);if(G.part2)toast('Discovered the '+AREA_LABEL[a]+'!','#94dc64');}}
 
 /* ---- skill trainers: some skills need a special lesson before you can buy them ---- */
