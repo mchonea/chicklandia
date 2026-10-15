@@ -19,7 +19,7 @@ const BUILDINGS=[
 // the rooftop stairs (inside the toy shop) and back
 const ROOF_STAIRS={toyDoor:[(5+1)*16+13,(4+1)*12+2],roofDoor:[(5)*16+3,(7)*12+2]};
 const BUILDING_AT={},BUILDING_BY_ROOM={};
-function roomCell(id){return REGION_LIST.find(r=>r.id==='cityin').cells.find(c=>c.id===id);}
+function roomCell(id){return REGION_LIST.find(r=>r.id==='cityin').cells.find(c=>c.id===id)||REGIONS.skyin.cells.find(c=>c.id===id);}
 function roomOrigin(id){const c=roomCell(id);return {x:c.sx*256,y:c.sy*192};}
 function roomEntry(id){const o=roomOrigin(id);return {x:o.x+128,y:o.y+171};}      // where Pip appears, just inside the exit
 for(const b of BUILDINGS){

@@ -23,6 +23,9 @@ function update(){
     case 'voyage':updateVoyage();break;
     case 'chase':updateChase();break;
     case 'credits':updateCredits();break;
+    case 'hatch':updateHatch();break;
+    case 'naming':updateNaming();break;
+    case 'flyover':updateFlyover();break;
     case 'grow':updateGrow();updateAmbient();break;
     case 'quests':if(pressed.b){{const pg=questPages();questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;
     case 'map':updateMap();break;

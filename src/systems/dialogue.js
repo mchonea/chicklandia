@@ -12,7 +12,7 @@ function hint(){
   if(!has('fly'))return "You've grown so much! Keep spending seeds in your Growth Tree until you learn FLIGHT!";
   return "Go on, fly over that Big Fence! Mama is so proud of you!";
 }
-function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?2:1,(ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
+function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id)||ORDER6.includes(id))?2:1,(ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id)||ORDER6.includes(id))?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
 function say(lines,onEnd){lines.forEach(l=>l.text=tt(l.text));dlg={lines,i:0,shown:0,onEnd};state='talk';}
 function talkTo(e){
   const L=[];const it=(t,fx)=>L.push({who:e,text:t,fx});const me=t=>L.push({who:'me',text:t});

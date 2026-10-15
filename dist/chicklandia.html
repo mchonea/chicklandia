@@ -269,6 +269,15 @@ TILE.obsidian=mk(16,16,x=>{P_(x,'#3a2a4a',0,0,16,16);const r=mulberry(777);for(l
 TILE.deck=mk(16,16,x=>{P_(x,'#b8844c',0,0,16,16);for(let i=0;i<16;i+=4)P_(x,'#8a5c30',i,0,1,16);P_(x,'#d0a068',1,2,2,1);P_(x,'#d0a068',9,9,2,1);});
 TILE.wreck=mk(16,16,x=>{P_(x,'k',0,0,16,16);P_(x,'#4a3a2a',1,1,14,14);for(let j=3;j<16;j+=4)P_(x,'#2a1c10',1,j,14,1);P_(x,'#6a5a3a',3,5,3,1);P_(x,'#2a6a4a',2,12,5,2);});
 TILE.wreckDeck=mk(16,16,x=>{P_(x,'#6a5a3a',0,0,16,16);for(let i=0;i<16;i+=5)P_(x,'#3a2c1c',i,0,1,16);P_(x,'#8a7a5a',2,4,2,1);});
+// sky tiles
+TILE.cloud=[0,1,2].map(s=>mk(16,16,x=>{P_(x,'#e6f2ff',0,0,16,16);const r=mulberry(900+s);for(let n=0;n<5;n++)P_(x,'#ffffff',(r()*11)|0,(r()*12)|0,4+(r()*3|0),3);for(let n=0;n<4;n++)P_(x,'#c8dcf0',(r()*13)|0,(r()*14)|0,3,1);}));
+TILE.thinCloud=mk(16,16,x=>{x.fillStyle='rgba(235,245,255,0.55)';x.fillRect(0,0,16,16);for(let i=0;i<16;i+=4){x.fillStyle='rgba(160,200,240,0.6)';x.fillRect(i,0,2,1);x.fillRect(i,15,2,1);x.fillRect(0,i,1,2);x.fillRect(15,i,1,2);}x.fillStyle='rgba(255,255,255,0.7)';x.fillRect(4,5,6,2);x.fillRect(7,10,5,2);});
+TILE.windR=[0,1,2,3].map(f=>mk(16,16,x=>{P_(x,'#a8d4fa',0,0,16,16);for(const j of [3,8,13]){for(let i=-8;i<16;i+=8){const o=i+f*2;for(const [dx,dy] of [[2,-2],[3,-1],[4,0],[3,1],[2,2]])P_(x,'#ffffff',o+dx,j+dy,1,1);P_(x,'#e6f4ff',o-2,j,3,1);}}}));
+TILE.windL=[0,1,2,3].map(f=>mk(16,16,x=>{P_(x,'#a8d4fa',0,0,16,16);for(const j of [3,8,13]){for(let i=-8;i<24;i+=8){const o=i-f*2;for(const [dx,dy] of [[4,-2],[3,-1],[2,0],[3,1],[4,2]])P_(x,'#ffffff',o+dx,j+dy,1,1);P_(x,'#e6f4ff',o+5,j,3,1);}}}));
+TILE.openSky=mk(16,16,x=>{P_(x,'#5aa8f0',0,0,16,16);const r=mulberry(950);for(let n=0;n<3;n++)P_(x,'#7cc0fa',(r()*12)|0,(r()*14)|0,4,2);P_(x,'#ffffff',(r()*14)|0,(r()*14)|0,1,1);});
+TILE.stormCrystal=mk(16,16,x=>{x.drawImage(TILE.cloud[0],0,0);P_(x,'k',3,5,5,10);P_(x,'#8a4ad8',4,6,3,8);P_(x,'#c898f8',4,6,1,5);P_(x,'k',8,2,6,13);P_(x,'#6a2ab8',9,3,4,11);P_(x,'#d8b0ff',9,3,1,6);P_(x,'#ffe84a',11,8,1,2);});
+TILE.rainWall=[0,1].map(f=>mk(16,16,x=>{P_(x,'#4a5a7a',0,0,16,16);for(let i=0;i<16;i+=3){const o=(i*5+f*4)%16;P_(x,'#a6c8ff',i,o,1,5);P_(x,'#8aa8e8',i+1,(o+8)%16,1,4);}P_(x,'#2a3a5a',0,0,16,2);}));
+TILE.barrier=mk(16,16,x=>{P_(x,'k',0,0,16,16);P_(x,'#d8e0ec',1,1,14,14);P_(x,'#ffffff',2,2,6,3);P_(x,'#a8b4c8',1,10,14,5);P_(x,'#a8b4c8',9,5,5,3);P_(x,'#8898b0',1,14,14,1);});
 function groundFor(c,r,h){
   switch(groundOf(c,r)){
     case 'snow':return TILE.snow[h%2];
@@ -737,7 +746,7 @@ defineRegion({id:'cityin',name:'CITY',kind:'indoor',origin:[5,4],grid:[5,3],grou
  {id:'ducks',label:'THE DUCK FLAT',rows:room([['p',3,3,'n'],['p',4,3,'n'],['p',12,3,'n'],['p',13,3,'n'],['r',6,7,9,8,'o']])},
  {id:'loft',label:"PIDGE'S LOFT",rows:room([['p',3,3,'n'],['p',4,3,'n'],['p',5,3,'n'],['r',10,4,12,4,'t'],['p',13,3,'P'],['r',6,8,9,9,'o']])},
  {id:'library',label:'LIBRARY',rows:room([['r',2,3,13,3,'9'],['r',2,4,2,8,'9'],['r',13,4,13,8,'9'],['r',6,6,9,6,'k'],['r',3,8,5,9,'o'],['p',10,9,'P']])},
- {id:'museum',label:'MUSEUM',rows:room([['p',3,4,'4'],['p',6,4,'4'],['p',9,4,'4'],['p',12,4,'4'],['p',2,3,'P'],['p',13,3,'P'],['r',5,7,10,8,'o']])},
+ {id:'museum',label:'MUSEUM',rows:room([['p',3,4,'4'],['p',6,4,'4'],['p',9,4,'4'],['p',12,4,'4'],['p',4,10,'4'],['p',11,10,'4'],['p',2,3,'P'],['p',13,3,'P'],['r',5,7,10,8,'o']])},
  null,null]});
 
 /* ===== src/regions/rooftops.js ===== */
@@ -809,6 +818,40 @@ defineRegion({id:'lighthouse',name:'LIGHTHOUSE ROCK',kind:'outdoor',origin:[0,13
 defineRegion({id:'fortress',name:"SQUAWKBEARD'S SHIP",kind:'outdoor',origin:[3,13],grid:[1,1],ground:'sand',beyond:true,area:'fortress',music:'boss',sea:true,mm:'sea',
  screens:[grid('w',[['r',1,1,14,10,'`'],['r',1,1,14,1,'F'],['r',1,10,14,10,'F'],['r',1,1,1,10,'F'],['r',14,1,14,10,'F'],['r',0,8,2,9,'`'],['p',3,2,'6'],['p',12,2,'6'],['p',3,9,'6'],['p',12,9,'6'],['r',7,1,8,1,'`']])]});
 
+/* ===== src/regions/sky.js ===== */
+/* regions: the Sky Kingdom (4 areas, 8 screens + the dragon's lair + 5 Cloud City rooms), above the clouds.
+     Cloud Meadows (0,17)(1,17)      Floating Gardens (3,17)(4,17)
+     Cloud City    (0,19)(1,19)      Storm Peaks      (3,19)(4,19)       Storm Dragon's lair (0,21)   City rooms (3..7,21)
+   α cloud floor   β (unused)   γ thin cloud (needs CLOUD WALK)   ε wind east   ζ wind west   η open sky (blocks)
+   θ storm crystal (THUNDER PECK clears it)   ι rain wall (hurts)   κ cloud barrier (DIVE-BOMB breaks it)
+   Bounce pads, updraft vents, portals and the sky gate are entities (see content/sky.js).                          */
+const SKYREG={beyond:true,sky:true,mm:'sky',ground:'grass',kind:'outdoor'};
+defineRegion(Object.assign({id:'meadows',name:'CLOUD MEADOWS',origin:[0,17],grid:[2,1],area:'meadows',music:'skymeadow'},SKYREG,{
+ screens:[
+  grid('η',[['r',1,4,14,10,'α'],['r',15,5,15,6,'α'],['r',8,1,13,2,'α'],['r',2,1,5,2,'α'],['p',3,3,'γ'],['r',6,7,9,7,'ε'],['p',12,9,'η']]),
+  grid('η',[['r',0,4,14,10,'α'],['r',9,7,14,10,'η'],['r',11,8,12,9,'α'],['r',9,8,10,9,'κ'],['r',3,1,6,2,'α'],['r',4,3,5,3,'γ']])]}));
+defineRegion(Object.assign({id:'gardens',name:'FLOATING GARDENS',origin:[3,17],grid:[2,1],area:'gardens',music:'skygarden'},SKYREG,{
+ screens:[
+  grid('η',[['r',1,3,14,10,'α'],['r',15,5,15,6,'α'],['r',0,5,0,6,'α'],['r',3,5,5,6,'V'],['r',9,5,11,6,'V'],['r',3,8,5,9,'V'],['r',9,8,11,9,'V']]),
+  grid('η',[['r',0,4,14,10,'α'],['r',0,5,0,6,'α'],['r',15,5,15,6,'α'],['r',5,1,9,2,'α'],['r',1,1,3,2,'α'],['p',2,3,'γ']])]}));
+defineRegion(Object.assign({id:'skycity',name:'CLOUD CITY',origin:[0,19],grid:[2,1],area:'skycity',music:'skycity'},SKYREG,{
+ screens:[
+  grid('η',[['r',1,0,14,1,'a'],['r',1,2,14,2,'U'],['p',3,2,'1'],['p',8,2,'1'],['p',12,2,'1'],['p',2,2,'Q'],['p',6,2,'Q'],['p',10,2,'Q'],['p',14,2,'Q'],['r',1,3,14,10,'α'],['r',15,5,15,6,'α'],['p',7,6,'$']]),
+  grid('η',[['r',1,0,14,1,'a'],['r',1,2,14,2,'U'],['p',4,2,'1'],['p',11,2,'1'],['p',3,2,'Q'],['p',5,2,'Q'],['p',10,2,'Q'],['p',12,2,'Q'],['r',1,3,14,10,'α'],['r',0,5,0,6,'α'],['r',15,5,15,6,'α']])]}));
+defineRegion(Object.assign({id:'peaks',name:'STORM PEAKS',origin:[3,19],grid:[2,1],area:'peaks',music:'skystorm'},SKYREG,{
+ screens:[
+  grid('η',[['r',1,3,14,10,'α'],['r',0,5,0,6,'α'],['r',5,3,6,4,'ι'],['r',5,7,6,10,'ι'],['r',10,3,10,10,'θ'],['r',12,3,13,4,'ι'],['r',12,8,13,9,'ι'],['r',15,5,15,6,'α']]),
+  grid('η',[['r',0,3,14,10,'α'],['r',0,5,0,6,'α'],['r',4,3,5,4,'ι'],['r',4,7,5,10,'ι'],['r',8,8,9,10,'ι'],['r',11,3,11,10,'θ'],['r',13,3,14,4,'ι']])]}));
+defineRegion(Object.assign({id:'lair',name:"DRAGON'S LAIR",origin:[0,21],grid:[1,1],area:'lair',music:'boss'},SKYREG,{
+ screens:[grid('η',[['r',1,1,14,10,'α'],['r',2,2,13,9,'α']])]}));
+defineRegion({id:'skyin',name:'CLOUD CITY',kind:'indoor',origin:[3,21],grid:[5,1],ground:'grass',beyond:true,sky:true,mm:'sky',
+ screens:[
+  {id:'sk_plume',label:'FEATHER BOUTIQUE',rows:room([['r',4,4,11,4,'k'],['p',2,3,'P'],['p',13,3,'P'],['r',5,7,10,8,'o']])},
+  {id:'sk_star',label:'STAR-FRUIT STAND',rows:room([['r',3,4,9,4,'k'],['p',13,3,'P'],['p',12,3,'P'],['p',3,9,'0'],['p',12,9,'0'],['r',6,7,9,8,'o']])},
+  {id:'sk_weather',label:'WEATHER SHOP',rows:room([['r',3,4,10,4,'k'],['p',2,3,'P'],['p',13,3,'P'],['r',5,8,10,8,'o']])},
+  {id:'sk_cottage',label:"PUFF'S COTTAGE",rows:room([['p',3,3,'e'],['p',4,3,'e'],['r',6,6,9,6,'t'],['r',7,8,10,9,'o'],['p',12,3,'P'],['p',13,3,'P']])},
+  {id:'sk_nursery',label:'SKY NURSERY',rows:room([['p',3,3,'n'],['p',4,3,'n'],['p',12,3,'n'],['p',13,3,'n'],['r',6,7,9,8,'o']])}]});
+
 /* ===== src/world/tilemap.js ===== */
 /* ---------------- tile map: built from the regions, plus door/solid/hidden data ---------------- */
 // F fence  H big fence  T tree  A apple tree  W water  h hay bale  R rock  C crate  L leaf pile
@@ -826,12 +869,13 @@ const EXITS=[{x:56,y:76},{x:328,y:76},{x:568,y:76}];
 buildWorld();
 let tiles=MAP.map(r=>r.split(''));
 function tileAt(c,r){if(c<0||r<0||c>=MW||r>=MH)return'F';return tiles[r][c];}
-const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456)\\'.split(''));
+const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456)\\ηθκ'.split(''));
 const FLOORISH=new Set('_:XoP'.split(''));
 function solidTile(ch,forPlayer=true){
   if(ch==='W')return !(forPlayer&&has('flutter'));
   if(ch==='w')return !(forPlayer&&has('swim'));
   if(ch==='z')return !(forPlayer&&has('glide'));
+  if(ch==='γ')return !(forPlayer&&has('cloudwalk'));
   return SOLID.has(ch);
 }
 
@@ -890,6 +934,14 @@ function drawTile(ch,c,r,sx,sy,wf){
     case 'x':img=TILE.dam[wf];break;
     case 'a':img=TILE.roofC;break;
     case '1':img=TILE.brickDoor;break;
+    case 'α':img=TILE.cloud[h%3];break;
+    case 'γ':ctx.drawImage(TILE.openSky,sx,sy);img=TILE.thinCloud;break;
+    case 'ε':img=TILE.windR[Math.floor(tick/6)%4];break;
+    case 'ζ':img=TILE.windL[Math.floor(tick/6)%4];break;
+    case 'η':img=TILE.openSky;break;
+    case 'θ':img=TILE.stormCrystal;break;
+    case 'ι':img=TILE.rainWall[Math.floor(tick/5)%2];break;
+    case 'κ':img=TILE.barrier;break;
     case ')':img=TILE.coral;break;
     case ']':img=TILE.seaweed;break;
     case '<':img=TILE.curL[Math.floor(tick/8)%4];break;
@@ -1271,7 +1323,7 @@ const BUILDINGS=[
 // the rooftop stairs (inside the toy shop) and back
 const ROOF_STAIRS={toyDoor:[(5+1)*16+13,(4+1)*12+2],roofDoor:[(5)*16+3,(7)*12+2]};
 const BUILDING_AT={},BUILDING_BY_ROOM={};
-function roomCell(id){return REGION_LIST.find(r=>r.id==='cityin').cells.find(c=>c.id===id);}
+function roomCell(id){return REGION_LIST.find(r=>r.id==='cityin').cells.find(c=>c.id===id)||REGIONS.skyin.cells.find(c=>c.id===id);}
 function roomOrigin(id){const c=roomCell(id);return {x:c.sx*256,y:c.sy*192};}
 function roomEntry(id){const o=roomOrigin(id);return {x:o.x+128,y:o.y+171};}      // where Pip appears, just inside the exit
 for(const b of BUILDINGS){
@@ -1422,11 +1474,11 @@ const RANKS=[
   {n:7,name:'GROWN-UP CHICKEN',short:'GROWN-UP CHICKEN',gp:390,gate:()=>!!G.flags.festival,perk:'+1 heart, and an ACCESSORY slot in your closet!',
     gateHint:"You're FULL of growth! Finish your dream coop and ask GRANNY SHELL: it's time!",
     react:"Pip... you're all grown up. I'm the proudest hen in the world.",letter:"Dear Pip, you did it. You're a grown-up chicken. I love you to the moon. Mama"},
-  {n:8,name:'VILLAGE HERO',short:'VILLAGE HERO',gp:650,gate:()=>!!G.flags.village,perk:'A hero sash! (Village perk comes later.)',
+  {n:8,name:'VILLAGE HERO',short:'VILLAGE HERO',gp:650,gate:()=>!!G.flags.village,perk:'A hero sash! Gathering at the village always gives +1 material.',
     react:"A hero! My Pip, the Village Hero!",letter:"Dear Pip, the whole village cheers for you! Mama"},
-  {n:9,name:'CAPTAIN OF THE SEAS',short:'SEAS CAPTAIN',gp:850,gate:()=>!!G.flags.seas,perk:"A captain's badge! (Seas perk comes later.)",
+  {n:9,name:'CAPTAIN OF THE SEAS',short:'SEAS CAPTAIN',gp:850,gate:()=>!!G.flags.seas,perk:"A captain's badge! You hold your breath 50% longer, and sail faster.",
     react:"Captain Pip! Arr, I mean... wow!",letter:"Dear Pip, a captain! Don't forget your scarf at sea. Mama"},
-  {n:10,name:'LEGEND OF CHICKLANDIA',short:'LEGEND',gp:1100,gate:()=>!!G.flags.sky,perk:'A golden aura! (Legend perk comes later.)',
+  {n:10,name:'LEGEND OF CHICKLANDIA',short:'LEGEND',gp:1100,gate:()=>!!G.flags.sky,perk:'A golden aura! +1 heart, and your Wing Flap recharges twice as fast.',
     react:"The Legend of Chicklandia... is my baby!",letter:"Dear Pip, a legend! Now come home for dinner. Mama"}
 ];
 // growth points per source (see CHICKLANDIA_STATUS.md for the budget)
@@ -1899,6 +1951,255 @@ Object.assign(TALK,{
     ask("Ready to sail, Captain? Upgrade the ship, or set sail?",['Ship menu','Not now'],i=>{if(i===0)openCatalog('ship');});}
 });
 
+/* ===== src/content/sky.js ===== */
+/* content: the Sky Kingdom (Phase 6). Data only: where everything is, the Sky Tree II, outfits, foods.
+   Positions are written as [screen, col, row]; the screens are the keys of SKO (top-left tile of each screen).
+     m0 m1 = Cloud Meadows     g0 g1 = Floating Gardens     c0 c1 = Cloud City     p0 p1 = Storm Peaks     lair = the dragon's lair
+     plume star weather cottage nursery = the five Cloud City rooms                                                         */
+const SKO={m0:[0,204],m1:[16,204],g0:[48,204],g1:[64,204],c0:[0,228],c1:[16,228],p0:[48,228],p1:[64,228],lair:[0,252],
+  plume:[48,252],star:[64,252],weather:[80,252],cottage:[96,252],nursery:[112,252]};
+const skp=(o,c,r)=>({x:(SKO[o][0]+c)*16+8,y:(SKO[o][1]+r)*16+12});      // -> pixel position (feet)
+const skpA=a=>skp(a[0],a[1],a[2]);
+const SKY_AREAS=['meadows','gardens','skycity','peaks','lair'];
+// where the fly map and "arrive" put Pip, and where the snowy-peak sky gate is
+const SKY_NODES={meadows:{at:['m0',2,8],mx:62,my:78,icon:'cloud'},gardens:{at:['g0',7,7],mx:194,my:78,icon:'flower'},
+  skycity:{at:['c0',7,8],mx:62,my:150,icon:'brickWin'},peaks:{at:['p0',2,8],mx:194,my:150,icon:'storm'}};
+const SKY_GATE={tile:[29,54]};                                           // the cloud stairway on the snowy peak (global tile)
+const gatePx=()=>({x:SKY_GATE.tile[0]*16+8,y:SKY_GATE.tile[1]*16+12});
+const gateOut=()=>({x:SKY_GATE.tile[0]*16+8,y:SKY_GATE.tile[1]*16+36});
+// bouncy clouds: stepping on one launches Pip to "to" (or straight up and down when to is null: that is where DIVE-BOMB lands)
+const SKY_PADS=[
+  {id:'pad_m0a',at:['m0',10,4],to:['m0',10,2]},{id:'pad_m0b',at:['m0',12,2],to:['m0',12,4]},{id:'pad_m0c',at:['m0',2,2],to:['m0',2,4]},
+  {id:'pad_m1',at:['m1',8,9],to:null},
+  {id:'pad_g1a',at:['g1',9,2],to:['g1',9,4]},{id:'pad_g1b',at:['g1',3,2],to:['g1',3,4]},{id:'pad_g0',at:['g0',13,9],to:null}];
+// updraft vents: UPDRAFT lifts Pip up to the island above
+const SKY_VENTS=[{id:'vm0',at:['m0',5,4],to:['m0',5,2]},{id:'vg1',at:['g1',7,5],to:['g1',7,2]}];
+// sky portals (cloud stairways) between the four areas. Both ends are listed; Pip lands one tile beside the far end.
+const SKY_PORTALS=[
+  {id:'down',at:['m0',2,10],label:'DOWN',to:null},
+  {id:'m1g0',at:['m1',14,5],to:['g0',2,5],label:'GARDENS'},{id:'g0m1',at:['g0',1,5],to:['m1',13,5],label:'MEADOWS'},
+  {id:'g1c0',at:['g1',14,5],to:['c0',2,4],label:'CITY'},{id:'c0g1',at:['c0',1,4],to:['g1',13,5],label:'GARDENS'},
+  {id:'c1p0',at:['c1',14,9],to:['p0',2,8],label:'PEAKS'},{id:'p0c1',at:['p0',1,8],to:['c1',13,9],label:'CITY'},
+  {id:'p1lair',at:['p1',14,6],to:['lair',8,8],label:"LAIR",lair:true},{id:'lairp1',at:['lair',8,10],to:['p1',13,6],label:'LEAVE',lair:true}];
+// pick-ups: [id, kind, screen, col, row]
+const SKY_ITEMS=[
+  ['lamb0','lamb','m0',13,9],['lamb1','lamb','m1',12,5],['lamb2','lamb','g0',1,9],
+  ['sf0','skyfeather','m0',9,1],['sf1','skyfeather','m0',4,1],['sf2','skyfeather','g0',13,4],['sf3','skyfeather','g1',6,1],
+  ['ch0','chime','m0',14,10],['ch1','chime','m1',8,5],['ch2','chime','g1',13,9],
+  ['pg0','peg','g0',1,3],['pg1','peg','g1',12,9],['pg2','peg','m1',2,10],
+  ['cp0','cloudpuff','g0',7,10],['cp1','cloudpuff','c0',14,9],['cp2','cloudpuff','c1',2,9],
+  ['bt0','bolt','p0',2,4],['bt1','bolt','p0',3,9],['bt2','bolt','p0',8,6],
+  ['rd0','rod','p1',2,5],['rd1','rod','p1',7,5],['rd2','rod','p1',13,8],
+  // hidden seeds: two on islands that need Updraft, two behind Cloud Walk, three out in the open, one in the storm
+  ['shd0','shard','p0',13,6],['shd1','shard','p1',12,5],['shd2','shard','p1',14,9],
+  ['cb0','cloudbloom','m0',11,1],['cb1','cloudbloom','g1',7,1],['cb2','cloudbloom','m0',3,1],
+  ['sk_s0','seed','m0',13,1],['sk_s1','seed','m0',2,1],['sk_s2','seed','m1',3,1],['sk_s3','seed','g1',1,1],['sk_s4','seed','g1',5,1],
+  ['sk_s5','seed','c1',1,10],['sk_s6','seed','p0',14,9],['sk_s7','seed','p1',13,10]];
+const SKY_ITEM_NAME={lamb:'LAMB',skyfeather:'SKY FEATHER',chime:'WIND CHIME',peg:'PEG',cloudpuff:'CLOUD PUFF',bolt:'STATIC BOLT',rod:'LIGHTNING ROD'};
+const SKY_ITEM_KINDS=Object.keys(SKY_ITEM_NAME);
+// floating garden: soil blocks (every tile is a plot), and the three chime posts of the garden puzzle (small, BIG, medium)
+const SKY_SOIL=[[3,5,5,6],[9,5,11,6],[3,8,5,9],[9,8,11,9]];             // [c0,r0,c1,r1] on g0
+const SKY_CHIMES=[['small','g1',3,7],['big','g1',7,7],['mid','g1',11,7]];
+const CHIME_TUNE=['big','small','mid'];
+// the boss lair
+const SKY_BELLS=[['b0','lair',3,3],['b1','lair',12,3],['b2','lair',8,9]];
+const SKY_CRYS=[['c0','lair',3,5],['c1','lair',12,5],['c2','lair',5,8],['c3','lair',10,8]];
+// characters (screen-local positions, see SKO)
+const SKY_CAST=[
+  {id:'puff',name:'PUFF',spr:'cloudsheep',o:'m0',c:6,r:6,voice:420,w:16},
+  {id:'zephyr',name:'ZEPHYR',spr:'zephyr',o:'m1',c:3,r:6,voice:1300,w:12},
+  {id:'fern',name:'FERN',spr:'fernbird',o:'g0',c:7,r:4,voice:900,w:12},
+  {id:'plume',name:'PLUME',spr:'plumeKeeper',o:'plume',c:7,r:4,voice:1000,w:10},
+  {id:'starla',name:'STARLA',spr:'starla',o:'star',c:6,r:4,voice:380,w:12},
+  {id:'nimbus',name:'NIMBUS',spr:'nimbus',o:'weather',c:6,r:4,voice:260,w:14},
+  {id:'tweeta',name:'TWEETA',spr:'tweeta',o:'cottage',c:5,r:8,voice:1500,w:10},
+  {id:'nb1',name:'BABY BIRD',spr:'tweeta',o:'nursery',c:6,r:7,voice:1600,w:8},
+  {id:'nb2',name:'BABY BIRD',spr:'eaglet',o:'nursery',c:9,r:7,voice:1450,w:10}];
+// Cloud City buildings use the same machinery as the city's (see content/city.js): sign, door tile, room
+const SKY_BUILDINGS=[
+  {id:'plume',sign:'PLUME',name:'FEATHER BOUTIQUE',door:['c0',3,2],room:'sk_plume',hours:'always'},
+  {id:'starstand',sign:'STARS',name:'STAR-FRUIT STAND',door:['c0',8,2],room:'sk_star',hours:'always'},
+  {id:'weather',sign:'WEATHER',name:'WEATHER SHOP',door:['c0',12,2],room:'sk_weather',hours:'always'},
+  {id:'cottage',sign:'TWEETA',name:"TWEETA'S COTTAGE",door:['c1',4,2],room:'sk_cottage',hours:'always'},
+  {id:'nursery',sign:'NURSERY',name:'SKY NURSERY',door:['c1',11,2],room:'sk_nursery',hours:'always'}];
+for(const b of SKY_BUILDINGS){const d=SKO[b.door[0]];b.door=[d[0]+b.door[1],d[1]+b.door[2]];
+  b.out={x:b.door[0]*16+8,y:(b.door[1]+1)*16+11};b.in=roomEntry(b.room);BUILDINGS.push(b);BUILDING_AT[b.door[0]+','+b.door[1]]=b;BUILDING_BY_ROOM[b.room]=b;
+  DOORS[b.door[0]+','+b.door[1]]={x:b.in.x,y:b.in.y,b};}
+/* ---- the Sky Tree II: Updraft is free to buy; the other three are taught (see TRAIN in this file's quests) ---- */
+const SKILLS5=[
+  {id:'updraft',name:'UPDRAFT',cost:5,req:[],x:44,y:96,desc:'Step on an updraft vent to ride the wind up to the islands above!',learn:'Ride the updraft vents!'},
+  {id:'cloudwalk',name:'CLOUD WALK',cost:6,req:['updraft'],x:112,y:62,desc:'Light as a feather: walk across the thin, wispy clouds. Taught by Zephyr.',learn:'Thin clouds hold you now!'},
+  {id:'divebomb',name:'DIVE-BOMB',cost:6,req:['updraft'],x:112,y:130,desc:'Bounce on a bouncy cloud, press peck in mid-air, and SLAM down! Cracks cloud barriers. Taught by your chick.',learn:'Peck in mid-air to DIVE-BOMB!'},
+  {id:'thunder',name:'THUNDER PECK',cost:8,req:['cloudwalk','divebomb'],x:196,y:96,desc:'Your peck crackles with lightning and shatters storm crystals. Taught by Starla.',learn:'Your peck crackles with lightning!'}];
+/* ---- outfits (1 or 2 per region), foods, secret ---- */
+OUTFITS.push(
+  {id:'scarf',name:'CLOUD SCARF',bonus:'Soft as a cloud: strong winds and wind lanes cannot push you around.',how:'Dive-bomb into the hidden pocket in Cloud Meadows.',desc:'A scarf that smells like rain and sunshine.'},
+  {id:'bloom',name:'SUN-BLOOM CROWN',bonus:'Sky gardener: sky-garden harvests give +1 seed.',how:'Help Fern in the Floating Gardens.',desc:'A crown of everlasting flowers.'},
+  {id:'quill',name:'FEATHER QUILL',price:5,bonus:'Fancy feathers: updraft vents and bouncy clouds lift you a little higher and faster.',desc:'A grand plume from the Feather Boutique.'},
+  {id:'stormcap',name:'STORM CAP',price:6,bonus:'Rain-proof: rain walls cannot hurt you, and lightning warns you a little earlier.',desc:'A snug cap that keeps off the drizzle.'});
+ACCESSORY_IDS.push('scarf');
+FOODS.push({id:'starfruit',name:'STAR-FRUIT',spr:'starfruit'},{id:'cake',name:'STAR CAKE',spr:'cake'},{id:'cloudberry',name:'CLOUDBERRY',color:'#e6f2ff'},
+  {id:'skyhoney',name:'SKY HONEY',color:'#ffd83a'},{id:'stormtea',name:'STORM TEA',color:'#a8b8e0'});
+EXHIBITS.push({id:'shard',item:'shard',name:'STORM SHARDS',need:3,desc:'Three shards of storm crystal.',where:'Past the crystal walls in the Storm Peaks.',reward:{seeds:6,gp:12}},
+  {id:'cloudbloom',item:'cloudbloom',name:'CLOUD BLOOMS',need:3,desc:'Three flowers that only grow on clouds.',where:'On the sky islands of the Meadows and the Gardens.',reward:{seeds:6,gp:12}});
+SECRET_IDS.push({id:'skynest',name:'THE LAST CLOUD'});
+SEED_TYPES.star={name:'STAR-FRUIT SEED',price:3,grow:0.8,yield:5,spr:'starfruit',star:true,desc:'Grows glowing star-fruit. Gives 5 seeds and a star-fruit.'};
+
+/* ===== src/content/quests_sky.js ===== */
+/* content: Sky Kingdom quests (9), trainers (3), shops (3) and the talk of the people up there. Same shape as every other quest. */
+Object.assign(NAMES,{puff:'Puff',zephyr:'Zephyr',fern:'Fern',plume:'Plume',starla:'Starla',nimbus:'Nimbus',tweeta:'Tweeta',stormy:'Stormy',sk_hatch:'Elda',sk_boss:'Nimbus'});
+const ORDER6=['sk_hatch','sk_lambs','sk_gust','sk_moon','sk_chimes','sk_cake','sk_boutique','sk_rods','sk_boss'];
+Object.assign(QUEST_GIVER,{sk_hatch:'elda',sk_lambs:'puff',sk_gust:'zephyr',sk_moon:'fern',sk_chimes:'fern',sk_cake:'tweeta',sk_boutique:'plume',sk_rods:'nimbus',sk_boss:'nimbus'});
+Object.assign(QUEST_OF,{puff:'sk_lambs',zephyr:'sk_gust',fern:'sk_moon',tweeta:'sk_cake',plume:'sk_boutique',nimbus:'sk_rods'});
+Object.assign(FOLLOWUP,{fern:['sk_moon','sk_chimes'],nimbus:['sk_rods','sk_boss']});
+Object.assign(FOLLOW_GATE,{sk_boss:()=>has('thunder')&&G.q.sk_rods===2&&!!G.sky.open});
+const NIGHT_HINT='Moonflowers only grow at night.';
+Object.assign(QUESTS,{
+  sk_hatch:{title:'The Egg Hatches',loc:'SNOWY PEAK: Elda',check:()=>!!G.sky.hatched,prog:()=>G.sky.hatched?'hatched!':'watch the egg',reward:5,
+    intro:[],done:[],after:()=>["Look after our little one, Pip."],
+    hint:()=>"Elda the eagle is waiting on the snowy peak. Her egg is about to hatch!"},
+  sk_lambs:{title:'Lost Lambs',loc:'MEADOWS: Puff',check:()=>G.items.lamb>=3,prog:()=>Math.min(3,G.items.lamb)+'/3 lambs',reward:5,
+    intro:["Baaa... oh, a visitor! A chick, up here? I'm Puff, the cloud shepherd.","My three cloud lambs bounced off on the bouncy clouds and I can't find them!","Look around the meadows and the gardens. They hide in the soft spots!"],
+    remind:()=>Math.min(3,G.items.lamb)+"/3 lambs. Try the plateau corners of the meadows, and the gardens!",
+    done:["My lambs! Baaa-rilliant! Oh, bless your wings.","Here, take these seeds, and a CLOUDBERRY for the road."],
+    onDone:()=>{G.items.lamb=0;tasteFood('cloudberry');},
+    after:()=>["Baaa. The lambs are napping on a cloud. All thanks to you."],
+    hint:()=>"Find 3 lost cloud lambs in the Cloud Meadows and the Floating Gardens for Puff."},
+  sk_gust:{title:'Zephyr\'s Feathers',loc:'MEADOWS: Zephyr',check:()=>G.items.skyfeather>=4,prog:()=>Math.min(4,G.items.skyfeather)+'/4 feathers',reward:5,
+    intro:["Whoosh! I'm Zephyr, the fastest bird in the sky. Well, I WAS, before the big gust.","It blew four of my tail feathers away, and now I fly in circles!","They landed on the islands. Learn UPDRAFT, ride the vents, and use the bouncy clouds!"],
+    remind:()=>Math.min(4,G.items.skyfeather)+"/4 feathers. Hop on the bouncy clouds, and learn UPDRAFT for the vents!",
+    done:["My feathers! Zzzoom! I'm back to full speed!","I'll teach you something for your trouble. Come and talk to me again!"],
+    onDone:()=>{G.items.skyfeather=0;},
+    after:()=>["Whoosh! Nothing beats a tailwind."],
+    hint:()=>has('updraft')?"Collect Zephyr's 4 sky feathers on the islands: use bouncy clouds and updraft vents.":"Learn UPDRAFT in your Sky Tree, then ride the vents to the islands for Zephyr's feathers."},
+  sk_moon:{title:'Sky Seeds',loc:'GARDENS: Fern',check:()=>G.sky.harv.moon>=1&&G.sky.harv.star>=1,prog:()=>(G.sky.harv.moon>=1?'moon ok':'moon?')+' / '+(G.sky.harv.star>=1?'star ok':'star?'),reward:5,
+    intro:["Chirp! Welcome to the Floating Gardens! I'm Fern. Nothing grows like it does up here.","Sky soil is magic: everything grows three times as fast! Moonflowers, too, but only at night.","Take these: two STAR-FRUIT seeds and two MOONFLOWER seeds. Grow one of each and show me!",
+      {t:"Plant them in the soil blocks. Press peck on the soil!",fx:()=>{G.sacks.star=(G.sacks.star||0)+2;G.sacks.moon=(G.sacks.moon||0)+2;toast('Got 2 STAR-FRUIT and 2 MOONFLOWER seeds!','#ffd83a');}}],
+    remind:()=>(G.sky.harv.star>=1?'':'Grow a STAR-FRUIT. ')+(G.sky.harv.moon>=1?'':'Grow a MOONFLOWER. '+NIGHT_HINT)+' Peck the soil to plant!',
+    done:["Gorgeous! A star-fruit AND a moonflower!","You've got the touch, little gardener. A crown of sun-blooms for you!"],
+    onDone:()=>{if(grantOutfit('bloom'))toast('Got the SUN-BLOOM CROWN!','#ff9cd0');},
+    after:()=>["Chirp! Everything grows better with a friend."],
+    hint:()=>"Plant a star-fruit and a moonflower in the Floating Gardens' soil, and harvest both. Moonflowers grow at night."},
+  sk_chimes:{title:'The Garden Chimes',loc:'GARDENS: Fern',check:()=>G.sky.chimes>=1,prog:()=>G.sky.chimes>=1?'sung!':'play the tune',reward:6,
+    intro:["Chirp! One more thing. There are three old chimes in the east garden.","They play a tune: BIG... SMALL... MEDIUM. Peck them in that order and something nice happens.","If you get it wrong, they just go quiet. No harm done!"],
+    remind:()=>G.sky.chimes?"The chest is waiting in the east garden!":"The tune is BIG, then SMALL, then MEDIUM. The chimes are in the east garden.",
+    done:["I heard it all the way over here! Lovely!","Take this jar of SKY HONEY. The bees up here are very fancy."],
+    onDone:()=>{tasteFood('skyhoney');},
+    after:()=>["Chirp! The garden hums that tune every dusk."],
+    hint:()=>"Peck the three chimes in the east Floating Gardens in order: BIG, SMALL, MEDIUM."},
+  sk_cake:{title:'Star-Fruit Cake',loc:'CITY: Tweeta\'s cottage',check:()=>G.items.starfruit>=2,prog:()=>Math.min(2,G.items.starfruit)+'/2 star-fruit',reward:6,
+    intro:["Tweet tweet! Oh, hello! It's my hatching-day, and I'm baking a cake!","A STAR-FRUIT CAKE needs two fresh star-fruit. I'm all out!","Grow two in the Floating Gardens. A seed is 3 at the Star-Fruit Stand!"],
+    remind:()=>Math.min(2,G.items.starfruit)+"/2 star-fruit. Buy seeds at the stand, plant them in the sky soil, and harvest!",
+    done:["Two perfect star-fruit! Mix, mix, mix... bake, bake, bake...","Ta-daaa! Have the first slice, and these seeds for your trouble!"],
+    onDone:()=>{G.items.starfruit-=2;tasteFood('cake');},
+    after:()=>["Tweet! The cake was a hit. Thank you, Pip!"],
+    hint:()=>"Harvest 2 star-fruit in the Floating Gardens for Tweeta's cake. Star-fruit seeds are sold at the Star-Fruit Stand."},
+  sk_boutique:{title:'Window Display',loc:'CITY: Feather Boutique',check:()=>G.items.cloudpuff>=3,prog:()=>Math.min(3,G.items.cloudpuff)+'/3 cloud puffs',reward:6,
+    intro:["Coo! Welcome to the Feather Boutique! I'm Plume. The finest plumes in all the clouds.","My window needs a little FLUFF. Three CLOUD PUFFS would make it look like a dream!","They drift around the gardens and the city plazas. Just pick them up!"],
+    remind:()=>Math.min(3,G.items.cloudpuff)+"/3 cloud puffs. Look in the Floating Gardens and around Cloud City's plazas!",
+    done:["Perfect puffs! Look at my window now. Gorgeous!","Come in any time. The shop is yours to browse, darling!"],
+    onDone:()=>{G.items.cloudpuff=0;},
+    after:()=>["Coo! Feathers are my life."],
+    hint:()=>"Find 3 cloud puffs in the Floating Gardens and Cloud City for Plume's window."},
+  sk_rods:{title:'Lightning Rods',loc:'CITY: Weather Shop, then the Peaks',check:()=>G.items.rod>=3,prog:()=>Math.min(3,G.items.rod)+'/3 rods',reward:6,
+    intro:["Hmph. Nimbus. I run the weather shop. And the weather has been... terrible lately.","A storm sits over the PEAKS. It rains and zaps. Something has made it grumpy.","I need three LIGHTNING RODS from the far peaks to measure it. A crystal wall blocks the way. THUNDER PECK shatters it!"],
+    remind:()=>has('thunder')?Math.min(3,G.items.rod)+"/3 rods. Break the crystal walls in the Storm Peaks and look past them!":"You need THUNDER PECK to shatter the crystal walls. Starla at the Star-Fruit Stand teaches it!",
+    done:["The rods! Look at that reading. It's not weather. It's a... a very sad dragon.","A dragon lives in the lair beyond the peaks. And I think he's lonely."],
+    onDone:()=>{G.items.rod=0;},
+    after:()=>["Hmph. Thank you. The rain is still rain, though."],
+    hint:()=>has('thunder')?"Find 3 lightning rods past the crystal walls in the Storm Peaks for Nimbus.":"Learn THUNDER PECK from Starla, then find 3 lightning rods in the Storm Peaks for Nimbus."},
+  sk_boss:{title:'The Lonely Storm',loc:'PEAKS: the dragon\'s lair',check:()=>!!G.flags.sky,prog:()=>G.flags.sky?'calmed!':(G.sky.boss?'stage '+Math.min(3,G.sky.boss)+'/3':'enter the lair'),reward:12,
+    intro:["Pip. The storm is the dragon. He's not angry. He's alone up there, and his sadness makes the lightning.","Go to his lair, past the last crystal wall. Dodge the lightning. Smash the storm crystals. Ring the three sky bells.","The bells' song might calm him. Be brave. And bring your chick's courage!"],
+    remind:()=>"The lair is past the second crystal wall in the Storm Peaks. Dodge, smash, then ring the 3 bells!",
+    done:[],after:()=>["The skies are calm. Thank you, Pip."],
+    hint:()=>"Enter the Dragon's Lair in the Storm Peaks and calm the Storm Dragon: dodge lightning, smash crystals, ring 3 bells."}
+});
+/* ---- trainers ---- */
+const trainSpawn=kind=>SKY_ITEMS.filter(i=>i[1]===kind).map(i=>[i[0],SKO[i[2]][0]+i[3],SKO[i[2]][1]+i[4]]);
+Object.assign(TRAIN,{
+  cloudwalk:{phase:6,who:'zephyr',whoName:'ZEPHYR',skill:'CLOUD WALK',title:'Feather-Light Training',avail:()=>G.q.sk_gust===2,item:'chime',need:3,noun:'wind chimes',spawn:trainSpawn('chime'),
+    lock:"Help ZEPHYR in the Cloud Meadows with his feathers, and he'll teach you CLOUD WALK!",
+    intro:["Whoosh! You're quick, kid. Want to walk on the thin clouds? They hold only the lightest feet.","The trick is to listen to the wind. Three WIND CHIMES are hidden around the meadows and gardens.","Find them and bring me their song!"],
+    remind:()=>Math.min(3,G.items.chime)+"/3 wind chimes. One's on the meadow plateau, one's in the next meadow, and one's in the gardens!",
+    done:["Ting-ting-ting! Hear that? Light as a feather. Now you try!","Learn CLOUD WALK in your Sky Tree. Press E, and mind the thin clouds!"],
+    hint:()=>"Find 3 wind chimes in the Cloud Meadows and the Floating Gardens for Zephyr."},
+  divebomb:{phase:6,who:'hatch',whoName:'YOUR CHICK',skill:'DIVE-BOMB',title:'Dive Practice',avail:()=>!!G.sky.hatched,item:'peg',need:3,noun:'pegs',spawn:trainSpawn('peg'),
+    lock:"Your chick wants to teach you something! Talk to your little one after the egg hatches.",
+    intro:["*peep peep!* (Your chick flaps its tiny wings and points at three little pegs.)","(It wants to show you how to DIVE! But first it needs three PEGS to practise on.)","(They're lying around: one in the gardens, one by the meadow, one on the garden plateau!)"],
+    remind:()=>Math.min(3,G.items.peg)+"/3 pegs. Look in the Floating Gardens and the next meadow!",
+    done:["*PEEP!* (Your chick zooms up, tucks its wings... and drops like a stone, right on the peg!)","(Now you know! Learn DIVE-BOMB in your Sky Tree. Press E!)"],
+    hint:()=>"Find 3 pegs in the Cloud Meadows and Floating Gardens for your chick."},
+  thunder:{phase:6,who:'starla',whoName:'STARLA',skill:'THUNDER PECK',title:'Static Charge',avail:()=>has('cloudwalk')&&has('divebomb'),item:'bolt',need:3,noun:'static bolts',spawn:trainSpawn('bolt'),
+    lock:"Learn CLOUD WALK and DIVE-BOMB first. Then Starla at the Star-Fruit Stand will teach you THUNDER PECK!",
+    intro:["Hoo! A chick who walks on clouds AND dives? Now we're talking.","Thunder Peck takes real zap. Three STATIC BOLTS are drifting around the Storm Peaks entrance.","Stay out of the rain walls. They sting! Bring me the bolts and I'll charge your beak."],
+    remind:()=>Math.min(3,G.items.bolt)+"/3 static bolts. They're in the west part of the Storm Peaks. Stay out of the rain walls!",
+    done:["Fizz-crackle! Feel that tingle? Hold your beak steady...","Learn THUNDER PECK in your Sky Tree. Press E! It shatters storm crystals!"],
+    hint:()=>"Find 3 static bolts in the west Storm Peaks for Starla."}
+});
+/* ---- shops ---- */
+const SKY_FOOD=(id,name,price,spr,desc,heal)=>({name,price,icon:spr,tag:G.taste[id]?null:'NEW!',desc:desc+(G.taste[id]?'':' A new food for the Taste Log!'),
+  act:()=>shopBuy(price,'Yum! '+name+'!',()=>{G.hearts=Math.min(maxHearts(),G.hearts+heal);tasteFood(id);})});
+const shopOutfit=(id)=>{const o=OUTFITS.find(x=>x.id===id),own=G.outfits.includes(id);
+  return {name:o.name,price:own?null:priceOf(o),tag:own?(wearing(id)?'ON':'OWN'):null,own,on:wearing(id),desc:o.desc,bonus:o.bonus,outfit:id,
+    act:()=>{if(own){setWear(id);return {s:wearing(id)?'Wearing it! Gorgeous!':'Taken off.',c:'#94dc64'};}
+      return shopBuy(priceOf(o),'Sold! Looking fabulous!',()=>{grantOutfit(id);setWear(id,true);});}};};
+Object.assign(SHOPS,{
+  plume:{title:'FEATHER BOUTIQUE',owner:'plumeKeeper',color:'#ff9cd0',leave:'LEAVE SHOP',bye:'Come back soon, darling!',
+    items:()=>[shopOutfit('quill'),
+      {name:'SKY FEATHER',price:null,icon:'skyfeather',desc:'Feathers from the islands make fine gifts.',off:true,offMsg:'Zephyr collects the best ones!'}]},
+  starstand:{title:'STAR-FRUIT STAND',owner:'starla',color:'#ffd83a',leave:'LEAVE',bye:'Hoo! Stay glowing!',
+    items:()=>[
+      {name:'STAR-FRUIT SEED',price:SEED_TYPES.star.price,tag:G.sacks.star?'x'+G.sacks.star:null,icon:'starfruit',desc:SEED_TYPES.star.desc+' Plant it in the sky soil.',
+        act:()=>shopBuy(SEED_TYPES.star.price,'Got a star-fruit seed! Plant it in the Floating Gardens.',()=>{G.sacks.star=(G.sacks.star||0)+1;})},
+      SKY_FOOD('cloudberry','CLOUDBERRY',2,'cloudpuff','Sweet and light as a cloud.',2),
+      SKY_FOOD('cake','STAR CAKE',4,'cake','Tweeta\'s favourite!',3),
+      SKY_FOOD('skyhoney','SKY HONEY',3,'chime','Golden and slow, from the fancy sky bees.',3)]},
+  weather:{title:'WEATHER SHOP',owner:'nimbus',color:'#a8b8e0',leave:'LEAVE',bye:'Hmph. Mind the rain.',
+    items:()=>[
+      SKY_FOOD('stormtea','STORM TEA',2,'bolt','Hot, strong and slightly electric.',2),
+      {name:'RAIN CHARM',price:2,icon:'rod',desc:'Makes it rain. Gardens grow twice as fast in the rain!',act:()=>shopBuy(2,'Pitter patter! It starts to rain.',()=>{G.weather='rain';G.wInt=0.2;})},
+      {name:'SUNNY CHARM',price:2,icon:'skyfeather',desc:'Clears the sky and sends the clouds away.',act:()=>shopBuy(2,'The clouds slide away. Sunshine!',()=>{G.weather='clear';})},
+      shopOutfit('stormcap')]}
+});
+/* ---- talk ---- */
+const trainPending=k=>{const t=TRAIN[k];return !!t&&t.avail()&&(G.train[k]||0)!==2&&!has(k);};
+Object.assign(TALK,{
+  elda:(e,{it,me,ask})=>{
+    if(!G.flags.skyMap||G.q.elda!==2)return false;
+    if(!G.sky.hatched){
+      if(!G.q.sk_hatch)G.q.sk_hatch=1;
+      it("Screeee! Pip! Come quickly! Look at the egg!");
+      it("It's wobbling! The egg you saved is about to HATCH!");
+      it("And that old map the pirates gave you? It shows a stairway in the clouds, right here on the peak. Our little one is meant to follow it with you.");
+      ask("Will you watch the hatching with me?",['Yes!','Not yet'],i=>{if(i===0)startHatch();});return true;}
+    if(!G.sky.open){it("Screee! The cloud stairway is just east of my nest, Pip. Take our little one up there!");return true;}
+    it(G.flags.sky?"Screee! The skies are calm again, and my chick is so happy up there with you!":"Screee! I can see the storm over the peaks from here. Be careful, you two!");return true;},
+  hatch:(e,{it,ask})=>{
+    if(trainPending('divebomb'))return false;
+    const n=G.sky.name||'CHICK';
+    it(['*peep peep!*','*flap flap!* (It wants you to jump on the bouncy clouds!)','*peep?* (It looks up at the sky, then at you.)','*chirp!*'][(Math.random()*4)|0]);
+    if(has('divebomb'))it("(Your chick did a tiny, proud dive-bomb into the cloud.)");},
+  nb1:(e,{it})=>{it(['Peep!','Peep peep!','*flap flap*'][(Math.random()*3)|0]);},
+  nb2:(e,{it})=>{it(['*sleepy peep*','Skree!','*waddles in a tiny circle*'][(Math.random()*3)|0]);},
+  plume:(e,{it,ask})=>{
+    if(G.q.sk_boutique!==2)return false;
+    it("Coo! Lovely to see you, darling. The window looks divine!");
+    ask("Care to try something on?",['Shop','Bye!'],i=>{if(i===0)openCatalog('plume');});},
+  starla:(e,{it,ask})=>{
+    if(trainPending('thunder')&&((G.train.thunder||0)===0||trainCount('thunder')>=TRAIN.thunder.need))return false;
+    if(trainPending('thunder'))it(TRAIN.thunder.remind());
+    if(!G.met.has('starla_hi')){G.met.add('starla_hi');it("Hoo! Welcome to the Star-Fruit Stand! I'm Starla. Fruit that glows in the dark!");}
+    ask("Fancy a snack, or a seed to grow your own?",['Shop','Bye!'],i=>{if(i===0)openCatalog('starstand');});},
+  nimbus:(e,{it,ask})=>{
+    if(G.q.sk_rods!==2||(G.q.sk_boss!==2&&FOLLOW_GATE.sk_boss()))return false;
+    it(G.flags.sky?"Hmph. The sky is clear. I'm almost bored.":"Hmph. Weather's weather.");
+    ask("Anything for the weather?",['Shop','Bye!'],i=>{if(i===0)openCatalog('weather');});},
+  tweeta:(e,{it})=>{if(G.q.sk_cake!==2)return false;it(['Tweet! The cake was delicious. Thank you!','Tweet tweet! Happy hatching-day to me!','Tweet! Have you met the babies in the nursery?'][(Math.random()*3)|0]);},
+  puff:(e,{it})=>{if(G.q.sk_lambs!==2)return false;it(['Baaa. Everything is soft up here.','Baaa! The lambs say hello!','Baaa. Mind the thin clouds, dear.'][(Math.random()*3)|0]);},
+  stormy:(e,{it,ask})=>{
+    it(['*rumble* ...Hello, little friend.','*gentle rumble* I was so lonely. Not any more.','*puffs a tiny cloud heart*'][(Math.random()*3)|0]);}
+});
+
 /* ===== src/entities/sprites.js ===== */
 /* ---------------- sprites ---------------- */
 const SPR={};
@@ -2216,6 +2517,43 @@ Object.assign(ICON,{
   cannon:makeSprite(['..kkkk..','.kEEEEk.','kEeeeeEk','kEe..eEk','kEeeeeEk','.kEEEEk.','..kyyk..','...yy...']),
   sealegs:makeSprite(['..bb.bb.','.bbbbbbb','bbTbbbTb','.bbbbbb.','..uuuu..','.uuuuuu.','.u.uu.u.','u..uu..u'])});
 
+/* ===== src/entities/sprites_sky.js ===== */
+/* ---------------- Sky Kingdom sprites ---------------- */
+SPR.cloudsheep=makeSprite(['....cccccc....','..cccwwwwccc..','.ccwwwwwwwwcc.','ccwwwwwwwwwwcc','.cwwkwwwwkwwc.','.cwwwwppwwwwc.','ccwwwwwwwwwwcc','.cwwwwwwwwwwc.','..ccwwwwwwcc..','...cc....cc...']);
+SPR.fernbird=makeSprite(['..GGG....','.GllGG...','.GlkGGoo.','..GGGG...','..GllGG..','.GGGlGGG.','..GG.GG..','..oo.oo..']);
+SPR.zephyr=makeSprite(['....ccc...','...ccuuc..','..cckuccoo','.ccccuc...','ccuuccccc.','.ccuuccc..','..ccc.cc..','..oo..oo..']);
+SPR.nimbus=makeSprite(['.e......e.','.ee....ee.','.eeeeeeee.','eewweeewwe','ewkweeewke','eewweqqwwe','.eeeeqqeee','.eEEEEEEe.','eeEeyyeEee','.eEEEEEEe.','..ee..ee..','..oo..oo..']);
+SPR.plumeKeeper=decorate(SPR.pigeon,x=>{P_(x,'#ff6fae',0,0,3,2);P_(x,'#ffd83a',2,0,1,1);});
+SPR.starla=decorate(SPR.owl,x=>{P_(x,'#ffd83a',5,0,2,2);P_(x,'#ffd83a',4,1,4,1);});
+SPR.tweeta=makeSprite(['..yyy..','.yyyyy.','.ykyyy.','ooyyy..','.yyyyy.','..yyy..','..o.o..']);
+SPR.eaglet=makeSprite(['..nnn...','.nnnnn..','.nkntnn.','.nnqqn..','..nnnn..','.nnnnnn.','.nTnnTn.','..q..q..']);
+SPR.dragon=mk(72,52,x=>{const R=(c,i,j,w,h)=>{x.fillStyle=c;x.fillRect(i,j,w,h);};
+  R('#21142b',8,14,50,30);R('#8a98c8',10,16,46,26);R('#a8b8e0',12,17,40,10);R('#6a78a8',10,36,46,6);
+  R('#21142b',36,2,26,24);R('#8a98c8',38,4,22,20);R('#a8b8e0',40,5,16,6);R('#21142b',42,10,6,6);R('#ff6a6a',43,11,4,4);R('#fff8ec',43,11,1,1);
+  R('#21142b',52,12,6,6);R('#ff6a6a',53,13,4,4);R('#6a78a8',58,20,12,4);R('#21142b',57,18,5,3);R('#ffe84a',39,0,3,5);R('#ffe84a',46,0,3,4);R('#ffe84a',54,1,3,4);
+  R('#21142b',0,22,12,12);R('#8a98c8',1,23,10,10);R('#a8b8e0',2,24,6,3);R('#21142b',16,44,8,8);R('#6a78a8',17,45,6,6);R('#21142b',40,44,8,8);R('#6a78a8',41,45,6,6);
+  R('#4a5a8a',14,26,6,4);R('#4a5a8a',26,28,6,4);R('#4a5a8a',38,26,6,4);R('#9aa8d8',18,18,30,2);});
+// finds and goods
+SPR.lamb=makeSprite(['..ccc..','.cwwwc.','cwkwwkc','cwwppwc','.cwwwc.','.c...c.']);
+SPR.chime=makeSprite(['..k...','.kkk..','kqkqkq','.q.q.q','.q.q.q','.q.q.q']);
+SPR.skyfeather=makeSprite(['....ww','...wcw','..wcww','.wcww.','wcww..','ww....']);
+SPR.cloudpuff=makeSprite(['.ww.','wwww','wwwww','.www']);
+SPR.rod=makeSprite(['..y..','.yy..','..yy.','.yyyy','..yy.','..y..','..k..','..k..']);
+SPR.starfruit=makeSprite(['..y..','.yyy.','yyyyy','.yyy.','y.y.y','..G..']);
+SPR.cake=makeSprite(['.ppp.','wwwww','pwwwp','wwwww','.eee.']);
+SPR.sbell=makeSprite(['..qq..','.qqqq.','qqQQqq','qQqqQq','qqqqqq','.qqqq.','..kk..']);
+SPR.shard=mk(9,11,x=>{P_(x,'#21142b',3,0,3,1);P_(x,'#21142b',2,1,5,8);P_(x,'#21142b',3,9,3,1);P_(x,'#8a4ad8',3,1,3,8);P_(x,'#6a2ab8',4,3,2,6);P_(x,'#c898f8',3,2,1,5);P_(x,'#ffe84a',5,5,1,2);});
+SPR.cloudbloom=makeSprite(['..p..','.pyp.','pyqyp','.pyp.','..l..','.ll..']);
+SPR.bolt=makeSprite(['...yy.','..yy..','.yyyy.','..yy..','.yy...','yy....']);
+SPR.peg=mk(12,16,x=>{x.fillStyle='#21142b';x.fillRect(3,6,6,10);x.fillStyle='#c8c8d8';x.fillRect(4,7,4,8);x.fillStyle='#21142b';x.fillRect(1,0,10,8);});
+// Sky Tree II icons
+Object.assign(ICON,{
+  updraft:makeSprite(['...yy...','..yyyy..','.yyyyyy.','...yy...','...yy...','..y..y..','.y....y.','y......y']),
+  divebomb:makeSprite(['...kk...','..kyyk..','..kyyk..','..kyyk..','.kyyyyk.','kyyyyyyk','.kkkkkk.','..y..y..']),
+  cloudwalk:makeSprite(['..wwww..','.wwwwww.','wwwwwwww','.wwwwww.','..y..y..','..y..y..','.yy..yy.','........']),
+  thunder:makeSprite(['....yy..','...yy...','..yyyy..','.yyyy...','...yy...','..yy....','.yy.....','y.......'])});
+Object.assign(OUTFIT_SPR,{quill:makeSprite(['...ww','..wcw','.wwcw','wwc..','wc...','c....']),bloom:makeSprite(['p.y.p.y.p','.pyypyypy.','GlGGlGGlG']),stormcap:makeSprite(['..eeee..','.eEEEEe.','eEeeeeEe','kkkkkkkk','.yy.....']),scarf:makeSprite(['pppppppp','.pp..pp.','.....pp.'],false)});
+
 /* ===== src/engine/settings.js ===== */
 /* ---------------- settings (saved separately from game progress) ---------------- */
 const SETTINGS_KEY='chicklandia_settings_v1';
@@ -2364,6 +2702,24 @@ function startMusic(){
 }
 
 
+/* ===== src/engine/tracks_sky.js ===== */
+/* music for the Sky Kingdom: one track per area (same format as TRACKS in audio.js). The dragon's lair reuses 'boss'. */
+const SKY_TRACKS={
+  skymeadow:{bpm:104,lead:'triangle',lv:0.05,len:1.1,bass:'sine',bv:0.06,
+    mel:[72,0,76,79,0,76,72,0, 74,0,79,81,0,79,74,0, 76,0,81,84,0,81,76,0, 79,0,76,0,72,0,0,0, 69,0,72,76,0,72,69,0, 71,0,74,77,0,74,71,0, 72,0,76,79,84,0,79,0, 76,0,72,0,67,0,0,0],
+    ch:[[48,55],[50,57],[52,59],[48,55],[45,52],[47,54],[48,55],[43,50]]},
+  skygarden:{bpm:78,lead:'sine',lv:0.06,len:1.8,bass:'sine',bv:0.06,
+    mel:[79,0,0,76,0,0,72,0, 81,0,0,77,0,0,74,0, 83,0,0,79,0,0,76,0, 84,0,0,0,79,0,0,0, 79,0,0,76,0,0,72,0, 77,0,0,74,0,0,71,0, 76,0,79,0,83,0,79,0, 72,0,0,0,0,0,0,0],
+    ch:[[48,55],[41,48],[43,50],[48,55],[48,55],[41,48],[43,50],[48,55]]},
+  skycity:{bpm:118,lead:'square',lv:0.024,len:0.8,bass:'triangle',bv:0.07,
+    mel:[72,0,72,76,0,79,0,76, 74,0,74,77,0,81,0,77, 76,0,76,79,0,83,0,79, 84,0,83,0,81,0,79,0, 72,0,72,76,0,79,0,76, 69,0,69,72,0,76,0,72, 71,0,74,77,79,0,77,0, 72,0,0,0,0,0,0,0],
+    ch:[[48,55],[41,48],[43,50],[48,55],[48,55],[45,52],[43,50],[48,55]]},
+  skystorm:{bpm:134,lead:'square',lv:0.028,len:0.8,bass:'triangle',bv:0.085,
+    mel:[69,0,69,72,0,69,0,64, 69,0,69,72,0,76,0,72, 67,0,67,71,0,67,0,62, 67,0,67,71,0,74,0,71, 65,0,65,69,0,65,0,60, 65,0,69,72,0,77,0,72, 64,0,67,71,0,76,0,71, 69,0,0,0,0,0,0,0],
+    ch:[[45,52],[45,52],[43,50],[43,50],[41,48],[41,48],[40,47],[45,52]]}
+};
+Object.assign(TRACKS,SKY_TRACKS);
+
 /* ===== src/engine/input.js ===== */
 /* ---------------- input ---------------- */
 const keys={},pressed={};
@@ -2409,7 +2765,7 @@ function facingTalk(){
 function updateTouchUI(){
   if(!TOUCH)return;
   const show=(id,v)=>{const el=document.getElementById(id);if(el)el.style.display=v?'':'none';};
-  const menus=state==='grow'||state==='quests';
+  const menus=state==='grow'||state==='quests'||(state==='map'&&!!G&&!!G.sky&&!!G.sky.open);
   show('menu',state!=='title'&&state!=='ending'&&state!=='p2intro'&&state!=='flying'&&state!=='egg');
   show('btnB',(state==='play'&&has('flap'))||(menus&&G&&G.part2));
   show('btnD',(state==='play'||state==='chase')&&!!G&&has('dash'));
@@ -2440,7 +2796,7 @@ function has(s){return G&&G.skills.has(s);}
 function level(){return 1+G.skills.size;}
 function stage(){return G?stageOfRank(G.rank):0;}
 function wearing(id){return !!G&&(G.wear===id||G.acc===id);}
-function maxHearts(){return (typeof buffActive==='function'&&buffActive('tart')?1:0)+3+(has('down')?1:0)+(has('tough')?1:0)+(has('golden')?1:0)+(wearing('bow')?1:0)+(G.rank>=4?1:0)+(G.rank>=7?1:0);}
+function maxHearts(){return (typeof buffActive==='function'&&buffActive('tart')?1:0)+3+(has('down')?1:0)+(has('tough')?1:0)+(has('golden')?1:0)+(wearing('bow')?1:0)+(G.rank>=4?1:0)+(G.rank>=7?1:0)+(G.rank>=10?1:0);}
 function speed(){return speed0()*(buffActive('muffin')?1.1:1)*(wearing('goggles')&&(P.flying||overChasm())?1.15:1);}
 function speed0(){return ((has('quick')?1.45:1.05)+(has('golden')?0.2:0))*(wearing('ears')?1.2:1)*(G.rank>=2?1.05:1)+(wearing('ninja')?0.12:0);}
 function priceOf(o){return Math.max(1,o.price-(wearing('shades')?1:0));}
@@ -2457,14 +2813,14 @@ function strawBonus(x,y){if(wearing('straw')&&Math.random()<0.25){G.seeds++;G.ea
 
 function freshState(){
   return {seeds:0,skills:new Set(),hearts:3,q:{mom:0,daisy:0,pig:0,duck:0,sheep:0,rooster:0,penny:0,clyde:0,squeaks:0,biscuit:0,whiskers:0,
-      granny:0,bucky:0,doe:0,mo:0,elda:0,pidge:0,remy:0,pinch:0,sandy:0,rocco:0,cleo:0,cookoff:0,vane:0,babysit:0,portrait:0,sea_cove:0,sea_xmarks:0,sea_smug:0,sea_pearl:0,sea_wreck:0,sea_springs:0,sea_forge:0,sea_light:0,sea_boss:0,vfound:0,v_pig:0,v_whiskers:0,v_clyde:0,v_daisy:0,v_doe:0,v_penny:0,v_rooster:0,vharvest:0},
-    items:{worm:0,bell:0,apple:0,feather:0,carrot:0,bone:0,yarn:0,letter:0,cheese:0,acorn:0,stick:0,shell:0,fish:0,snowberry:0,eagleEgg:0,horseshoe:0,puff:0,ring:0,stump:0,bhat:0,bwhisk:0,bbell:0,pepper:0,salt:0,mushroom:0,pebble:0,plank:0,snowball:0,pearl:0,wreckbell:0,crate:0,sunstone:0,ironore:0,powderkeg:0,conch:0},collected:new Set(),mods:{},picked:{},foxGone:false,gooseGone:false,
-    sp1:0,sp2:0,earned:0,gp:0,rank:1,taste:{},secrets:{},mgFirst:{},mgDay:{d:-1,n:0},acc:null,accessoryUnlocked:false,snackFirst:false,snackEaten:0,growMsgOnLoad:false,sea:{open:false,lv:{sails:0,hull:0,cannon:0},salv:{sailcloth:0,hullplank:0,cannonpart:0},visited:{},dug:{},chest:0,lamps:0,boss:0},vil:{open:false,b:{},mat:{wood:0,stone:0,wool:0,clay:0},res:{},letters:[],nodes:{},shear:{},whistle:{},skills:0,contest:{},decor:{}},time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
-    clock:Math.round(DAY*0.07),weather:'clear',wInt:0,puddle:0,outfits:[],wear:null,best:{egg:0,bonk:0,ffly:0,race:0},sacks:{speedy:0,giant:0,moon:0},decor:{},buff:null,jobs:{day:0,list:[]},hold:{seashell:0,plume:0,fossil:0,petal:0},museum:{seashell:0,plume:0,fossil:0,petal:0},cellar:false,chest:false,
+      granny:0,bucky:0,doe:0,mo:0,elda:0,pidge:0,remy:0,pinch:0,sandy:0,rocco:0,cleo:0,cookoff:0,vane:0,babysit:0,portrait:0,sea_cove:0,sea_xmarks:0,sea_smug:0,sea_pearl:0,sea_wreck:0,sea_springs:0,sea_forge:0,sea_light:0,sea_boss:0,vfound:0,v_pig:0,v_whiskers:0,v_clyde:0,v_daisy:0,v_doe:0,v_penny:0,v_rooster:0,vharvest:0,sk_hatch:0,sk_lambs:0,sk_gust:0,sk_moon:0,sk_chimes:0,sk_cake:0,sk_boutique:0,sk_rods:0,sk_boss:0},
+    items:{worm:0,bell:0,apple:0,feather:0,carrot:0,bone:0,yarn:0,letter:0,cheese:0,acorn:0,stick:0,shell:0,fish:0,snowberry:0,eagleEgg:0,horseshoe:0,puff:0,ring:0,stump:0,bhat:0,bwhisk:0,bbell:0,pepper:0,salt:0,mushroom:0,pebble:0,plank:0,snowball:0,pearl:0,wreckbell:0,crate:0,sunstone:0,ironore:0,powderkeg:0,conch:0,lamb:0,skyfeather:0,chime:0,peg:0,cloudpuff:0,bolt:0,rod:0,starfruit:0},collected:new Set(),mods:{},picked:{},foxGone:false,gooseGone:false,
+    sp1:0,sp2:0,earned:0,gp:0,rank:1,taste:{},secrets:{},mgFirst:{},mgDay:{d:-1,n:0},acc:null,accessoryUnlocked:false,snackFirst:false,snackEaten:0,growMsgOnLoad:false,sea:{open:false,lv:{sails:0,hull:0,cannon:0},salv:{sailcloth:0,hullplank:0,cannonpart:0},visited:{},dug:{},chest:0,lamps:0,boss:0},sky:{open:0,hatched:0,name:'',harv:{moon:0,star:0},chimes:0,boss:0,crys:0,nest:0,metBoss:0,dbTip:0},vil:{open:false,b:{},mat:{wood:0,stone:0,wool:0,clay:0},res:{},letters:[],nodes:{},shear:{},whistle:{},skills:0,contest:{},decor:{}},time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
+    clock:Math.round(DAY*0.07),weather:'clear',wInt:0,puddle:0,outfits:[],wear:null,best:{egg:0,bonk:0,ffly:0,race:0},sacks:{speedy:0,giant:0,moon:0,star:0},decor:{},buff:null,jobs:{day:0,list:[]},hold:{seashell:0,plume:0,fossil:0,petal:0,shard:0,cloudbloom:0},museum:{seashell:0,plume:0,fossil:0,petal:0,shard:0,cloudbloom:0},cellar:false,chest:false,
     part2:false,areas:['farm'],thumb:false,coop:null,plots:{},mail:{rocco:0,cleo:0,granny:0},flags:{},turtles:[],harvests:0,train:{}};
 }
 function newPlayer(x,y){return {x,y,dir:0,z:0,moving:false,hop:null,kt:0,kx:0,ky:0,inv:0,peckT:0,flapCd:0,flapAnim:0,bubbleCd:0,flying:false};}
-function resetTransient(){RU=null;FEST=null;CRED=null;PIN=null;VB=null;SH=null;PL=null;MG=null;EG=null;dlg=null;}
+function resetTransient(){RU=null;FEST=null;CRED=null;PIN=null;VB=null;SH=null;PL=null;MG=null;EG=null;dlg=null;HAT=null;NAMEUI=null;FLYO=null;SKB=null;STRIKES.length=0;chimeSeq=[];}
 function newGame(){
   resetTransient();
   G=freshState();tiles=MAP.map(r=>r.split(''));P=newPlayer(56,76);CS={x:0,y:0};camX=0;camY=0;trans=null;
@@ -2473,7 +2829,7 @@ function newGame(){
 function save(){
   if(!G)return;titleSave=undefined;
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({sv:3,pos:toRegionPos(P.x,P.y),seeds:G.seeds,skills:[...G.skills],hearts:G.hearts,q:G.q,
-    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,gp:G.gp,rank:G.rank,taste:G.taste,secrets:G.secrets,mgFirst:G.mgFirst,mgDay:G.mgDay,acc:G.acc,accessoryUnlocked:G.accessoryUnlocked,snackFirst:G.snackFirst,snackEaten:G.snackEaten,sacks:G.sacks,vil:G.vil,sea:G.sea,decor:G.decor,buff:G.buff,jobs:G.jobs,hold:G.hold,museum:G.museum,
+    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,gp:G.gp,rank:G.rank,taste:G.taste,secrets:G.secrets,mgFirst:G.mgFirst,mgDay:G.mgDay,acc:G.acc,accessoryUnlocked:G.accessoryUnlocked,snackFirst:G.snackFirst,snackEaten:G.snackEaten,sacks:G.sacks,vil:G.vil,sea:G.sea,sky:G.sky,decor:G.decor,buff:G.buff,jobs:G.jobs,hold:G.hold,museum:G.museum,
     time:G.time,met:[...G.met],home:G.home,sibs:G.sibs,visited:[...G.visited],won:G.won,
     clock:G.clock,weather:G.weather,outfits:G.outfits,wear:G.wear,best:G.best,cellar:G.cellar,chest:G.chest,
     part2:G.part2,areas:G.areas,thumb:G.thumb,coop:G.coop,plots:G.plots,mail:G.mail,flags:G.flags,turtles:G.turtles,harvests:G.harvests,train:G.train,ov:2}));}catch(e){}
@@ -2492,7 +2848,7 @@ function continueGame(){
   {const p=s.pos?fromRegionPos(s.pos):{x:s.x,y:s.y};P=newPlayer(p.x,p.y);CS=s.pos?{x:Math.floor(p.x/256),y:Math.floor((p.y-1)/192)}:(s.cs||{x:0,y:0});if(!cellAt(CS)){P=newPlayer(56,76);CS={x:0,y:0};}}
   camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
   G.train=Object.assign({},s.train||{});migrateSave(s);
-  G.sacks=Object.assign(G.sacks,s.sacks||{});if(s.vil)G.vil=Object.assign(G.vil,s.vil);if(s.sea)G.sea=Object.assign(G.sea,s.sea);G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
+  G.sacks=Object.assign(G.sacks,s.sacks||{});if(s.vil)G.vil=Object.assign(G.vil,s.vil);if(s.sea)G.sea=Object.assign(G.sea,s.sea);if(s.sky){G.sky=Object.assign(G.sky,s.sky);G.sky.harv=Object.assign({moon:0,star:0},s.sky.harv||{});}G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
   migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();state='play';fade=1;fadeColor='#000';
   if(G.growMsgOnLoad){G.growMsgOnLoad=false;toast("You've grown! You are now a "+RANKS[G.rank-1].name+'!','#94dc64');}
 }
@@ -2532,6 +2888,7 @@ function makeEnts(){
   makeCityEnts();
   makeVillageEnts();
   makeSeaEnts();
+  makeSkyEnts();
   if(!G.foxGone){const p=at(27,16);addEnt({type:'fox',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:1,sy:1,hp:3,wt:0,wx:0,wy:0,kt:0,stun:0,cool:0,flash:0,flip:false});}
   if(!G.gooseGone){const p=at(43,18);addEnt({type:'goose',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:2,sy:1,st:'idle',t:0,kt:0,cool:0,flash:0,flip:false,solid:true,w:14});}
 }
@@ -2655,7 +3012,7 @@ function hint(){
   if(!has('fly'))return "You've grown so much! Keep spending seeds in your Growth Tree until you learn FLIGHT!";
   return "Go on, fly over that Big Fence! Mama is so proud of you!";
 }
-function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?2:1,(ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
+function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id)||ORDER6.includes(id))?2:1,(ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id)||ORDER6.includes(id))?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
 function say(lines,onEnd){lines.forEach(l=>l.text=tt(l.text));dlg={lines,i:0,shown:0,onEnd};state='talk';}
 function talkTo(e){
   const L=[];const it=(t,fx)=>L.push({who:e,text:t,fx});const me=t=>L.push({who:'me',text:t});
@@ -2741,7 +3098,7 @@ function peck(f){
   if(MG&&MG.type==='ffly')for(const e of ents){if(e.type==='ffly'&&Math.abs(e.x-f.x)<15&&Math.abs(e.y-8-f.y)<15){
     e.dead=true;MG.score++;SFX.chirp();puff(e.x,e.y-8,6,['#e8ff70','#fff8ec'],0.8,0);float(e.x,e.y-16,''+MG.score,'#e8ff70');return;}}
   for(const e of ents){
-    if(hazardPeck(e,f,pr)||cityPeck(e,f,pr)||villagePeck(e,f,pr)||seaPeck(e,f,pr))return;
+    if(hazardPeck(e,f,pr)||cityPeck(e,f,pr)||villagePeck(e,f,pr)||seaPeck(e,f,pr)||skyPeck(e,f,pr))return;
     if(e.type==='worm'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
       e.dead=true;G.collected.add(e.id);G.items.worm++;tasteFood('worm');SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#9a6234']);strawBonus(e.x,e.y);
       float(e.x,e.y-14,'WORM '+Math.min(G.items.worm,3)+'/3','#f6a6b6');
@@ -2777,6 +3134,8 @@ function peck(f){
     else{SFX.clunk();float(c*16+8,r*16,'Too big! Need SUPER PECK');}}
   else if(t==='Z'){if(has('peck')){setTile(c,r,'Y');SFX.brk();shake=4;puff(c*16+8,r*16+8,12,['#9a6234','#5e3a1c','#c49a5c'],1.4,0.08);toast('A secret trapdoor!');save();}
     else{SFX.clunk();float(c*16+8,r*16,'*creeeak*');}}
+  else if(t==='θ'){if(has('thunder'))smashCrystal(c,r);else{SFX.clunk();float(c*16+8,r*16,'*zzzt* Too buzzy!','#c898f8');}}
+  else if(t==='κ'){SFX.clunk();float(c*16+8,r*16,'Needs a big SLAM!','#a6e0ff');}
   else if(t==='h'||t==='T'||t==='u'){SFX.clunk();}
 }
 function setTile(c,r,ch){tiles[r][c]=ch;G.mods[c+','+r]=ch;}
@@ -2805,7 +3164,7 @@ function hitEnemy(e){
 }
 function wingFlap(){
   if(!has('flap')||P.flapCd>0)return;
-  P.flapCd=40;P.flapAnim=22;SFX.gust();
+  P.flapCd=G.rank>=10?20:40;P.flapAnim=22;SFX.gust();
   const [dx,dy]=DIRV[P.dir];
   for(let i=0;i<18;i++){const s=1.5+Math.random()*2;parts.push({x:P.x+dx*8+(dy?(Math.random()-.5)*20:0),y:P.y-6+dy*8+(dx?(Math.random()-.5)*16:0),
     vx:dx*s+(Math.random()-.5)*0.4,vy:dy*s+(Math.random()-.5)*0.4,g:0,life:22+Math.random()*10,c:i%3?'#fff8ec':'#a6e0ff'});}
@@ -2836,8 +3195,9 @@ function tryHop(dx,dy){
   P.hop={x0:P.x,y0:P.y,x1:tx,y1:ty,t:0,d:wearing('astronaut')?34:26};SFX.hop();return true;
 }
 function updateHop(){
-  const h=P.hop;h.t++;const p=h.t/h.d;P.x=lerp(h.x0,h.x1,p);P.y=lerp(h.y0,h.y1,p);P.z=Math.sin(p*Math.PI)*(wearing('astronaut')?26:14);P.moving=true;
-  if(h.t>=h.d){P.hop=null;P.z=0;puff(P.x,P.y,4,['#ecd09a','#fff8ec'],0.6,0);}
+  const h=P.hop;h.t++;if(h.slam){if(h.t<h.d*0.5)h.t=Math.ceil(h.d*0.5);h.t+=2;}
+  const p=Math.min(1,h.t/h.d);P.x=lerp(h.x0,h.x1,p);P.y=lerp(h.y0,h.y1,p);P.z=Math.sin(p*Math.PI)*(h.hz||(wearing('astronaut')?26:14));P.moving=true;
+  if(h.t>=h.d){P.hop=null;P.z=0;puff(P.x,P.y,4,['#ecd09a','#fff8ec'],0.6,0);if(h.sky)skyLand(h);}
 }
 let WARP=null;
 function warpTo(x,y,dir,after,then){WARP={t:0,x,y,dir,after,then};state='warp';SFX.door();}
@@ -2847,7 +3207,7 @@ function updateWarp(){
   if(WARP.t===16){P.x=WARP.x;P.y=WARP.y;P.dir=WARP.dir;P.kt=0;P.hop=null;P.z=0;
     CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;
     G.visited.add(CS.x+','+CS.y);resetEnemies();TRAIL=[];
-    for(const d of ents)if((d.type==='duckling'||d.type==='follower'||d.type==='cduck')&&d.mode==='follow'){d.x=P.x;d.y=P.y;}
+    for(const d of ents)if(((d.type==='duckling'||d.type==='follower'||d.type==='cduck')&&d.mode==='follow')||d.follow){d.x=P.x;d.y=P.y;}
     noteArea();if(WARP.after)WARP.after();save();}
   if(WARP.t>16)fade=Math.max(0,1-(WARP.t-16)/16);
   if(WARP.t>=32){const th=WARP.then;WARP=null;state='play';fade=0;if(th)th();}
@@ -2868,6 +3228,7 @@ function checkPlates(){
 }
 function bump(ix,iy){
   if(tryPush(ix,iy))return;
+  if(skyBump(ix,iy))return;
   if(has('hop')&&tryHop(ix,iy))return;
   if(iy<0&&(WALK.has(CS.x+','+CS.y)||cellAt().kind==='indoor')){for(const ox of [0,-5,5]){const c=Math.floor((P.x+ox)/16),r=Math.floor((P.y-9)/16),d=DOORS[c+','+r];
     if(d){if(d.b&&!buildingOpen(d.b)){closedSign(d.b);return;}warpTo(d.x,d.y,d.roof?0:1,null,()=>{if(d.b)enteredBuilding(d.b);if(d.roof&&regionAt().id==='rooftops')secretFound('rooftops');});return;}}}
@@ -2881,7 +3242,7 @@ function hurt(src){
   if(P.inv>0||P.hop)return;
   G.hearts--;P.inv=80;const dx=P.x-src.x,dy=P.y-src.y,d=Math.hypot(dx,dy)||1;
   P.kx=dx/d*3;P.ky=dy/d*3;P.kt=has('sealegs')&&seaRegion()?0:8;SFX.hurt();shake=8;float(P.x,P.y-22,'OUCH','#ff6060');
-  if(G.hearts<=0){if(bossActive()){bossRetry();return;}G.hearts=0;state='faint';FT=0;}
+  if(G.hearts<=0){if(bossActive()){bossRetry();return;}if(skyBossActive()){skyBossRetry();return;}G.hearts=0;state='faint';FT=0;}
 }
 function trailPush(){const l=TRAIL[TRAIL.length-1];if(!l||l.x!==P.x||l.y!==P.y){TRAIL.push({x:P.x,y:P.y});if(TRAIL.length>120)TRAIL.shift();}}
 
@@ -2936,7 +3297,7 @@ function updItem(e){
 function collect(e){
   e.dead=true;G.collected.add(e.id);
   switch(e.kind){
-    case 'seed':addSeeds(1,inBeyond(e.x,e.y)?2:1);gainGP(GP.hiddenSeed);SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffd83a');toast('Found a hidden seed!');break;
+    case 'seed':{const rr=regionOfPos(e.x,e.y);if(rr&&rr.sky)addSeeds(1,2,0);else addSeeds(1,inBeyond(e.x,e.y)?2:1);}gainGP(GP.hiddenSeed);SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffd83a');toast('Found a hidden seed!');break;
     case 'bell':G.items.bell=1;SFX.quest();toast("Found Daisy's bell!");break;
     case 'apple':G.items.apple++;tasteFood('apple');SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'APPLE '+Math.min(3,G.items.apple)+'/3','#ff8080');break;
     case 'bone':G.items.bone=1;SFX.quest();toast("Found Biscuit's bone!");break;
@@ -2949,10 +3310,12 @@ function collect(e){
     case 'yarn':G.items.yarn=1;SFX.quest();toast("Found Whiskers' yarn!");break;
     case 'sailcloth':case 'hullplank':case 'cannonpart':G.sea.salv[e.kind]++;SFX.pick();toast('Got '+SALV_NAME[e.kind]+'! ('+G.sea.salv[e.kind]+')','#ffd83a');break;
     case 'pearl':case 'wreckbell':case 'crate':case 'sunstone':case 'ironore':case 'conch':case 'powderkeg':G.items[e.kind]++;SFX.pick();float(e.x,e.y-16,({pearl:'PEARL',wreckbell:'THE BELL!',crate:'CRATE',sunstone:'SUNSTONE',ironore:'IRON ORE',conch:'CONCH',powderkeg:'POWDER KEG'})[e.kind]+(e.kind==='wreckbell'?'':' x'+G.items[e.kind]),'#fff8ec');break;
+    case 'lamb':case 'skyfeather':case 'chime':case 'peg':case 'cloudpuff':case 'bolt':case 'rod':{G.items[e.kind]++;SFX.pick();const need={lamb:3,skyfeather:4,chime:3,peg:3,cloudpuff:3,bolt:3,rod:3}[e.kind],have=G.items[e.kind];
+      float(e.x,e.y-16,SKY_ITEM_NAME[e.kind]+' '+Math.min(need,have)+'/'+need,'#fff8ec');if(have===need)toast('Got all '+need+'!','#ff9cd0');break;}
     case 'pebble':case 'plank':case 'snowball':G.items[e.kind]++;SFX.pick();float(e.x,e.y-16,({pebble:'PEBBLE',plank:'PLANK',snowball:'SNOWBALL'})[e.kind]+' x'+G.items[e.kind],'#fff8ec');break;
     case 'hat':case 'whisk':case 'collarBell':{const b=BORROWED.find(x=>x.kind===e.kind);G.items[b.item]=1;SFX.quest();toast('Found '+b.name+'! Return it.','#ff9cd0');break;}
     case 'pepper':case 'salt':case 'mushroom':G.items[e.kind]=1;SFX.pick();toast('Got '+({pepper:'MOUNTAIN PEPPER',salt:'SEA SALT',mushroom:'a FOREST MUSHROOM'})[e.kind]+'!','#ff9cd0');break;
-    case 'seashell':case 'plume':case 'fossil':G.hold[e.kind]++;SFX.pick();toast('Found '+({seashell:'a pretty SEASHELL',plume:'a rare FEATHER',fossil:'a FOSSIL'})[e.kind]+'! Take it to the museum.','#c49a5c');break;
+    case 'seashell':case 'plume':case 'fossil':case 'shard':case 'cloudbloom':G.hold[e.kind]++;SFX.pick();toast('Found '+({seashell:'a pretty SEASHELL',plume:'a rare FEATHER',fossil:'a FOSSIL',shard:'a STORM SHARD',cloudbloom:'a CLOUD BLOOM'})[e.kind]+'! Take it to the museum.','#c49a5c');break;
     case 'feather':G.items.feather++;SFX.quest();toast('Golden feather! ('+Math.min(3,G.items.feather)+'/3)');break;
   }
   puff(e.x,e.y-6,8,['#ffd21e','#fff8ec'],1,0);save();
@@ -2986,7 +3349,7 @@ function checkEdges(){
     if(P.bubbleCd<=0){P.bubbleCd=240;float(P.x,P.y-24,'These mushrooms look magical...','#d890ff');}
   }
   if(!ROAM.has(CS.x+','+CS.y)){
-    if(tileAt(fc,Math.floor(P.y/16))==='X'){const cl=cellAt(),e=cl.region.id==='coop'?coopExit():cl.region.id==='cityin'?BUILDING_BY_ROOM[cl.id].out:(cl.region.id==='rooms'?EXITS:EXITS3)[cl.gx];if(e)warpTo(e.x,e.y,0);}
+    if(tileAt(fc,Math.floor(P.y/16))==='X'){const cl=cellAt(),e=cl.region.id==='coop'?coopExit():BUILDING_BY_ROOM[cl.id]?BUILDING_BY_ROOM[cl.id].out:(cl.region.id==='rooms'?EXITS:EXITS3)[cl.gx];if(e)warpTo(e.x,e.y,0);}
     return;}
   const L=CS.x*256,R=L+256,T=CS.y*192,B=T+192;let d=null;
   if(P.x-4<L)d=[-1,0];else if(P.x+4>R)d=[1,0];else if(P.y-6<T)d=[0,-1];else if(P.y>B)d=[0,1];
@@ -3007,7 +3370,7 @@ function updatePlay(){
   if(pressed.pause||pressed.back){openPause();return;}
   if(checkRankUp())return;
   if(tick%30===0){updateSchedules(false);checkBuffExpiry();}
-  updateSunbeam();updateBabysit();updateRace();updateVillage();updateSeas();updateCharge();
+  updateSunbeam();updateBabysit();updateRace();updateVillage();updateSeas();updateSky();updateCharge();
   if(pressed.dash)tryDash();
   if(pressed.grow){openGrow();return;}
   if(pressed.quest){state='quests';questPage=G.part2?1:0;SFX.menu();return;}
@@ -3085,7 +3448,7 @@ function updateEnv(){
   if(G.clock>DAY*0.5&&((prev<0.3&&t>=0.3)||(prev<0.8&&t>=0.8)))rollWeather();
   if(prev<0.04&&t>=0.04&&isOutdoor())SFX.crow();
   G.wInt+=((G.weather==='clear'?0:1)-G.wInt)*0.004;
-  const rain=rainAmt(),out=isOutdoor(),n=nightAmt();
+  const rain=skyRain(),out=isOutdoor(),n=nightAmt();
   G.puddle=clamp(G.puddle+(rain>0.5?0.0015:-0.0006),0,1);
   updatePlots();
   const snowy=areaOf()==='mountains';
@@ -3113,7 +3476,7 @@ const lightC=document.createElement('canvas');lightC.width=W;lightC.height=VH;co
 function drawEnvFX(){
   const out=isOutdoor(),cave=isCave(),n=nightAmt();
   if(out){
-    const wk=G.wInt*({clear:0,cloudy:0.06,rain:0.14,storm:0.24}[G.weather]);
+    const wk=skyRegion()?0:G.wInt*({clear:0,cloudy:0.06,rain:0.14,storm:0.24}[G.weather]);
     if(wk>0.005){ctx.fillStyle='rgba(20,30,60,'+(wk*0.45)+')';
       for(let i=0;i<3;i++){const span=W+200,x=Math.round(((i*170-tick*0.3)%span+span)%span-100),y=HUD+20+i*58;ctx.fillRect(x,y+6,90,22);ctx.fillRect(x+12,y,60,34);}
       ctx.fillStyle='rgba(40,50,90,'+wk+')';ctx.fillRect(0,HUD,W,VH);}
@@ -3124,7 +3487,7 @@ function drawEnvFX(){
     for(const d of drops){if(d.snow)continue;for(let k=0;k<d.l;k++)ctx.fillRect(Math.round(d.x+k*0.35),Math.round(d.y-k),1,1);}
     ctx.fillStyle='#ffffff';for(const d of drops)if(d.snow)ctx.fillRect(Math.round(d.x),Math.round(d.y),2,2);
   }
-  const dark=cave?0.62:out?n*0.68:n*0.3;
+  const sd=skyDark(),dark=sd!==null?sd:cave?0.62:out?n*0.68:n*0.3;
   if(dark>0.02){
     lctx.globalCompositeOperation='source-over';lctx.clearRect(0,0,W,VH);
     lctx.fillStyle=cave?'rgba(10,4,14,'+dark+')':'rgba(8,8,36,'+dark+')';lctx.fillRect(0,0,W,VH);
@@ -3176,6 +3539,9 @@ function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
       ctx.fillStyle='#fff';ctx.fillRect(Math.round(hx-R*0.6),Math.round(hy-R*0.5),sc,2*sc);
       ctx.fillStyle=PAL.E;ctx.fillRect(Math.round(hx-sc/2),Math.round(hy-R-6*sc),sc,3*sc);ctx.fillStyle=PAL.r;ctx.fillRect(Math.round(hx-sc),Math.round(hy-R-7*sc),2*sc,2*sc);
       if(dir===0){ctx.fillStyle='#d8dce8';ctx.fillRect(Math.round(hx-R*0.9),Math.round(hy+R+2*sc),Math.round(R*1.8),2*sc);ctx.fillStyle=PAL.u;ctx.fillRect(Math.round(hx-sc),Math.round(hy+R+2*sc),2*sc,2*sc);}break;}
+    case 'quill':case 'bloom':case 'stormcap':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
+    case 'scarf':{const o=O.scarf;ctx.fillStyle='#ff9cd0';ctx.fillRect(Math.round(hx-R*0.8),Math.round(hy+R*0.75),Math.round(R*1.6),2*sc);ctx.fillStyle='#ffd0e6';ctx.fillRect(Math.round(hx-R*0.8),Math.round(hy+R*0.75),Math.round(R*1.6),sc);
+      if(dir!==1){ctx.fillStyle='#ff9cd0';ctx.fillRect(Math.round(hx+(dir===2?R*0.5:-R*0.7)),Math.round(hy+R*0.75),2*sc,4*sc);}break;}
     case 'chef':case 'detective':case 'overalls':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
     case 'goggles':{if(dir===1)break;const ey=y0+Math.floor(hd.y)*sc-sc;
       if(dir===0){const o=O.gogF;D(o,hx-o.width*sc/2,ey);}else{const o=O.gogS,ex=x0+mx(hd.x-hd.r*0.35)*sc;D(o,ex-o.width*sc/2,ey,dir===3);}break;}
@@ -3341,6 +3707,7 @@ function hint2(){
   for(const id of ORDER3){if(G.q[id]===1)return QUESTS[id].hint();}
   {const vh=villageHint();if(vh)return vh;}
   {const sh=seaHint();if(sh)return sh;}
+  {const kh=skyHint();if(kh)return kh;}
   if(G.coop&&G.coop.lv<4)return "Upgrade your coop! Read the sign next to it.";
   if(!G.flags.festival)return festivalReady()?"Talk to Granny Shell in the forest: it's time for the festival!":"Almost there! Keep growing: the city has shops and homes to explore, and garden harvests and the snack bowl help too.";
   return "Your Dream Coop is finished! What a journey, little one.";
@@ -3423,7 +3790,7 @@ const GROW=5400;
 function plotRate(e){const st=G.plots[e.id],kind=SEED_TYPES[(st&&st.k)||'plain'];
   if(kind.night&&nightAmt()<0.5)return 0;
   let r=wearing('straw')?1.5:1;if(e.coop&&G.coop){if(G.coop.lv>=4)r=2;else if(G.coop.lv>=3)r=1.5;}
-  if(buffActive('bun'))r*=1.25;if(rainAmt()>0.5)r*=2;if(!e.coop&&G.vil.open)r*=seasonPlotMul();return r*kind.grow;}
+  if(buffActive('bun'))r*=1.25;if(rainAmt()>0.5)r*=2;if(!e.coop&&G.vil.open)r*=seasonPlotMul();{const pr=regionOfPos(e.x,e.y);if(pr&&pr.sky)r*=3;}return r*kind.grow;}
 function updatePlots(){for(const e of ents)if(e.type==='plot'){const s=G.plots[e.id];if(s&&s.p<1)s.p=Math.min(1,s.p+plotRate(e)/GROW);}}
 function usePlot(e){
   if(!G.thumb){say([{who:'me',text:"This soil looks so soft... Maybe Granny Shell knows how to grow things?"}]);return;}
@@ -3432,7 +3799,8 @@ function usePlot(e){
     if(opts.length===1)plantSeed(e,opts[0]);else openPlantMenu(e,opts);return;}
   const kd=SEED_TYPES[s.k||'plain'];
   if(s.p<1){float(e.x,e.y-16,(kd.night&&nightAmt()<0.5?'Sleeping until night... ':'Growing... ')+Math.floor(s.p*100)+'%','#94dc64');SFX.menu();return;}
-  const yield_=kd.yield+(G.rank>=6?1:0);if(kd.petal){G.hold.petal++;toast('A rare MOON PETAL! Take it to the museum.','#e8a0d0');}
+  const yield_=kd.yield+(G.rank>=6?1:0)+(wearing('bloom')&&skyRegion()?1:0);if(kd.petal){G.hold.petal++;toast('A rare MOON PETAL! Take it to the museum.','#e8a0d0');if(skyRegion())G.sky.harv.moon++;}
+  if(kd.star){G.items.starfruit++;G.sky.harv.star++;tasteFood('starfruit');toast('A glowing STAR-FRUIT!','#ffd83a');}
   if(kd.pumpkin){tasteFood('pumpkin');const wt=pumpkinWeigh(s);toast('Your pumpkin weighs '+wt+' pounds!','#f37d22');if(wt>=24&&seasonNow().name==='AUTUMN')contestWin();else if(wt<24)toast('Judges want 24. Water it with Green Wings next time!','#b8a8d8');}
   delete G.plots[e.id];addSeeds(yield_,2,0);G.harvests++;gainGP(GP.harvest);SFX.seed();puff(e.x,e.y-10,10,['#ffd83a','#fff8ec'],1.2,0.05);float(e.x,e.y-18,'+'+yield_+' SEEDS!','#ffd83a');save();
 }
@@ -3459,16 +3827,17 @@ function freeMo(){
 /* ---- fly map ---- */
 const DEST={farm:{x:584,y:283,mx:40,my:110,icon:'door'},forest:{x:136,y:1067,mx:128,my:110,icon:'oak'},mountains:{x:136,y:923,mx:128,my:62,icon:'pine'},
   city:{x:600,y:1051,mx:214,my:110,icon:'brickWin'},village:{x:648,y:1436,mx:214,my:158,icon:'hay'},beach:{x:136,y:1179,mx:128,my:158,icon:'palm'},coop:{mx:0,my:0,icon:'cdoor'}};
-let mapSel='forest',FLY=null;
+let mapSel='forest',FLY=null,mapPage=0;
 function destOf(k){if(k==='coop'){const S=SITES[G.coop.site],a=DEST[G.coop.site];return Object.assign({},coopExit(),{mx:a.mx+26,my:a.my+18,icon:'cdoor'});}return DEST[k];}
-function mapNodes(){const ks=['farm','forest','mountains','city','beach','village'].filter(k=>(G.areas.includes(k)&&(k!=='village'||G.vil.open))||k==='farm'||k==='forest');if(G.coop)ks.push('coop');return ks;}
+function mapNodes(){if(mapPage===1)return skyMapNodes();const ks=['farm','forest','mountains','city','beach','village'].filter(k=>(G.areas.includes(k)&&(k!=='village'||G.vil.open))||k==='farm'||k==='forest');if(G.coop)ks.push('coop');return ks;}
 function openMap(){
   if(!G.part2)return;
   const k=CS.x+','+CS.y;if(!WALK.has(k)){toast('Go outside to fly!','#a6e0ff');return;}
-  state='map';mapSel=areaOf()||'farm';SFX.menu();
+  mapPage=skyArea()?1:0;state='map';mapSel=areaOf()||'farm';if(mapPage&&!skyMapNodes().includes(mapSel))mapSel='meadows';SFX.menu();
 }
 function updateMap(){
   if(pressed.back||pressed.fly||pressed.quest||pressed.grow){state='play';SFX.menu();return;}
+  if(pressed.b&&G.sky.open){mapPage^=1;mapSel=mapPage?'meadows':(areaOf()&&!skyArea()&&mapNodes().includes(areaOf())?areaOf():'mountains');if(!mapNodes().includes(mapSel))mapSel=mapPage?'meadows':'farm';SFX.menu();return;}
   const nodes=mapNodes(),cur=destOf(mapSel);
   for(const [k,dx,dy] of [['up',0,-1],['down',0,1],['left',-1,0],['right',1,0]]){if(!pressed[k])continue;
     let best=null,bs=1e9;for(const n of nodes){if(n===mapSel)continue;const d=destOf(n),vx=d.mx-cur.mx,vy=d.my-cur.my,al=vx*dx+vy*dy;if(al<=0)continue;
@@ -3482,6 +3851,7 @@ function updateFlying(){
     warpTo(d.x,d.y,0,null,()=>toast('Welcome to the '+name+'!','#94dc64'));}
 }
 function drawMap(){
+  if(mapPage===1){drawSkyMap();return;}
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(6,6,W-12,H-12,'#f2dca0','#9a6234');
   txt('WHERE TO, PIP?',W/2,14,8,'#5e3a1c',{align:'center'});
   const nodes=mapNodes(),line=(a,b)=>{const A=destOf(a),B=destOf(b);ctx.fillStyle='#c49a5c';
@@ -3496,7 +3866,7 @@ function drawMap(){
     txt(open?AREA_LABEL[k]:'???',d.mx,d.my+16,5,open?'#5e3a1c':'#9a8060',{align:'center'});
     if(areaOf()===k||(k==='coop'&&false)){drawPip(stage(),0,Math.floor(tick/12)%2,false,d.mx+12,d.my-6,1);}
   }
-  txt('Z: fly   F: close',W/2,H-20,5,'#5e3a1c',{align:'center'});
+  txt(G.sky.open?'Z: fly   X: sky page   F: close':'Z: fly   F: close',W/2,H-20,5,'#5e3a1c',{align:'center'});
 }
 function drawFlying(){
   drawSky(tick*3);ctx.fillStyle='#4ea84a';
@@ -3671,7 +4041,7 @@ function gainGP(n,note){
   G.gp+=n;
   if(P&&state!=='title')float(P.x,P.y-30,'+'+n+' GROWTH','#94dc64');
 }
-function questGP(id){gainGP((ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?GP.quest3:ORDER2.includes(id)?GP.quest2:GP.quest1);}
+function questGP(id){gainGP((ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id)||ORDER6.includes(id))?GP.quest3:ORDER2.includes(id)?GP.quest2:GP.quest1);}
 function tasteFood(id){
   if(!G||G.taste[id])return;G.taste[id]=1;gainGP(GP.taste);
   if(wearing('chef'))gainGP(1);
@@ -3829,9 +4199,9 @@ const HARVEST_LINES=[
   ['bucky',"BUCKY","Beaver-tail slap! We did it, Pip! A whole village, from a muddy meadow!"],
   ['mom',"MAMA HEN","My little peep, the Village Hero. I'm the proudest hen in the world!"]];
 const FEST_SCRIPTS={
-  coming:{lines:FEST_LINES,guests:FEST_GUESTS,scene:'coop',end:()=>{G.flags.festival=1;G.flags.part2done=1;save();startRankUp(7,startCredits);}},
-  harvest:{lines:HARVEST_LINES,guests:HARVEST_GUESTS,scene:'harvest',end:()=>{G.flags.village=1;reward(QUESTS.vharvest.reward,'vharvest');save();startRankUp(8,startPinch);}}};
-function startFestival(name){FEST={t:0,line:0,shown:0,S:FEST_SCRIPTS[name||'coming']};state='festival';fade=0;SFX.fanfare();}
+  coming:{lines:FEST_LINES,guests:FEST_GUESTS,scene:'coop',end:()=>{G.flags.festival=1;G.flags.part2done=1;save();finaleRank(7,startCredits);}},
+  harvest:{lines:HARVEST_LINES,guests:HARVEST_GUESTS,scene:'harvest',end:()=>{G.flags.village=1;reward(QUESTS.vharvest.reward,'vharvest');save();finaleRank(8,startPinch);}}};
+function startFestival(name){const S0=FEST_SCRIPTS[name||'coming'];if(S0.mk)S0.lines=S0.mk();FEST={t:0,line:0,shown:0,S:S0};state='festival';fade=0;SFX.fanfare();}
 function updateFestival(){
   const f=FEST;f.t++;
   if(f.t<40){fade=1-f.t/40;return;}fade=0;
@@ -3854,9 +4224,10 @@ function drawFestival(){
   ctx.fillStyle='#21142b';ctx.fillRect(10,40,W-20,1);
   const n=Math.min(S.guests.length,Math.floor((f.t-10)/6));
   S.guests.forEach((k,i)=>{if(i>=n)return;const s=SPR[k];if(!s)return;
-    const row=i%2,x=14+Math.floor(i/2)*18+(row?9:0),y=(row?196:178)+Math.round(Math.sin((tick+i*9)/12)*1);
+    const lg=S.scene==='legend',row=lg?i%3:i%2,x=lg?10+Math.floor(i/3)*15+row*5:14+Math.floor(i/2)*18+(row?9:0),y=(lg?[172,186,200][row]:(row?196:178))+Math.round(Math.sin((tick+i*9)/12)*1);
     drawImg(i%3===0?flipOf(s):s,x-(s.width>>1),y-s.height);});
   drawPip(stageOfRank(G.rank),0,Math.floor(tick/14)%2,false,128,160,2);
+  if(S.scene==='legend'){ctx.fillStyle='rgba(255,200,120,0.12)';ctx.fillRect(0,0,W,H);const hh=SPR.eaglet;ctx.drawImage(hh,150,160-hh.height*2,hh.width*2,hh.height*2);txt('THE LEGEND OF CHICKLANDIA',W/2,48,7,'#ffd83a',{align:'center',shadow:true});}
   const L=S.lines[f.line];
   if(f.t>=40){box(10,10,W-20,22,'#fff8ec','#21142b');
     txt(L[1],16,13,5,'#ec6c24');
@@ -3876,11 +4247,11 @@ const CREDITS=[
   ['BUT WAIT...'],'',
   ["Animals from all over are asking","to move in near Pip's coop!"],'',
   ['TO BE CONTINUED...']];
-function startCredits(){CRED={t:0};state='credits';fade=0;}
+function startCredits(){CRED={t:0,list:CREDITS};state='credits';fade=0;}
 function updateCredits(){
   const c=CRED;c.t++;
   if(c.t%16===0&&c.t<900)SFX.flap();
-  if(c.t>CREDITS.length*14+120&&pressed.a){CRED=null;const e=coopExit();P.x=e.x;P.y=e.y+8;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;state='play';save();
+  if(c.t>c.list.length*14+120&&pressed.a){const en=c.end;CRED=null;if(en){en();return;}const e=coopExit();P.x=e.x;P.y=e.y+8;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;state='play';save();
     say([{who:'me',text:"What a day! And it sounds like there's more adventure ahead..."}]);}
   else if(pressed.a&&c.t>20)c.t+=6;
 }
@@ -3888,9 +4259,9 @@ function drawCredits(){
   const c=CRED;ctx.fillStyle='#0d0814';ctx.fillRect(0,0,W,H);
   for(let i=0;i<40;i++){const x=(i*53)%W,y=(i*97+Math.floor(c.t/3))%H;ctx.fillStyle=(i+Math.floor(c.t/10))%5?'#3b2a56':'#ffd83a';ctx.fillRect(x,y,1,1);}
   let y=H-c.t*0.7+10;
-  CREDITS.forEach(l=>{if(l==='')y+=8;else l.forEach((s,j)=>{const big=l===CREDITS[0]||l[0]==='TO BE CONTINUED...';if(y>-12&&y<H+4)txt(s,W/2,y,big?8:6,big?'#ffd83a':'#fff8ec',{align:'center'});y+=big?14:11;});});
+  c.list.forEach(l=>{if(l==='')y+=8;else l.forEach((s0,j)=>{const big=l===c.list[0]||l[0]==='TO BE CONTINUED...'||s0[0]==='#',s=s0[0]==='#'?s0.slice(1):s0;if(y>-12&&y<H+4)txt(s,W/2,y,big?8:6,big?'#ffd83a':'#fff8ec',{align:'center'});y+=big?14:11;});});
   drawPip(stageOfRank(G.rank),0,Math.floor(tick/14)%2,false,W/2,Math.max(150,y+20),2);
-  if(c.t>CREDITS.length*14+120&&Math.floor(c.t/25)%2)txt('Press Z to keep playing',W/2,H-14,6,'#b8a8d8',{align:'center'});
+  if(c.t>c.list.length*14+120&&Math.floor(c.t/25)%2)txt('Press Z to keep playing',W/2,H-14,6,'#b8a8d8',{align:'center'});
 }
 
 /* ---- Cap'n Pinch sails in with the treasure map (end of the village chapter) ---- */
@@ -4104,7 +4475,7 @@ function makeCityEnts(){
   for(const b of BORROWED)if(!G.collected.has(b.id)&&!G.items[b.item]&&!(G.flags.ret&&G.flags.ret[b.flag]))spawnItem(b.id,b.kind,b.c*16+8,b.r*16+12);
   for(const i of INGREDIENTS)if(!G.collected.has(i.id))spawnItem(i.id,i.kind,i.c*16+8,i.r*16+12);
   const to=roomOrigin('toy');[[4,8],[7,8],[10,8],[5,10],[8,10],[11,10]].forEach(([c,r],i)=>addEnt({type:'hole',id:'ahole'+i,x:to.x+c*16+8,y:to.y+r*16+12,up:0,max:1,arcade:true}));
-  const mo=roomOrigin('museum');EXHIBITS.forEach((x,i)=>addEnt({type:'exhibit',ex:x.id,x:mo.x+[3,6,9,12][i]*16+8,y:mo.y+4*16+13}));
+  const mo=roomOrigin('museum');EXHIBITS.forEach((x,i)=>{const [pc,pr]=[[3,4],[6,4],[9,4],[12,4],[4,10],[11,10]][i];addEnt({type:'exhibit',ex:x.id,x:mo.x+pc*16+8,y:mo.y+pr*16+13});});
   const lo=roomOrigin('library');addEnt({type:'nook',x:lo.x+4*16+8,y:lo.y+9*16+12});
   const ao=roomOrigin('artist');addEnt({type:'easel',x:ao.x+7*16+8,y:ao.y+6*16+14,solid:true,w:14});
   const o=raceOrigin();addEnt({type:'vane',x:(o.c+16+14)*16+8,y:(o.r+4)*16+12,solid:true,w:10});
@@ -4235,10 +4606,10 @@ function villagePeck(e,f,pr){
   if(e.type==='vnode'&&G.vil.nodes[e.id]!==dayNum()&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-6-f.y)<14){
     if(e.kind==='stone'&&!has('carry')){SFX.clunk();float(e.x,e.y-16,'Too heavy! Learn CARRY','#ff9cd0');return true;}
     if(!has('peck')&&e.kind!=='clay'){SFX.clunk();float(e.x,e.y-16,'Too tough!');return true;}
-    G.vil.nodes[e.id]=dayNum();gainMat(e.kind,NODE_YIELD[e.kind]+(wearing('overalls')?1:0),e.x,e.y);puff(e.x,e.y-4,8,['#c49a5c','#e8d8b0'],1.2,0.06);SFX.brk();save();return true;}
+    G.vil.nodes[e.id]=dayNum();gainMat(e.kind,NODE_YIELD[e.kind]+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);puff(e.x,e.y-4,8,['#c49a5c','#e8d8b0'],1.2,0.06);SFX.brk();save();return true;}
   if(e.type==='vsheep'&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-5-f.y)<14){
     if(G.vil.shear[e.id]===dayNum()){float(e.x,e.y-18,'Baa! (Come back tomorrow)','#fff8ec');SFX.menu();return true;}
-    G.vil.shear[e.id]=dayNum();gainMat('wool',2+(wearing('overalls')?1:0),e.x,e.y);puff(e.x,e.y-8,8,['#fff8ec','#e8e8f0'],1.2,0.04);save();return true;}
+    G.vil.shear[e.id]=dayNum();gainMat('wool',2+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);puff(e.x,e.y-8,8,['#fff8ec','#e8e8f0'],1.2,0.04);save();return true;}
   if(e.type==='vsculpt'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-5-f.y)<16){sculptAction();return true;}
   return false;
 }
@@ -4257,7 +4628,7 @@ function whistleAction(e){
   say([{who:'me',text:"Who shall I whistle for?",choices:['The sheep','The beaver'],cb:i=>{
     const k=i===0?'wool':'wood',day=G.vil.whistle[k];
     if(day===dayNum()){say([{who:'me',text:i===0?"The sheep already brought wool today!":"The beaver already hauled logs today!"}]);return;}
-    G.vil.whistle[k]=dayNum();SFX.magic();gainMat(k,2+(wearing('overalls')?1:0),e.x,e.y);
+    G.vil.whistle[k]=dayNum();SFX.magic();gainMat(k,2+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);
     toast(i===0?'A sheep trots over with a bundle of wool!':'A beaver drags in a stack of logs!','#ffd83a');save();}}]);
 }
 /* ---- skills ---- */
@@ -4372,7 +4743,7 @@ function updateSail(){
   if(pressed.a){const n=SEA_NODES[S.sel];
     if(n.id===cur.id){SFX.deny();return;}
     if(!n.need()){SFX.deny();toast(n.lock,'#ff8080');return;}
-    VOY={from:cur,to:n,t:0,dur:G.sea.lv.sails>=1?100:150};SAIL=null;state='voyage';SFX.magic();}
+    VOY={from:cur,to:n,t:0,dur:Math.round((G.sea.lv.sails>=1?100:150)*(G.rank>=9?0.8:1))};SAIL=null;state='voyage';SFX.magic();}
 }
 function updateVoyage(){
   const v=VOY;v.t++;if(v.t%14===0)SFX.splash&&SFX.splash();
@@ -4465,7 +4836,7 @@ function updateSeas(){
   }
   // swim/dive handling: air meter in deep reef
   if(inDeep()){
-    G.air=Math.max(0,(G.air==null?AIR_MAX:G.air)-1);
+    G.air=Math.max(0,(G.air==null?AIR_MAX:G.air)-(G.rank>=9&&tick%3===0?0:1));
     if(G.air<=0&&state==='play'){surface(true);}
   }else G.air=AIR_MAX;
   for(const e of ents){
@@ -4689,7 +5060,7 @@ function bossWin(){
   ents=ents.filter(e=>!['boss','barrel'].includes(e.type));
   const o=SO.fort;P.x=o[0]*16+60;P.y=o[1]*16+8*16+12;P.inv=60;
   reward(QUESTS.sea_boss.reward,'sea_boss');addSeeds(20,2,0);toast('Squawkbeard dropped his chest: 20 golden seeds!','#ffd83a');SFX.fanfare();save();
-  startRankUp(9,startSeaEnding);
+  finaleRank(9,startSeaEnding);
 }
 function startSeaEnding(){
   PIN={t:0,line:0,shown:0,lines:SEA_END_LINES,sunset:true,after:()=>{const h=SEA_NODES[0].arrive;warpTo(h.x,h.y,0,null,()=>say([{who:'me',text:"Captain of the Seas! And a map of the SKY... I wonder what Elda's egg is up to?"}]));}};
@@ -4780,7 +5151,7 @@ function overChasm(){return tileAt(Math.floor(P.x/16),Math.floor((P.y-3)/16))===
 let PL=null;   // planting menu
 function plantChoices(){
   const L=[];if(G.seeds>=1)L.push('plain');
-  for(const k of ['speedy','giant','moon','pumpkin'])if(G.sacks[k]>0)L.push(k);
+  for(const k of ['speedy','giant','moon','star','pumpkin'])if(G.sacks[k]>0)L.push(k);
   return L;
 }
 function plantSeed(e,k){
@@ -4910,18 +5281,499 @@ function shopBuy(price,what,fn){
   G.seeds-=price;SFX.cash();const m=fn();save();return m||{s:what,c:'#ffd83a'};
 }
 
+/* ===== src/systems/sky.js ===== */
+/* ---------------- Sky Kingdom: bouncy clouds, vents, wind, storms, the sky gate, hatching, naming, chime puzzle ---------------- */
+for(const c of SKY_CAST){const p=SKO[c.o];CHARACTERS.push({id:c.id,name:c.name,spr:c.spr,c:p[0]+c.c,r:p[1]+c.r,voice:c.voice,w:c.w});}
+Object.assign(AREA_LABEL,{meadows:'CLOUD MEADOWS',gardens:'FLOATING GARDENS',skycity:'CLOUD CITY',peaks:'STORM PEAKS',lair:"DRAGON'S LAIR"});
+Object.assign(WEAR_ICON,{quill:OUTFIT_SPR.quill,bloom:OUTFIT_SPR.bloom,stormcap:OUTFIT_SPR.stormcap,scarf:OUTFIT_SPR.scarf});
+function skyRegion(){const r=regionAt();return !!r&&!!r.sky;}
+function skyArea(){const r=regionAt();return r&&r.sky&&r.area?r.area:null;}
+function skyRain(){const r=regionAt();if(r&&r.sky)return (r.area==='peaks'||r.area==='lair')?0.55:0;return rainAmt();}
+function skyDark(){const r=regionAt();if(!r||!r.sky||r.kind==='indoor')return null;const n=nightAmt();
+  if(r.area==='peaks')return 0.3+n*0.25;if(r.area==='lair')return 0.42;return n*0.3;}   // sky areas: gentle nights; the storm always dims the peaks
+/* ---- entities ---- */
+function addHatchling(){
+  if(ents.some(e=>e.id==='hatch'))return;
+  addEnt({type:'npc',id:'hatch',name:G.sky.name||'CHICK',spr:'eaglet',x:P.x-10,y:P.y,w:10,voice:1500,solid:false,phase:0,flip:false,follow:true});
+}
+function makeSkyEnts(){
+  const S=G.sky;
+  for(const p of SKY_PADS){const a=skpA(p.at);addEnt({type:'spad',id:p.id,x:a.x,y:a.y,to:p.to?skpA(p.to):null,sq:0});}
+  for(const v of SKY_VENTS){const a=skpA(v.at);addEnt({type:'svent',id:v.id,x:a.x,y:a.y,to:skpA(v.to)});}
+  for(const p of SKY_PORTALS){const a=skpA(p.at);addEnt({type:'sport',id:p.id,x:a.x,y:a.y,to:p.to?skpA(p.to):null,label:p.label,lair:!!p.lair,down:p.id==='down'});}
+  for(const [id,kind,o,c,r] of SKY_ITEMS){if(kind==='chime'||kind==='peg'||kind==='bolt')continue;const p=skp(o,c,r);spawnItem(id,kind,p.x,p.y);}
+  for(const [c0,r0,c1,r1] of SKY_SOIL)for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++)addPlot(SKO.g0[0]+c,SKO.g0[1]+r,false);
+  {const g=gatePx();addEnt({type:'sgate',x:g.x,y:g.y});}
+  for(const [k,o,c,r] of SKY_CHIMES){const p=skp(o,c,r);addEnt({type:'gchime',id:k,x:p.x,y:p.y,solid:true,w:12,ring:0});}
+  if(S.chimes===1){const p=skp('g1',7,9);addEnt({type:'skychest',id:'chimechest',kind:'chime',x:p.x,y:p.y,solid:true,w:16});}
+  if(!G.outfits.includes('scarf')){const p=skp('m1',12,8);addEnt({type:'skychest',id:'scarfchest',kind:'scarf',x:p.x,y:p.y,solid:true,w:16});}
+  {const p=skp('m1',5,1);addEnt({type:'snest',x:p.x,y:p.y+2});}
+  if(S.hatched)addHatchling();
+  if(G.flags.sky){const p=skp('lair',8,4);addEnt({type:'npc',id:'stormy',name:'STORMY',spr:'dragon',x:p.x,y:p.y,w:44,voice:120,solid:true,phase:0,flip:false});}
+}
+function skyFollow(){
+  const h=ents.find(e=>e.id==='hatch');if(!h||!h.follow)return;
+  const p=TRAIL[Math.max(0,TRAIL.length-1-(followerCount()+1)*12)];
+  if(p){if(Math.abs(p.x-h.x)>0.3)h.flip=p.x>h.x;h.x+=(p.x-h.x)*0.4;h.y+=(p.y-h.y)*0.4;}
+  if(Math.hypot(h.x-P.x,h.y-P.y)>180){h.x=P.x;h.y=P.y;}
+}
+/* ---- per-frame ---- */
+let skyCool=0,skySafe=null;
+const STRIKES=[];let strikeT=60,chimeSeq=[];
+function updateSky(){
+  if(!G||!P||!G.sky)return;
+  if(skyCool>0)skyCool--;
+  skyFollow();
+  // the sky gate on the snowy peak
+  for(const e of ents){if(e.type!=='sgate'||!onCur(e)||state!=='play'||P.hop)continue;
+    if(Math.abs(P.x-e.x)<12&&Math.abs(P.y-e.y)<12&&warpCool<=0){
+      if(!G.sky.hatched){if(P.bubbleCd<=0){P.bubbleCd=240;float(e.x,e.y-26,G.flags.skyMap?'The clouds shimmer. Wait for the egg!':'A faint swirl of cloud...','#a6e0ff');}continue;}
+      warpCool=80;const a=skpA(SKY_NODES.meadows.at);
+      if(!G.sky.open){G.sky.open=1;save();say([{who:'me',text:"A stairway of clouds, just like the ancient map! "+(G.sky.name||'My chick')+" is tugging my wing. Let's climb!"}],()=>warpTo(a.x,a.y,3,null,()=>toast('Welcome to the CLOUD MEADOWS!','#a6e0ff')));}
+      else warpTo(a.x,a.y,3,null,()=>toast('Up the cloud stairs...','#a6e0ff'));}}
+  const rg=regionAt();if(!rg||!rg.sky){STRIKES.length=0;return;}
+  if(P.hop&&P.hop.sky&&!P.hop.slam&&pressed.a&&has('divebomb')&&P.hop.t>6){P.hop.slam=true;SFX.gust();float(P.x,P.y-26-P.z,'DIVE!','#ffd83a');}
+  const under=tileAt(Math.floor(P.x/16),Math.floor((P.y-3)/16));
+  if(!P.hop&&state==='play'){
+    if(under==='ε'||under==='ζ'){if(!wearing('scarf'))moveP(under==='ε'?0.9:-0.9,0,false);else if(tick%120===0)float(P.x,P.y-24,'Cozy scarf!','#ff9cd0');}
+    if(under==='ι'&&!wearing('stormcap')&&P.inv<=0){hurt({x:P.x,y:P.y});if(skySafe){P.x=skySafe.x;P.y=skySafe.y;}float(P.x,P.y-24,'Brrr! Rain wall!','#a6c8ff');}
+    else if(under!=='ι'&&under!=='ε'&&under!=='ζ')skySafe={x:P.x,y:P.y};
+  }
+  if(state==='play')for(const e of ents){if(!onCur(e))continue;
+    if(P.hop)break;
+    const near=Math.abs(P.x-e.x)<9&&Math.abs(P.y-e.y)<9;
+    if(e.type==='spad'&&near&&skyCool<=0)skyLaunch(e);
+    else if(e.type==='svent'&&near&&skyCool<=0)ventUse(e);
+    else if(e.type==='sport'&&warpCool<=0&&Math.abs(P.x-e.x)<10&&Math.abs(P.y-e.y)<10)portalUse(e);}
+  for(const e of ents)if(e.sq>0)e.sq--;
+  updateStorm();
+  if(skyBossActive())updateSkyBoss();
+}
+function skyLaunch(e){
+  const q=wearing('quill'),to=e.to||{x:e.x,y:e.y};
+  P.x=e.x;P.y=e.y;P.hop={x0:P.x,y0:P.y,x1:to.x,y1:to.y,t:0,d:Math.round((e.to?40:46)*(q?0.8:1)),hz:e.to?34:44,sky:true};skyCool=P.hop.d+30;   // time to walk off the cloud before it bounces again
+  e.sq=10;SFX.hop();puff(e.x,e.y-4,8,['#ffffff','#e6f2ff'],1.4,0.05);
+  if(!e.to&&has('divebomb')&&!G.sky.dbTip){G.sky.dbTip=1;toast('Press peck in mid-air to DIVE-BOMB!','#ffd83a');}
+}
+function ventUse(e){
+  if(!has('updraft')){skyCool=120;float(e.x,e.y-26,'Strong wind! Learn UPDRAFT.','#a6e0ff');SFX.deny();return;}
+  P.x=e.x;P.y=e.y;P.hop={x0:P.x,y0:P.y,x1:e.to.x,y1:e.to.y,t:0,d:Math.round(46*(wearing('quill')?0.8:1)),hz:46,sky:true};skyCool=P.hop.d+30;
+  SFX.gust();puff(e.x,e.y-6,10,['#ffffff','#a6e0ff'],1.2,-0.04);
+}
+function portalUse(e){
+  if(e.down){warpCool=80;const o=gateOut();warpTo(o.x,o.y,0,null,()=>toast('Down the cloud stairs...','#a6e0ff'));return;}
+  if(e.id==='p1lair'&&G.sky.boss<4){warpCool=80;warpTo(e.to.x,e.to.y,1,null,()=>skyBossStart());return;}
+  if(e.id==='lairp1'){SKB=null;ents=ents.filter(x=>!['sdragon','scrys','sbell'].includes(x.type));STRIKES.length=0;}
+  warpCool=80;warpTo(e.to.x,e.to.y,e.to.x>e.x?3:2,null,null);
+}
+function skyLand(h){
+  if(!h.slam)return;
+  shake=7;SFX.brk();
+  for(let i=0;i<16;i++){const a=i/16*Math.PI*2;parts.push({x:P.x,y:P.y-2,vx:Math.cos(a)*2.2,vy:Math.sin(a)*1.2,g:0,life:18,c:i%2?'#ffffff':'#ffd83a'});}
+  let n=0;const c0=Math.floor(P.x/16),r0=Math.floor((P.y-3)/16);
+  for(let dr=-3;dr<=3;dr++)for(let dc=-3;dc<=3;dc++){const c=c0+dc,r=r0+dr;
+    if(tileAt(c,r)==='κ'&&Math.hypot(c*16+8-P.x,r*16+8-(P.y-3))<=44){setTile(c,r,'α');n++;puff(c*16+8,r*16+8,10,['#ffffff','#a8b4c8'],1.6,0.06);}}
+  for(const e of ents)if(e.type==='sbell'&&!e.rung&&Math.hypot(e.x-P.x,e.y-P.y)<26)ringBell(e);
+  if(n){toast('SLAM! The cloud barrier cracks!','#ffd83a');save();}
+}
+function skyBump(ix,iy){
+  if(!skyRegion()||P.bubbleCd>0)return false;
+  const [dx,dy]=[ix?Math.sign(ix):0,iy?Math.sign(iy):0],t=tileAt(Math.floor((P.x+dx*9)/16),Math.floor((P.y-3+dy*7)/16));
+  const msg={γ:"This cloud is too thin to stand on... Cloud Walk could do it!",κ:"A cloud barrier! Something heavy, falling from above, might crack it.",θ:"A storm crystal, buzzing with lightning!",η:null}[t];
+  if(msg){P.bubbleCd=200;float(P.x,P.y-26,msg.length>34?msg.slice(0,msg.lastIndexOf(' ',34))+'...':msg,'#a6e0ff');return true;}
+  return false;
+}
+/* ---- storms ---- */
+function spawnStrike(x,y,warn){
+  const c=Math.floor(x/16),r=Math.floor((y-3)/16),t=tileAt(c,r);if(t!=='α'&&t!=='ε'&&t!=='ζ')return;
+  STRIKES.push({x:c*16+8,y:r*16+12,t:0,warn:(warn||56)+(wearing('stormcap')?24:0)});
+}
+function updateStorm(){
+  if(skyArea()==='peaks'&&state==='play'&&--strikeT<=0){strikeT=110+Math.random()*100;spawnStrike(P.x+(Math.random()-.5)*130,P.y+(Math.random()-.5)*100);}
+  for(const s of STRIKES){s.t++;
+    if(s.t===s.warn){SFX.thunder();flash=Math.max(flash,0.6);shake=5;
+      if(Math.hypot(P.x-s.x,P.y-6-(s.y-8))<16&&!P.hop)hurt({x:s.x,y:s.y});}}
+  for(let i=STRIKES.length-1;i>=0;i--)if(STRIKES[i].t>STRIKES[i].warn+14)STRIKES.splice(i,1);
+}
+/* ---- peck hooks ---- */
+function skyPeck(e,f,pr){
+  if(e.type==='gchime'&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-8-f.y)<14){ringChime(e);return true;}
+  if(e.type==='skychest'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<16){openSkyChest(e);return true;}
+  if(e.type==='snest'&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-4-f.y)<14){peckNest(e);return true;}
+  if(e.type==='sbell'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-8-f.y)<16){ringBell(e);return true;}
+  if(e.type==='scrys'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-8-f.y)<16){hitCrystal(e);return true;}
+  return false;
+}
+function skyTalkChest(f){for(const e of ents)if(e.type==='skychest'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<16){openSkyChest(e);return true;}return false;}
+function smashCrystal(c,r){
+  setTile(c,r,'α');SFX.brk();shake=6;puff(c*16+8,r*16+8,16,['#c898f8','#8a4ad8','#ffe84a','#ffffff'],1.8,0.06);
+  if(!G.sky.crys)toast('The storm crystal shatters! A gap in the wall!','#c898f8');G.sky.crys=(G.sky.crys||0)+1;save();
+}
+function ringChime(e){
+  e.ring=20;SFX.blip({small:980,mid:720,big:470}[e.id]);
+  if(G.sky.chimes>=1){float(e.x,e.y-20,'The garden hums...','#94dc64');return;}
+  chimeSeq.push(e.id);
+  if(chimeSeq.some((k,i)=>k!==CHIME_TUNE[i])){chimeSeq=[];SFX.deny();float(e.x,e.y-20,'...off-key. Try again!','#b8a8d8');return;}
+  float(e.x,e.y-20,chimeSeq.length+'/3','#ffd83a');
+  if(chimeSeq.length>=3){chimeSeq=[];G.sky.chimes=1;SFX.fanfare();shake=4;toast('The chimes sing! A chest appears!','#ff9cd0');
+    const p=skp('g1',7,9);addEnt({type:'skychest',id:'chimechest',kind:'chime',x:p.x,y:p.y,solid:true,w:16});puff(p.x,p.y-8,16,['#ffd83a','#fff8ec','#ff9cd0'],1.8,0.04);save();}
+}
+function openSkyChest(e){
+  if(e.kind==='chime'){e.dead=true;G.sky.chimes=2;SFX.chest();shake=3;G.sacks.star=(G.sacks.star||0)+3;addSeeds(4,2,0);
+    toast('3 STAR-FRUIT seeds and 4 seeds!','#ffd83a');say([{who:'me',text:"The garden chest held star-fruit seeds and a few seeds! Time to plant."}]);}
+  else if(e.kind==='scarf'){e.dead=true;SFX.chest();shake=5;
+    if(grantOutfit('scarf'))toast('Found the CLOUD SCARF!','#ff9cd0');say([{who:'me',text:"A hidden pocket in the clouds, and a CLOUD SCARF inside! Press C to wear it."}]);}
+  save();
+}
+function peckNest(e){
+  if(G.sky.nest){float(e.x,e.y-16,'An empty old nest.','#b8a8d8');SFX.clunk();return;}
+  G.sky.nest=1;SFX.chirp();puff(e.x,e.y-6,12,['#c49a5c','#fff8ec','#ffd83a'],1.4,0.05);addSeeds(3,2,0);secretFound('skynest');
+  say([{who:'me',text:"The last cloud of the island! A tiny, ancient nest, and three seeds tucked inside."}]);save();
+}
+/* ---- hatching ---- */
+let HAT=null,NAMEUI=null;
+function startHatch(){HAT={t:0};state='hatch';fade=0;SFX.magic();}
+function updateHatch(){
+  const h=HAT;h.t++;
+  if(h.t<150&&h.t%24===0)SFX.clunk();
+  if(h.t===150){SFX.crackEgg();shake=4;}
+  if(h.t===195){SFX.catchEgg();shake=3;}
+  if(h.t===230)SFX.chirp();
+  if(h.t>290&&pressed.a){SFX.menu();openNaming();}
+  updateAmbient();
+}
+function drawHatch(){
+  const h=HAT,t=h.t;
+  drawSky(tick);ctx.fillStyle='#fff8ec';ctx.fillRect(0,150,W,H-150);ctx.fillStyle='#d8eefc';ctx.fillRect(0,150,W,2);
+  for(let i=0;i<12;i++){ctx.fillStyle=i%2?'#e6f2ff':'#ffffff';ctx.fillRect(i*22-6,146+(i%3)*2,26,6);}
+  const el=SPR.eagle;ctx.drawImage(el,34,170-el.height*2,el.width*2,el.height*2);
+  drawPip(stageOfRank(G.rank),3,Math.floor(tick/14)%2,false,210,184,2);
+  const cx=128,cy=168;
+  if(t<195){const w=t<150?Math.sin(t/4)*Math.min(14,t/8):0,e=SPR.eagleEgg;
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(w*0.03);ctx.drawImage(e,-e.width*3,-e.height*6,e.width*6,e.height*6);
+    if(t>=150){ctx.fillStyle='#21142b';ctx.fillRect(-4,-22,2,10);ctx.fillRect(-2,-14,6,2);ctx.fillRect(2,-12,2,8);}
+    ctx.restore();}
+  else{const e=SPR.eaglet,k=Math.min(1,(t-195)/20);
+    ctx.fillStyle='#fff8ec';ctx.fillRect(cx-22,cy-8,16,10);ctx.fillRect(cx+8,cy-8,16,10);ctx.fillStyle='#21142b';ctx.fillRect(cx-22,cy-9,16,2);ctx.fillRect(cx+8,cy-9,16,2);
+    ctx.drawImage(e,Math.round(cx-e.width*2*k),Math.round(cy-e.height*4*k-Math.sin(t/6)*1.5),Math.round(e.width*4*k),Math.round(e.height*4*k));
+    if(t%5===0)parts.push({x:cx-12+Math.random()*24+camX,y:cy-30+camY,vx:(Math.random()-.5)*1.5,vy:-0.8-Math.random(),g:0.02,life:30,c:['#ffd83a','#fff8ec','#ff6fae'][(Math.random()*3)|0]});}
+  for(const p of parts){ctx.fillStyle=p.c;ctx.fillRect(Math.round(p.x-camX),Math.round(p.y-camY),2,2);}
+  const msg=t<150?'The egg is wobbling...':t<195?'Crack... crack...':t<290?'A tiny eaglet blinks up at you!':'Press Z';
+  box(40,16,176,22,'#fff8ec','#21142b');txt(msg,W/2,23,7,'#21142b',{align:'center'});
+}
+const NAME_ROWS=[['SKY','NIMBLE','PEEPER','ZIPPY'],'ABCDEFG'.split(''),'HIJKLMN'.split(''),'OPQRSTU'.split(''),['V','W','X','Y','Z','DEL','OK']];
+function openNaming(){NAMEUI={s:'',row:0,col:0};state='naming';HAT=null;}
+function updateNaming(){
+  const N=NAMEUI;
+  if(pressed.up){N.row=(N.row+NAME_ROWS.length-1)%NAME_ROWS.length;SFX.menu();}
+  if(pressed.down){N.row=(N.row+1)%NAME_ROWS.length;SFX.menu();}
+  if(pressed.left){N.col--;SFX.menu();}if(pressed.right){N.col++;SFX.menu();}
+  const rl=NAME_ROWS[N.row].length;N.col=((N.col%rl)+rl)%rl;
+  if(pressed.b||pressed.back){N.s=N.s.slice(0,-1);SFX.menu();}
+  if(pressed.a){const k=NAME_ROWS[N.row][N.col];
+    if(N.row===0){N.s=k;SFX.pick();}
+    else if(k==='DEL'){N.s=N.s.slice(0,-1);SFX.menu();}
+    else if(k==='OK'){if(N.s.length>0)finishNaming();else{SFX.deny();}}
+    else if(N.s.length<10){N.s+=k;SFX.pick();}else SFX.deny();}
+  updateAmbient();
+}
+function drawNaming(){
+  const N=NAMEUI;ctx.fillStyle='#241838';ctx.fillRect(0,0,W,H);
+  for(let i=0;i<30;i++){ctx.fillStyle=(i+Math.floor(tick/12))%4?'#3b2a56':'#ffd83a';ctx.fillRect((i*53)%W,(i*37+Math.floor(tick/4))%H,1,1);}
+  box(10,8,W-20,H-16,'#1d1430','#ffd83a');txt('NAME YOUR CHICK!',W/2,14,9,'#ffd83a',{align:'center',shadow:true});
+  const e=SPR.eaglet;ctx.drawImage(e,Math.round(W/2-e.width*1.5),32,e.width*3,e.height*3);
+  box(54,64,148,18,'#fff8ec','#21142b');let nm=N.s;if(Math.floor(tick/20)%2&&N.s.length<10)nm+='_';txt(nm,W/2,70,9,'#21142b',{align:'center'});
+  NAME_ROWS.forEach((row,ri)=>{const y=ri===0?90:106+(ri-1)*17,n=row.length,cw=ri===0?42:ri===4?(ri===4?30:26):26;
+    const total=ri===0?4*44:n*28,x0=Math.round((W-total)/2);
+    row.forEach((k,ci)=>{const w=ri===0?42:26,x=ri===0?x0+ci*44:x0+ci*28,sel=ri===N.row&&ci===N.col;
+      box(x,y,w,ri===0?13:15,sel?'#ffd83a':'#3b2a56',sel?'#fff8ec':'#6a5a90');
+      txt(k,x+w/2,y+(ri===0?4:5),ri===0?5:6,sel?'#21142b':(k==='OK'?'#94dc64':k==='DEL'?'#ff8080':'#fff8ec'),{align:'center'});});});
+  txt('Z: pick     X: erase',W/2,H-22,5,'#b8a8d8',{align:'center'});
+}
+function finishNaming(){
+  const name=NAMEUI.s;NAMEUI=null;state='play';G.sky.name=name;G.sky.hatched=1;
+  const h=ents.find(e=>e.id==='hatch');if(h)h.name=name;else addHatchling();
+  const hh=ents.find(e=>e.id==='hatch');if(hh)hh.name=name;
+  SFX.fanfare();reward(QUESTS.sk_hatch.reward,'sk_hatch');
+  const el=ents.find(e=>e.id==='elda');
+  say([{who:el||'me',text:name+"! What a fine, strong name. Screeee!"},
+    {who:el||'me',text:"The old map shows a stairway of clouds just east of my nest. "+name+" belongs up there, in the sky, and so do you."},
+    {who:'me',text:"A cloud stairway! Come on, "+name+"! Let's see the Sky Kingdom!"}],()=>{toast('A cloud stairway shimmers east of Elda!','#a6e0ff');save();});
+}
+/* ---- quest marker and hint for the sky ---- */
+function skyHint(){
+  if(!G.flags.skyMap)return null;
+  if(!G.sky.hatched)return "Elda's egg is about to hatch! Visit her on the snowy peak.";
+  if(!G.sky.open)return "A cloud stairway shimmers just east of Elda's nest on the snowy peak. Take your chick up!";
+  for(const id of ORDER6)if(G.q[id]===1&&QUESTS[id].check())return "Go tell "+NAMES[QUEST_GIVER[id]]+" the good news!";
+  for(const k in TRAIN){const t=TRAIN[k];if(t.phase===6&&G.train[k]===1)return t.hint();}
+  for(const id of ORDER6)if(G.q[id]===1)return QUESTS[id].hint();
+  for(const k in TRAIN){const t=TRAIN[k];if(t.phase===6&&!has(k)&&G.train[k]!==2&&t.avail())return "Talk to "+t.whoName+" to learn "+t.skill+"!";}
+  for(const s of SKILLS5)if(skillState(s)==='open'&&G.seeds>=s.cost)return "You can learn "+s.name+" in your Sky Tree II. Press E!";
+  for(const id of ORDER6){if(G.q[id]===0&&(id!=='sk_hatch')&&(!FOLLOW_GATE[id]||FOLLOW_GATE[id]())){
+    const gv=QUEST_GIVER[id];if(id==='sk_chimes'&&G.q.sk_moon!==2)continue;if(id==='sk_boss'&&G.q.sk_rods!==2)continue;
+    return "Talk to "+NAMES[gv].toUpperCase()+" ("+QUESTS[id].loc+").";}}
+  if(G.q.sk_boss===1&&!G.flags.sky)return QUESTS.sk_boss.hint();
+  if(!G.flags.sky)return has('thunder')?"Take on the Storm Dragon: the lair is past the second crystal wall in the Storm Peaks.":"Learn THUNDER PECK from Starla to break the crystal walls in the Storm Peaks.";
+  return null;
+}
+function skyMarker(e){
+  if(e.id==='elda'&&G.flags.skyMap&&G.q.elda===2&&!G.sky.hatched)return SPR.excl;
+  const a=QUEST_OF[e.id];if(!a)return (e.id==='starla'||e.id==='hatch')?trainerMarker(e):undefined;
+  const seq=[a].concat(FOLLOWUP[e.id]||[]);
+  for(const id of seq){if(!QUESTS[id])continue;const st=G.q[id];
+    if(st===2)continue;if(FOLLOW_GATE[id]&&!FOLLOW_GATE[id]())return trainerMarker(e);
+    if(st===0)return SPR.excl;if(st===1&&QUESTS[id].check())return SPR.ques;return trainerMarker(e);}
+  return trainerMarker(e);
+}
+/* ---- the fly map's sky page ---- */
+const SKY_MAP_ORDER=['meadows','gardens','skycity','peaks'];
+function skyMapNodes(){return SKY_MAP_ORDER.filter(k=>k==='meadows'||G.areas.includes(k));}
+for(const k of SKY_MAP_ORDER){const a=skpA(SKY_NODES[k].at);DEST[k]={x:a.x,y:a.y,mx:SKY_NODES[k].mx,my:SKY_NODES[k].my,icon:SKY_NODES[k].icon};}
+function drawSkyMap(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(6,6,W-12,H-12,'#cfe8ff','#5a78b8');
+  for(let i=0;i<5;i++)cloud(10+i*52,28+(i%2)*12,1+(i%2));
+  txt('THE SKY KINGDOM',W/2,14,8,'#21408a',{align:'center'});
+  const nodes=skyMapNodes();
+  ctx.fillStyle='#fff8ec';for(const [a,b] of [['meadows','gardens'],['gardens','peaks'],['meadows','skycity'],['skycity','peaks'],['gardens','skycity']]){
+    const A=DEST[a],B=DEST[b];if(!nodes.includes(a)||!nodes.includes(b))continue;const n=Math.max(Math.abs(B.mx-A.mx),Math.abs(B.my-A.my))/4;
+    for(let i=0;i<=n;i+=2)ctx.fillRect(Math.round(lerp(A.mx,B.mx,i/n))-1,Math.round(lerp(A.my,B.my,i/n))-1,2,2);}
+  for(const k of SKY_MAP_ORDER){const d=DEST[k],open=nodes.includes(k),sel=k===mapSel;
+    if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(d.mx-17,d.my-17,34,34);}
+    box(d.mx-15,d.my-15,30,30,open?'#fff8ec':'#9aa8c8',open?'#21408a':'#6a78a8');
+    if(open){const cl=ctx.fillStyle;
+      if(k==='meadows'){ctx.fillStyle='#e6f2ff';ctx.fillRect(d.mx-10,d.my-1,20,8);ctx.fillRect(d.mx-6,d.my-6,12,7);ctx.fillStyle='#c8dcf0';ctx.fillRect(d.mx-10,d.my+6,20,2);}
+      else if(k==='gardens'){ctx.fillStyle='#94dc64';ctx.fillRect(d.mx-9,d.my+2,18,6);ctx.fillStyle='#ff6fae';ctx.fillRect(d.mx-6,d.my-6,4,6);ctx.fillStyle='#ffd83a';ctx.fillRect(d.mx+2,d.my-8,4,8);}
+      else if(k==='skycity'){ctx.fillStyle='#e8b070';ctx.fillRect(d.mx-9,d.my-4,18,12);ctx.fillStyle='#e03838';ctx.fillRect(d.mx-10,d.my-8,20,4);ctx.fillStyle='#21142b';ctx.fillRect(d.mx-2,d.my+1,4,7);}
+      else{ctx.fillStyle='#6a78a8';ctx.fillRect(d.mx-10,d.my-2,20,9);ctx.fillRect(d.mx-6,d.my-8,12,7);ctx.fillStyle='#ffe84a';ctx.fillRect(d.mx-1,d.my-6,3,8);}}
+    else txt('?',d.mx,d.my-4,8,'#6a78a8',{align:'center'});
+    txt(open?AREA_LABEL[k]:'???',d.mx,d.my+19,5,open?'#21408a':'#6a78a8',{align:'center'});
+    if(skyArea()===k)drawPip(stage(),0,Math.floor(tick/12)%2,false,d.mx+14,d.my-8,1);}
+  txt('Z: fly    X: ground page    F: close',W/2,H-20,5,'#21408a',{align:'center'});
+}
+
+/* ===== src/systems/sky2.js ===== */
+/* ---------------- Sky Kingdom part 2: the Storm Dragon (3 stages), the finale, the flyover, credits, drawing ---------------- */
+let SKB=null;
+function skyBossActive(){const r=regionAt();return !!G&&!!G.sky&&!!SKB&&G.sky.boss>0&&G.sky.boss<4&&!!r&&r.id==='lair';}
+function dragonEnt(){return ents.find(e=>e.type==='sdragon');}
+function addDragon(){const d=skp('lair',8,3);return addEnt({type:'sdragon',name:'STORM DRAGON',spr:'dragon',x:d.x,y:d.y-8,hx:d.x,hy:d.y-8,t:0,flash:0,flip:false,phase:0,w:44,voice:110});}
+const SKY_STAGE_TXT=['','STAGE 1: Dodge the lightning!','STAGE 2: Smash the storm crystals! (THUNDER PECK)','STAGE 3: Ring the 3 sky bells!'];
+function skyBossStart(){
+  const st=G.sky.boss>0&&G.sky.boss<4?G.sky.boss:1;
+  ents=ents.filter(e=>!['sdragon','scrys','sbell'].includes(e.type));
+  const d=addDragon();
+  if(!G.sky.metBoss){G.sky.metBoss=1;
+    say([{who:d,text:"GRRRUMBLE! Go away! This is MY storm. MY sky!"},{who:'me',text:"(He sounds angry... but a little bit sad, too. "+(G.sky.name||'My chick')+" is hiding behind my wing.)"}],()=>startSkyStage(st));}
+  else startSkyStage(st);
+}
+function startSkyStage(st){
+  ents=ents.filter(e=>!['scrys','sbell'].includes(e.type));STRIKES.length=0;G.sky.boss=st;
+  if(!dragonEnt())addDragon();
+  SKB={st,t:0,intro:90,timer:0,need:1500,left:0,bells:0,swoop:null,next:200};
+  if(st===2){for(const [id,o,c,r] of SKY_CRYS){const p=skp(o,c,r);addEnt({type:'scrys',id,x:p.x,y:p.y,solid:true,w:14,hp:1});}SKB.left=SKY_CRYS.length;}
+  if(st===3){for(const [id,o,c,r] of SKY_BELLS){const p=skp(o,c,r);addEnt({type:'sbell',id,x:p.x,y:p.y,solid:true,w:12,rung:false,sw:0});}}
+  toast(SKY_STAGE_TXT[st],'#ffd83a');save();
+}
+function updateSkyBoss(){
+  const B=SKB,d=dragonEnt();if(!B||!d)return;
+  if(d.flash>0)d.flash--;
+  if(B.intro>0){B.intro--;d.y=d.hy+Math.sin(tick/9)*3;return;}
+  B.t++;
+  if(!B.swoop){d.t++;d.x=d.hx+Math.sin(d.t/70)*70;d.y=d.hy+Math.sin(d.t/23)*5;d.flip=Math.cos(d.t/70)>0;}
+  const rate=B.st===1?44:B.st===2?80:110;
+  if(B.t%rate===0)spawnStrike(P.x+(Math.random()-.5)*(B.st===1?28:70),P.y+(Math.random()-.5)*(B.st===1?24:60),B.st===1?58:62);
+  if(B.st===1&&B.t%rate===Math.floor(rate/2))spawnStrike(SKO.lair[0]*16+24+Math.random()*208,SKO.lair[1]*16+40+Math.random()*130,70);
+  if(B.st===1){B.timer++;if(B.timer>=B.need){skyStageClear();return;}}
+  if(B.st===3){
+    const o=SKO.lair;
+    if(!B.swoop){if(--B.next<=0){const y=clamp(P.y-6,o[1]*16+52,o[1]*16+150);B.swoop={ph:0,t:0,y,dir:Math.random()<0.5?1:-1};B.next=190+Math.random()*70;SFX.honk();}}
+    else{const s=B.swoop;s.t++;
+      if(s.ph===0){d.x+=((s.dir>0?o[0]*16+22:o[0]*16+234)-d.x)*0.1;d.y+=(s.y-d.y)*0.1;d.flip=s.dir>0;if(s.t>=58){s.ph=1;s.t=0;SFX.gust();}}
+      else{d.x+=s.dir*5.6;d.y=s.y;d.flip=s.dir>0;
+        if(Math.abs(P.x-d.x)<28&&Math.abs(P.y-6-s.y)<13&&P.inv<=0&&!P.hop)hurt(d);
+        if(s.t>=46){B.swoop=null;d.t=0;d.hx=o[0]*16+128;d.y=d.hy;d.x=d.hx;}}}}
+}
+function hitCrystal(e){
+  if(!has('thunder')){SFX.clunk();float(e.x,e.y-20,'*zzzt* Need THUNDER PECK!','#c898f8');return;}
+  e.dead=true;SFX.brk();shake=6;puff(e.x,e.y-8,18,['#c898f8','#8a4ad8','#ffe84a','#ffffff'],2,0.05);
+  const B=SKB;if(!B||B.st!==2)return;B.left--;float(e.x,e.y-22,B.left?B.left+' left!':'ALL GONE!','#ffd83a');
+  const d=dragonEnt();if(d)d.flash=16;
+  if(B.left<=0)skyStageClear();
+}
+function ringBell(e){
+  if(e.rung)return;const B=SKB;
+  e.rung=true;e.sw=40;SFX.magic();SFX.chime&&SFX.chime();puff(e.x,e.y-10,10,['#ffd83a','#fff8ec'],1.2,-0.02);
+  if(!B||B.st!==3){float(e.x,e.y-22,'Dong!','#ffd83a');return;}
+  B.bells++;float(e.x,e.y-22,B.bells+'/3','#ffd83a');const d=dragonEnt();if(d)d.flash=12;
+  if(B.bells>=3)skyBossWin();
+}
+function skyStageClear(){
+  const B=SKB,next=B.st+1;SFX.questDone();toast('Stage cleared!','#94dc64');STRIKES.length=0;
+  for(const e of ents)if(e.type==='scrys'||e.type==='sbell')e.dead=true;
+  SKB=null;G.sky.boss=next;save();
+  const d=dragonEnt();
+  say([{who:d||'me',text:next===2?"GRRR! Why won't you leave?! ...My storm crystals keep it raining. Please... don't break them.":"*sniff* ...The crystals are gone. Now the bells... don't touch the bells!"},
+    {who:'me',text:next===2?"Those crystals feed the storm! "+(G.sky.name||'My chick')+" says: smash them with THUNDER PECK!":"The three sky bells! Their song might calm him. Ring them all!"}],()=>startSkyStage(next));
+}
+function skyBossRetry(){
+  toast('A kind breeze catches you! Try this stage again!','#ffd83a');
+  const o=skp('lair',8,9);P.x=o.x;P.y=o.y;P.inv=60;P.kt=0;G.hearts=maxHearts();STRIKES.length=0;
+  startSkyStage(Math.max(1,Math.min(3,G.sky.boss||1)));
+}
+function skyBossWin(){
+  SKB=null;G.sky.boss=4;G.flags.sky=1;STRIKES.length=0;ents=ents.filter(e=>!['sdragon','scrys','sbell'].includes(e.type));
+  const p=skp('lair',8,4);const s=addEnt({type:'npc',id:'stormy',name:'STORMY',spr:'dragon',x:p.x,y:p.y,w:44,voice:120,solid:true,phase:0,flip:false});
+  SFX.fanfare();shake=8;toast('The sky is calm!','#a6e0ff');save();
+  const nm=G.sky.name||'My chick';
+  say([{who:s,text:"*sniff*... The bells. They sound like... voices. Far away, kind voices."},
+    {who:s,text:"I'm sorry. I get so lonely up here, and then the storms come out all on their own."},
+    {who:'me',text:"You don't have to be lonely! Come and visit Cloud City. "+nm+" and I will show you around!"},
+    {who:s,text:"Really? ...Friends. I would like that very much. My name is Stormy. Here, take my old cap, to keep the rain off."}],
+    ()=>{reward(QUESTS.sk_boss.reward,'sk_boss');if(grantOutfit('stormcap'))toast('Stormy gave you the STORM CAP!','#ff9cd0');
+      for(let i=0;i<30;i++)parts.push({x:P.x+(Math.random()-.5)*60,y:P.y-30+Math.random()*30,vx:(Math.random()-.5)*1.5,vy:-0.6-Math.random(),g:0.02,life:50,c:['#ffd83a','#fff8ec','#a6e0ff','#ff6fae'][(Math.random()*4)|0]});
+      save();startFlyover();});
+}
+function drawSkyBossHUD(){
+  const B=SKB;if(!B)return;txt('STORM DRAGON',252,7,5,'#c898f8',{align:'right'});
+  if(B.st===1){ctx.fillStyle='#21142b';ctx.fillRect(168,16,84,8);ctx.fillStyle='#4a3a66';ctx.fillRect(169,17,82,6);ctx.fillStyle='#ffe84a';ctx.fillRect(169,17,Math.round(82*Math.min(1,B.timer/B.need)),6);}
+  else for(let i=0;i<(B.st===2?4:3);i++){const on=B.st===2?i<B.left:i<B.bells;ctx.fillStyle=B.st===2?(on?'#c898f8':'#4a3a66'):(on?'#4a3a66':'#ffd83a');ctx.fillRect(252-((B.st===2?4:3)-i)*12,16,10,8);}
+}
+/* ---- the flyover ---- */
+let FLYO=null;
+const FLYO_SCENES=[['THE STORM PEAKS','peaks',['dragon']],['CLOUD CITY','skycity',['plumeKeeper','starla','nimbus']],['THE FLOATING GARDENS','gardens',['fernbird']],['THE CLOUD MEADOWS','meadows',['cloudsheep','zephyr']],
+  ['THE SNOWY PEAK','mountains',['eagle','marmot']],['THE FOREST','forest',['tortoise','beaver','deer']],['THE CITY','city',['pigeon','chef','magpie']],['THE PIRATE SEAS','sea',['parrot','crab']],
+  ['THE VILLAGE','village',['beaver','goat','dog']],['HOME: THE FARM','farm',['hen','cow','pig','horse']]];
+function startFlyover(){FLYO={t:0};state='flyover';fade=0;SFX.fanfare();}
+function updateFlyover(){
+  const f=FLYO;f.t++;if(f.t%14===0)SFX.flap();if(pressed.a&&f.t>30)f.t+=9;
+  if(f.t>=FLYO_SCENES.length*140){FLYO=null;startLegendGathering();}
+}
+function drawFlyover(){
+  const f=FLYO,dur=140,i=Math.min(FLYO_SCENES.length-1,Math.floor(f.t/dur)),lt=f.t-i*dur,[name,kind,friends]=FLYO_SCENES[i],off=f.t*2.4,g=150;
+  const SK={peaks:['#2a3050','#8a98c8'],skycity:['#6ab0ff','#e6f2ff'],gardens:['#78baff','#f0f8ff'],meadows:['#7cc0fa','#ffffff'],mountains:['#8ac4f0','#e8f4ff'],forest:['#8ac8f4','#d8f0ff'],city:['#9ad0ff','#fff0d8'],sea:['#ffb080','#fff0d8'],village:['#ffa868','#ffe8c0'],farm:['#ff9a60','#ffe0b0']}[kind];
+  for(let b=0;b<12;b++){ctx.fillStyle=lerpColor(SK[0],SK[1],b/11);ctx.fillRect(0,b*(g/12),W,Math.ceil(g/12)+1);}
+  if(kind==='farm'||kind==='village'||kind==='sea'){ctx.fillStyle='#fff3a0';ctx.beginPath();ctx.arc(200,60,16,0,7);ctx.fill();}
+  for(let k=0;k<4;k++){const x=((k*98-off*0.35)%(W+90)+W+90)%(W+90)-45;cloud(Math.round(x),20+k*22,1+(k%2));}
+  const GR={peaks:'#6a78a8',skycity:'#ffffff',gardens:'#cfe8b0',meadows:'#e6f2ff',mountains:'#f0f4fa',forest:'#3f9a46',city:'#9a8a7a',sea:'#2a5fb0',village:'#8aa84a',farm:'#4ea84a'}[kind];
+  ctx.fillStyle=GR;ctx.fillRect(0,g,W,H-g);
+  for(let x=-16;x<W+16;x+=16){const px=Math.round(x-(off%16));
+    const cx=Math.floor((x+off)/16);
+    ctx.fillStyle='rgba(20,10,30,0.12)';ctx.fillRect(px,g+((cx*7)%3)*8+4,10,2);}
+  const prop=(x,k)=>{const h=hash2(k,7)%3;
+    if(kind==='peaks'){ctx.fillStyle='#4a5a8a';ctx.beginPath();ctx.moveTo(x-16,g);ctx.lineTo(x,g-34-h*8);ctx.lineTo(x+16,g);ctx.fill();ctx.fillStyle='#ffe84a';if((tick+k*11)%90<6)ctx.fillRect(x,g-30-h*8,2,12);}
+    else if(kind==='skycity'||kind==='city'){ctx.fillStyle=kind==='city'?'#c49a5c':'#e8b070';ctx.fillRect(x-9,g-20-h*6,18,20+h*6);ctx.fillStyle='#e03838';ctx.fillRect(x-11,g-24-h*6,22,5);ctx.fillStyle='#ffd83a';ctx.fillRect(x-4,g-14-h*6,3,4);ctx.fillRect(x+2,g-14-h*6,3,4);}
+    else if(kind==='gardens'||kind==='meadows'){ctx.fillStyle=kind==='gardens'?'#ff6fae':'#c8dcf0';ctx.fillRect(x-3,g-6-h*2,6,6+h*2);ctx.fillStyle='#ffd83a';ctx.fillRect(x-1,g-9-h*2,2,3);}
+    else if(kind==='mountains'){ctx.fillStyle='#8a98b8';ctx.beginPath();ctx.moveTo(x-18,g);ctx.lineTo(x,g-38-h*6);ctx.lineTo(x+18,g);ctx.fill();ctx.fillStyle='#ffffff';ctx.beginPath();ctx.moveTo(x-6,g-26-h*6);ctx.lineTo(x,g-38-h*6);ctx.lineTo(x+6,g-26-h*6);ctx.fill();}
+    else if(kind==='forest'){ctx.fillStyle='#5e3a1c';ctx.fillRect(x-1,g-8,3,8);ctx.fillStyle='#2f7d3a';ctx.beginPath();ctx.arc(x,g-14-h*2,9,0,7);ctx.fill();}
+    else if(kind==='sea'){ctx.fillStyle='#3a70c8';ctx.fillRect(x-8,g+8,16,2);if(k%5===0){ctx.drawImage(TILE.ship,x-8,g-8,16,16);}}
+    else if(kind==='village'){if(k%4===0){ctx.fillStyle='#e8d8b0';ctx.fillRect(x-7,g-22,14,22);ctx.fillStyle='#21142b';const a=tick/30;ctx.lineWidth=2;ctx.strokeStyle='#21142b';for(let q=0;q<4;q++){ctx.beginPath();ctx.moveTo(x,g-18);ctx.lineTo(x+Math.cos(a+q*1.57)*12,g-18+Math.sin(a+q*1.57)*12);ctx.stroke();}}else{ctx.fillStyle='#e8c050';ctx.fillRect(x-5,g-6,10,6);}}
+    else{ctx.fillStyle=k%4===0?'#c0392b':'#e8d8b0';ctx.fillRect(x-8,g-14,16,14);ctx.fillStyle='#8a4a1c';ctx.fillRect(x-10,g-18,20,5);}};
+  for(let k=0;k<7;k++){const x=((k*54-off*0.9)%(W+60)+W+60)%(W+60)-30;prop(Math.round(x),k+i*13);}
+  friends.forEach((fk,j)=>{const s=SPR[fk];if(!s)return;const x=Math.round(((j*86+40-off*1.0)%(W+80)+W+80)%(W+80)-40),y=g+8+(j%2)*10+Math.round(Math.abs(Math.sin((tick+j*9)/8))*-3);
+    drawImg(j%2?flipOf(s):s,x-(s.width>>1),y-s.height);});
+  const by=84+Math.round(Math.sin(tick/10)*5);
+  const h=SPR.eaglet;ctx.drawImage(flipOf(h),66,by+16+Math.round(Math.sin(tick/7)*2),h.width*2,h.height*2);
+  drawPip(stageOfRank(G.rank),3,Math.floor(tick/5)%2,true,112,by+34,2);
+  const a=Math.min(1,lt/20,(dur-lt)/20);ctx.globalAlpha=Math.max(0,a);box(40,H-34,176,24,'#1d1430','#ffd83a');txt(name,W/2,H-30,7,'#ffd83a',{align:'center'});
+  txt(i===FLYO_SCENES.length-1?'...and everyone is waiting!':'A friend waves hello!',W/2,H-20,5,'#fff8ec',{align:'center'});ctx.globalAlpha=1;
+  if(f.t<24){ctx.fillStyle='rgba(255,255,255,'+(1-f.t/24)+')';ctx.fillRect(0,0,W,H);}
+  txt('Z: speed up',W-8,6,5,'#21142b',{align:'right',alpha:0.7});
+}
+function lerpColor(a,b,t){const p=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16)),A=p(a),B=p(b);return 'rgb('+A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(',')+')';}
+/* ---- the gathering, rank 10, and the credits ---- */
+const LEGEND_MK=()=>{const nm=G.sky.name||'The chick';return [
+  ['mom','MAMA HEN',"Pip! My little peep! You flew all the way above the clouds and back home again!"],
+  ['penny','PENNY',"A village, a ship and a whole sky saved... and you're STILL my favorite peep."],
+  ['elda','ELDA',"Screee! Look at "+nm+", flapping like a champion. Thank you, Pip."],
+  ['pinch','CAPN PINCH',"Arr! The sea AND the sky! Captain Pip, ye be a legend!"],
+  ['barnaby','FOREMAN BARNABY',"Every building in the village has a story with your name in it, Pip!"],
+  ['granny','GRANNY SHELL',"I always said you'd fly higher than all of us, dearie."],
+  ['zephyr','ZEPHYR',"Whoosh! Cloud Kingdom express delivery! We flew down just to cheer for you!"],
+  ['nimbus','NIMBUS',"Hmph. Even the weather's behaving today. Congratulations."],
+  ['stormy','STORMY',"*rumble* Hello, everyone. I made a tiny rain cloud for the party. It only rains confetti."],
+  ['rooster','SIR CLUCKINGTON',"COCK-A-DOODLE-LEGEND! Never have I seen such pluck!"],
+  ['hatch',nm.toUpperCase(),"*PEEP PEEP PEEP!* (Your chick shouts it as loud as a tiny chick can!)"],
+  ['mom','MAMA HEN',"Now, who's hungry? There's dinner on the table, Legend of Chicklandia!"]];};
+const LEGEND_GUESTS=[...new Set([...CHARACTERS.filter(c=>!c.deco&&!/^nb\d|^sheep/.test(c.id)).map(c=>c.spr),'hen','penny','peep','cheep','tweet','eaglet','dragon','sheep'])];
+Object.assign(FEST_SCRIPTS,{legend:{lines:[['mom','MAMA HEN','...']],guests:LEGEND_GUESTS,scene:'legend',mk:LEGEND_MK,
+  end:()=>{G.flags.legend=1;save();finaleRank(10,startLegendCredits);}}});
+function startLegendGathering(){
+  P.x=56;P.y=76;CS={x:0,y:0};camX=0;camY=0;TRAIL=[];const h=ents.find(e=>e.id==='hatch');if(h){h.x=P.x-10;h.y=P.y;}
+  startFestival('legend');
+}
+function finaleRank(n,after){
+  if(G.rank>=n){after();return;}
+  if(G.gp<RANKS[n-1].gp)G.gp=RANKS[n-1].gp;      // the story itself tops up whatever growth is missing
+  startRankUp(n,after);
+}
+function legendCreditList(){
+  const nm=(G.sky.name||'THE CHICK').toUpperCase();
+  const names=[...new Set(CHARACTERS.filter(c=>!c.deco&&!/^nb\d|^sheep/.test(c.id)&&c.id!=='sheep').map(c=>c.name))].filter(n=>n!=='BABY BIRD');
+  const out=[['#THE LEGEND OF','#CHICKLANDIA'],'',['PIP THE CHICK'],['AND '+nm],'',['MAMA HEN','PENNY','PEEP, CHEEP & TWEET'],''];
+  for(let i=0;i<names.length;i+=4)out.push(names.slice(i,i+4),'');
+  out.push(['STORMY','THE DRAGON WHO FOUND FRIENDS'],'',['AND EVERY FRIEND','YOU MADE ALONG THE WAY'],'','',['#THANK YOU FOR PLAYING!'],'',
+    ['The sky is saved. The seas are safe.','The village is happy. The coop is golden.'],'',['But the story is not over.','Free play is open: the whole world is yours!'],'',['#THE END'],['(and the adventure goes on)']);
+  return out;
+}
+function startLegendCredits(){CRED={t:0,list:legendCreditList(),end:()=>{
+  P.x=56;P.y=76;CS={x:0,y:0};camX=0;camY=0;TRAIL=[];state='play';fade=0;
+  const h=ents.find(e=>e.id==='hatch');if(h){h.x=P.x-10;h.y=P.y;}save();
+  say([{who:'me',text:"The Legend of Chicklandia! ...Funny. It still feels like the same little farm. Maybe there are more secrets up in the clouds."}]);}};state='credits';fade=0;}
+/* ---- drawing of every sky thing ---- */
+function drawSkyEnt(e,sx,sy){
+  switch(e.type){
+    case 'spad':{const sq=e.sq>0?3:0;ctx.fillStyle='rgba(20,10,30,0.18)';ctx.fillRect(sx-8,sy-1,16,3);
+      ctx.fillStyle='#c8dcf0';ctx.fillRect(sx-9,sy-5+sq,18,6-sq);ctx.fillStyle='#ffffff';ctx.fillRect(sx-8,sy-7+sq,16,5);ctx.fillRect(sx-5,sy-9+sq,10,3);
+      ctx.fillStyle='#ff6fae';ctx.fillRect(sx-1,sy-6+sq,2,2);if(tick%60<10){ctx.fillStyle='#ffd83a';ctx.fillRect(sx-1,sy-12+sq,2,2);}break;}
+    case 'svent':{ctx.fillStyle='rgba(20,10,30,0.15)';ctx.fillRect(sx-7,sy-1,14,3);ctx.fillStyle='#a6d8ff';ctx.fillRect(sx-7,sy-3,14,3);
+      for(let k=0;k<3;k++){const t=(tick*1.4+k*18)%54,x=sx-5+k*5+Math.round(Math.sin((t+k)/6)*2);ctx.fillStyle='rgba(255,255,255,'+(1-t/54)+')';ctx.fillRect(x,Math.round(sy-4-t*0.5),2,5);}
+      if(!has('updraft')){ctx.fillStyle='#ff9cd0';ctx.fillRect(sx-1,sy-12,2,5);ctx.fillRect(sx-1,sy-5,2,2);}break;}
+    case 'sport':{const down=e.down,col=e.lair?'#c898f8':'#ffffff';
+      ctx.fillStyle='rgba(20,10,30,0.18)';ctx.fillRect(sx-9,sy-1,18,3);
+      for(let k=0;k<3;k++){const w=18-k*4;ctx.fillStyle=k%2?'#e6f2ff':col;ctx.fillRect(sx-w/2,sy-3-k*4,w,4);}
+      ctx.fillStyle=(Math.floor(tick/12)%2)?'#ffd83a':'#fff8ec';ctx.fillRect(sx-1,sy-16+Math.round(Math.sin(tick/9)*2),2,2);
+      if(Math.hypot(P.x-e.x,P.y-e.y)<46)txt(e.label,sx,sy-26,5,'#fff8ec',{align:'center',shadow:true});break;}
+    case 'sgate':{if(!G.flags.skyMap)break;const on=!!G.sky.hatched;ctx.globalAlpha=on?1:0.45;
+      for(let k=0;k<4;k++){const w=20-k*3,y=sy-2-k*6;ctx.fillStyle='rgba(20,10,30,0.2)';if(k===0)ctx.fillRect(sx-10,sy-1,20,3);ctx.fillStyle=k%2?'#e6f2ff':'#ffffff';ctx.fillRect(sx-w/2+k*2,y-4,w,5);}
+      for(let k=0;k<5;k++){const t=(tick*0.8+k*14)%60;ctx.fillStyle='rgba(255,248,236,'+(1-t/60)+')';ctx.fillRect(sx-8+k*4,Math.round(sy-t*0.9),2,2);}
+      ctx.globalAlpha=1;break;}
+    case 'gchime':{const sw=e.ring>0?(e.ring--,Math.round(Math.sin(e.ring)*2)):0,L={small:6,mid:9,big:13}[e.id];
+      ctx.fillStyle='rgba(20,10,30,0.2)';ctx.fillRect(sx-7,sy-1,14,3);ctx.fillStyle='#8a4a1c';ctx.fillRect(sx-6,sy-18,12,2);ctx.fillRect(sx-5,sy-18,2,18);ctx.fillRect(sx+3,sy-18,2,18);
+      ctx.fillStyle=e.ring>0?'#fff8ec':'#ffd83a';ctx.fillRect(sx-2+sw,sy-16,4,L);ctx.fillStyle='#c49a5c';ctx.fillRect(sx-1+sw,sy-16,1,L);break;}
+    case 'skychest':{const s=SPR.chest;shadow(sx,sy+1,14);drawImg(s,sx-(s.width>>1),sy+1-s.height);if(tick%60<5){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-s.height,1,1);}break;}
+    case 'snest':{ctx.fillStyle='#8a5a2c';ctx.fillRect(sx-7,sy-4,14,4);ctx.fillRect(sx-5,sy-6,10,3);ctx.fillStyle='#c49a5c';ctx.fillRect(sx-6,sy-4,12,1);if(!G.sky.nest&&tick%40<8){ctx.fillStyle='#ffd83a';ctx.fillRect(sx-1,sy-10,2,2);}break;}
+    case 'sbell':{const sw=e.sw>0?(e.sw--,Math.round(Math.sin(e.sw/2)*3)):0;ctx.fillStyle='#8a4a1c';ctx.fillRect(sx-8,sy-26,16,2);ctx.fillRect(sx-1,sy-26,2,6);
+      const s=SPR.sbell;ctx.save();ctx.translate(sx,sy-20);ctx.rotate(sw*0.06);ctx.drawImage(s,-(s.width>>1),0);ctx.restore();
+      if(!e.rung&&tick%50<6){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-18,1,1);}break;}
+    case 'scrys':{shadow(sx,sy+1,14);ctx.drawImage(TILE.stormCrystal,sx-8,sy-14);if(tick%24<4){ctx.fillStyle='#ffe84a';ctx.fillRect(sx+2,sy-12,2,5);}break;}
+    case 'sdragon':{if(e.flash>0&&Math.floor(e.flash/2)%2)break;const s=e.flip?flipOf(SPR.dragon):SPR.dragon;
+      shadow(sx,sy+30,44);ctx.drawImage(s,Math.round(sx-s.width/2),Math.round(sy-s.height/2));
+      if(SKB&&SKB.swoop&&SKB.swoop.ph===0){ctx.fillStyle='rgba(255,60,60,'+(0.25+0.15*Math.sin(tick/3))+')';ctx.fillRect(0,Math.round(SKB.swoop.y-camY+HUD-14),W,26);}break;}
+  }
+}
+function drawSkyFX(cx,cy){
+  for(const s of STRIKES){const x=Math.round(s.x-cx),y=Math.round(s.y-cy+HUD);
+    if(s.x<cx-20||s.x>cx+276)continue;
+    if(s.t<s.warn){const p=s.t/s.warn;ctx.fillStyle='rgba(255,232,74,'+(0.15+0.25*p)+')';ctx.beginPath();ctx.ellipse(x,y-4,16*p+2,7*p+1,0,0,7);ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.7)';ctx.lineWidth=1;ctx.beginPath();ctx.ellipse(x,y-4,16,7,0,0,7);ctx.stroke();}
+    else{const k=1-(s.t-s.warn)/14;ctx.fillStyle='rgba(255,255,255,'+k+')';ctx.fillRect(x-3,HUD,6,y-HUD);ctx.fillStyle='rgba(255,232,74,'+k+')';ctx.fillRect(x-1,HUD,2,y-HUD);
+      ctx.beginPath();ctx.ellipse(x,y-4,14*k,6*k,0,0,7);ctx.fill();}}
+  if(skyArea()==='peaks'||skyArea()==='lair'){ctx.fillStyle='rgba(30,38,70,0.13)';ctx.fillRect(0,HUD,W,VH);}
+}
+
 /* ===== src/ui/growth.js ===== */
 /* ---------------- growth tree ---------------- */
 let growPage=0;
-const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:growPage===4?SKILLS4:SKILLS;
-function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),...(G.sea.open?[4]:[]),2];}
+const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:growPage===4?SKILLS4:growPage===5?SKILLS5:SKILLS;
+function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),...(G.sea.open?[4]:[]),...(G.sky.open?[5]:[]),2];}
 function openGrow(){state='grow';SFX.menu();growMsg=null;growPage=G.part2?1:0;growSel=0;const i=TREE().findIndex(s=>!has(s.id)&&s.req.every(has));if(i>=0)growSel=i;}
 function skillState(s){if(has(s.id))return'learned';if(!s.req.every(has))return'locked';if(TRAIN[s.id]&&G.train[s.id]!==2)return'train';return'open';}
 function updateGrow(){
   if(lvlAnim>0)lvlAnim--;
   if(pressed.grow||pressed.back||pressed.quest){state='play';SFX.menu();return;}
   if(pressed.b){const pg=growPages();growPage=pg[(pg.indexOf(growPage)+1)%pg.length];growSel=0;growMsg=null;SFX.menu();return;}
-  if(growPage===2)return;
+  if(growPage===2){if(pressed.a||pressed.left||pressed.right){jpage^=1;SFX.menu();}return;}
   const SKILLS=TREE();
   const cur=SKILLS[growSel];
   const dirs=[['up',0,-1],['down',0,1],['left',-1,0],['right',1,0]];
@@ -4973,9 +5825,9 @@ let FAINT_FAR=false;
 function updateFaint(){
   FT++;
   if(FT<=50){fade=FT/50;fadeColor='#000';}
-  if(FT===50){const far=G.part2&&inBeyond(),sn=seaRegion()?SEA_NODES.find(n=>n.id===curNode()&&n.id!=='harbor'):null,sp=sn?sn.arrive:far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
+  if(FT===50){const far=G.part2&&inBeyond(),sn=seaRegion()?SEA_NODES.find(n=>n.id===curNode()&&n.id!=='harbor'):null,sp=skyRegion()?skpA(SKY_NODES.skycity.at):sn?sn.arrive:far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
     P=newPlayer(sp.x,sp.y);CS={x:Math.floor(sp.x/256),y:Math.floor(sp.y/192)};camX=CS.x*256;camY=CS.y*192;G.hearts=maxHearts();resetEnemies();TRAIL=[];FAINT_FAR=far;
-    for(const d of ents)if(d.type==='duckling'&&d.mode==='follow'){d.x=P.x;d.y=P.y;}}
+    for(const d of ents)if((d.type==='duckling'&&d.mode==='follow')||d.follow){d.x=P.x;d.y=P.y;}}
   if(FT>50)fade=Math.max(0,1-(FT-50)/50);
   if(FT>=100){state='play';const m=ents.find(e=>e.id==='mom');
     if(!FAINT_FAR&&m&&onCur(m))say([{who:m,text:"Oh my! You came home all tuckered out, sweet pea. Rest up... there, all better!"}]);
@@ -4985,10 +5837,12 @@ function updateFaint(){
 
 /* ===== src/ui/journal.js ===== */
 /* ---------------- GROWTH JOURNAL: rank ladder, taste log, secrets, best scores ---------------- */
+let jpage=0;      // the journal has two sheets: 0 = ranks and Taste Log, 1 = secrets, scores and collections
 function drawJournal(){
   box(4,4,W-8,H-8,'#241838','#94dc64');
   txt('GROWTH JOURNAL',W/2,10,9,'#94dc64',{align:'center',shadow:true});
-  txt('X: next page',W/2,22,5,'#8a7ab0',{align:'center'});
+  txt('X: next page     Z: flip sheet ('+(jpage+1)+'/2)',W/2,22,5,'#8a7ab0',{align:'center'});
+  if(jpage===1){drawJournal2();return;}
   // rank ladder
   RANKS.forEach((r,i)=>{const y=32+i*10,done=G.rank>=r.n,cur=G.rank===r.n;
     if(cur){ctx.fillStyle='#3b2a56';ctx.fillRect(10,y-2,114,10);}
@@ -5007,10 +5861,18 @@ function drawJournal(){
       else{ctx.fillStyle=f.color||'#fff';ctx.fillRect(135,y,6,6);}}
     else txt('?',137,y,5,'#4a3a66');
     txt(got?f.name:'???',148,y,5,got?'#fff8ec':'#4a3a66');});
-  txt('SECRETS '+Object.keys(G.secrets).length+'/'+SECRET_IDS.length,132,132,5,'#d890ff');
-  SECRET_IDS.forEach((s,i)=>txt(G.secrets[s.id]?s.name:'???',134,141+i*8,5,G.secrets[s.id]?'#fff8ec':'#4a3a66'));
-  txt('BEST SCORES',132,174,5,'#e8ff70');
-  [['EGG',G.best.egg],['BONK',G.best.bonk],['FIREFLY',G.best.ffly],['RACE',G.best.race?G.best.race+'s':0]].forEach(([n,v],i)=>txt(n+' '+(v||'-'),134,183+i*8,5,v?'#fff8ec':'#4a3a66'));
+}
+function drawJournal2(){
+  txt('SECRETS '+Object.keys(G.secrets).length+'/'+SECRET_IDS.length,12,34,6,'#d890ff');
+  SECRET_IDS.forEach((s,i)=>txt(G.secrets[s.id]?s.name:'???',14,46+i*9,5,G.secrets[s.id]?'#fff8ec':'#4a3a66'));
+  txt('BEST SCORES',132,34,6,'#e8ff70');
+  [['EGG CATCH',G.best.egg],['CARROT BONK',G.best.bonk],['FIREFLY',G.best.ffly],['ROOFTOP RACE',G.best.race?G.best.race+'s':0]].forEach(([n,v],i)=>txt(n+' '+(v||'-'),134,46+i*9,5,v?'#fff8ec':'#4a3a66'));
+  const ex=EXHIBITS.filter(x=>G.museum[x.id]>=x.need).length;
+  txt('COLLECTIONS',12,112,6,'#c49a5c');
+  txt('OUTFITS '+G.outfits.length+'/'+OUTFITS.length,14,124,5,'#fff8ec');txt('MUSEUM '+ex+'/'+EXHIBITS.length+' EXHIBITS',14,133,5,'#fff8ec');
+  txt('SKY SKILLS '+SKILLS5.filter(s=>has(s.id)).length+'/'+SKILLS5.length,14,142,5,'#fff8ec');
+  if(G.sky&&G.sky.name)txt('YOUR CHICK: '+G.sky.name,14,160,6,'#ffd83a');
+  if(G.flags.legend)txt('LEGEND OF CHICKLANDIA!',14,176,6,'#ffd83a');
 }
 
 /* ===== src/ui/pause.js ===== */
@@ -5112,7 +5974,7 @@ function drawWorld(){
   const ocx=camX,ocy=camY;camX=cx;camY=cy;
   for(const e of list){if(e.type==='player')drawPlayer();else drawEnt(e);}
   for(const p of parts){ctx.fillStyle=p.c;ctx.fillRect(Math.round(p.x-camX),Math.round(p.y-camY+HUD),2,2);}
-  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);drawSeaFX(cx,cy);
+  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);drawSeaFX(cx,cy);drawSkyFX(cx,cy);
 }
 function drawPlayer(){
   const st=stage(),sx=Math.round(P.x-camX),sy=Math.round(P.y-camY+HUD);
@@ -5131,6 +5993,7 @@ function drawPlayer(){
   drawPip(st,P.dir,fr,flap,sx+ox,sy+2-Math.round(P.z)+oy+bob,1);
 }
 function questMarker(e){
+  {const m=skyMarker(e);if(m!==undefined)return m;}
   if(e.id==='nibbles')return G.items.letter?SPR.ques:null;
   if(G.mail&&G.mail[e.id]===1)return SPR.ques;
   const q=QUESTS[e.id];if(!q)return null;const st=G.q[e.id];
@@ -5157,6 +6020,7 @@ function drawEnt(e){
     case 'fmound':case 'star':case 'flag':case 'vane':case 'cduck':case 'decor':case 'exhibit':case 'easel':case 'nook':drawCityEnt(e,sx,sy);break;
     case 'vpad':case 'vnode':case 'vsheep':case 'vmail':case 'vboard':case 'vwhistle':case 'vcontest':case 'windmill':case 'scarecrow':case 'vsculpt':drawVillageEnt(e,sx,sy);break;
     case 'gullp':case 'jelly':case 'spark':case 'bubbles':case 'swarp':case 'shipdock':case 'xmark':case 'seachest':case 'brazier':case 'boss':case 'barrel':drawSeaEnt(e,sx,sy);break;
+    case 'spad':case 'svent':case 'sport':case 'sgate':case 'gchime':case 'skychest':case 'snest':case 'sbell':case 'scrys':case 'sdragon':drawSkyEnt(e,sx,sy);break;
     case 'worm':{const s=SPR.worm[Math.floor((tick+e.phase)/12)%2];drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'carrot':{const s=SPR.carrot,w=Math.floor((tick+e.x)/40)%2;drawImg(s,sx-(s.width>>1)+w,sy+2-s.height);break;}
     case 'mound':{const s=SPR.mound;drawImg(s,sx-(s.width>>1),sy+2-s.height);if(senseNear(e.x,e.y)&&(e.has==='seed'||e.has==='bone')&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx-1,sy-8,2,2);ctx.fillRect(sx+4,sy-5,1,1);}break;}
@@ -5218,7 +6082,8 @@ function drawHUD(){
     const cl0=cellAt(),rid=cl0.region.id;
     if(cl0.kind==='water'){txt('DEEP REEF',252,7,5,'#a6e0ff',{align:'right'});ctx.fillStyle='#21142b';ctx.fillRect(168,16,84,8);ctx.fillStyle='#3a70c8';ctx.fillRect(169,17,82,6);const f=(G.air==null?AIR_MAX:G.air)/AIR_MAX;ctx.fillStyle=f>0.25?'#a6e0ff':(Math.floor(tick/6)%2?'#ff8080':'#fff8ec');ctx.fillRect(169,17,Math.round(82*f),6);txt('AIR',208,25,4,'#fff8ec',{align:'center'});return;}
     if(rid==='fortress'&&bossActive()&&BOSS){txt('SQUAWKBEARD',252,7,5,'#ff8080',{align:'right'});for(let i=0;i<BOSS.max;i++){ctx.fillStyle=i<BOSS.hp?'#ff8080':'#4a3a66';ctx.fillRect(252-(BOSS.max-i)*10,17,8,7);}return;}
-    if(rid==='cityin'||rid==='rooftops'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
+    if(rid==='lair'&&skyBossActive()&&SKB){drawSkyBossHUD();return;}
+    if(rid==='cityin'||rid==='rooftops'||rid==='skyin'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
     const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':a==='village'&&G.vil.open?seasonNow().name:'F: FLY',220,18,5,'#ffd83a',{align:'right'});
     // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
     const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor((31-(cs.cols-1))/cs.cols)),h=Math.min(8,Math.floor((27-(cs.rows-1))/cs.rows));
@@ -5261,10 +6126,10 @@ function drawBubble(){
 function drawGrow(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);
   if(growPage===2){drawJournal();return;}
-  const gcol=growPage===1?'#a6e0ff':growPage===3?'#94dc64':growPage===4?'#46b8c8':'#ffd83a';
+  const gcol=growPage===1?'#a6e0ff':growPage===3?'#94dc64':growPage===4?'#46b8c8':growPage===5?'#ffb8e0':'#ffd83a';
   box(4,4,W-8,H-8,'#241838',gcol);
   const SKILLS=TREE();
-  txt(growPage===1?'SKY TREE':growPage===3?'VILLAGE TREE':growPage===4?'SEA TREE':'GROWTH TREE',W/2,10,9,gcol,{align:'center',shadow:true});
+  txt(growPage===1?'SKY TREE':growPage===3?'VILLAGE TREE':growPage===4?'SEA TREE':growPage===5?'SKY TREE II':'GROWTH TREE',W/2,10,9,gcol,{align:'center',shadow:true});
   txt('X: next page',W/2,22,5,'#8a7ab0',{align:'center'});
   const big=lvlAnim>0?1:0;drawPip(stage(),0,Math.floor(tick/12)%2,lvlAnim>60,28,46,1+big);
   txt(RANKS[G.rank-1].name,48,24,6,'#ffd83a');txt('LV '+level()+'   GROWTH '+G.gp,48,34,5,'#b8a8d8');
@@ -5302,7 +6167,9 @@ function drawGrow(){
 }
 function drawQuests(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
-  if(questPage===2){drawTrainingPage();return;}
+  if(questPage===2){drawTrainingPage(0);return;}
+  if(questPage===8){drawTrainingPage(6);return;}
+  if(questPage===7){drawSkyPage();return;}
   if(questPage===3){drawCityPage();return;}
   if(questPage===5){drawVillagePage();return;}
   if(questPage===6){drawSeasPage();return;}
@@ -5326,16 +6193,16 @@ function drawQuests(){
   });
   txt('Seeds found: '+G.sp1+'/'+TOTAL_SEEDS+'   X: next page   Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }
-function drawTrainingPage(){
+function drawTrainingPage(off){off=off||0;
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
   txt('SKILL TRAINING',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
-  Object.keys(TRAIN).forEach((k,i)=>{const t=TRAIN[k],y=25+i*34,st=G.train[k]||0,done=has(k);
+  Object.keys(TRAIN).slice(off,off+6).forEach((k,i)=>{const t=TRAIN[k],y=24+i*31,st=G.train[k]||0,done=has(k);
     const stat=done?'DONE!':st===2?'Learn it! (E)':st===1?trainCount(k)+'/'+t.need:t.avail()?'Talk to '+t.whoName:'locked';
     const col=done?'#94dc64':(st>=1||t.avail())?'#ffd83a':'#8a7ab0';
-    box(10,y,W-20,30,done?'#23402a':'#1d1430',done?'#94dc64':st>=1?'#ff9cd0':'#4a3a66');
+    box(10,y,W-20,28,done?'#23402a':'#1d1430',done?'#94dc64':st>=1?'#ff9cd0':'#4a3a66');
     txt(t.title+' ('+t.skill+')',16,y+5,5,'#fff8ec');txt(stat,W-16,y+5,5,col,{align:'right'});
     const info=done?t.whoName+' taught you!':st===1?trainMsg(k):t.avail()?'Ready! Find '+t.whoName+'.':t.lock;
-    wrapTxt(info,16,y+16,W-34,5,done?'#94dc64':'#b8a8d8');});
+    wrapTxt(info,16,y+14,W-34,5,done?'#94dc64':'#b8a8d8');});
   txt('Pink ! over a friend = training ready    X: next page',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }
 function wrapTxt(s,x,y,w,sz,c){let line='',yy=y;for(const wd of s.split(' ')){const t=line?line+' '+wd:wd;if(measure(t,sz)>w&&line){txt(line,x,yy,sz,c);yy+=8;line=wd;}else line=t;}if(line)txt(line,x,yy,sz,c);}
@@ -5397,6 +6264,9 @@ function render(){
   else if(state==='voyage')drawVoyage();
   else if(state==='chase')drawChase();
   else if(state==='credits')drawCredits();
+  else if(state==='hatch')drawHatch();
+  else if(state==='naming')drawNaming();
+  else if(state==='flyover')drawFlyover();
   else if(state==='map'){drawWorld();drawEnvFX();drawHUD();TQ=[];drawMap();}
   else{
     drawWorld();drawEnvFX();drawHUD();
@@ -5427,14 +6297,14 @@ function render(){
 
 let _mmCache=null;
 function MINIMAP_BEYOND(){
-  const sea=seaRegion();if(!_mmCache)_mmCache={};if(_mmCache[sea])return _mmCache[sea];
-  const cells=REGION_LIST.filter(r=>r.beyond&&r.area&&!!r.sea===sea).flatMap(r=>r.cells);
+  const sea=seaRegion()?'sea':skyRegion()?'sky':'ground';if(!_mmCache)_mmCache={};if(_mmCache[sea])return _mmCache[sea];
+  const cells=REGION_LIST.filter(r=>r.beyond&&r.area&&(r.sea?'sea':r.sky?'sky':'ground')===sea).flatMap(r=>r.cells);
   const xs=cells.map(c=>c.sx),ys=cells.map(c=>c.sy),x0=Math.min(...xs),y0=Math.min(...ys);
   return _mmCache[sea]={cells,x0,y0,cols:Math.max(...xs)-x0+1,rows:Math.max(...ys)-y0+1};
 }
 
 // quest-log pages: 0 farm, 1 part 2, 3 city, 2 training, 4 detective notes (only while a Detective Cap is owned)
-function questPages(){const p=[0];if(G.part2)p.push(1,3);if(G.vil.open)p.push(5);if(G.sea.open)p.push(6);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
+function questPages(){const p=[0];if(G.part2)p.push(1,3);if(G.vil.open)p.push(5);if(G.sea.open)p.push(6);if(G.sky.open||G.flags.skyMap)p.push(7);p.push(2,8);if(G.outfits.includes('detective'))p.push(4);return p;}
 function drawCityPage(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
   txt('QUESTS - CITY',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
@@ -5476,6 +6346,18 @@ function drawVillagePage(){
   txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }
 
+// quest log page for the sky
+function drawSkyPage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffb8e0');
+  txt('QUESTS - SKY KINGDOM',W/2,10,9,'#ffb8e0',{align:'center',shadow:true});
+  ORDER6.forEach((id,i)=>{const y=21+i*15,q=QUESTS[id],st=G.q[id];
+    box(10,y,W-20,13,st===2?'#23402a':'#1d1430',st===2?'#94dc64':(st===1?'#ffd83a':'#4a3a66'));
+    if(st===0){txt('???',16,y+4,5,'#6a5a90');txt(id==='sk_hatch'?'see Elda':id==='sk_boss'?'see Nimbus':'find them up there',W-16,y+4,5,'#6a5a90',{align:'right'});return;}
+    txt(q.title,16,y+4,5,st===2?'#94dc64':'#fff8ec');
+    txt(st===2?'DONE!':q.prog(),W-16,y+4,5,st===2?'#94dc64':(q.check()?'#ffd83a':'#d8c8f8'),{align:'right'});});
+  txt((G.sky.name?'CHICK: '+G.sky.name+'    ':'')+'SKY SKILLS '+SKILLS5.filter(s=>has(s.id)).length+'/4',W/2,H-21,5,'#c49a5c',{align:'center'});
+  txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
+}
 // quest log page for the seas
 function drawSeasPage(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#a6e0ff');
@@ -5514,6 +6396,9 @@ function update(){
     case 'voyage':updateVoyage();break;
     case 'chase':updateChase();break;
     case 'credits':updateCredits();break;
+    case 'hatch':updateHatch();break;
+    case 'naming':updateNaming();break;
+    case 'flyover':updateFlyover();break;
     case 'grow':updateGrow();updateAmbient();break;
     case 'quests':if(pressed.b){{const pg=questPages();questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;
     case 'map':updateMap();break;

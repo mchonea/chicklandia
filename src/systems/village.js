@@ -117,10 +117,10 @@ function villagePeck(e,f,pr){
   if(e.type==='vnode'&&G.vil.nodes[e.id]!==dayNum()&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-6-f.y)<14){
     if(e.kind==='stone'&&!has('carry')){SFX.clunk();float(e.x,e.y-16,'Too heavy! Learn CARRY','#ff9cd0');return true;}
     if(!has('peck')&&e.kind!=='clay'){SFX.clunk();float(e.x,e.y-16,'Too tough!');return true;}
-    G.vil.nodes[e.id]=dayNum();gainMat(e.kind,NODE_YIELD[e.kind]+(wearing('overalls')?1:0),e.x,e.y);puff(e.x,e.y-4,8,['#c49a5c','#e8d8b0'],1.2,0.06);SFX.brk();save();return true;}
+    G.vil.nodes[e.id]=dayNum();gainMat(e.kind,NODE_YIELD[e.kind]+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);puff(e.x,e.y-4,8,['#c49a5c','#e8d8b0'],1.2,0.06);SFX.brk();save();return true;}
   if(e.type==='vsheep'&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-5-f.y)<14){
     if(G.vil.shear[e.id]===dayNum()){float(e.x,e.y-18,'Baa! (Come back tomorrow)','#fff8ec');SFX.menu();return true;}
-    G.vil.shear[e.id]=dayNum();gainMat('wool',2+(wearing('overalls')?1:0),e.x,e.y);puff(e.x,e.y-8,8,['#fff8ec','#e8e8f0'],1.2,0.04);save();return true;}
+    G.vil.shear[e.id]=dayNum();gainMat('wool',2+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);puff(e.x,e.y-8,8,['#fff8ec','#e8e8f0'],1.2,0.04);save();return true;}
   if(e.type==='vsculpt'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-5-f.y)<16){sculptAction();return true;}
   return false;
 }
@@ -139,7 +139,7 @@ function whistleAction(e){
   say([{who:'me',text:"Who shall I whistle for?",choices:['The sheep','The beaver'],cb:i=>{
     const k=i===0?'wool':'wood',day=G.vil.whistle[k];
     if(day===dayNum()){say([{who:'me',text:i===0?"The sheep already brought wool today!":"The beaver already hauled logs today!"}]);return;}
-    G.vil.whistle[k]=dayNum();SFX.magic();gainMat(k,2+(wearing('overalls')?1:0),e.x,e.y);
+    G.vil.whistle[k]=dayNum();SFX.magic();gainMat(k,2+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);
     toast(i===0?'A sheep trots over with a bundle of wool!':'A beaver drags in a stack of logs!','#ffd83a');save();}}]);
 }
 /* ---- skills ---- */

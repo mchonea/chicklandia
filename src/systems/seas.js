@@ -21,7 +21,7 @@ function updateSail(){
   if(pressed.a){const n=SEA_NODES[S.sel];
     if(n.id===cur.id){SFX.deny();return;}
     if(!n.need()){SFX.deny();toast(n.lock,'#ff8080');return;}
-    VOY={from:cur,to:n,t:0,dur:G.sea.lv.sails>=1?100:150};SAIL=null;state='voyage';SFX.magic();}
+    VOY={from:cur,to:n,t:0,dur:Math.round((G.sea.lv.sails>=1?100:150)*(G.rank>=9?0.8:1))};SAIL=null;state='voyage';SFX.magic();}
 }
 function updateVoyage(){
   const v=VOY;v.t++;if(v.t%14===0)SFX.splash&&SFX.splash();
@@ -114,7 +114,7 @@ function updateSeas(){
   }
   // swim/dive handling: air meter in deep reef
   if(inDeep()){
-    G.air=Math.max(0,(G.air==null?AIR_MAX:G.air)-1);
+    G.air=Math.max(0,(G.air==null?AIR_MAX:G.air)-(G.rank>=9&&tick%3===0?0:1));
     if(G.air<=0&&state==='play'){surface(true);}
   }else G.air=AIR_MAX;
   for(const e of ents){

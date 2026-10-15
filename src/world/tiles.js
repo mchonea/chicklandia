@@ -137,6 +137,15 @@ TILE.obsidian=mk(16,16,x=>{P_(x,'#3a2a4a',0,0,16,16);const r=mulberry(777);for(l
 TILE.deck=mk(16,16,x=>{P_(x,'#b8844c',0,0,16,16);for(let i=0;i<16;i+=4)P_(x,'#8a5c30',i,0,1,16);P_(x,'#d0a068',1,2,2,1);P_(x,'#d0a068',9,9,2,1);});
 TILE.wreck=mk(16,16,x=>{P_(x,'k',0,0,16,16);P_(x,'#4a3a2a',1,1,14,14);for(let j=3;j<16;j+=4)P_(x,'#2a1c10',1,j,14,1);P_(x,'#6a5a3a',3,5,3,1);P_(x,'#2a6a4a',2,12,5,2);});
 TILE.wreckDeck=mk(16,16,x=>{P_(x,'#6a5a3a',0,0,16,16);for(let i=0;i<16;i+=5)P_(x,'#3a2c1c',i,0,1,16);P_(x,'#8a7a5a',2,4,2,1);});
+// sky tiles
+TILE.cloud=[0,1,2].map(s=>mk(16,16,x=>{P_(x,'#e6f2ff',0,0,16,16);const r=mulberry(900+s);for(let n=0;n<5;n++)P_(x,'#ffffff',(r()*11)|0,(r()*12)|0,4+(r()*3|0),3);for(let n=0;n<4;n++)P_(x,'#c8dcf0',(r()*13)|0,(r()*14)|0,3,1);}));
+TILE.thinCloud=mk(16,16,x=>{x.fillStyle='rgba(235,245,255,0.55)';x.fillRect(0,0,16,16);for(let i=0;i<16;i+=4){x.fillStyle='rgba(160,200,240,0.6)';x.fillRect(i,0,2,1);x.fillRect(i,15,2,1);x.fillRect(0,i,1,2);x.fillRect(15,i,1,2);}x.fillStyle='rgba(255,255,255,0.7)';x.fillRect(4,5,6,2);x.fillRect(7,10,5,2);});
+TILE.windR=[0,1,2,3].map(f=>mk(16,16,x=>{P_(x,'#a8d4fa',0,0,16,16);for(const j of [3,8,13]){for(let i=-8;i<16;i+=8){const o=i+f*2;for(const [dx,dy] of [[2,-2],[3,-1],[4,0],[3,1],[2,2]])P_(x,'#ffffff',o+dx,j+dy,1,1);P_(x,'#e6f4ff',o-2,j,3,1);}}}));
+TILE.windL=[0,1,2,3].map(f=>mk(16,16,x=>{P_(x,'#a8d4fa',0,0,16,16);for(const j of [3,8,13]){for(let i=-8;i<24;i+=8){const o=i-f*2;for(const [dx,dy] of [[4,-2],[3,-1],[2,0],[3,1],[4,2]])P_(x,'#ffffff',o+dx,j+dy,1,1);P_(x,'#e6f4ff',o+5,j,3,1);}}}));
+TILE.openSky=mk(16,16,x=>{P_(x,'#5aa8f0',0,0,16,16);const r=mulberry(950);for(let n=0;n<3;n++)P_(x,'#7cc0fa',(r()*12)|0,(r()*14)|0,4,2);P_(x,'#ffffff',(r()*14)|0,(r()*14)|0,1,1);});
+TILE.stormCrystal=mk(16,16,x=>{x.drawImage(TILE.cloud[0],0,0);P_(x,'k',3,5,5,10);P_(x,'#8a4ad8',4,6,3,8);P_(x,'#c898f8',4,6,1,5);P_(x,'k',8,2,6,13);P_(x,'#6a2ab8',9,3,4,11);P_(x,'#d8b0ff',9,3,1,6);P_(x,'#ffe84a',11,8,1,2);});
+TILE.rainWall=[0,1].map(f=>mk(16,16,x=>{P_(x,'#4a5a7a',0,0,16,16);for(let i=0;i<16;i+=3){const o=(i*5+f*4)%16;P_(x,'#a6c8ff',i,o,1,5);P_(x,'#8aa8e8',i+1,(o+8)%16,1,4);}P_(x,'#2a3a5a',0,0,16,2);}));
+TILE.barrier=mk(16,16,x=>{P_(x,'k',0,0,16,16);P_(x,'#d8e0ec',1,1,14,14);P_(x,'#ffffff',2,2,6,3);P_(x,'#a8b4c8',1,10,14,5);P_(x,'#a8b4c8',9,5,5,3);P_(x,'#8898b0',1,14,14,1);});
 function groundFor(c,r,h){
   switch(groundOf(c,r)){
     case 'snow':return TILE.snow[h%2];

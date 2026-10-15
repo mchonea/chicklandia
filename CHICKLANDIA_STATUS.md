@@ -23,7 +23,9 @@ Pip now grows through **growth points (GP)**. Data: `src/content/ranks.js` (rank
 | 5 | Almost a Chicken | 210 | learned Flight | fly-map trip takes half as long |
 | 6 | Young Chicken | 300 | | harvests +1 seed; new white-feather sprite |
 | 7 | Grown-Up Chicken | 390 | Coming-of-Age Festival | +1 heart, accessory slot; adult sprite |
-| 8-10 | Village Hero / Captain of the Seas / Legend | 650 / 850 / 1100 | later expansions | sash / badge / aura drawn already; perks later |
+| 8 | Village Hero | 650 | village finale | sash; village gathering always +1 material |
+| 9 | Captain of the Seas | 850 | beat Squawkbeard | badge; air lasts 50% longer, sailing 20% faster |
+| 10 | Legend of Chicklandia | 1100 | beat the Storm Dragon | golden aura; +1 heart, Wing Flap recharges twice as fast |
 
 **Where growth comes from** (as built): quest 10 (Part 1) / 12 (Part 2); training 8; skill 5; first taste of a food 4; minigame first win 8, repeat 2 (max 3 a day); secret area 6; hidden seed 2; new outfit 3; coop upgrade 6; garden harvest 1; snack bowl 1 per seed (the bowl is in both coops once Flight is learned).
 
@@ -118,6 +120,46 @@ Islands are separated by empty screens, so they can only be reached by ship. The
 **Seed budget:** sources: quest rewards 5+5+5+5+5+5+5+6+10 = 51, golden seeds 20, polly chest 6. Sinks: Sea Tree 24, ship upgrades 30.
 
 **Tests.** `tests/seas.js` (with `tests/walk.js`): walks Pip from each dock to every pick-up, person, cave crate and underwater item; checks cave and dive warps, air, Dash, Cannon Peck, Sea Legs, enemies, every quest, ship upgrades, the lighthouse puzzle, all three boss stages, the chase, rank 9, the ending and the save round trip. Smoke, city and village tests still pass. **Not verified:** touch on a device (new DASH button), the music by ear, a human playthrough of the boss (difficulty), or how long the seas take.
+
+## 0f. Phase 6 (Sky Kingdom): built (Oct 14, 2026)
+
+```
+Cloud Meadows (0,17)(1,17)      Floating Gardens (3,17)(4,17)      Cloud City rooms (3..7,21): boutique, star-fruit stand,
+Cloud City    (0,19)(1,19)      Storm Peaks      (3,19)(4,19)      weather shop, Tweeta's cottage, sky nursery
+Storm Dragon's lair (0,21)
+```
+The four areas are joined by **cloud stairways** (swirling portals with a label: GARDENS, CITY, PEAKS, LAIR, DOWN). The way in is a cloud stairway on the snowy peak, just east of Elda's nest.
+
+**Story flow.** After Squawkbeard (flag `skyMap`) and Elda's egg quest, talk to Elda again: the egg hatches in a short scene, then the player **names the chick** (letter-grid screen, 10 letters or four presets, touch friendly). The chick (`NIMBLE` in the tests) then follows Pip everywhere, is the trainer for Dive-Bomb, and appears in the finale and credits. The cloud stairway then works. Win the Storm Dragon: flyover of every region, the whole of Chicklandia gathers at the farm, **Legend of Chicklandia (rank 10)**, credits with every friend, then free play (everything stays open; Stormy lives in the lair).
+
+**Code map.** Data: `src/content/sky.js` (positions, pads, vents, portals, items, cast, buildings, Sky Tree II, outfits, foods, exhibits), `src/content/quests_sky.js` (9 quests, 3 trainers, 3 shops, talk). Regions: `src/regions/sky.js`. Systems: `src/systems/sky.js` (pads, vents, wind, rain walls, lightning, gate, chime puzzle, hatching, naming, hints, fly-map sky page), `src/systems/sky2.js` (the dragon, flyover, gathering, rank 10, credits, drawing of every sky thing). Art: `src/entities/sprites_sky.js` and 11 new tiles in `src/world/tiles.js`. Music: `src/engine/tracks_sky.js` (4 tracks; the lair uses `boss`). Save: `G.sky` (open, hatched, name, harvest counts, chimes, boss stage, crystals, nest, metBoss).
+
+**Mechanics.** *Bouncy clouds* launch Pip along an arc (to another island, or straight up and down); you cannot be hurt while in the air; the cloud waits `bounce length + 30 frames` before it bounces again, so Pip can walk off. *Updraft vents* lift Pip to an island (needs UPDRAFT). *Wind lanes* push Pip sideways (the Cloud Scarf blocks it). *Thin clouds* (needs CLOUD WALK). *Cloud barriers* are cracked by a **Dive-Bomb**: bounce on a cloud, press peck in mid-air, slam down. *Storm crystals* (walls in the Peaks, and the boss's crystals) are shattered by **Thunder Peck** (a normal peck, once learned). *Rain walls* hurt and send Pip back (the Storm Cap blocks them). *Lightning* in the Peaks shows a glowing ring for about a second before it strikes.
+
+**Sky Tree II** (4 skills): Updraft (5 seeds, no training), Cloud Walk (6; Zephyr; 3 wind chimes), Dive-Bomb (6; **your chick** teaches it; 3 pegs), Thunder Peck (8; Starla; 3 static bolts; needs Cloud Walk and Dive-Bomb learned). Training items are only spawned while a training is running, like the other trainers. (The spec asked for two trainer-locked skills with the hatchling as one trainer; here three are trainer-locked, Cloud Walk by Zephyr, Dive-Bomb by the chick and Thunder Peck by Starla, and Updraft is the free one, so the player can always reach the first islands.)
+
+**Quests (9).** The Egg Hatches (Elda), Lost Lambs (Puff), Zephyr's Feathers (4 sky feathers on the islands; needs Updraft), Sky Seeds (Fern: grow and harvest one star-fruit and one moonflower in the sky soil; reward: Sun-Bloom Crown), The Garden Chimes (Fern: peck the chimes BIG, SMALL, MEDIUM), Star-Fruit Cake (Tweeta: 2 star-fruit), Window Display (Plume: 3 cloud puffs; then the Feather Boutique opens), Lightning Rods (Nimbus; 3 rods past the crystal wall; needs Thunder Peck), The Lonely Storm (Nimbus: the boss).
+
+**Sky farming.** 24 soil tiles in the Floating Gardens are garden plots. Anything planted there grows 3 times as fast (moonflowers still only at night). New seed: STAR-FRUIT SEED (3 seeds at the stand; harvest gives 5 seeds and a star-fruit).
+
+**Cloud City.** Five enterable buildings built on the Phase 3 machinery (`BUILDINGS`, `DOORS`, `roomCell`, `openCatalog`): Feather Boutique (Feather Quill outfit), Star-Fruit Stand (star-fruit seed, cloudberry, star cake, sky honey), Weather Shop (storm tea, rain charm, sunny charm, Storm Cap), Tweeta's Cottage (a home), Sky Nursery (baby birds and four nests Pip can sleep in).
+
+**Boss: the Storm Dragon, 3 stages with checkpoints.** A lonely, grumpy cloud dragon. 1) Dodge his lightning for about 25 seconds (a bar fills). 2) Shatter the 4 storm crystals with Thunder Peck while the lightning keeps coming. 3) Ring the 3 sky bells by pecking them (or by a Dive-Bomb next to one) while he swoops across the arena (a red band shows where). Running out of hearts only restarts that stage. Winning calms him: he becomes Stormy, gives Pip his Storm Cap, and the finale starts.
+
+**Darkness and weather decisions.** Meadows, Gardens and Cloud City get gentle nights (30% instead of 68% dark) and no rain. The Storm Peaks and the lair are always dim, with rain, and flashes. Cloud City interiors are lit like the city's.
+
+**Perks for ranks 8-10 (new).** Rank 8: village gathering always gives +1 material. Rank 9: air lasts 50% longer underwater and sailing is 20% faster. Rank 10: +1 heart and Wing Flap recharges twice as fast. The golden aura was already drawn. **Fix:** the village and seas endings no longer force a rank-up that was already earned (`finaleRank(n)`).
+
+**Museum and Journal.** Two new exhibits (Storm Shards, Cloud Blooms: 3 each), the museum room got 2 more cases. The Taste Log now has 17 foods, so the Journal is two sheets (press Z / A to flip): ranks + Taste Log, then secrets, scores and collections.
+
+**Fly map.** A second page (press X / B on the map): the four sky areas, each unlocked when first visited. The ground page reaches the sky page the same way. The map button also works on touch.
+
+**Growth budget added by the sky:** quests 9 x 14 = 126, skills 4 x 5 = 20, trainings 3 x 8 = 24, new foods 5 x 4 = 20, outfits 4 x 3 = 12, secret 6 (The Last Cloud), hidden seeds 8 x 2 = 16, museum exhibits 2 x 12 = 24: about 248, plus 1 per garden harvest. Running fixed total: 1018 + 248 = 1266. Rank 10 needs 1100 (87%), and the finale tops up whatever is missing.
+
+**Seed budget:** sources: quest rewards 5+5+5+5+6+6+6+6+12 = 56, hidden seeds 8, chime chest 4, nest 3, museum exhibits 12, sky harvests 5 each (6 at rank 6+, 7 with the Sun-Bloom Crown). Sinks: Sky Tree II 25, star-fruit seeds 3 each, Feather Quill 5, foods 2-4, weather charms 2 each (the Storm Cap is a free gift from Stormy; it is also 6 seeds in the shop until then).
+
+**Tests.** `tests/sky.js` (with `tests/walk.js`; 184 checks): regions and tiles; Elda, hatching, naming (presets, letters, erase, 10-letter limit, empty-name block); the hatchling follows; the sky gate; a **static reachability proof** (every pick-up, person, chest, soil tile, chime, door and portal is reachable with exactly the skills that should be needed, and the locked islands are NOT reachable without them); pads, vents, Cloud Walk, wind and the scarf, Dive-Bomb and the barrier, both chests, the secret nest, rain walls, lightning (hit and dodge), Thunder Peck through a save; the chime puzzle and sky farming; every quest, trainer, shop and Sky Tree skill; all three boss stages, the retry, the flyover, the gathering, rank 10 and the credits; free play; save round trip and loading an old (pre-sky) save; the fly map's two pages; every quest/grow/journal page rendering; darkness, rain and the minimap; the museum. Smoke, city, village and seas tests still pass. **Not verified:** touch on a real device (naming screen, X on the fly map, the peck button in mid-air), the music by ear, a human playthrough of the dragon (difficulty and fairness of the lightning), or how long the sky takes.
+
 
 ## 1. Snapshot
 

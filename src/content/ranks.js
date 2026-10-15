@@ -19,11 +19,11 @@ const RANKS=[
   {n:7,name:'GROWN-UP CHICKEN',short:'GROWN-UP CHICKEN',gp:390,gate:()=>!!G.flags.festival,perk:'+1 heart, and an ACCESSORY slot in your closet!',
     gateHint:"You're FULL of growth! Finish your dream coop and ask GRANNY SHELL: it's time!",
     react:"Pip... you're all grown up. I'm the proudest hen in the world.",letter:"Dear Pip, you did it. You're a grown-up chicken. I love you to the moon. Mama"},
-  {n:8,name:'VILLAGE HERO',short:'VILLAGE HERO',gp:650,gate:()=>!!G.flags.village,perk:'A hero sash! (Village perk comes later.)',
+  {n:8,name:'VILLAGE HERO',short:'VILLAGE HERO',gp:650,gate:()=>!!G.flags.village,perk:'A hero sash! Gathering at the village always gives +1 material.',
     react:"A hero! My Pip, the Village Hero!",letter:"Dear Pip, the whole village cheers for you! Mama"},
-  {n:9,name:'CAPTAIN OF THE SEAS',short:'SEAS CAPTAIN',gp:850,gate:()=>!!G.flags.seas,perk:"A captain's badge! (Seas perk comes later.)",
+  {n:9,name:'CAPTAIN OF THE SEAS',short:'SEAS CAPTAIN',gp:850,gate:()=>!!G.flags.seas,perk:"A captain's badge! You hold your breath 50% longer, and sail faster.",
     react:"Captain Pip! Arr, I mean... wow!",letter:"Dear Pip, a captain! Don't forget your scarf at sea. Mama"},
-  {n:10,name:'LEGEND OF CHICKLANDIA',short:'LEGEND',gp:1100,gate:()=>!!G.flags.sky,perk:'A golden aura! (Legend perk comes later.)',
+  {n:10,name:'LEGEND OF CHICKLANDIA',short:'LEGEND',gp:1100,gate:()=>!!G.flags.sky,perk:'A golden aura! +1 heart, and your Wing Flap recharges twice as fast.',
     react:"The Legend of Chicklandia... is my baby!",letter:"Dear Pip, a legend! Now come home for dinner. Mama"}
 ];
 // growth points per source (see CHICKLANDIA_STATUS.md for the budget)

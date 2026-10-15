@@ -27,9 +27,9 @@ const HARVEST_LINES=[
   ['bucky',"BUCKY","Beaver-tail slap! We did it, Pip! A whole village, from a muddy meadow!"],
   ['mom',"MAMA HEN","My little peep, the Village Hero. I'm the proudest hen in the world!"]];
 const FEST_SCRIPTS={
-  coming:{lines:FEST_LINES,guests:FEST_GUESTS,scene:'coop',end:()=>{G.flags.festival=1;G.flags.part2done=1;save();startRankUp(7,startCredits);}},
-  harvest:{lines:HARVEST_LINES,guests:HARVEST_GUESTS,scene:'harvest',end:()=>{G.flags.village=1;reward(QUESTS.vharvest.reward,'vharvest');save();startRankUp(8,startPinch);}}};
-function startFestival(name){FEST={t:0,line:0,shown:0,S:FEST_SCRIPTS[name||'coming']};state='festival';fade=0;SFX.fanfare();}
+  coming:{lines:FEST_LINES,guests:FEST_GUESTS,scene:'coop',end:()=>{G.flags.festival=1;G.flags.part2done=1;save();finaleRank(7,startCredits);}},
+  harvest:{lines:HARVEST_LINES,guests:HARVEST_GUESTS,scene:'harvest',end:()=>{G.flags.village=1;reward(QUESTS.vharvest.reward,'vharvest');save();finaleRank(8,startPinch);}}};
+function startFestival(name){const S0=FEST_SCRIPTS[name||'coming'];if(S0.mk)S0.lines=S0.mk();FEST={t:0,line:0,shown:0,S:S0};state='festival';fade=0;SFX.fanfare();}
 function updateFestival(){
   const f=FEST;f.t++;
   if(f.t<40){fade=1-f.t/40;return;}fade=0;
@@ -52,9 +52,10 @@ function drawFestival(){
   ctx.fillStyle='#21142b';ctx.fillRect(10,40,W-20,1);
   const n=Math.min(S.guests.length,Math.floor((f.t-10)/6));
   S.guests.forEach((k,i)=>{if(i>=n)return;const s=SPR[k];if(!s)return;
-    const row=i%2,x=14+Math.floor(i/2)*18+(row?9:0),y=(row?196:178)+Math.round(Math.sin((tick+i*9)/12)*1);
+    const lg=S.scene==='legend',row=lg?i%3:i%2,x=lg?10+Math.floor(i/3)*15+row*5:14+Math.floor(i/2)*18+(row?9:0),y=(lg?[172,186,200][row]:(row?196:178))+Math.round(Math.sin((tick+i*9)/12)*1);
     drawImg(i%3===0?flipOf(s):s,x-(s.width>>1),y-s.height);});
   drawPip(stageOfRank(G.rank),0,Math.floor(tick/14)%2,false,128,160,2);
+  if(S.scene==='legend'){ctx.fillStyle='rgba(255,200,120,0.12)';ctx.fillRect(0,0,W,H);const hh=SPR.eaglet;ctx.drawImage(hh,150,160-hh.height*2,hh.width*2,hh.height*2);txt('THE LEGEND OF CHICKLANDIA',W/2,48,7,'#ffd83a',{align:'center',shadow:true});}
   const L=S.lines[f.line];
   if(f.t>=40){box(10,10,W-20,22,'#fff8ec','#21142b');
     txt(L[1],16,13,5,'#ec6c24');
@@ -74,11 +75,11 @@ const CREDITS=[
   ['BUT WAIT...'],'',
   ["Animals from all over are asking","to move in near Pip's coop!"],'',
   ['TO BE CONTINUED...']];
-function startCredits(){CRED={t:0};state='credits';fade=0;}
+function startCredits(){CRED={t:0,list:CREDITS};state='credits';fade=0;}
 function updateCredits(){
   const c=CRED;c.t++;
   if(c.t%16===0&&c.t<900)SFX.flap();
-  if(c.t>CREDITS.length*14+120&&pressed.a){CRED=null;const e=coopExit();P.x=e.x;P.y=e.y+8;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;state='play';save();
+  if(c.t>c.list.length*14+120&&pressed.a){const en=c.end;CRED=null;if(en){en();return;}const e=coopExit();P.x=e.x;P.y=e.y+8;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;state='play';save();
     say([{who:'me',text:"What a day! And it sounds like there's more adventure ahead..."}]);}
   else if(pressed.a&&c.t>20)c.t+=6;
 }
@@ -86,9 +87,9 @@ function drawCredits(){
   const c=CRED;ctx.fillStyle='#0d0814';ctx.fillRect(0,0,W,H);
   for(let i=0;i<40;i++){const x=(i*53)%W,y=(i*97+Math.floor(c.t/3))%H;ctx.fillStyle=(i+Math.floor(c.t/10))%5?'#3b2a56':'#ffd83a';ctx.fillRect(x,y,1,1);}
   let y=H-c.t*0.7+10;
-  CREDITS.forEach(l=>{if(l==='')y+=8;else l.forEach((s,j)=>{const big=l===CREDITS[0]||l[0]==='TO BE CONTINUED...';if(y>-12&&y<H+4)txt(s,W/2,y,big?8:6,big?'#ffd83a':'#fff8ec',{align:'center'});y+=big?14:11;});});
+  c.list.forEach(l=>{if(l==='')y+=8;else l.forEach((s0,j)=>{const big=l===c.list[0]||l[0]==='TO BE CONTINUED...'||s0[0]==='#',s=s0[0]==='#'?s0.slice(1):s0;if(y>-12&&y<H+4)txt(s,W/2,y,big?8:6,big?'#ffd83a':'#fff8ec',{align:'center'});y+=big?14:11;});});
   drawPip(stageOfRank(G.rank),0,Math.floor(tick/14)%2,false,W/2,Math.max(150,y+20),2);
-  if(c.t>CREDITS.length*14+120&&Math.floor(c.t/25)%2)txt('Press Z to keep playing',W/2,H-14,6,'#b8a8d8',{align:'center'});
+  if(c.t>c.list.length*14+120&&Math.floor(c.t/25)%2)txt('Press Z to keep playing',W/2,H-14,6,'#b8a8d8',{align:'center'});
 }
 
 /* ---- Cap'n Pinch sails in with the treasure map (end of the village chapter) ---- */

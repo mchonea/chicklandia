@@ -16,5 +16,5 @@ defineRegion({id:'cityin',name:'CITY',kind:'indoor',origin:[5,4],grid:[5,3],grou
  {id:'ducks',label:'THE DUCK FLAT',rows:room([['p',3,3,'n'],['p',4,3,'n'],['p',12,3,'n'],['p',13,3,'n'],['r',6,7,9,8,'o']])},
  {id:'loft',label:"PIDGE'S LOFT",rows:room([['p',3,3,'n'],['p',4,3,'n'],['p',5,3,'n'],['r',10,4,12,4,'t'],['p',13,3,'P'],['r',6,8,9,9,'o']])},
  {id:'library',label:'LIBRARY',rows:room([['r',2,3,13,3,'9'],['r',2,4,2,8,'9'],['r',13,4,13,8,'9'],['r',6,6,9,6,'k'],['r',3,8,5,9,'o'],['p',10,9,'P']])},
- {id:'museum',label:'MUSEUM',rows:room([['p',3,4,'4'],['p',6,4,'4'],['p',9,4,'4'],['p',12,4,'4'],['p',2,3,'P'],['p',13,3,'P'],['r',5,7,10,8,'o']])},
+ {id:'museum',label:'MUSEUM',rows:room([['p',3,4,'4'],['p',6,4,'4'],['p',9,4,'4'],['p',12,4,'4'],['p',4,10,'4'],['p',11,10,'4'],['p',2,3,'P'],['p',13,3,'P'],['r',5,7,10,8,'o']])},
  null,null]});

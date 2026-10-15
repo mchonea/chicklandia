@@ -43,7 +43,7 @@ function facingTalk(){
 function updateTouchUI(){
   if(!TOUCH)return;
   const show=(id,v)=>{const el=document.getElementById(id);if(el)el.style.display=v?'':'none';};
-  const menus=state==='grow'||state==='quests';
+  const menus=state==='grow'||state==='quests'||(state==='map'&&!!G&&!!G.sky&&!!G.sky.open);
   show('menu',state!=='title'&&state!=='ending'&&state!=='p2intro'&&state!=='flying'&&state!=='egg');
   show('btnB',(state==='play'&&has('flap'))||(menus&&G&&G.part2));
   show('btnD',(state==='play'||state==='chase')&&!!G&&has('dash'));

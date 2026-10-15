@@ -39,7 +39,7 @@ function updateEnv(){
   if(G.clock>DAY*0.5&&((prev<0.3&&t>=0.3)||(prev<0.8&&t>=0.8)))rollWeather();
   if(prev<0.04&&t>=0.04&&isOutdoor())SFX.crow();
   G.wInt+=((G.weather==='clear'?0:1)-G.wInt)*0.004;
-  const rain=rainAmt(),out=isOutdoor(),n=nightAmt();
+  const rain=skyRain(),out=isOutdoor(),n=nightAmt();
   G.puddle=clamp(G.puddle+(rain>0.5?0.0015:-0.0006),0,1);
   updatePlots();
   const snowy=areaOf()==='mountains';
@@ -67,7 +67,7 @@ const lightC=document.createElement('canvas');lightC.width=W;lightC.height=VH;co
 function drawEnvFX(){
   const out=isOutdoor(),cave=isCave(),n=nightAmt();
   if(out){
-    const wk=G.wInt*({clear:0,cloudy:0.06,rain:0.14,storm:0.24}[G.weather]);
+    const wk=skyRegion()?0:G.wInt*({clear:0,cloudy:0.06,rain:0.14,storm:0.24}[G.weather]);
     if(wk>0.005){ctx.fillStyle='rgba(20,30,60,'+(wk*0.45)+')';
       for(let i=0;i<3;i++){const span=W+200,x=Math.round(((i*170-tick*0.3)%span+span)%span-100),y=HUD+20+i*58;ctx.fillRect(x,y+6,90,22);ctx.fillRect(x+12,y,60,34);}
       ctx.fillStyle='rgba(40,50,90,'+wk+')';ctx.fillRect(0,HUD,W,VH);}
@@ -78,7 +78,7 @@ function drawEnvFX(){
     for(const d of drops){if(d.snow)continue;for(let k=0;k<d.l;k++)ctx.fillRect(Math.round(d.x+k*0.35),Math.round(d.y-k),1,1);}
     ctx.fillStyle='#ffffff';for(const d of drops)if(d.snow)ctx.fillRect(Math.round(d.x),Math.round(d.y),2,2);
   }
-  const dark=cave?0.62:out?n*0.68:n*0.3;
+  const sd=skyDark(),dark=sd!==null?sd:cave?0.62:out?n*0.68:n*0.3;
   if(dark>0.02){
     lctx.globalCompositeOperation='source-over';lctx.clearRect(0,0,W,VH);
     lctx.fillStyle=cave?'rgba(10,4,14,'+dark+')':'rgba(8,8,36,'+dark+')';lctx.fillRect(0,0,W,VH);
@@ -130,6 +130,9 @@ function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
       ctx.fillStyle='#fff';ctx.fillRect(Math.round(hx-R*0.6),Math.round(hy-R*0.5),sc,2*sc);
       ctx.fillStyle=PAL.E;ctx.fillRect(Math.round(hx-sc/2),Math.round(hy-R-6*sc),sc,3*sc);ctx.fillStyle=PAL.r;ctx.fillRect(Math.round(hx-sc),Math.round(hy-R-7*sc),2*sc,2*sc);
       if(dir===0){ctx.fillStyle='#d8dce8';ctx.fillRect(Math.round(hx-R*0.9),Math.round(hy+R+2*sc),Math.round(R*1.8),2*sc);ctx.fillStyle=PAL.u;ctx.fillRect(Math.round(hx-sc),Math.round(hy+R+2*sc),2*sc,2*sc);}break;}
+    case 'quill':case 'bloom':case 'stormcap':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
+    case 'scarf':{const o=O.scarf;ctx.fillStyle='#ff9cd0';ctx.fillRect(Math.round(hx-R*0.8),Math.round(hy+R*0.75),Math.round(R*1.6),2*sc);ctx.fillStyle='#ffd0e6';ctx.fillRect(Math.round(hx-R*0.8),Math.round(hy+R*0.75),Math.round(R*1.6),sc);
+      if(dir!==1){ctx.fillStyle='#ff9cd0';ctx.fillRect(Math.round(hx+(dir===2?R*0.5:-R*0.7)),Math.round(hy+R*0.75),2*sc,4*sc);}break;}
     case 'chef':case 'detective':case 'overalls':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
     case 'goggles':{if(dir===1)break;const ey=y0+Math.floor(hd.y)*sc-sc;
       if(dir===0){const o=O.gogF;D(o,hx-o.width*sc/2,ey);}else{const o=O.gogS,ex=x0+mx(hd.x-hd.r*0.35)*sc;D(o,ex-o.width*sc/2,ey,dir===3);}break;}

@@ -15,12 +15,13 @@ const EXITS=[{x:56,y:76},{x:328,y:76},{x:568,y:76}];
 buildWorld();
 let tiles=MAP.map(r=>r.split(''));
 function tileAt(c,r){if(c<0||r<0||c>=MW||r>=MH)return'F';return tiles[r][c];}
-const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456)\\'.split(''));
+const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456)\\ηθκ'.split(''));
 const FLOORISH=new Set('_:XoP'.split(''));
 function solidTile(ch,forPlayer=true){
   if(ch==='W')return !(forPlayer&&has('flutter'));
   if(ch==='w')return !(forPlayer&&has('swim'));
   if(ch==='z')return !(forPlayer&&has('glide'));
+  if(ch==='γ')return !(forPlayer&&has('cloudwalk'));
   return SOLID.has(ch);
 }
 
@@ -79,6 +80,14 @@ function drawTile(ch,c,r,sx,sy,wf){
     case 'x':img=TILE.dam[wf];break;
     case 'a':img=TILE.roofC;break;
     case '1':img=TILE.brickDoor;break;
+    case 'α':img=TILE.cloud[h%3];break;
+    case 'γ':ctx.drawImage(TILE.openSky,sx,sy);img=TILE.thinCloud;break;
+    case 'ε':img=TILE.windR[Math.floor(tick/6)%4];break;
+    case 'ζ':img=TILE.windL[Math.floor(tick/6)%4];break;
+    case 'η':img=TILE.openSky;break;
+    case 'θ':img=TILE.stormCrystal;break;
+    case 'ι':img=TILE.rainWall[Math.floor(tick/5)%2];break;
+    case 'κ':img=TILE.barrier;break;
     case ')':img=TILE.coral;break;
     case ']':img=TILE.seaweed;break;
     case '<':img=TILE.curL[Math.floor(tick/8)%4];break;

@@ -179,7 +179,7 @@ function makeCityEnts(){
   for(const b of BORROWED)if(!G.collected.has(b.id)&&!G.items[b.item]&&!(G.flags.ret&&G.flags.ret[b.flag]))spawnItem(b.id,b.kind,b.c*16+8,b.r*16+12);
   for(const i of INGREDIENTS)if(!G.collected.has(i.id))spawnItem(i.id,i.kind,i.c*16+8,i.r*16+12);
   const to=roomOrigin('toy');[[4,8],[7,8],[10,8],[5,10],[8,10],[11,10]].forEach(([c,r],i)=>addEnt({type:'hole',id:'ahole'+i,x:to.x+c*16+8,y:to.y+r*16+12,up:0,max:1,arcade:true}));
-  const mo=roomOrigin('museum');EXHIBITS.forEach((x,i)=>addEnt({type:'exhibit',ex:x.id,x:mo.x+[3,6,9,12][i]*16+8,y:mo.y+4*16+13}));
+  const mo=roomOrigin('museum');EXHIBITS.forEach((x,i)=>{const [pc,pr]=[[3,4],[6,4],[9,4],[12,4],[4,10],[11,10]][i];addEnt({type:'exhibit',ex:x.id,x:mo.x+pc*16+8,y:mo.y+pr*16+13});});
   const lo=roomOrigin('library');addEnt({type:'nook',x:lo.x+4*16+8,y:lo.y+9*16+12});
   const ao=roomOrigin('artist');addEnt({type:'easel',x:ao.x+7*16+8,y:ao.y+6*16+14,solid:true,w:14});
   const o=raceOrigin();addEnt({type:'vane',x:(o.c+16+14)*16+8,y:(o.r+4)*16+12,solid:true,w:10});

@@ -179,7 +179,7 @@ function bossWin(){
   ents=ents.filter(e=>!['boss','barrel'].includes(e.type));
   const o=SO.fort;P.x=o[0]*16+60;P.y=o[1]*16+8*16+12;P.inv=60;
   reward(QUESTS.sea_boss.reward,'sea_boss');addSeeds(20,2,0);toast('Squawkbeard dropped his chest: 20 golden seeds!','#ffd83a');SFX.fanfare();save();
-  startRankUp(9,startSeaEnding);
+  finaleRank(9,startSeaEnding);
 }
 function startSeaEnding(){
   PIN={t:0,line:0,shown:0,lines:SEA_END_LINES,sunset:true,after:()=>{const h=SEA_NODES[0].arrive;warpTo(h.x,h.y,0,null,()=>say([{who:'me',text:"Captain of the Seas! And a map of the SKY... I wonder what Elda's egg is up to?"}]));}};

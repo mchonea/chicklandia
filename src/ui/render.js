@@ -46,7 +46,7 @@ function drawWorld(){
   const ocx=camX,ocy=camY;camX=cx;camY=cy;
   for(const e of list){if(e.type==='player')drawPlayer();else drawEnt(e);}
   for(const p of parts){ctx.fillStyle=p.c;ctx.fillRect(Math.round(p.x-camX),Math.round(p.y-camY+HUD),2,2);}
-  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);drawSeaFX(cx,cy);
+  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);drawSeaFX(cx,cy);drawSkyFX(cx,cy);
 }
 function drawPlayer(){
   const st=stage(),sx=Math.round(P.x-camX),sy=Math.round(P.y-camY+HUD);
@@ -65,6 +65,7 @@ function drawPlayer(){
   drawPip(st,P.dir,fr,flap,sx+ox,sy+2-Math.round(P.z)+oy+bob,1);
 }
 function questMarker(e){
+  {const m=skyMarker(e);if(m!==undefined)return m;}
   if(e.id==='nibbles')return G.items.letter?SPR.ques:null;
   if(G.mail&&G.mail[e.id]===1)return SPR.ques;
   const q=QUESTS[e.id];if(!q)return null;const st=G.q[e.id];
@@ -91,6 +92,7 @@ function drawEnt(e){
     case 'fmound':case 'star':case 'flag':case 'vane':case 'cduck':case 'decor':case 'exhibit':case 'easel':case 'nook':drawCityEnt(e,sx,sy);break;
     case 'vpad':case 'vnode':case 'vsheep':case 'vmail':case 'vboard':case 'vwhistle':case 'vcontest':case 'windmill':case 'scarecrow':case 'vsculpt':drawVillageEnt(e,sx,sy);break;
     case 'gullp':case 'jelly':case 'spark':case 'bubbles':case 'swarp':case 'shipdock':case 'xmark':case 'seachest':case 'brazier':case 'boss':case 'barrel':drawSeaEnt(e,sx,sy);break;
+    case 'spad':case 'svent':case 'sport':case 'sgate':case 'gchime':case 'skychest':case 'snest':case 'sbell':case 'scrys':case 'sdragon':drawSkyEnt(e,sx,sy);break;
     case 'worm':{const s=SPR.worm[Math.floor((tick+e.phase)/12)%2];drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'carrot':{const s=SPR.carrot,w=Math.floor((tick+e.x)/40)%2;drawImg(s,sx-(s.width>>1)+w,sy+2-s.height);break;}
     case 'mound':{const s=SPR.mound;drawImg(s,sx-(s.width>>1),sy+2-s.height);if(senseNear(e.x,e.y)&&(e.has==='seed'||e.has==='bone')&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx-1,sy-8,2,2);ctx.fillRect(sx+4,sy-5,1,1);}break;}
@@ -152,7 +154,8 @@ function drawHUD(){
     const cl0=cellAt(),rid=cl0.region.id;
     if(cl0.kind==='water'){txt('DEEP REEF',252,7,5,'#a6e0ff',{align:'right'});ctx.fillStyle='#21142b';ctx.fillRect(168,16,84,8);ctx.fillStyle='#3a70c8';ctx.fillRect(169,17,82,6);const f=(G.air==null?AIR_MAX:G.air)/AIR_MAX;ctx.fillStyle=f>0.25?'#a6e0ff':(Math.floor(tick/6)%2?'#ff8080':'#fff8ec');ctx.fillRect(169,17,Math.round(82*f),6);txt('AIR',208,25,4,'#fff8ec',{align:'center'});return;}
     if(rid==='fortress'&&bossActive()&&BOSS){txt('SQUAWKBEARD',252,7,5,'#ff8080',{align:'right'});for(let i=0;i<BOSS.max;i++){ctx.fillStyle=i<BOSS.hp?'#ff8080':'#4a3a66';ctx.fillRect(252-(BOSS.max-i)*10,17,8,7);}return;}
-    if(rid==='cityin'||rid==='rooftops'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
+    if(rid==='lair'&&skyBossActive()&&SKB){drawSkyBossHUD();return;}
+    if(rid==='cityin'||rid==='rooftops'||rid==='skyin'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
     const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':a==='village'&&G.vil.open?seasonNow().name:'F: FLY',220,18,5,'#ffd83a',{align:'right'});
     // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
     const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor((31-(cs.cols-1))/cs.cols)),h=Math.min(8,Math.floor((27-(cs.rows-1))/cs.rows));
@@ -195,10 +198,10 @@ function drawBubble(){
 function drawGrow(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);
   if(growPage===2){drawJournal();return;}
-  const gcol=growPage===1?'#a6e0ff':growPage===3?'#94dc64':growPage===4?'#46b8c8':'#ffd83a';
+  const gcol=growPage===1?'#a6e0ff':growPage===3?'#94dc64':growPage===4?'#46b8c8':growPage===5?'#ffb8e0':'#ffd83a';
   box(4,4,W-8,H-8,'#241838',gcol);
   const SKILLS=TREE();
-  txt(growPage===1?'SKY TREE':growPage===3?'VILLAGE TREE':growPage===4?'SEA TREE':'GROWTH TREE',W/2,10,9,gcol,{align:'center',shadow:true});
+  txt(growPage===1?'SKY TREE':growPage===3?'VILLAGE TREE':growPage===4?'SEA TREE':growPage===5?'SKY TREE II':'GROWTH TREE',W/2,10,9,gcol,{align:'center',shadow:true});
   txt('X: next page',W/2,22,5,'#8a7ab0',{align:'center'});
   const big=lvlAnim>0?1:0;drawPip(stage(),0,Math.floor(tick/12)%2,lvlAnim>60,28,46,1+big);
   txt(RANKS[G.rank-1].name,48,24,6,'#ffd83a');txt('LV '+level()+'   GROWTH '+G.gp,48,34,5,'#b8a8d8');
@@ -236,7 +239,9 @@ function drawGrow(){
 }
 function drawQuests(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
-  if(questPage===2){drawTrainingPage();return;}
+  if(questPage===2){drawTrainingPage(0);return;}
+  if(questPage===8){drawTrainingPage(6);return;}
+  if(questPage===7){drawSkyPage();return;}
   if(questPage===3){drawCityPage();return;}
   if(questPage===5){drawVillagePage();return;}
   if(questPage===6){drawSeasPage();return;}
@@ -260,16 +265,16 @@ function drawQuests(){
   });
   txt('Seeds found: '+G.sp1+'/'+TOTAL_SEEDS+'   X: next page   Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }
-function drawTrainingPage(){
+function drawTrainingPage(off){off=off||0;
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
   txt('SKILL TRAINING',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
-  Object.keys(TRAIN).forEach((k,i)=>{const t=TRAIN[k],y=25+i*34,st=G.train[k]||0,done=has(k);
+  Object.keys(TRAIN).slice(off,off+6).forEach((k,i)=>{const t=TRAIN[k],y=24+i*31,st=G.train[k]||0,done=has(k);
     const stat=done?'DONE!':st===2?'Learn it! (E)':st===1?trainCount(k)+'/'+t.need:t.avail()?'Talk to '+t.whoName:'locked';
     const col=done?'#94dc64':(st>=1||t.avail())?'#ffd83a':'#8a7ab0';
-    box(10,y,W-20,30,done?'#23402a':'#1d1430',done?'#94dc64':st>=1?'#ff9cd0':'#4a3a66');
+    box(10,y,W-20,28,done?'#23402a':'#1d1430',done?'#94dc64':st>=1?'#ff9cd0':'#4a3a66');
     txt(t.title+' ('+t.skill+')',16,y+5,5,'#fff8ec');txt(stat,W-16,y+5,5,col,{align:'right'});
     const info=done?t.whoName+' taught you!':st===1?trainMsg(k):t.avail()?'Ready! Find '+t.whoName+'.':t.lock;
-    wrapTxt(info,16,y+16,W-34,5,done?'#94dc64':'#b8a8d8');});
+    wrapTxt(info,16,y+14,W-34,5,done?'#94dc64':'#b8a8d8');});
   txt('Pink ! over a friend = training ready    X: next page',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }
 function wrapTxt(s,x,y,w,sz,c){let line='',yy=y;for(const wd of s.split(' ')){const t=line?line+' '+wd:wd;if(measure(t,sz)>w&&line){txt(line,x,yy,sz,c);yy+=8;line=wd;}else line=t;}if(line)txt(line,x,yy,sz,c);}
@@ -331,6 +336,9 @@ function render(){
   else if(state==='voyage')drawVoyage();
   else if(state==='chase')drawChase();
   else if(state==='credits')drawCredits();
+  else if(state==='hatch')drawHatch();
+  else if(state==='naming')drawNaming();
+  else if(state==='flyover')drawFlyover();
   else if(state==='map'){drawWorld();drawEnvFX();drawHUD();TQ=[];drawMap();}
   else{
     drawWorld();drawEnvFX();drawHUD();
@@ -361,14 +369,14 @@ function render(){
 
 let _mmCache=null;
 function MINIMAP_BEYOND(){
-  const sea=seaRegion();if(!_mmCache)_mmCache={};if(_mmCache[sea])return _mmCache[sea];
-  const cells=REGION_LIST.filter(r=>r.beyond&&r.area&&!!r.sea===sea).flatMap(r=>r.cells);
+  const sea=seaRegion()?'sea':skyRegion()?'sky':'ground';if(!_mmCache)_mmCache={};if(_mmCache[sea])return _mmCache[sea];
+  const cells=REGION_LIST.filter(r=>r.beyond&&r.area&&(r.sea?'sea':r.sky?'sky':'ground')===sea).flatMap(r=>r.cells);
   const xs=cells.map(c=>c.sx),ys=cells.map(c=>c.sy),x0=Math.min(...xs),y0=Math.min(...ys);
   return _mmCache[sea]={cells,x0,y0,cols:Math.max(...xs)-x0+1,rows:Math.max(...ys)-y0+1};
 }
 
 // quest-log pages: 0 farm, 1 part 2, 3 city, 2 training, 4 detective notes (only while a Detective Cap is owned)
-function questPages(){const p=[0];if(G.part2)p.push(1,3);if(G.vil.open)p.push(5);if(G.sea.open)p.push(6);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
+function questPages(){const p=[0];if(G.part2)p.push(1,3);if(G.vil.open)p.push(5);if(G.sea.open)p.push(6);if(G.sky.open||G.flags.skyMap)p.push(7);p.push(2,8);if(G.outfits.includes('detective'))p.push(4);return p;}
 function drawCityPage(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
   txt('QUESTS - CITY',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
@@ -410,6 +418,18 @@ function drawVillagePage(){
   txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }
 
+// quest log page for the sky
+function drawSkyPage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffb8e0');
+  txt('QUESTS - SKY KINGDOM',W/2,10,9,'#ffb8e0',{align:'center',shadow:true});
+  ORDER6.forEach((id,i)=>{const y=21+i*15,q=QUESTS[id],st=G.q[id];
+    box(10,y,W-20,13,st===2?'#23402a':'#1d1430',st===2?'#94dc64':(st===1?'#ffd83a':'#4a3a66'));
+    if(st===0){txt('???',16,y+4,5,'#6a5a90');txt(id==='sk_hatch'?'see Elda':id==='sk_boss'?'see Nimbus':'find them up there',W-16,y+4,5,'#6a5a90',{align:'right'});return;}
+    txt(q.title,16,y+4,5,st===2?'#94dc64':'#fff8ec');
+    txt(st===2?'DONE!':q.prog(),W-16,y+4,5,st===2?'#94dc64':(q.check()?'#ffd83a':'#d8c8f8'),{align:'right'});});
+  txt((G.sky.name?'CHICK: '+G.sky.name+'    ':'')+'SKY SKILLS '+SKILLS5.filter(s=>has(s.id)).length+'/4',W/2,H-21,5,'#c49a5c',{align:'center'});
+  txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
+}
 // quest log page for the seas
 function drawSeasPage(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#a6e0ff');

@@ -1,15 +1,15 @@
 'use strict';
 /* ---------------- growth tree ---------------- */
 let growPage=0;
-const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:growPage===4?SKILLS4:SKILLS;
-function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),...(G.sea.open?[4]:[]),2];}
+const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:growPage===4?SKILLS4:growPage===5?SKILLS5:SKILLS;
+function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),...(G.sea.open?[4]:[]),...(G.sky.open?[5]:[]),2];}
 function openGrow(){state='grow';SFX.menu();growMsg=null;growPage=G.part2?1:0;growSel=0;const i=TREE().findIndex(s=>!has(s.id)&&s.req.every(has));if(i>=0)growSel=i;}
 function skillState(s){if(has(s.id))return'learned';if(!s.req.every(has))return'locked';if(TRAIN[s.id]&&G.train[s.id]!==2)return'train';return'open';}
 function updateGrow(){
   if(lvlAnim>0)lvlAnim--;
   if(pressed.grow||pressed.back||pressed.quest){state='play';SFX.menu();return;}
   if(pressed.b){const pg=growPages();growPage=pg[(pg.indexOf(growPage)+1)%pg.length];growSel=0;growMsg=null;SFX.menu();return;}
-  if(growPage===2)return;
+  if(growPage===2){if(pressed.a||pressed.left||pressed.right){jpage^=1;SFX.menu();}return;}
   const SKILLS=TREE();
   const cur=SKILLS[growSel];
   const dirs=[['up',0,-1],['down',0,1],['left',-1,0],['right',1,0]];
@@ -61,9 +61,9 @@ let FAINT_FAR=false;
 function updateFaint(){
   FT++;
   if(FT<=50){fade=FT/50;fadeColor='#000';}
-  if(FT===50){const far=G.part2&&inBeyond(),sn=seaRegion()?SEA_NODES.find(n=>n.id===curNode()&&n.id!=='harbor'):null,sp=sn?sn.arrive:far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
+  if(FT===50){const far=G.part2&&inBeyond(),sn=seaRegion()?SEA_NODES.find(n=>n.id===curNode()&&n.id!=='harbor'):null,sp=skyRegion()?skpA(SKY_NODES.skycity.at):sn?sn.arrive:far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
     P=newPlayer(sp.x,sp.y);CS={x:Math.floor(sp.x/256),y:Math.floor(sp.y/192)};camX=CS.x*256;camY=CS.y*192;G.hearts=maxHearts();resetEnemies();TRAIL=[];FAINT_FAR=far;
-    for(const d of ents)if(d.type==='duckling'&&d.mode==='follow'){d.x=P.x;d.y=P.y;}}
+    for(const d of ents)if((d.type==='duckling'&&d.mode==='follow')||d.follow){d.x=P.x;d.y=P.y;}}
   if(FT>50)fade=Math.max(0,1-(FT-50)/50);
   if(FT>=100){state='play';const m=ents.find(e=>e.id==='mom');
     if(!FAINT_FAR&&m&&onCur(m))say([{who:m,text:"Oh my! You came home all tuckered out, sweet pea. Rest up... there, all better!"}]);
