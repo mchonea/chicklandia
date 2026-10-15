@@ -46,7 +46,7 @@ function drawWorld(){
   const ocx=camX,ocy=camY;camX=cx;camY=cy;
   for(const e of list){if(e.type==='player')drawPlayer();else drawEnt(e);}
   for(const p of parts){ctx.fillStyle=p.c;ctx.fillRect(Math.round(p.x-camX),Math.round(p.y-camY+HUD),2,2);}
-  camX=ocx;camY=ocy;
+  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);
 }
 function drawPlayer(){
   const st=stage(),sx=Math.round(P.x-camX),sy=Math.round(P.y-camY+HUD);
@@ -89,6 +89,7 @@ function drawEnt(e){
       ctx.fillStyle='#e8c88a';ctx.fillRect(sx-3,sy-7,2,2);ctx.fillRect(sx,sy-8,2,2);ctx.fillRect(sx+2,sy-7,2,2);ctx.fillRect(sx-4,sy-6,2,1);
       if(tick%90<8){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-9,1,1);}break;}
     case 'fmound':case 'star':case 'flag':case 'vane':case 'cduck':case 'decor':case 'exhibit':case 'easel':case 'nook':drawCityEnt(e,sx,sy);break;
+    case 'vpad':case 'vnode':case 'vsheep':case 'vmail':case 'vboard':case 'vwhistle':case 'vcontest':case 'windmill':case 'scarecrow':case 'vsculpt':drawVillageEnt(e,sx,sy);break;
     case 'worm':{const s=SPR.worm[Math.floor((tick+e.phase)/12)%2];drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'carrot':{const s=SPR.carrot,w=Math.floor((tick+e.x)/40)%2;drawImg(s,sx-(s.width>>1)+w,sy+2-s.height);break;}
     case 'mound':{const s=SPR.mound;drawImg(s,sx-(s.width>>1),sy+2-s.height);if(senseNear(e.x,e.y)&&(e.has==='seed'||e.has==='bone')&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx-1,sy-8,2,2);ctx.fillRect(sx+4,sy-5,1,1);}break;}
@@ -149,7 +150,7 @@ function drawHUD(){
   if(inBeyond()){
     const cl0=cellAt(),rid=cl0.region.id;
     if(rid==='cityin'||rid==='rooftops'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
-    const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':'F: FLY',220,18,5,'#ffd83a',{align:'right'});
+    const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':a==='village'&&G.vil.open?seasonNow().name:'F: FLY',220,18,5,'#ffd83a',{align:'right'});
     // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
     const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor((31-(cs.cols-1))/cs.cols)),h=Math.min(8,Math.floor((27-(cs.rows-1))/cs.rows));
     for(const c of cs.cells){const cur=CS.x===c.sx&&CS.y===c.sy,vis=G.visited.has(c.sx+','+c.sy);
@@ -191,9 +192,10 @@ function drawBubble(){
 function drawGrow(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);
   if(growPage===2){drawJournal();return;}
-  box(4,4,W-8,H-8,'#241838',growPage?'#a6e0ff':'#ffd83a');
+  const gcol=growPage===1?'#a6e0ff':growPage===3?'#94dc64':'#ffd83a';
+  box(4,4,W-8,H-8,'#241838',gcol);
   const SKILLS=TREE();
-  txt(growPage?'SKY TREE':'GROWTH TREE',W/2,10,9,growPage?'#a6e0ff':'#ffd83a',{align:'center',shadow:true});
+  txt(growPage===1?'SKY TREE':growPage===3?'VILLAGE TREE':'GROWTH TREE',W/2,10,9,gcol,{align:'center',shadow:true});
   txt('X: next page',W/2,22,5,'#8a7ab0',{align:'center'});
   const big=lvlAnim>0?1:0;drawPip(stage(),0,Math.floor(tick/12)%2,lvlAnim>60,28,46,1+big);
   txt(RANKS[G.rank-1].name,48,24,6,'#ffd83a');txt('LV '+level()+'   GROWTH '+G.gp,48,34,5,'#b8a8d8');
@@ -233,6 +235,7 @@ function drawQuests(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
   if(questPage===2){drawTrainingPage();return;}
   if(questPage===3){drawCityPage();return;}
+  if(questPage===5){drawVillagePage();return;}
   if(questPage===4){drawSleuthPage();return;}
   txt(questPage===1?'QUESTS - PART 2':'QUESTS',W/2,12,9,'#ffd83a',{align:'center',shadow:true});
   if(questPage){
@@ -319,6 +322,7 @@ function render(){
   else if(state==='flying')drawFlying();
   else if(state==='p2intro')drawP2Intro();
   else if(state==='festival')drawFestival();
+  else if(state==='pinch')drawPinch();
   else if(state==='credits')drawCredits();
   else if(state==='map'){drawWorld();drawEnvFX();drawHUD();TQ=[];drawMap();}
   else{
@@ -357,7 +361,7 @@ function MINIMAP_BEYOND(){
 }
 
 // quest-log pages: 0 farm, 1 part 2, 3 city, 2 training, 4 detective notes (only while a Detective Cap is owned)
-function questPages(){const p=[0];if(G.part2)p.push(1,3);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
+function questPages(){const p=[0];if(G.part2)p.push(1,3);if(G.vil.open)p.push(5);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
 function drawCityPage(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
   txt('QUESTS - CITY',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
@@ -382,5 +386,19 @@ function drawSleuthPage(){
   ids.slice(0,9).forEach((id,i)=>{const y=24+i*20;box(10,y,W-20,18,'#1d1430','#4a3a66');
     txt(QUESTS[id].title,16,y+3,5,'#fff8ec');txt(QUESTS[id].prog(),W-16,y+3,5,QUESTS[id].check()?'#ffd83a':'#d8c8f8',{align:'right'});
     txt(questLoc(QUEST_GIVER[id]&&G.q[id]===1&&false?QUEST_GIVER[id]:id),16,y+11,5,'#94dc64');});
+  txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
+}
+
+function drawVillagePage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#94dc64');
+  txt('QUESTS - VILLAGE',W/2,10,9,'#94dc64',{align:'center',shadow:true});
+  ORDER4.forEach((id,i)=>{const y=21+i*15,q=QUESTS[id],st=G.q[id];
+    box(10,y,W-20,13,st===2?'#23402a':'#1d1430',st===2?'#94dc64':(st===1?'#ffd83a':'#4a3a66'));
+    if(st===0){txt('???',16,y+4,5,'#6a5a90');txt(id==='vfound'?'see Bucky':id==='vharvest'?'later':'build for them',W-16,y+4,5,'#6a5a90',{align:'right'});return;}
+    txt(q.title,16,y+4,5,st===2?'#94dc64':'#fff8ec');
+    txt(st===2?'DONE!':q.prog(),W-16,y+4,5,st===2?'#94dc64':(q.check()?'#ffd83a':'#d8c8f8'),{align:'right'});});
+  const s=seasonNow();
+  txt('HAPPY '+happiness()+'/'+FINALE_HAPPY+'   '+s.name+' ('+daysToNextSeason()+'d)',W/2,H-30,5,'#ffd83a',{align:'center'});
+  txt(matsLine(),W/2,H-21,5,'#c49a5c',{align:'center'});
   txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }

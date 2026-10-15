@@ -39,5 +39,7 @@ const CHARACTERS=[
   {id:'sheldon',name:'CURATOR SHELDON',spr:'curator',c:120,r:78,voice:210,w:16},
   {id:'pablo',name:'PABLO PEACOCK',spr:'peacock',c:137,r:66,voice:700,w:12},
   {id:'waddles',name:'MRS. WADDLES',spr:'duck',c:152,r:65,voice:780,w:14},
+  {id:'barnaby',name:'FOREMAN BARNABY',spr:'beaver',c:38,r:89,voice:520,w:12},
+  {id:'dash',name:'DASH',spr:'dog',c:56,r:101,voice:340,w:14},
   {id:'nibbles2',name:'NIBBLES',spr:'chef',c:123,r:53,voice:1100,w:10},
 ];

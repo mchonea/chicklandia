@@ -1,13 +1,14 @@
 'use strict';
 /* ---------------- growth tree ---------------- */
 let growPage=0;
-const TREE=()=>growPage===1?SKILLS2:SKILLS;
+const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:SKILLS;
+function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),2];}
 function openGrow(){state='grow';SFX.menu();growMsg=null;growPage=G.part2?1:0;growSel=0;const i=TREE().findIndex(s=>!has(s.id)&&s.req.every(has));if(i>=0)growSel=i;}
 function skillState(s){if(has(s.id))return'learned';if(!s.req.every(has))return'locked';if(TRAIN[s.id]&&G.train[s.id]!==2)return'train';return'open';}
 function updateGrow(){
   if(lvlAnim>0)lvlAnim--;
   if(pressed.grow||pressed.back||pressed.quest){state='play';SFX.menu();return;}
-  if(pressed.b){const pg=G.part2?[0,1,2]:[0,2];growPage=pg[(pg.indexOf(growPage)+1)%pg.length];growSel=0;growMsg=null;SFX.menu();return;}
+  if(pressed.b){const pg=growPages();growPage=pg[(pg.indexOf(growPage)+1)%pg.length];growSel=0;growMsg=null;SFX.menu();return;}
   if(growPage===2)return;
   const SKILLS=TREE();
   const cur=SKILLS[growSel];

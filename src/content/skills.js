@@ -17,3 +17,10 @@ const SKILLS2=[
   {id:'golden',name:'GOLDEN WINGS',cost:8,req:['swim','super'],x:204,y:96,desc:'Shimmering golden wings! +1 heart and even faster feet.',learn:'+1 heart and speed! So shiny!'}
 ];
 const STAGE_NAMES=['TEENY PEEP','LITTLE CHICK','GROWING CHICK','BIG CHICK','ALMOST A CHICKEN'];
+
+// Village Tree: whistle and master are taught by trainers (see trainers.js)
+const SKILLS3=[
+  {id:'carry',name:'CARRY',cost:5,req:[],x:44,y:96,desc:'Lift heavy stone and big loads. You need it for stone at the riverside!',learn:'You can carry heavy stone!'},
+  {id:'whistle',name:'WHISTLE',cost:6,req:['carry'],x:112,y:62,desc:'Whistle at the village whistle post for a helper to bring wool or wood. Taught by Dash.',learn:'Whistle for helpers at the post!'},
+  {id:'green',name:'GREEN WINGS',cost:6,req:['carry'],x:112,y:130,desc:'Flap over crop rows to water them and make them grow faster!',learn:'Flap over crops to water them!'},
+  {id:'master',name:'MASTER BUILDER',cost:8,req:['whistle','green'],x:196,y:96,desc:'Buildings go up twice as fast and need less wood. Taught by Foreman Barnaby.',learn:'Buildings finish twice as fast!'}];

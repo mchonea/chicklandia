@@ -125,6 +125,7 @@ TILE.stackCrate=mk(16,16,x=>{x.drawImage(TILE.cobble,0,0);P_(x,'k',1,5,14,10);P_
 TILE.roofWalk=mk(16,16,x=>{P_(x,'#d8805c',0,0,16,16);for(let j=0;j<16;j+=4){P_(x,'#b85c3c',0,j+3,16,1);for(let i=((j/4)%2)*4;i<16;i+=8)P_(x,'#b85c3c',i,j,1,3);}P_(x,'#f0a080',0,0,16,1);});
 TILE.shelf=mk(16,16,x=>{P_(x,'B',0,0,16,16);P_(x,'k',0,0,16,1);P_(x,'k',0,7,16,1);P_(x,'k',0,15,16,1);const cs=['r','u','y','g','p','o'];for(let i=0;i<6;i++){P_(x,cs[i],1+i*2+(i>2?1:0),1,2,6);P_(x,cs[(i+2)%6],1+i*2+(i>2?1:0),8,2,7);}});
 TILE.pedestal=mk(16,16,x=>{x.drawImage(TILE.floor,0,0);P_(x,'k',2,7,12,9);P_(x,'e',3,8,10,7);P_(x,'E',3,13,10,2);P_(x,'k',3,1,10,7);P_(x,'c',4,2,8,5);P_(x,'w',5,2,1,2);});
+TILE.pad=mk(16,16,x=>{x.drawImage(TILE.dirt,0,0);P_(x,'B',0,0,2,2);P_(x,'B',14,0,2,2);P_(x,'B',0,14,2,2);P_(x,'B',14,14,2,2);P_(x,'T',3,3,10,1);P_(x,'T',3,12,10,1);});
 function groundFor(c,r,h){
   switch(groundOf(c,r)){
     case 'snow':return TILE.snow[h%2];

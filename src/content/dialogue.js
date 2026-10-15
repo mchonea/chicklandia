@@ -84,3 +84,15 @@ Object.assign(TALK,{
     if(regionAt().id!=='cityin')return false;
     ask("Coo! Postmaster Pidge here. Looking for a delivery job?",['Job board','Chat'],i=>{if(i===0)openCatalog('post');else{e.chatNow=true;talkTo(e);}});}
 });
+
+// ---- the village ----
+Object.assign(TALK,{
+  barnaby:(e,{it,me,ask})=>{
+    if(!G.vil.open)return false;
+    if(!G.flags.village&&RESIDENTS.every(r=>G.vil.res[r.id])&&happiness()>=FINALE_HAPPY){
+      it("Pip! Every friend is home and the whole village is smiling!");it("It's time for the GRAND HARVEST FESTIVAL!");
+      ask('Start the festival?',['Yes!','Not yet'],i=>{if(i===0)startFestival('harvest');});return;}
+    if(trainTalk(e,it))return;
+    it(G.flags.village?"The village is the pride of Chicklandia, Pip! And you built it.":"I'm Foreman Barnaby. I run the building site. Pads in the square, wood and stone at the riverside. Happy building!");},
+  dash:(e,{it})=>{if(!G.vil.open)return false;if(trainTalk(e,it))return;it(G.flags.village?"Woof! Everything's peaceful. Even the sheep have a schedule now.":"Woof! I herd the sheep. Pebbles make great whistles, you know!");}
+});

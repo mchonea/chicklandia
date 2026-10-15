@@ -35,6 +35,6 @@ SPR.easel=makeSprite(['.bbbbbbb.','bwwwwwwwb','bwwwwwwwb','bwwwwwwwb','bwwwwwwwb
 SPR.flag=makeSprite(['kkkkkk','krkwwk','kwkrwk','krkwrk','k.....','k.....','k.....','k.....']);
 SPR.book=makeSprite(['.rrrrr','rwwwwr','rwkkwr','rwwwwr','.rrrrr']);
 SPR.plant0=SPR.plant[2];
-Object.assign(OUTFIT_SPR,{chef:makeSprite(['..www..','.wwwww.','wwwwwww','wwwwwww','.wwwww.','kkkkkkk']),detective:makeSprite(['..tttt..','.tTTTTt.','tTtTtTtt','TTTTTTTT','kkkkkkkk']),
+Object.assign(OUTFIT_SPR,{overalls:makeSprite(['..uuuu..','.uuuuuu.','uuuuuuuu','kkkkkkkk']),chef:makeSprite(['..www..','.wwwww.','wwwwwww','wwwwwww','.wwwww.','kkkkkkk']),detective:makeSprite(['..tttt..','.tTTTTt.','tTtTtTtt','TTTTTTTT','kkkkkkkk']),
   gogF:makeSprite(['uuuuuuuu','uccuucu','.uu..uu.'],false),gogS:makeSprite(['uuuu','ucuu','.uu.'],false)});
-const WEAR_ICON_EXTRA={chef:OUTFIT_SPR.chef,detective:OUTFIT_SPR.detective,goggles:OUTFIT_SPR.gogF};
+const WEAR_ICON_EXTRA={overalls:OUTFIT_SPR.overalls,chef:OUTFIT_SPR.chef,detective:OUTFIT_SPR.detective,goggles:OUTFIT_SPR.gogF};

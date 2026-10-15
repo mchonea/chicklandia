@@ -29,6 +29,7 @@ function pickTrack(){
   if(state==='map'||state==='flying'||state==='p2intro')return'grove';
   {const c=cellAt();if(c){if(c.kind==='grove')return'grove';if(c.kind==='cave')return'cave';if(c.kind==='indoor')return'indoor';}}
   if(nightAmt()>0.45)return'night';
+  {const rm=regionAt();if(rm&&rm.music)return rm.music;}
   {const a=areaOf();if(a&&a!=='farm')return a;}
   if(CS.x===0&&CS.y===1)return'pond';
   return'farm';
@@ -114,7 +115,7 @@ function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
   if(G&&G.rank>=10&&st>=6&&wear!==undefined&&G.wear===wear){ctx.fillStyle='rgba(255,216,58,0.22)';ctx.beginPath();ctx.arc(x0+w*sc/2,y0+h*sc/2,w*sc*0.8,0,7);ctx.fill();}
   ctx.drawImage(spr,x0,y0,w*sc,h*sc);
   if(G&&st>=6&&G.rank>=8&&G.wear===wear)rankFlair(x0,y0,w,h,sc,dir);
-  const O=OUTFIT_SPR,HAT={straw:5,pirate:5,astronaut:8,chef:6,detective:4},lift=(acc&&wear&&HAT[wear]||0)*sc;
+  const O=OUTFIT_SPR,HAT={straw:5,pirate:5,astronaut:8,chef:6,detective:4,overalls:4},lift=(acc&&wear&&HAT[wear]||0)*sc;
   const wearItem=(wear,lift)=>{switch(wear){
     case 'straw':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
     case 'pirate':{const o=O.pirate;D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);
@@ -129,7 +130,7 @@ function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
       ctx.fillStyle='#fff';ctx.fillRect(Math.round(hx-R*0.6),Math.round(hy-R*0.5),sc,2*sc);
       ctx.fillStyle=PAL.E;ctx.fillRect(Math.round(hx-sc/2),Math.round(hy-R-6*sc),sc,3*sc);ctx.fillStyle=PAL.r;ctx.fillRect(Math.round(hx-sc),Math.round(hy-R-7*sc),2*sc,2*sc);
       if(dir===0){ctx.fillStyle='#d8dce8';ctx.fillRect(Math.round(hx-R*0.9),Math.round(hy+R+2*sc),Math.round(R*1.8),2*sc);ctx.fillStyle=PAL.u;ctx.fillRect(Math.round(hx-sc),Math.round(hy+R+2*sc),2*sc,2*sc);}break;}
-    case 'chef':case 'detective':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
+    case 'chef':case 'detective':case 'overalls':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
     case 'goggles':{if(dir===1)break;const ey=y0+Math.floor(hd.y)*sc-sc;
       if(dir===0){const o=O.gogF;D(o,hx-o.width*sc/2,ey);}else{const o=O.gogS,ex=x0+mx(hd.x-hd.r*0.35)*sc;D(o,ex-o.width*sc/2,ey,dir===3);}break;}
     case 'crown':case 'ears':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+2*sc-lift);break;}
@@ -201,12 +202,12 @@ function updateMG(){
 }
 function endMG(){
   const m=MG;MG=null;for(const e of ents){if(e.type==='hole')e.up=0;if(e.type==='ffly')e.dead=true;}
-  const win=m.score>=m.goal,key=m.type,prize=key==='bonk'?'ears':'pirate',npc=ents.find(n=>n.id===m.npc);
+  const win=m.score>=m.goal;if(win&&m.contest)contestWin();const key=m.type,prize=key==='bonk'?'ears':'pirate',npc=ents.find(n=>n.id===m.npc);
   G.best[key]=Math.max(G.best[key],m.score);const L=[];
   if(win){SFX.questDone();
     minigameGP(key,true);
     if(!G.outfits.includes(prize)){grantOutfit(prize);
-      L.push({who:npc,text:m.npc==='fizz'?"You won with "+m.score+" points! Take the prize, it's yours!":key==='bonk'?"WOW! You bonked "+m.score+" carrots! You win my spare BUNNY EARS!":"Hoo-hoo! Splendid! "+m.score+" fireflies! A pirate captain left this PIRATE OUTFIT in my tree long ago. It's yours! Arr!",
+      L.push({who:npc,text:(m.npc==='fizz'||m.contest)?"You won with "+m.score+" points! Take the prize, it's yours!":key==='bonk'?"WOW! You bonked "+m.score+" carrots! You win my spare BUNNY EARS!":"Hoo-hoo! Splendid! "+m.score+" fireflies! A pirate captain left this PIRATE OUTFIT in my tree long ago. It's yours! Arr!",
         fx:()=>toast('Got the '+(prize==='ears'?'BUNNY EARS':'PIRATE OUTFIT')+'! Press C to wear.')});}
     else L.push({who:npc,text:"You won again! Score: "+m.score+". Best: "+G.best[key]+"!"});}
   else{SFX.deny();L.push({who:npc,text:(key==='bonk'?"Time's up! You got ":"The moon is setting! You caught ")+m.score+". Talk to me to try again!"});}
@@ -232,7 +233,7 @@ function updateEgg(){
   if(e.score>=20){e.over=1;e.win=true;SFX.questDone();}else if(e.miss>=5){e.over=1;SFX.deny();}
 }
 function endEgg(){
-  const e=EG;EG=null;state='play';const penny=ents.find(n=>n.id===e.host),L=[];G.best.egg=Math.max(G.best.egg,e.score);
+  const e=EG;EG=null;state='play';const penny=ents.find(n=>n.id===e.host),L=[];if(e.contest&&e.win)contestWin();G.best.egg=Math.max(G.best.egg,e.score);
   if(e.win){minigameGP('egg',true);if(!G.outfits.includes('bow')){grantOutfit('bow');
       L.push({who:penny,text:"WOW! "+e.score+" eggs! You're amazing, Pip! Here, take my spare PINK BOW!",fx:()=>{toast('Got the PINK BOW! Press C to wear.');SFX.quest();}});}
     else L.push({who:penny,text:"You did it again! "+e.score+" eggs. Egg-cellent!"});}

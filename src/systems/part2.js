@@ -11,12 +11,13 @@ function hint2(){
   for(const id of ORDER2){if(G.q[id]===1)return QUESTS[id].hint();}
   for(const id of ORDER3){if(G.q[id]===1&&QUESTS[id].check())return "Go tell "+NAMES[QUEST_GIVER[id]||id]+" the good news!";}
   for(const id of ORDER3){if(G.q[id]===1)return QUESTS[id].hint();}
+  {const vh=villageHint();if(vh)return vh;}
   if(G.coop&&G.coop.lv<4)return "Upgrade your coop! Read the sign next to it.";
   if(!G.flags.festival)return festivalReady()?"Talk to Granny Shell in the forest: it's time for the festival!":"Almost there! Keep growing: the city has shops and homes to explore, and garden harvests and the snack bowl help too.";
   return "Your Dream Coop is finished! What a journey, little one.";
 }
 function areaOf(cs=CS){const r=regionAt(cs);return r?r.area:null;}
-const AREA_LABEL={farm:'FARM',forest:'FOREST',mountains:'MOUNTAINS',city:'CITY',beach:'BEACH',coop:'MY COOP'};
+const AREA_LABEL={farm:'FARM',forest:'FOREST',mountains:'MOUNTAINS',city:'CITY',beach:'BEACH',coop:'MY COOP',village:'VILLAGE'};
 function noteArea(){const a=areaOf();if(a&&a!=='coop'&&!G.areas.includes(a)){G.areas.push(a);if(G.part2)toast('Discovered the '+AREA_LABEL[a]+'!','#94dc64');}}
 
 /* ---- skill trainers: some skills need a special lesson before you can buy them ---- */
@@ -93,7 +94,7 @@ const GROW=5400;
 function plotRate(e){const st=G.plots[e.id],kind=SEED_TYPES[(st&&st.k)||'plain'];
   if(kind.night&&nightAmt()<0.5)return 0;
   let r=wearing('straw')?1.5:1;if(e.coop&&G.coop){if(G.coop.lv>=4)r=2;else if(G.coop.lv>=3)r=1.5;}
-  if(buffActive('bun'))r*=1.25;if(rainAmt()>0.5)r*=2;return r*kind.grow;}
+  if(buffActive('bun'))r*=1.25;if(rainAmt()>0.5)r*=2;if(!e.coop&&G.vil.open)r*=seasonPlotMul();return r*kind.grow;}
 function updatePlots(){for(const e of ents)if(e.type==='plot'){const s=G.plots[e.id];if(s&&s.p<1)s.p=Math.min(1,s.p+plotRate(e)/GROW);}}
 function usePlot(e){
   if(!G.thumb){say([{who:'me',text:"This soil looks so soft... Maybe Granny Shell knows how to grow things?"}]);return;}
@@ -103,6 +104,7 @@ function usePlot(e){
   const kd=SEED_TYPES[s.k||'plain'];
   if(s.p<1){float(e.x,e.y-16,(kd.night&&nightAmt()<0.5?'Sleeping until night... ':'Growing... ')+Math.floor(s.p*100)+'%','#94dc64');SFX.menu();return;}
   const yield_=kd.yield+(G.rank>=6?1:0);if(kd.petal){G.hold.petal++;toast('A rare MOON PETAL! Take it to the museum.','#e8a0d0');}
+  if(kd.pumpkin){tasteFood('pumpkin');const wt=pumpkinWeigh(s);toast('Your pumpkin weighs '+wt+' pounds!','#f37d22');if(wt>=24&&seasonNow().name==='AUTUMN')contestWin();else if(wt<24)toast('Judges want 24. Water it with Green Wings next time!','#b8a8d8');}
   delete G.plots[e.id];addSeeds(yield_,2,0);G.harvests++;gainGP(GP.harvest);SFX.seed();puff(e.x,e.y-10,10,['#ffd83a','#fff8ec'],1.2,0.05);float(e.x,e.y-18,'+'+yield_+' SEEDS!','#ffd83a');save();
 }
 /* ---- followers (fawn & baby turtles) ---- */
@@ -127,10 +129,10 @@ function freeMo(){
 }
 /* ---- fly map ---- */
 const DEST={farm:{x:584,y:283,mx:40,my:110,icon:'door'},forest:{x:136,y:1067,mx:128,my:110,icon:'oak'},mountains:{x:136,y:923,mx:128,my:62,icon:'pine'},
-  city:{x:600,y:1051,mx:214,my:110,icon:'brickWin'},beach:{x:136,y:1179,mx:128,my:158,icon:'palm'},coop:{mx:0,my:0,icon:'cdoor'}};
+  city:{x:600,y:1051,mx:214,my:110,icon:'brickWin'},village:{x:648,y:1436,mx:214,my:158,icon:'hay'},beach:{x:136,y:1179,mx:128,my:158,icon:'palm'},coop:{mx:0,my:0,icon:'cdoor'}};
 let mapSel='forest',FLY=null;
 function destOf(k){if(k==='coop'){const S=SITES[G.coop.site],a=DEST[G.coop.site];return Object.assign({},coopExit(),{mx:a.mx+26,my:a.my+18,icon:'cdoor'});}return DEST[k];}
-function mapNodes(){const ks=['farm','forest','mountains','city','beach'].filter(k=>G.areas.includes(k)||k==='farm'||k==='forest');if(G.coop)ks.push('coop');return ks;}
+function mapNodes(){const ks=['farm','forest','mountains','city','beach','village'].filter(k=>(G.areas.includes(k)&&(k!=='village'||G.vil.open))||k==='farm'||k==='forest');if(G.coop)ks.push('coop');return ks;}
 function openMap(){
   if(!G.part2)return;
   const k=CS.x+','+CS.y;if(!WALK.has(k)){toast('Go outside to fly!','#a6e0ff');return;}
@@ -155,8 +157,9 @@ function drawMap(){
   txt('WHERE TO, PIP?',W/2,14,8,'#5e3a1c',{align:'center'});
   const nodes=mapNodes(),line=(a,b)=>{const A=destOf(a),B=destOf(b);ctx.fillStyle='#c49a5c';
     const n=Math.max(Math.abs(B.mx-A.mx),Math.abs(B.my-A.my))/4;for(let i=0;i<=n;i++){if(i%2)continue;ctx.fillRect(Math.round(lerp(A.mx,B.mx,i/n))-1,Math.round(lerp(A.my,B.my,i/n))-1,2,2);}};
-  ['farm','mountains','city','beach'].forEach(k=>line('forest',k));
-  for(const k of ['farm','forest','mountains','city','beach','coop']){
+  ['farm','mountains','city','beach'].forEach(k=>line('forest',k));if(G.vil.open)line('city','village');
+  for(const k of ['farm','forest','mountains','city','beach','village','coop']){
+    if(k==='village'&&!G.vil.open)continue;
     if(k==='coop'&&!G.coop)continue;const d=destOf(k),open=nodes.includes(k),sel=k===mapSel;
     if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(d.mx-15,d.my-15,30,30);}
     box(d.mx-13,d.my-13,26,26,open?'#fff8ec':'#c8b080',open?'#5e3a1c':'#9a8060');

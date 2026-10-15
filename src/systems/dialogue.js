@@ -31,8 +31,8 @@ function talkTo(e){
   }
   const ask=(t,choices,cb)=>L.push({who:e,text:t,choices,cb});
   const spec=TALK[e.id];if(spec&&spec(e,{it,me,ask})!==false){say(L);return;}
-  if(trainTalk(e,it)){say(L);return;}
-  let qid=QUEST_OF[e.id]||e.id;if(FOLLOWUP[e.id]&&G.q[e.id]===2&&G.q[FOLLOWUP[e.id]]!==2)qid=FOLLOWUP[e.id];
+  let qid=QUEST_OF[e.id]||e.id;const base=qid;if(FOLLOWUP[e.id]&&G.q[e.id]===2&&G.q[FOLLOWUP[e.id]]!==2&&(!FOLLOW_GATE[e.id]||FOLLOW_GATE[e.id]()))qid=FOLLOWUP[e.id];
+  if(qid===base&&trainTalk(e,it)){say(L);return;}
   const q=QUESTS[qid];if(!q)return;
   const pushLine=l=>typeof l==='string'?it(l):(l.me?me(l.me):it(l.t,l.fx));
   const doneLines=()=>{q.done.forEach((l,i)=>it(l,i===q.done.length-1?()=>{if(q.onDone)q.onDone();reward(q.reward,qid);}:null));(q.post||[]).forEach(pushLine);};

@@ -31,7 +31,7 @@ function room(ops=[],floor='_'){
 function buildWorld(){
   let maxX=0,maxY=0;
   for(const r of REGION_LIST){
-    r.area=AREA_IDS.includes(r.id)?r.id:null;r.cells=[];
+    r.area=r.area||(AREA_IDS.includes(r.id)?r.id:null);r.cells=[];
     for(let gy=0;gy<r.grid[1];gy++)for(let gx=0;gx<r.grid[0];gx++){
       const i=gy*r.grid[0]+gx,cx=r.origin[0]+gx,cy=r.origin[1]+gy;
       if(CELL[cx+','+cy])console.warn('region overlap at',cx,cy,r.id);

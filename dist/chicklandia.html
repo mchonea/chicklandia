@@ -254,6 +254,7 @@ TILE.stackCrate=mk(16,16,x=>{x.drawImage(TILE.cobble,0,0);P_(x,'k',1,5,14,10);P_
 TILE.roofWalk=mk(16,16,x=>{P_(x,'#d8805c',0,0,16,16);for(let j=0;j<16;j+=4){P_(x,'#b85c3c',0,j+3,16,1);for(let i=((j/4)%2)*4;i<16;i+=8)P_(x,'#b85c3c',i,j,1,3);}P_(x,'#f0a080',0,0,16,1);});
 TILE.shelf=mk(16,16,x=>{P_(x,'B',0,0,16,16);P_(x,'k',0,0,16,1);P_(x,'k',0,7,16,1);P_(x,'k',0,15,16,1);const cs=['r','u','y','g','p','o'];for(let i=0;i<6;i++){P_(x,cs[i],1+i*2+(i>2?1:0),1,2,6);P_(x,cs[(i+2)%6],1+i*2+(i>2?1:0),8,2,7);}});
 TILE.pedestal=mk(16,16,x=>{x.drawImage(TILE.floor,0,0);P_(x,'k',2,7,12,9);P_(x,'e',3,8,10,7);P_(x,'E',3,13,10,2);P_(x,'k',3,1,10,7);P_(x,'c',4,2,8,5);P_(x,'w',5,2,1,2);});
+TILE.pad=mk(16,16,x=>{x.drawImage(TILE.dirt,0,0);P_(x,'B',0,0,2,2);P_(x,'B',14,0,2,2);P_(x,'B',0,14,2,2);P_(x,'B',14,14,2,2);P_(x,'T',3,3,10,1);P_(x,'T',3,12,10,1);});
 function groundFor(c,r,h){
   switch(groundOf(c,r)){
     case 'snow':return TILE.snow[h%2];
@@ -298,7 +299,7 @@ function room(ops=[],floor='_'){
 function buildWorld(){
   let maxX=0,maxY=0;
   for(const r of REGION_LIST){
-    r.area=AREA_IDS.includes(r.id)?r.id:null;r.cells=[];
+    r.area=r.area||(AREA_IDS.includes(r.id)?r.id:null);r.cells=[];
     for(let gy=0;gy<r.grid[1];gy++)for(let gx=0;gx<r.grid[0];gx++){
       const i=gy*r.grid[0]+gx,cx=r.origin[0]+gx,cy=r.origin[1]+gy;
       if(CELL[cx+','+cy])console.warn('region overlap at',cx,cy,r.id);
@@ -733,6 +734,30 @@ defineRegion({id:'rooftops',name:'ROOFTOPS',kind:'outdoor',origin:[5,7],grid:[3,
  grid('z',[['r',0,3,6,8,'8'],['r',3,3,3,8,'h'],['r',10,3,15,8,'8'],['r',12,3,12,8,'h']]),
  grid('z',[['r',0,3,5,8,'8'],['r',9,2,14,9,'8']])]});
 
+/* ===== src/regions/village.js ===== */
+/* regions: Chicklandia Village (4 areas, 8 screens), south of the city market.
+     Windmill Hill (0,7)(1,7) | Village Square (2,7)(3,7)
+     Riverside     (0,8)(1,8) | Meadow Farmlands (2,8)(3,8)
+   7 building pad   V tilled soil   A apple tree   F fence   W river (flutter crosses it)   3 plank bridge / stage   m mud (clay)
+   The road from the city market is closed until Bucky shows Pip the meadow (see content/village.js). */
+const VEG=[['p',3,1,','],['p',12,9,','],['p',2,9,','],['p',13,2,',']];
+defineRegion({id:'vhill',name:'WINDMILL HILL',kind:'outdoor',origin:[0,7],grid:[2,1],ground:'grass',beyond:true,area:'village',music:'farm',
+ screens:[
+  grid('T',[['r',1,1,14,10,'.'],['r',1,5,15,6,'='],['r',4,5,5,11,'='],['r',8,2,13,3,','],['r',3,8,6,9,','],...VEG]),
+  grid('T',[['r',1,1,14,10,'.'],['r',0,5,15,6,'='],['r',10,5,11,11,'='],['r',3,2,8,3,'3'],['r',3,4,8,4,'.'],['r',12,2,13,3,'.'],['p',2,9,','],['p',13,9,',']])]});
+defineRegion({id:'vsquare',name:'VILLAGE SQUARE',kind:'outdoor',origin:[2,7],grid:[2,1],ground:'grass',beyond:true,area:'village',music:'farm',
+ screens:[
+  grid('T',[['r',1,1,14,10,'.'],['r',7,0,8,11,'='],['r',0,5,15,6,'='],['r',3,2,4,3,'7'],['r',11,2,12,3,'7'],['r',3,8,4,9,'7'],['r',11,8,12,9,'7'],['p',6,4,','],['p',9,7,','],['p',1,1,'u'],['p',14,1,'u']]),
+  grid('T',[['r',1,1,14,10,'.'],['r',0,5,10,6,'='],['r',7,5,8,11,'='],['r',3,2,4,3,'7'],['r',11,2,12,3,'7'],['r',3,8,4,9,'7'],['r',11,8,12,9,'7'],['p',6,4,','],['p',9,7,',']])]});
+defineRegion({id:'vriver',name:'RIVERSIDE',kind:'outdoor',origin:[0,8],grid:[2,1],ground:'grass',beyond:true,area:'village',music:'farm',
+ screens:[
+  grid('T',[['r',1,1,14,10,'.'],['r',4,0,5,5,'='],['r',4,5,15,6,'='],['r',8,8,12,10,'W'],['r',2,2,3,3,'T'],['r',2,9,3,10,'T'],...VEG]),
+  grid('T',[['r',1,1,14,10,'.'],['r',10,0,11,5,'='],['r',0,5,15,6,'='],['r',4,1,6,10,'W'],['r',4,5,6,6,'3'],['r',8,2,9,3,'7'],['r',8,8,9,9,'7'],['r',2,8,3,9,'m'],['r',12,8,13,9,'m']])]});
+defineRegion({id:'vmeadow',name:'MEADOW FARMLANDS',kind:'outdoor',origin:[2,8],grid:[2,1],ground:'grass',beyond:true,area:'village',music:'farm',
+ screens:[
+  grid('T',[['r',1,1,14,10,'.'],['r',7,0,8,5,'='],['r',0,5,15,6,'='],['r',2,2,5,3,'V'],['r',2,8,5,9,'V'],['p',11,2,'A'],['p',13,2,'A'],['p',12,4,'A'],['p',10,9,'u'],['p',13,8,'u']]),
+  grid('T',[['r',1,1,14,10,'.'],['r',7,0,8,5,'='],['r',0,5,8,6,'='],['r',9,2,14,9,'F'],['r',10,3,13,8,'.'],['r',9,5,9,6,'.'],['r',2,2,5,3,'V'],['r',2,8,5,9,'V']])]});
+
 /* ===== src/world/tilemap.js ===== */
 /* ---------------- tile map: built from the regions, plus door/solid/hidden data ---------------- */
 // F fence  H big fence  T tree  A apple tree  W water  h hay bale  R rock  C crate  L leaf pile
@@ -814,6 +839,7 @@ function drawTile(ch,c,r,sx,sy,wf){
     case 'x':img=TILE.dam[wf];break;
     case 'a':img=TILE.roofC;break;
     case '1':img=TILE.brickDoor;break;
+    case '7':img=TILE.pad;break;
     case '5':img=TILE.ship;break;
     case '6':img=TILE.stackCrate;break;
     case '8':img=TILE.roofWalk;break;
@@ -889,6 +915,13 @@ const SKILLS2=[
 ];
 const STAGE_NAMES=['TEENY PEEP','LITTLE CHICK','GROWING CHICK','BIG CHICK','ALMOST A CHICKEN'];
 
+// Village Tree: whistle and master are taught by trainers (see trainers.js)
+const SKILLS3=[
+  {id:'carry',name:'CARRY',cost:5,req:[],x:44,y:96,desc:'Lift heavy stone and big loads. You need it for stone at the riverside!',learn:'You can carry heavy stone!'},
+  {id:'whistle',name:'WHISTLE',cost:6,req:['carry'],x:112,y:62,desc:'Whistle at the village whistle post for a helper to bring wool or wood. Taught by Dash.',learn:'Whistle for helpers at the post!'},
+  {id:'green',name:'GREEN WINGS',cost:6,req:['carry'],x:112,y:130,desc:'Flap over crop rows to water them and make them grow faster!',learn:'Flap over crops to water them!'},
+  {id:'master',name:'MASTER BUILDER',cost:8,req:['whistle','green'],x:196,y:96,desc:'Buildings go up twice as fast and need less wood. Taught by Foreman Barnaby.',learn:'Buildings finish twice as fast!'}];
+
 /* ===== src/content/outfits.js ===== */
 /* content: outfits and the shop list. Data only (icons are drawn in systems/world.js). */
 const OUTFITS=[
@@ -902,6 +935,7 @@ const OUTFITS=[
   {id:'chef',name:'CHEF HAT',price:4,bonus:'Foodie: every food you taste for the first time gives +1 extra growth.',desc:'A tall white hat. Smells like cinnamon.'},
   {id:'detective',name:'DETECTIVE CAP',price:4,bonus:'Sharp eyes: the quest log shows WHERE each task is.',desc:'Elementary, my dear chick!'},
   {id:'goggles',name:'RACING GOGGLES',bonus:'Speedy: +15% speed while gliding or flying.',how:'Win the Rooftop Race at the Toy Shop.',desc:'Zoom zoom! Strapped on tight.'},
+  {id:'overalls',name:'FARMER CAP',bonus:'Strong arms: gathering at the village gives +1 material.',how:'Help Bucky start the village.',desc:'Straw in the pockets, mud on the boots.'},
   {id:'pirate',name:'PIRATE',bonus:'Treasure sense: hidden treasures and secrets sparkle.',how:'Win a game under the moon.',desc:'Arr! Yo ho ho and a bucket of seeds!'}];
 const ACCESSORY_IDS=['bow','shades','ears','crown','goggles'];   // fit the accessory slot that opens at rank 7
 const SHOP=['straw','astronaut','shades','ninja','chef','detective'];
@@ -1088,7 +1122,21 @@ const TRAIN={
     intro:["Hey hey! Wanna know the secret to my super-strong teeth? PRACTICE!","There are 3 old tree stumps in the forest that need clearing out. Peck 'em to splinters!","Do that, and I'll teach you the SUPER PECK!"],
     remind:()=>Math.min(3,G.items.stump)+"/3 stumps smashed. They're around the forest edge and the deep woods!",
     done:["Look at those splinters! You've got the power, kid!","Now you can learn SUPER PECK in your Sky Tree. Press E!"],
-    hint:()=>"Smash the 3 old tree stumps in the forest for Bucky."}
+    hint:()=>"Smash the 3 old tree stumps in the forest for Bucky."},
+  whistle:{phase:4,who:'dash',whoName:'DASH',skill:'WHISTLE',title:'Sheepdog School',avail:()=>G.vil.open&&has('carry'),item:'pebble',need:3,noun:'whistle pebbles',
+    spawn:[['pb0',56,99],['pb1',62,106],['pb2',51,102]],
+    lock:"Learn CARRY first. Then Dash the sheepdog, out in the meadow pasture, will teach you to WHISTLE!",
+    intro:["Woof! You're the chick who started the village! I'm Dash, the sheepdog.","A good whistle can call every helper in the meadow. I'll teach you!","First, find 3 smooth WHISTLE PEBBLES in the meadow. They make the best whistle sound!"],
+    remind:()=>Math.min(3,G.items.pebble)+"/3 whistle pebbles. Look around the pasture and the meadow paths!",
+    done:["Perfect pebbles! Now put your beak like THIS... and blow!","Tweeeet! There! Learn WHISTLE in the Village Tree. Press E!"],
+    hint:()=>"Find 3 smooth pebbles in the meadow for Dash."},
+  master:{phase:4,who:'barnaby',whoName:'BARNABY',skill:'MASTER BUILDER',title:'Master Class',avail:()=>builtList().length>=2,item:'plank',need:3,noun:'fine planks',
+    spawn:[['pl0',9,100],['pl1',13,103],['pl2',3,101]],
+    lock:"Build 2 buildings, and Foreman Barnaby will teach you to be a MASTER BUILDER!",
+    intro:["Ho ho! Two buildings already? Bucky's cousin is impressed!","A master builder works fast and wastes no wood. I'll show you the tricks!","Bring me 3 FINE PLANKS from the riverside. Straight and strong. Then class begins!"],
+    remind:()=>Math.min(3,G.items.plank)+"/3 fine planks. They're scattered around the riverside!",
+    done:["Beautiful planks! Hammer like this, measure twice, cut once!","Now learn MASTER BUILDER in the Village Tree. Press E!"],
+    hint:()=>"Find 3 fine planks at the riverside for Foreman Barnaby."}
 };
 
 /* ===== src/content/coop.js ===== */
@@ -1161,6 +1209,53 @@ function buildingOpen(b){
   return t>=0.06&&t<0.57;
 }
 
+/* ===== src/content/village.js ===== */
+/* content: Chicklandia Village. Data only: building types, pads, material spots, residents and their wishes, seasons. */
+const MATS=['wood','stone','wool','clay'];
+const MAT_NAME={wood:'WOOD',stone:'STONE',wool:'WOOL',clay:'CLAY'};
+// building types. cost.seeds + materials. happy = village happiness it adds. only: 'river' pads only.
+const BUILDING_TYPES={
+  home:{name:'COZY HOME',cost:{seeds:4,wood:3,clay:1},happy:5,desc:'A snug little house for a friend to move into.'},
+  bakery:{name:'BAKERY BRANCH',cost:{seeds:5,wood:2,stone:2,clay:2},happy:6,desc:'Warm bread smells. A friend baker could live here.'},
+  mill:{name:'WATERMILL',cost:{seeds:6,wood:4,stone:3},happy:6,only:'river',desc:'Turns the river into flour. Gives 2 seeds every day!'},
+  band:{name:'BANDSTAND',cost:{seeds:6,wood:4,clay:2},happy:8,desc:'Music and dancing! Villagers love it.'},
+  school:{name:'SCHOOL',cost:{seeds:6,wood:3,stone:2,wool:2},happy:6,desc:'A little school with a big bell.'},
+  clinic:{name:'CLINIC',cost:{seeds:6,wood:2,stone:2,wool:3},happy:6,desc:'Rest and heal here. Free full hearts any time!'}};
+const BUILD_ORDER=['home','bakery','mill','band','school','clinic'];
+const BUILD_TIME=Math.round(DAY*0.2);                 // one build takes about a minute (half with Master Builder)
+// pads (tile col,row of the top-left tile of a 2x2 pad). river: next to the water.
+const PADS=[
+  {id:'p0',c:35,r:86},{id:'p1',c:43,r:86},{id:'p2',c:35,r:92},{id:'p3',c:43,r:92},
+  {id:'p4',c:51,r:86},{id:'p5',c:59,r:86},{id:'p6',c:51,r:92},{id:'p7',c:59,r:92},
+  {id:'p8',c:24,r:98,river:true},{id:'p9',c:24,r:104,river:true}];
+// gathering spots: wood, stone, clay come back every in-game day; stone needs CARRY
+const NODES=[
+  {id:'nw0',kind:'wood',c:6,r:98},{id:'nw1',kind:'wood',c:10,r:97},{id:'nw2',kind:'wood',c:6,r:106},{id:'nw3',kind:'wood',c:7,r:104},
+  {id:'ns0',kind:'stone',c:28,r:98},{id:'ns1',kind:'stone',c:30,r:106},{id:'ns2',kind:'stone',c:25,r:101},
+  {id:'nc0',kind:'clay',c:18,r:104},{id:'nc1',kind:'clay',c:19,r:105},{id:'nc2',kind:'clay',c:28,r:104}];
+const NODE_YIELD={wood:2,stone:2,clay:2};
+// sheep to shear (2 wool each, once a day) in the meadow pasture
+const VSHEEP=[{id:'vs0',c:59,r:100},{id:'vs1',c:61,r:102},{id:'vs2',c:60,r:103}];
+// crop rows (garden plots) and orchard
+const CROP_ROWS=[...[34,35,36,37].flatMap(c=>[[c,98],[c,104]]),...[50,51,52,53].flatMap(c=>[[c,98],[c,104]])];
+// the people who can move in. needs = building kind, give = materials for their wish, quest id v_<id>
+const RESIDENTS=[
+  {id:'pig',name:'PORKCHOP',needs:'home',give:{clay:2},wish:"a proper MUD POND to roll in. It needs 2 CLAY.",home:"Oink! Best. Village. EVER.",how:'moves into a cozy home'},
+  {id:'whiskers',name:'WHISKERS',needs:'home',give:{wool:2},wish:"a sunny window with a soft cushion. It needs 2 WOOL.",home:"Mrrow. This cushion is... acceptable. Very acceptable.",how:'moves into a cozy home'},
+  {id:'clyde',name:'CLYDE',needs:'mill',give:{wood:3},wish:"a new hay wagon by the mill. It needs 3 WOOD.",home:"Neeeigh! A mill AND a wagon. I'm a lucky horse.",how:'moves in beside the mill'},
+  {id:'daisy',name:'DAISY',needs:'bakery',give:{wood:2},wish:"a milking stool for her dairy corner at the bakery. It needs 2 WOOD.",home:"Moooo! Fresh milk and warm bread. Come by anytime!",how:'moves into the bakery branch'},
+  {id:'doe',name:'DOE',needs:'clinic',give:{wool:2},wish:"soft blankets for the clinic beds. It needs 2 WOOL.",home:"Everyone is welcome here. Rest and be well.",how:'moves in at the clinic'},
+  {id:'penny',name:'PENNY',needs:'school',give:{wood:3},wish:"desks for the little school. It needs 3 WOOD.",home:"Class is in session! Who wants to be teacher's pet?",how:'moves in at the school'},
+  {id:'rooster',name:'SIR CLUCKINGTON',needs:'band',give:{stone:2},wish:"a big stone stage to crow from. It needs 2 STONE.",home:"COCK-A-DOODLE-DOO! Every morning, at the top of my lungs!",how:'moves in by the bandstand'}];
+// one-time and daily events
+const FINALE_HAPPY=100;                               // happiness needed for the Grand Harvest Festival
+const HAPPY_WISH=8,HAPPY_CONTEST=5;
+const SEASONS=['SPRING','SUMMER','AUTUMN','WINTER'];
+const SEASON_DAYS=3;                                 // in-game days per season
+const SEASON_TINT={SPRING:'rgba(190,255,190,0.10)',SUMMER:'rgba(255,240,120,0.12)',AUTUMN:'rgba(255,150,60,0.16)',WINTER:'rgba(210,230,255,0.25)'};
+// the road from the city market opens here (tile col,row of the two market-bottom tiles)
+const VILLAGE_ROAD=[[39,83],[40,83]];
+
 /* ===== src/content/world_data.js ===== */
 /* content: farm family, dirt mounds, hidden items and signs */
 const SIBS=[
@@ -1211,7 +1306,7 @@ const FOODS=[
   {id:'worm',name:'WORM',spr:'worm0'},{id:'carrot',name:'CARROT',spr:'carrot'},{id:'apple',name:'APPLE',spr:'apple'},
   {id:'cheese',name:'CHEESE',color:'#ffd21e'},{id:'acorn',name:'ACORN',spr:'acorn'},{id:'fish',name:'FISH',color:'#a6d0ff'},
   {id:'snowberry',name:'SNOWBERRY',color:'#fff8ec'},
-  {id:'muffin',name:'CORN MUFFIN',spr:'muffin'},{id:'bun',name:'SEED BUN',spr:'sbun'},{id:'tart',name:'BERRY TART',spr:'tart'},{id:'stew',name:'WINNING STEW',color:'#e8a422'}];
+  {id:'muffin',name:'CORN MUFFIN',spr:'muffin'},{id:'bun',name:'SEED BUN',spr:'sbun'},{id:'tart',name:'BERRY TART',spr:'tart'},{id:'stew',name:'WINNING STEW',color:'#e8a422'},{id:'pumpkin',name:'PUMPKIN',spr:'pumpkin'}];
 const SECRET_IDS=[{id:'burrow',name:'RABBIT BURROW'},{id:'cellar',name:'FARMHOUSE CELLAR'},{id:'grove',name:'MOONLIT GROVE'},{id:'rooftops',name:'THE ROOFTOPS'}];
 
 /* ===== src/content/quests_city.js ===== */
@@ -1305,6 +1400,7 @@ function questLoc(id){return (QUESTS[id]&&QUESTS[id].loc)||QUEST_LOC[id]||'';}
 // special garden seeds (Seed & Feed). grow = speed multiplier, yield = seeds per harvest; moon only grows at night and also drops a petal.
 const SEED_TYPES={
   plain:{name:'PLAIN SEED',grow:1,yield:3,spr:'seed'},
+  pumpkin:{name:'GIANT PUMPKIN',grow:0.4,yield:4,spr:'pumpkin',pumpkin:true,desc:'The autumn contest pumpkin.'},
   speedy:{name:'SPEEDY SPROUT',price:1,grow:2,yield:2,spr:'sprout',desc:'Grows twice as fast! Gives 2 seeds.'},
   giant:{name:'GIANT SUNFLOWER',price:3,grow:0.5,yield:6,spr:'giant',desc:'Slow, but gives a whopping 6 seeds!'},
   moon:{name:'MOONFLOWER',price:2,grow:1,yield:4,night:true,petal:true,spr:'moonSeed',desc:'Only grows at night. Gives 4 seeds and a rare petal for the Museum.'}};
@@ -1338,6 +1434,22 @@ const JOB_TARGETS=[
   ['sandy','LIFEGUARD SANDY','on the beach'],['rocco','ROCCO','by the city fountain (daytime)'],['cleo','CLEO','in the market (daytime)']];
 
 const SHOPS={
+  build:{title:'BUILD HERE',owner:'beaver',color:'#c49a5c',leave:'CANCEL',bye:'Take your time. Good builders plan!',
+    items:()=>BUILD_ORDER.map(k=>{const t=BUILDING_TYPES[k],c=costOf(k),pad=VB&&VB.pad;
+      return {name:t.name,price:c.seeds,icon:'b_'+k,desc:t.desc+' NEEDS: '+costText(Object.assign({},c,{seeds:0})).replace(/^, /,'')+'.',bonus:'Village happiness +'+t.happy+(has('master')?'. Master Builder: half the time!':''),
+        off:t.only==='river'&&!(pad&&pad.river),offMsg:'A mill must be built beside the river!',act:()=>tryBuild(k)};})},
+  contest:{title:'WINDMILL FESTIVAL',owner:'beaver',color:'#ffd83a',leave:'LEAVE',bye:'See you at the next festival!',
+    items:()=>{const i=contestInfo(),s=seasonNow();return [
+      {name:i.name,tag:contestDone()?'WON':'ENTER',on:contestDone(),icon:i.icon,desc:i.desc,off:contestDone(),offMsg:'You already won this season! Come back next season.',act:()=>{startContest();}},
+      {name:'SEASON: '+s.name,tag:daysToNextSeason()+'d left',icon:'star',desc:'Seasons change every '+SEASON_DAYS+' days. Each season has its own contest.',off:true,offMsg:daysToNextSeason()+' day(s) until the next season.'},
+      {name:'WINS SO FAR',tag:''+Object.keys(G.vil.contest).length,icon:'token',desc:'Every contest you win makes the village happier.',off:true,offMsg:'Each win adds '+HAPPY_CONTEST+' happiness.'}];}},
+  board:{title:'VILLAGE BOARD',owner:'beaver',color:'#94dc64',leave:'LEAVE',bye:'Our village is growing!',
+    items:()=>[
+      {name:'HAPPINESS',tag:happiness()+'/'+FINALE_HAPPY,icon:'token',desc:'Buildings, friends moving in and contest wins make the village happy.',off:true,offMsg:happiness()>=FINALE_HAPPY?'Happy enough for the Grand Harvest! Talk to Barnaby.':'Keep building, and help friends move in!'},
+      {name:'FRIENDS HOME',tag:Object.keys(G.vil.res).length+'/'+RESIDENTS.length,icon:'mailbox',desc:'Friends write when a building they want exists.',off:true,offMsg:'Check the mailbox for letters!'},
+      {name:'MATERIALS',tag:'',icon:'m_wood',desc:matsLine(),off:true,offMsg:matsLine()},
+      {name:'BUILDINGS',tag:''+builtList().length+'/'+PADS.length,icon:'b_home',desc:'Pads in the square and by the river.',off:true,offMsg:'Gather wood, stone, wool and clay!'},
+      {name:'SEASON',tag:seasonNow().name,icon:'star',desc:'Contests at Windmill Hill each season.',off:true,offMsg:daysToNextSeason()+' day(s) until the next season.'}]},
   boutique:{title:"MAGGIE'S BOUTIQUE",owner:'magpie',color:'#ff9cd0',leave:'LEAVE SHOP',bye:'Come back soon, darling!',
     items:()=>SHOP.map(id=>{const o=OUTFITS.find(x=>x.id===id),own=G.outfits.includes(id);
       return {name:o.name,price:own?null:priceOf(o),tag:own?(wearing(id)?'ON':'OWN'):null,own,on:wearing(id),desc:o.desc,bonus:o.bonus,outfit:id,
@@ -1377,6 +1489,45 @@ const SHOPS={
     items:()=>[{name:'DONATE FINDS',tag:donatable()?'READY':null,icon:'seashell',desc:'Hand over any shells, feathers, fossils and moon petals you are carrying.',act:()=>donateAll()},
       ...EXHIBITS.map(x=>({name:x.name,tag:G.museum[x.id]+'/'+x.need,own:G.museum[x.id]>=x.need,icon:x.item,desc:x.desc+(G.museum[x.id]>=x.need?' COMPLETE!':' Carrying: '+(G.hold[x.item]||0)),off:true,offMsg:x.where}))]}
 };
+
+/* ===== src/content/quests_village.js ===== */
+/* content: Chicklandia Village quests. vfound is Bucky's; the v_<friend> quests are moved along by the village mailbox;
+   vharvest is the Grand Harvest Festival (talk to Foreman Barnaby when the village is happy enough). */
+Object.assign(NAMES,{vfound:'Bucky',barnaby:'Foreman Barnaby',dash:'Dash'});
+const ORDER4=['vfound','v_pig','v_whiskers','v_clyde','v_daisy','v_doe','v_penny','v_rooster','vharvest'];
+Object.assign(QUEST_GIVER,{vfound:'bucky',vharvest:'barnaby'});
+const FOLLOW_GATE={bucky:()=>!!G.flags.festival};
+Object.assign(FOLLOWUP,{bucky:'vfound'});
+Object.assign(QUESTS,{
+  vfound:{title:'A Village At Last',loc:'FOREST: Bucky, then the village',
+    check:()=>builtList().length>=1,prog:()=>builtList().length?'first building up!':'build something',reward:6,
+    intro:["Pip! Pip! Big news! While you were growing up, I was out surveying.","I found the sunniest meadow in all Chicklandia, just south of the city market!","Your friends all want to live near you. Let's build them a VILLAGE!",
+      {t:"The road is open now. Gather wood, stone, wool and clay, then use the building pads in the Village Square!",fx:()=>{openVillage();}}],
+    remind:()=>builtList().length?"Great, a building is up! Tell me about it!":"Go south from the city market to the Village Square. Peck logs, stone and clay at the Riverside, and wool from the sheep. Then build on a pad!",
+    done:["Look at that! A real building in our village! Beaver-tail slap!","Take these seeds, and this cap. Every builder needs one!"],
+    onDone:()=>{grantOutfit('overalls');toast('Got the FARMER CAP! Press C to wear.','#ffd83a');},
+    after:()=>["The village is lovely! Foreman Barnaby is running the building site."],
+    hint:()=>"Walk south from the city market to find the village. Gather materials, then build on a pad in the Village Square."},
+  vharvest:{title:'The Grand Harvest',loc:'VILLAGE: Foreman Barnaby',
+    check:()=>!!G.flags.village,prog:()=>G.flags.village?'celebrated!':happiness()+'/'+FINALE_HAPPY+' happy',reward:8,
+    intro:[],remind:()=>"The village needs "+happiness()+"/"+FINALE_HAPPY+" happiness and every friend moved in for the festival!",done:[],after:()=>["What a harvest festival!"],
+    hint:()=>"Make the village happy: move in every friend, build more, win seasonal contests. Then talk to Foreman Barnaby."}});
+for(const r of RESIDENTS){
+  QUESTS['v_'+r.id]={title:({pig:'Porkchop Moves In',whiskers:'Whiskers Moves In',clyde:'Clyde Moves In',daisy:'Daisy Moves In',doe:'Doe Moves In',penny:'Penny Moves In',rooster:'Cluckington Moves In'})[r.id],loc:'VILLAGE: mailbox in the square',
+    check:()=>!!G.vil.res[r.id],prog:()=>G.vil.res[r.id]?'moved in!':G.vil.letters.includes(r.id)?'read the letter':'needs a '+BUILDING_TYPES[r.needs].name.toLowerCase(),reward:4,
+    intro:[],remind:()=>'',done:[],after:()=>[],
+    hint:()=>G.vil.letters.includes(r.id)?r.name+" wrote a letter! Check the village mailbox and give the wish."
+      :"Build a "+BUILDING_TYPES[r.needs].name+" in the village. Then "+r.name+" will write to you!"};
+}
+// next thing to do in the village (hint system)
+function villageHint(){
+  if(!G.vil.open)return null;
+  if(G.vil.letters.length)return QUESTS['v_'+G.vil.letters[0]].hint();
+  if(G.q.vfound===1&&!builtList().length)return QUESTS.vfound.hint();
+  for(const r of RESIDENTS)if(G.q['v_'+r.id]===0)return QUESTS['v_'+r.id].hint();
+  if(!G.flags.village)return happiness()>=FINALE_HAPPY?"The village is happy! Talk to Foreman Barnaby for the Grand Harvest Festival!":QUESTS.vharvest.hint();
+  return null;
+}
 
 /* ===== src/content/characters.js ===== */
 /* content: the cast. Each entry becomes an NPC in makeEnts(). part 1 = farm, part 2 = beyond. */
@@ -1419,6 +1570,8 @@ const CHARACTERS=[
   {id:'sheldon',name:'CURATOR SHELDON',spr:'curator',c:120,r:78,voice:210,w:16},
   {id:'pablo',name:'PABLO PEACOCK',spr:'peacock',c:137,r:66,voice:700,w:12},
   {id:'waddles',name:'MRS. WADDLES',spr:'duck',c:152,r:65,voice:780,w:14},
+  {id:'barnaby',name:'FOREMAN BARNABY',spr:'beaver',c:38,r:89,voice:520,w:12},
+  {id:'dash',name:'DASH',spr:'dog',c:56,r:101,voice:340,w:14},
   {id:'nibbles2',name:'NIBBLES',spr:'chef',c:123,r:53,voice:1100,w:10},
 ];
 
@@ -1507,6 +1660,18 @@ Object.assign(TALK,{
     if(e.chatNow){e.chatNow=false;return false;}
     if(regionAt().id!=='cityin')return false;
     ask("Coo! Postmaster Pidge here. Looking for a delivery job?",['Job board','Chat'],i=>{if(i===0)openCatalog('post');else{e.chatNow=true;talkTo(e);}});}
+});
+
+// ---- the village ----
+Object.assign(TALK,{
+  barnaby:(e,{it,me,ask})=>{
+    if(!G.vil.open)return false;
+    if(!G.flags.village&&RESIDENTS.every(r=>G.vil.res[r.id])&&happiness()>=FINALE_HAPPY){
+      it("Pip! Every friend is home and the whole village is smiling!");it("It's time for the GRAND HARVEST FESTIVAL!");
+      ask('Start the festival?',['Yes!','Not yet'],i=>{if(i===0)startFestival('harvest');});return;}
+    if(trainTalk(e,it))return;
+    it(G.flags.village?"The village is the pride of Chicklandia, Pip! And you built it.":"I'm Foreman Barnaby. I run the building site. Pads in the square, wood and stone at the riverside. Happy building!");},
+  dash:(e,{it})=>{if(!G.vil.open)return false;if(trainTalk(e,it))return;it(G.flags.village?"Woof! Everything's peaceful. Even the sheep have a schedule now.":"Woof! I herd the sheep. Pebbles make great whistles, you know!");}
 });
 
 /* ===== src/entities/sprites.js ===== */
@@ -1734,9 +1899,53 @@ SPR.easel=makeSprite(['.bbbbbbb.','bwwwwwwwb','bwwwwwwwb','bwwwwwwwb','bwwwwwwwb
 SPR.flag=makeSprite(['kkkkkk','krkwwk','kwkrwk','krkwrk','k.....','k.....','k.....','k.....']);
 SPR.book=makeSprite(['.rrrrr','rwwwwr','rwkkwr','rwwwwr','.rrrrr']);
 SPR.plant0=SPR.plant[2];
-Object.assign(OUTFIT_SPR,{chef:makeSprite(['..www..','.wwwww.','wwwwwww','wwwwwww','.wwwww.','kkkkkkk']),detective:makeSprite(['..tttt..','.tTTTTt.','tTtTtTtt','TTTTTTTT','kkkkkkkk']),
+Object.assign(OUTFIT_SPR,{overalls:makeSprite(['..uuuu..','.uuuuuu.','uuuuuuuu','kkkkkkkk']),chef:makeSprite(['..www..','.wwwww.','wwwwwww','wwwwwww','.wwwww.','kkkkkkk']),detective:makeSprite(['..tttt..','.tTTTTt.','tTtTtTtt','TTTTTTTT','kkkkkkkk']),
   gogF:makeSprite(['uuuuuuuu','uccuucu','.uu..uu.'],false),gogS:makeSprite(['uuuu','ucuu','.uu.'],false)});
-const WEAR_ICON_EXTRA={chef:OUTFIT_SPR.chef,detective:OUTFIT_SPR.detective,goggles:OUTFIT_SPR.gogF};
+const WEAR_ICON_EXTRA={overalls:OUTFIT_SPR.overalls,chef:OUTFIT_SPR.chef,detective:OUTFIT_SPR.detective,goggles:OUTFIT_SPR.gogF};
+
+/* ===== src/entities/sprites_village.js ===== */
+/* ---------------- village sprites: buildings (drawn in code), materials, skill icons, props ---------------- */
+// each builder draws a 32x30 building into context x. pal = colors.
+function drawBuildingArt(x,kind,t){
+  const R=(c,i,j,w,h)=>{x.fillStyle=c;x.fillRect(i,j,w,h);};
+  const body=(wall,roof,rdark)=>{R('#21142b',2,12,28,18);R(wall,3,13,26,16);R('#21142b',0,3,32,11);R(roof,1,4,30,9);for(let i=2;i<30;i+=4)R(rdark,i,6,2,1);R(rdark,1,12,30,1);R('#21142b',13,19,6,11);R('#9a6234',14,20,4,10);R('#ffd21e',17,25,1,1);};
+  switch(kind){
+    case 'home':body('#f6ead0','#e03838','#962430');R('#a6e0ff',5,17,5,5);R('#a6e0ff',22,17,5,5);R('#21142b',7,17,1,5);R('#21142b',24,17,1,5);R('#21142b',22,0,5,6);R('#962430',23,1,3,4);break;
+    case 'bakery':body('#f2dca0','#e8a422','#c98a00');R('#a6e0ff',5,17,6,5);R('#e03838',4,15,8,2);R('#fff8ec',6,15,2,2);R('#21142b',23,-2,5,8);R('#6a5a90',24,-1,3,6);if(t!==undefined){R('rgba(255,255,255,0.7)',24+((t/6)%3|0),-5-((t/10)%4|0),3,3);}break;
+    case 'mill':body('#d8c8a0','#9a6234','#5e3a1c');R('#21142b',-1,16,6,14);R('#3a86e8',0,17,4,12);R('#a6e0ff',1,19,1,8);R('#21142b',24,2,2,12);R('#fff8ec',25,3,1,11);R('#a6e0ff',6,17,5,5);break;
+    case 'band':R('#21142b',1,14,30,16);R('#9a6234',2,22,28,7);R('#c49a5c',2,22,28,1);R('#21142b',1,2,30,13);R('#ff6fae',2,3,28,11);for(let i=3;i<30;i+=4)R('#ffd83a',i,3,2,11);R('#21142b',3,14,2,9);R('#21142b',27,14,2,9);R('#fff8ec',14,18,4,4);R('#21142b',15,18,2,3);break;
+    case 'school':body('#f4c0a0','#3a86e8','#1f55a8');R('#a6e0ff',5,17,5,5);R('#a6e0ff',22,17,5,5);R('#21142b',13,-3,6,8);R('#ffd21e',14,-2,4,6);R('#21142b',15,3,2,2);R('#fff8ec',14,13,4,2);break;
+    case 'clinic':body('#fff8ec','#94dc64','#2f7d3a');R('#e03838',14,15,4,1);R('#e03838',15,14,2,3);R('#a6e0ff',5,17,5,5);R('#a6e0ff',22,17,5,5);R('#21142b',6,17,3,1);break;
+  }
+}
+for(const k of BUILD_ORDER)SPR['b_'+k]=mk(32,34,x=>{x.translate(0,4);drawBuildingArt(x,k);});
+SPR.scaffold=mk(32,34,x=>{x.fillStyle='#21142b';x.fillRect(2,10,3,24);x.fillRect(27,10,3,24);x.fillRect(2,10,28,3);x.fillRect(2,22,28,3);x.fillStyle='#c49a5c';x.fillRect(3,11,1,22);x.fillRect(28,11,1,22);x.fillRect(3,11,26,1);x.fillRect(3,23,26,1);x.fillStyle='#9a6234';x.fillRect(8,26,6,3);x.fillRect(18,14,6,3);});
+// materials and trainer items
+SPR.m_wood=makeSprite(['.bbbbb.','bTtTtTb','bTbbbTb','bTtTtTb','.bbbbb.']);
+SPR.m_stone=makeSprite(['..eee..','.eEeee.','eEeeEee','eeeEeee','.eeEee.']);
+SPR.m_wool=makeSprite(['.nnnn.','nnnnnn','nnwnnn','nnnnnn','.nnnn.']);
+SPR.m_clay=makeSprite(['.oooo.','oOooOo','oooooo','oOooOo','.OOOO.']);
+SPR.pebble=makeSprite(['.ee.','eEee','.ee.']);
+SPR.plank=makeSprite(['bbbbbbbb','bTtTtTtb','bbbbbbbb']);
+SPR.snowball=makeSprite(['.www.','wwwww','wwewe','wwwww','.www.']);
+SPR.node_wood=makeSprite(['.bbbbbb.','bTtTtTtb','bTbbbbTb','bTtTtTtb','.bbbbbb.','..BBBB..']);
+SPR.node_stone=makeSprite(['..eeee..','.eEeeEe.','eeeEeeee','eEeeeEee','eeEeeeEe','.eeeeee.']);
+SPR.node_clay=makeSprite(['..oooo..','.oOooOo.','oooOoooo','.oOooOo.','..oooo..']);
+SPR.vsheep=SPR.sheep;
+SPR.mailbox=makeSprite(['.rrrrr.','rrwwwrr','rrrrrrr','..bbb..','..bbb..','..bbb..']);
+SPR.board=makeSprite(['bbbbbbbbbb','bttttttttb','btTtTtTttb','bttttttttb','bTtTtTtTtb','.b......b.','.b......b.']);
+SPR.whistlePost=makeSprite(['..qq..','.qqqq.','..qq..','..bb..','..bb..','..bb..','.bbbb.']);
+SPR.scarecrow=makeSprite(['..ttt..','.tkktt.','..ttt..','bbbbbbb','..bbb..','..bbb..','..b.b..']);
+SPR.windmillBase=mk(40,64,x=>{const R=(c,i,j,w,h)=>{x.fillStyle=c;x.fillRect(i,j,w,h);};R('#21142b',6,22,28,42);R('#e8d8b0',8,24,24,40);for(let j=26;j<62;j+=6)R('#c8b890',8,j,24,1);R('#21142b',16,44,8,20);R('#9a6234',17,45,6,19);R('#a6e0ff',17,32,6,6);R('#21142b',2,14,36,10);R('#e03838',4,15,32,8);R('#962430',4,21,32,2);R('#21142b',17,8,6,8);});
+// skill icons for the Village Tree
+Object.assign(ICON,{
+  carry:makeSprite(['..kkkk..','.kbbbbk.','kbTbbTbk','kbbbbbbk','.kkkkkk.','..y..y..','.yy..yy.']),
+  whistle:makeSprite(['.kkkkk..','kqqqqqk.','kqqqqqqk','.kqqqqk.','..kkkk..','.....y..','....y...']),
+  green:makeSprite(['..G..G..','.GlG.GlG','GGlGGGlG','.GGG.GGG','..uu.uu.','.u..u..u','u..u..u.']),
+  master:makeSprite(['....kk....','...kbbk...','..kbTTbk..','.kkkkkkkk.','..kbbbbk..','..kbTTbk..','..kbbbbk..','...kkkk...'])});
+SPR.snowSculpture=[makeSprite(['.www.','wwwww','wwwww']),makeSprite(['..ww..','.wwww.','wwwwww','wwwwww','.wwww.']),makeSprite(['...kk...','..wwww..','.wwwwww.','wwwwwwww','wwwwwwww','.wwwwww.','..wwww..'])];
+SPR.pumpkin=makeSprite(['..G..','.ooo.','ooooo','ooOoo','.ooo.']);
+SPR.kite=makeSprite(['..r..','.rrr.','rrrrr','.rrr.','..r..','..k..']);
 
 /* ===== src/engine/settings.js ===== */
 /* ---------------- settings (saved separately from game progress) ---------------- */
@@ -1957,14 +2166,14 @@ function strawBonus(x,y){if(wearing('straw')&&Math.random()<0.25){G.seeds++;G.ea
 
 function freshState(){
   return {seeds:0,skills:new Set(),hearts:3,q:{mom:0,daisy:0,pig:0,duck:0,sheep:0,rooster:0,penny:0,clyde:0,squeaks:0,biscuit:0,whiskers:0,
-      granny:0,bucky:0,doe:0,mo:0,elda:0,pidge:0,remy:0,pinch:0,sandy:0,rocco:0,cleo:0,cookoff:0,vane:0,babysit:0,portrait:0},
-    items:{worm:0,bell:0,apple:0,feather:0,carrot:0,bone:0,yarn:0,letter:0,cheese:0,acorn:0,stick:0,shell:0,fish:0,snowberry:0,eagleEgg:0,horseshoe:0,puff:0,ring:0,stump:0,bhat:0,bwhisk:0,bbell:0,pepper:0,salt:0,mushroom:0},collected:new Set(),mods:{},picked:{},foxGone:false,gooseGone:false,
-    sp1:0,sp2:0,earned:0,gp:0,rank:1,taste:{},secrets:{},mgFirst:{},mgDay:{d:-1,n:0},acc:null,accessoryUnlocked:false,snackFirst:false,snackEaten:0,growMsgOnLoad:false,time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
+      granny:0,bucky:0,doe:0,mo:0,elda:0,pidge:0,remy:0,pinch:0,sandy:0,rocco:0,cleo:0,cookoff:0,vane:0,babysit:0,portrait:0,vfound:0,v_pig:0,v_whiskers:0,v_clyde:0,v_daisy:0,v_doe:0,v_penny:0,v_rooster:0,vharvest:0},
+    items:{worm:0,bell:0,apple:0,feather:0,carrot:0,bone:0,yarn:0,letter:0,cheese:0,acorn:0,stick:0,shell:0,fish:0,snowberry:0,eagleEgg:0,horseshoe:0,puff:0,ring:0,stump:0,bhat:0,bwhisk:0,bbell:0,pepper:0,salt:0,mushroom:0,pebble:0,plank:0,snowball:0},collected:new Set(),mods:{},picked:{},foxGone:false,gooseGone:false,
+    sp1:0,sp2:0,earned:0,gp:0,rank:1,taste:{},secrets:{},mgFirst:{},mgDay:{d:-1,n:0},acc:null,accessoryUnlocked:false,snackFirst:false,snackEaten:0,growMsgOnLoad:false,vil:{open:false,b:{},mat:{wood:0,stone:0,wool:0,clay:0},res:{},letters:[],nodes:{},shear:{},whistle:{},skills:0,contest:{},decor:{}},time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
     clock:Math.round(DAY*0.07),weather:'clear',wInt:0,puddle:0,outfits:[],wear:null,best:{egg:0,bonk:0,ffly:0,race:0},sacks:{speedy:0,giant:0,moon:0},decor:{},buff:null,jobs:{day:0,list:[]},hold:{seashell:0,plume:0,fossil:0,petal:0},museum:{seashell:0,plume:0,fossil:0,petal:0},cellar:false,chest:false,
     part2:false,areas:['farm'],thumb:false,coop:null,plots:{},mail:{rocco:0,cleo:0,granny:0},flags:{},turtles:[],harvests:0,train:{}};
 }
 function newPlayer(x,y){return {x,y,dir:0,z:0,moving:false,hop:null,kt:0,kx:0,ky:0,inv:0,peckT:0,flapCd:0,flapAnim:0,bubbleCd:0,flying:false};}
-function resetTransient(){RU=null;FEST=null;CRED=null;SH=null;PL=null;MG=null;EG=null;dlg=null;}
+function resetTransient(){RU=null;FEST=null;CRED=null;PIN=null;VB=null;SH=null;PL=null;MG=null;EG=null;dlg=null;}
 function newGame(){
   resetTransient();
   G=freshState();tiles=MAP.map(r=>r.split(''));P=newPlayer(56,76);CS={x:0,y:0};camX=0;camY=0;trans=null;
@@ -1973,7 +2182,7 @@ function newGame(){
 function save(){
   if(!G)return;titleSave=undefined;
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({sv:3,pos:toRegionPos(P.x,P.y),seeds:G.seeds,skills:[...G.skills],hearts:G.hearts,q:G.q,
-    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,gp:G.gp,rank:G.rank,taste:G.taste,secrets:G.secrets,mgFirst:G.mgFirst,mgDay:G.mgDay,acc:G.acc,accessoryUnlocked:G.accessoryUnlocked,snackFirst:G.snackFirst,snackEaten:G.snackEaten,sacks:G.sacks,decor:G.decor,buff:G.buff,jobs:G.jobs,hold:G.hold,museum:G.museum,
+    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,gp:G.gp,rank:G.rank,taste:G.taste,secrets:G.secrets,mgFirst:G.mgFirst,mgDay:G.mgDay,acc:G.acc,accessoryUnlocked:G.accessoryUnlocked,snackFirst:G.snackFirst,snackEaten:G.snackEaten,sacks:G.sacks,vil:G.vil,decor:G.decor,buff:G.buff,jobs:G.jobs,hold:G.hold,museum:G.museum,
     time:G.time,met:[...G.met],home:G.home,sibs:G.sibs,visited:[...G.visited],won:G.won,
     clock:G.clock,weather:G.weather,outfits:G.outfits,wear:G.wear,best:G.best,cellar:G.cellar,chest:G.chest,
     part2:G.part2,areas:G.areas,thumb:G.thumb,coop:G.coop,plots:G.plots,mail:G.mail,flags:G.flags,turtles:G.turtles,harvests:G.harvests,train:G.train,ov:2}));}catch(e){}
@@ -1992,7 +2201,7 @@ function continueGame(){
   {const p=s.pos?fromRegionPos(s.pos):{x:s.x,y:s.y};P=newPlayer(p.x,p.y);CS=s.pos?{x:Math.floor(p.x/256),y:Math.floor((p.y-1)/192)}:(s.cs||{x:0,y:0});if(!cellAt(CS)){P=newPlayer(56,76);CS={x:0,y:0};}}
   camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
   G.train=Object.assign({},s.train||{});migrateSave(s);
-  G.sacks=Object.assign(G.sacks,s.sacks||{});G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
+  G.sacks=Object.assign(G.sacks,s.sacks||{});if(s.vil)G.vil=Object.assign(G.vil,s.vil);G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
   migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();state='play';fade=1;fadeColor='#000';
   if(G.growMsgOnLoad){G.growMsgOnLoad=false;toast("You've grown! You are now a "+RANKS[G.rank-1].name+'!','#94dc64');}
 }
@@ -2030,6 +2239,7 @@ function makeEnts(){
   addEnt({type:'bowl',x:184,y:28*16+12});addEnt({type:'bowl',x:44*16+8,y:52*16+12});
   makeP2Ents();
   makeCityEnts();
+  makeVillageEnts();
   if(!G.foxGone){const p=at(27,16);addEnt({type:'fox',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:1,sy:1,hp:3,wt:0,wx:0,wy:0,kt:0,stun:0,cool:0,flash:0,flip:false});}
   if(!G.gooseGone){const p=at(43,18);addEnt({type:'goose',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:2,sy:1,st:'idle',t:0,kt:0,cool:0,flash:0,flip:false,solid:true,w:14});}
 }
@@ -2065,7 +2275,7 @@ function relocateFamily(){
   if(!G.coop)return;const lv=G.coop.lv;
   for(const e of ents){if(e.type!=='npc')continue;
     if(e.id==='mom'&&lv>=2)Object.assign(e,at(...FAMILY_POS.mom));
-    if(lv>=3&&(e.id==='penny'||(e.sib&&e.home)))Object.assign(e,at(...FAMILY_POS[e.id]));}
+    if(lv>=3&&(e.id==='penny'||(e.sib&&e.home))&&!(G.vil&&G.vil.res[e.id]))Object.assign(e,at(...FAMILY_POS[e.id]));}
 }
 const PLATES=[[19,42],[28,42]],GATE=[[23,40],[24,40]];
 function placeBlocks(){
@@ -2172,8 +2382,8 @@ function talkTo(e){
   }
   const ask=(t,choices,cb)=>L.push({who:e,text:t,choices,cb});
   const spec=TALK[e.id];if(spec&&spec(e,{it,me,ask})!==false){say(L);return;}
-  if(trainTalk(e,it)){say(L);return;}
-  let qid=QUEST_OF[e.id]||e.id;if(FOLLOWUP[e.id]&&G.q[e.id]===2&&G.q[FOLLOWUP[e.id]]!==2)qid=FOLLOWUP[e.id];
+  let qid=QUEST_OF[e.id]||e.id;const base=qid;if(FOLLOWUP[e.id]&&G.q[e.id]===2&&G.q[FOLLOWUP[e.id]]!==2&&(!FOLLOW_GATE[e.id]||FOLLOW_GATE[e.id]()))qid=FOLLOWUP[e.id];
+  if(qid===base&&trainTalk(e,it)){say(L);return;}
   const q=QUESTS[qid];if(!q)return;
   const pushLine=l=>typeof l==='string'?it(l):(l.me?me(l.me):it(l.t,l.fx));
   const doneLines=()=>{q.done.forEach((l,i)=>it(l,i===q.done.length-1?()=>{if(q.onDone)q.onDone();reward(q.reward,qid);}:null));(q.post||[]).forEach(pushLine);};
@@ -2218,6 +2428,7 @@ function action(){
   const f=frontPoint();
   for(const e of ents){if(e.type!=='npc'||!onCur(e))continue;
     if(Math.abs(f.x-e.x)<e.w/2+7&&f.y>e.y-20&&f.y<e.y+7){talkTo(e);return;}}
+  if(villageAction(f))return;
   for(const e of ents){if(e.type==='nook'&&onCur(e)&&Math.abs(f.x-e.x)<16&&Math.abs(f.y-(e.y-4))<12){useNook();return;}}
   for(const e of ents){if(e.type==='bowl'&&has('fly')&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){useBowl(e);return;}}
   for(const e of ents){if(e.type==='chest'&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){openChest();return;}}
@@ -2236,7 +2447,7 @@ function peck(f){
   if(MG&&MG.type==='ffly')for(const e of ents){if(e.type==='ffly'&&Math.abs(e.x-f.x)<15&&Math.abs(e.y-8-f.y)<15){
     e.dead=true;MG.score++;SFX.chirp();puff(e.x,e.y-8,6,['#e8ff70','#fff8ec'],0.8,0);float(e.x,e.y-16,''+MG.score,'#e8ff70');return;}}
   for(const e of ents){
-    if(hazardPeck(e,f,pr)||cityPeck(e,f,pr))return;
+    if(hazardPeck(e,f,pr)||cityPeck(e,f,pr)||villagePeck(e,f,pr))return;
     if(e.type==='worm'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
       e.dead=true;G.collected.add(e.id);G.items.worm++;tasteFood('worm');SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#9a6234']);strawBonus(e.x,e.y);
       float(e.x,e.y-14,'WORM '+Math.min(G.items.worm,3)+'/3','#f6a6b6');
@@ -2312,7 +2523,7 @@ function wingFlap(){
       parts.push({x:c*16+8,y:r*16+10,vx:dx*s+(Math.random()-.5)*1.5,vy:dy*s-Math.random()*1.5,g:0.03,life:40,c:['#ec6c24','#e03838','#c98a00','#9a6234'][i%4]});}
       revealHidden(c,r);save();}
   }
-  hazardFlap(dx,dy);
+  hazardFlap(dx,dy);greenWings(dx,dy);
   for(const e of ents){
     if(!((e.type==='fox'&&!e.gone)||(e.type==='goose'&&!e.blown)))continue;
     const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
@@ -2442,6 +2653,7 @@ function collect(e){
     case 'shell':G.items.shell++;SFX.pick();float(e.x,e.y-16,'SHELL '+Math.min(5,G.items.shell)+'/5','#f6a6b6');break;
     case 'eagleEgg':G.items.eagleEgg=1;SFX.quest();toast("Found Elda's egg! Carry it gently...");break;
     case 'yarn':G.items.yarn=1;SFX.quest();toast("Found Whiskers' yarn!");break;
+    case 'pebble':case 'plank':case 'snowball':G.items[e.kind]++;SFX.pick();float(e.x,e.y-16,({pebble:'PEBBLE',plank:'PLANK',snowball:'SNOWBALL'})[e.kind]+' x'+G.items[e.kind],'#fff8ec');break;
     case 'hat':case 'whisk':case 'collarBell':{const b=BORROWED.find(x=>x.kind===e.kind);G.items[b.item]=1;SFX.quest();toast('Found '+b.name+'! Return it.','#ff9cd0');break;}
     case 'pepper':case 'salt':case 'mushroom':G.items[e.kind]=1;SFX.pick();toast('Got '+({pepper:'MOUNTAIN PEPPER',salt:'SEA SALT',mushroom:'a FOREST MUSHROOM'})[e.kind]+'!','#ff9cd0');break;
     case 'seashell':case 'plume':case 'fossil':G.hold[e.kind]++;SFX.pick();toast('Found '+({seashell:'a pretty SEASHELL',plume:'a rare FEATHER',fossil:'a FOSSIL'})[e.kind]+'! Take it to the museum.','#c49a5c');break;
@@ -2498,7 +2710,7 @@ function updatePlay(){
   if(pressed.pause||pressed.back){openPause();return;}
   if(checkRankUp())return;
   if(tick%30===0){updateSchedules(false);checkBuffExpiry();}
-  updateSunbeam();updateBabysit();updateRace();
+  updateSunbeam();updateBabysit();updateRace();updateVillage();
   if(pressed.grow){openGrow();return;}
   if(pressed.quest){state='quests';questPage=G.part2?1:0;SFX.menu();return;}
   if(pressed.wear){openWardrobe();return;}
@@ -2564,6 +2776,7 @@ function pickTrack(){
   if(state==='map'||state==='flying'||state==='p2intro')return'grove';
   {const c=cellAt();if(c){if(c.kind==='grove')return'grove';if(c.kind==='cave')return'cave';if(c.kind==='indoor')return'indoor';}}
   if(nightAmt()>0.45)return'night';
+  {const rm=regionAt();if(rm&&rm.music)return rm.music;}
   {const a=areaOf();if(a&&a!=='farm')return a;}
   if(CS.x===0&&CS.y===1)return'pond';
   return'farm';
@@ -2649,7 +2862,7 @@ function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
   if(G&&G.rank>=10&&st>=6&&wear!==undefined&&G.wear===wear){ctx.fillStyle='rgba(255,216,58,0.22)';ctx.beginPath();ctx.arc(x0+w*sc/2,y0+h*sc/2,w*sc*0.8,0,7);ctx.fill();}
   ctx.drawImage(spr,x0,y0,w*sc,h*sc);
   if(G&&st>=6&&G.rank>=8&&G.wear===wear)rankFlair(x0,y0,w,h,sc,dir);
-  const O=OUTFIT_SPR,HAT={straw:5,pirate:5,astronaut:8,chef:6,detective:4},lift=(acc&&wear&&HAT[wear]||0)*sc;
+  const O=OUTFIT_SPR,HAT={straw:5,pirate:5,astronaut:8,chef:6,detective:4,overalls:4},lift=(acc&&wear&&HAT[wear]||0)*sc;
   const wearItem=(wear,lift)=>{switch(wear){
     case 'straw':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
     case 'pirate':{const o=O.pirate;D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);
@@ -2664,7 +2877,7 @@ function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
       ctx.fillStyle='#fff';ctx.fillRect(Math.round(hx-R*0.6),Math.round(hy-R*0.5),sc,2*sc);
       ctx.fillStyle=PAL.E;ctx.fillRect(Math.round(hx-sc/2),Math.round(hy-R-6*sc),sc,3*sc);ctx.fillStyle=PAL.r;ctx.fillRect(Math.round(hx-sc),Math.round(hy-R-7*sc),2*sc,2*sc);
       if(dir===0){ctx.fillStyle='#d8dce8';ctx.fillRect(Math.round(hx-R*0.9),Math.round(hy+R+2*sc),Math.round(R*1.8),2*sc);ctx.fillStyle=PAL.u;ctx.fillRect(Math.round(hx-sc),Math.round(hy+R+2*sc),2*sc,2*sc);}break;}
-    case 'chef':case 'detective':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
+    case 'chef':case 'detective':case 'overalls':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+3*sc);break;}
     case 'goggles':{if(dir===1)break;const ey=y0+Math.floor(hd.y)*sc-sc;
       if(dir===0){const o=O.gogF;D(o,hx-o.width*sc/2,ey);}else{const o=O.gogS,ex=x0+mx(hd.x-hd.r*0.35)*sc;D(o,ex-o.width*sc/2,ey,dir===3);}break;}
     case 'crown':case 'ears':{const o=O[wear];D(o,hx-o.width*sc/2,top-o.height*sc+2*sc-lift);break;}
@@ -2736,12 +2949,12 @@ function updateMG(){
 }
 function endMG(){
   const m=MG;MG=null;for(const e of ents){if(e.type==='hole')e.up=0;if(e.type==='ffly')e.dead=true;}
-  const win=m.score>=m.goal,key=m.type,prize=key==='bonk'?'ears':'pirate',npc=ents.find(n=>n.id===m.npc);
+  const win=m.score>=m.goal;if(win&&m.contest)contestWin();const key=m.type,prize=key==='bonk'?'ears':'pirate',npc=ents.find(n=>n.id===m.npc);
   G.best[key]=Math.max(G.best[key],m.score);const L=[];
   if(win){SFX.questDone();
     minigameGP(key,true);
     if(!G.outfits.includes(prize)){grantOutfit(prize);
-      L.push({who:npc,text:m.npc==='fizz'?"You won with "+m.score+" points! Take the prize, it's yours!":key==='bonk'?"WOW! You bonked "+m.score+" carrots! You win my spare BUNNY EARS!":"Hoo-hoo! Splendid! "+m.score+" fireflies! A pirate captain left this PIRATE OUTFIT in my tree long ago. It's yours! Arr!",
+      L.push({who:npc,text:(m.npc==='fizz'||m.contest)?"You won with "+m.score+" points! Take the prize, it's yours!":key==='bonk'?"WOW! You bonked "+m.score+" carrots! You win my spare BUNNY EARS!":"Hoo-hoo! Splendid! "+m.score+" fireflies! A pirate captain left this PIRATE OUTFIT in my tree long ago. It's yours! Arr!",
         fx:()=>toast('Got the '+(prize==='ears'?'BUNNY EARS':'PIRATE OUTFIT')+'! Press C to wear.')});}
     else L.push({who:npc,text:"You won again! Score: "+m.score+". Best: "+G.best[key]+"!"});}
   else{SFX.deny();L.push({who:npc,text:(key==='bonk'?"Time's up! You got ":"The moon is setting! You caught ")+m.score+". Talk to me to try again!"});}
@@ -2767,7 +2980,7 @@ function updateEgg(){
   if(e.score>=20){e.over=1;e.win=true;SFX.questDone();}else if(e.miss>=5){e.over=1;SFX.deny();}
 }
 function endEgg(){
-  const e=EG;EG=null;state='play';const penny=ents.find(n=>n.id===e.host),L=[];G.best.egg=Math.max(G.best.egg,e.score);
+  const e=EG;EG=null;state='play';const penny=ents.find(n=>n.id===e.host),L=[];if(e.contest&&e.win)contestWin();G.best.egg=Math.max(G.best.egg,e.score);
   if(e.win){minigameGP('egg',true);if(!G.outfits.includes('bow')){grantOutfit('bow');
       L.push({who:penny,text:"WOW! "+e.score+" eggs! You're amazing, Pip! Here, take my spare PINK BOW!",fx:()=>{toast('Got the PINK BOW! Press C to wear.');SFX.quest();}});}
     else L.push({who:penny,text:"You did it again! "+e.score+" eggs. Egg-cellent!"});}
@@ -2827,12 +3040,13 @@ function hint2(){
   for(const id of ORDER2){if(G.q[id]===1)return QUESTS[id].hint();}
   for(const id of ORDER3){if(G.q[id]===1&&QUESTS[id].check())return "Go tell "+NAMES[QUEST_GIVER[id]||id]+" the good news!";}
   for(const id of ORDER3){if(G.q[id]===1)return QUESTS[id].hint();}
+  {const vh=villageHint();if(vh)return vh;}
   if(G.coop&&G.coop.lv<4)return "Upgrade your coop! Read the sign next to it.";
   if(!G.flags.festival)return festivalReady()?"Talk to Granny Shell in the forest: it's time for the festival!":"Almost there! Keep growing: the city has shops and homes to explore, and garden harvests and the snack bowl help too.";
   return "Your Dream Coop is finished! What a journey, little one.";
 }
 function areaOf(cs=CS){const r=regionAt(cs);return r?r.area:null;}
-const AREA_LABEL={farm:'FARM',forest:'FOREST',mountains:'MOUNTAINS',city:'CITY',beach:'BEACH',coop:'MY COOP'};
+const AREA_LABEL={farm:'FARM',forest:'FOREST',mountains:'MOUNTAINS',city:'CITY',beach:'BEACH',coop:'MY COOP',village:'VILLAGE'};
 function noteArea(){const a=areaOf();if(a&&a!=='coop'&&!G.areas.includes(a)){G.areas.push(a);if(G.part2)toast('Discovered the '+AREA_LABEL[a]+'!','#94dc64');}}
 
 /* ---- skill trainers: some skills need a special lesson before you can buy them ---- */
@@ -2909,7 +3123,7 @@ const GROW=5400;
 function plotRate(e){const st=G.plots[e.id],kind=SEED_TYPES[(st&&st.k)||'plain'];
   if(kind.night&&nightAmt()<0.5)return 0;
   let r=wearing('straw')?1.5:1;if(e.coop&&G.coop){if(G.coop.lv>=4)r=2;else if(G.coop.lv>=3)r=1.5;}
-  if(buffActive('bun'))r*=1.25;if(rainAmt()>0.5)r*=2;return r*kind.grow;}
+  if(buffActive('bun'))r*=1.25;if(rainAmt()>0.5)r*=2;if(!e.coop&&G.vil.open)r*=seasonPlotMul();return r*kind.grow;}
 function updatePlots(){for(const e of ents)if(e.type==='plot'){const s=G.plots[e.id];if(s&&s.p<1)s.p=Math.min(1,s.p+plotRate(e)/GROW);}}
 function usePlot(e){
   if(!G.thumb){say([{who:'me',text:"This soil looks so soft... Maybe Granny Shell knows how to grow things?"}]);return;}
@@ -2919,6 +3133,7 @@ function usePlot(e){
   const kd=SEED_TYPES[s.k||'plain'];
   if(s.p<1){float(e.x,e.y-16,(kd.night&&nightAmt()<0.5?'Sleeping until night... ':'Growing... ')+Math.floor(s.p*100)+'%','#94dc64');SFX.menu();return;}
   const yield_=kd.yield+(G.rank>=6?1:0);if(kd.petal){G.hold.petal++;toast('A rare MOON PETAL! Take it to the museum.','#e8a0d0');}
+  if(kd.pumpkin){tasteFood('pumpkin');const wt=pumpkinWeigh(s);toast('Your pumpkin weighs '+wt+' pounds!','#f37d22');if(wt>=24&&seasonNow().name==='AUTUMN')contestWin();else if(wt<24)toast('Judges want 24. Water it with Green Wings next time!','#b8a8d8');}
   delete G.plots[e.id];addSeeds(yield_,2,0);G.harvests++;gainGP(GP.harvest);SFX.seed();puff(e.x,e.y-10,10,['#ffd83a','#fff8ec'],1.2,0.05);float(e.x,e.y-18,'+'+yield_+' SEEDS!','#ffd83a');save();
 }
 /* ---- followers (fawn & baby turtles) ---- */
@@ -2943,10 +3158,10 @@ function freeMo(){
 }
 /* ---- fly map ---- */
 const DEST={farm:{x:584,y:283,mx:40,my:110,icon:'door'},forest:{x:136,y:1067,mx:128,my:110,icon:'oak'},mountains:{x:136,y:923,mx:128,my:62,icon:'pine'},
-  city:{x:600,y:1051,mx:214,my:110,icon:'brickWin'},beach:{x:136,y:1179,mx:128,my:158,icon:'palm'},coop:{mx:0,my:0,icon:'cdoor'}};
+  city:{x:600,y:1051,mx:214,my:110,icon:'brickWin'},village:{x:648,y:1436,mx:214,my:158,icon:'hay'},beach:{x:136,y:1179,mx:128,my:158,icon:'palm'},coop:{mx:0,my:0,icon:'cdoor'}};
 let mapSel='forest',FLY=null;
 function destOf(k){if(k==='coop'){const S=SITES[G.coop.site],a=DEST[G.coop.site];return Object.assign({},coopExit(),{mx:a.mx+26,my:a.my+18,icon:'cdoor'});}return DEST[k];}
-function mapNodes(){const ks=['farm','forest','mountains','city','beach'].filter(k=>G.areas.includes(k)||k==='farm'||k==='forest');if(G.coop)ks.push('coop');return ks;}
+function mapNodes(){const ks=['farm','forest','mountains','city','beach','village'].filter(k=>(G.areas.includes(k)&&(k!=='village'||G.vil.open))||k==='farm'||k==='forest');if(G.coop)ks.push('coop');return ks;}
 function openMap(){
   if(!G.part2)return;
   const k=CS.x+','+CS.y;if(!WALK.has(k)){toast('Go outside to fly!','#a6e0ff');return;}
@@ -2971,8 +3186,9 @@ function drawMap(){
   txt('WHERE TO, PIP?',W/2,14,8,'#5e3a1c',{align:'center'});
   const nodes=mapNodes(),line=(a,b)=>{const A=destOf(a),B=destOf(b);ctx.fillStyle='#c49a5c';
     const n=Math.max(Math.abs(B.mx-A.mx),Math.abs(B.my-A.my))/4;for(let i=0;i<=n;i++){if(i%2)continue;ctx.fillRect(Math.round(lerp(A.mx,B.mx,i/n))-1,Math.round(lerp(A.my,B.my,i/n))-1,2,2);}};
-  ['farm','mountains','city','beach'].forEach(k=>line('forest',k));
-  for(const k of ['farm','forest','mountains','city','beach','coop']){
+  ['farm','mountains','city','beach'].forEach(k=>line('forest',k));if(G.vil.open)line('city','village');
+  for(const k of ['farm','forest','mountains','city','beach','village','coop']){
+    if(k==='village'&&!G.vil.open)continue;
     if(k==='coop'&&!G.coop)continue;const d=destOf(k),open=nodes.includes(k),sel=k===mapSel;
     if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(d.mx-15,d.my-15,30,30);}
     box(d.mx-13,d.my-13,26,26,open?'#fff8ec':'#c8b080',open?'#5e3a1c':'#9a8060');
@@ -3300,34 +3516,48 @@ const FEST_LINES=[
   ['rooster',"SIR CLUCKINGTON","COCK-A-DOODLE-WOW! You've got real pluck, kid!"],
   ['pinch',"CAPN PINCH","Arr! A true sea chick, ye are!"],
   ['granny',"GRANNY SHELL","Now close your eyes, Pip. It's time to grow up!"]];
-function startFestival(){FEST={t:0,line:0,shown:0};state='festival';fade=0;SFX.fanfare();}
+const HARVEST_GUESTS=['beaver','dog','pig','cat','horse','cow','deer','penny','rooster','hen','tortoise','sheepBow','duck','mouse','peacock','goat','badger','ferret','owlGlasses','pigeon','raccoon','catO','marmot','eagle','crab','gull'];
+const HARVEST_LINES=[
+  ['barnaby',"FOREMAN BARNABY","Look at this village, Pip! Every pad has a building and every building has a friend!"],
+  ['daisy',"DAISY","Mooo-velous! Milk and bread for everyone!"],
+  ['pig',"PORKCHOP","Best mud pond in Chicklandia. I rolled in it twice today."],
+  ['clyde',"CLYDE","Neeeigh! A mill, a wagon and a hay barn. A horse's dream!"],
+  ['penny',"PENNY","Class is full! Everyone wants to learn from the chick who built it all!"],
+  ['rooster',"SIR CLUCKINGTON","COCK-A-DOODLE-DOO! I crow the sun up on my own stage every morning!"],
+  ['doe',"DOE","The clinic is quiet. That's the best sign of a happy village."],
+  ['whiskers',"WHISKERS","Purr. The cushion is perfect. The sun is perfect. You are... acceptable."],
+  ['bucky',"BUCKY","Beaver-tail slap! We did it, Pip! A whole village, from a muddy meadow!"],
+  ['mom',"MAMA HEN","My little peep, the Village Hero. I'm the proudest hen in the world!"]];
+const FEST_SCRIPTS={
+  coming:{lines:FEST_LINES,guests:FEST_GUESTS,scene:'coop',end:()=>{G.flags.festival=1;G.flags.part2done=1;save();startRankUp(7,startCredits);}},
+  harvest:{lines:HARVEST_LINES,guests:HARVEST_GUESTS,scene:'harvest',end:()=>{G.flags.village=1;reward(QUESTS.vharvest.reward,'vharvest');save();startRankUp(8,startPinch);}}};
+function startFestival(name){FEST={t:0,line:0,shown:0,S:FEST_SCRIPTS[name||'coming']};state='festival';fade=0;SFX.fanfare();}
 function updateFestival(){
   const f=FEST;f.t++;
   if(f.t<40){fade=1-f.t/40;return;}fade=0;
-  const L=FEST_LINES[f.line];
+  const L=f.S.lines[f.line];
   if(f.shown<L[2].length){f.shown+=TEXT_SPEED_MUL[SET.speed];if(Math.floor(f.shown)%3===0&&f.t%2===0)SFX.blip(500+(f.line*53)%300);if(pressed.a)f.shown=L[2].length;}
   else if(pressed.a){
     f.line++;f.shown=0;SFX.menu();
-    if(f.line>=FEST_LINES.length){FEST=null;G.flags.festival=1;G.flags.part2done=1;save();
-      startRankUp(7,startCredits);}
+    if(f.line>=f.S.lines.length){const end=f.S.end;FEST=null;end();}
   }
 }
 function drawFestival(){
-  const f=FEST;
-  drawSky(tick);for(let x=0;x<W;x++){const h=Math.round(120+Math.sin(x/23)*5);ctx.fillStyle='#4ea84a';ctx.fillRect(x,h,1,H-h);}
+  const f=FEST,S=f.S,harvest=S.scene==='harvest';
+  drawSky(harvest?tick+700:tick);for(let x=0;x<W;x++){const h=Math.round(120+Math.sin(x/23)*5);ctx.fillStyle=harvest?'#8aa84a':'#4ea84a';ctx.fillRect(x,h,1,H-h);}
   for(let x=0;x<W;x+=16){ctx.drawImage(TILE.grass[(x/16)%3],x,150);ctx.drawImage(TILE.grass[(x/16+1)%3],x,166);ctx.drawImage(TILE.flower[(x/16)%2],x,182);}
-  // the dream coop with its golden roof
-  for(let i=0;i<3;i++){ctx.drawImage(TILE.goldroof,104+i*16,92);ctx.drawImage(i===1?TILE.cdoor:TILE.cwall,104+i*16,108);}
-  // bunting
+  if(harvest){ctx.fillStyle='rgba(255,160,60,0.14)';ctx.fillRect(0,0,W,H);
+    ctx.drawImage(SPR.windmillBase,108,64);const a=tick/40;ctx.strokeStyle='#21142b';ctx.lineWidth=3;for(let i=0;i<4;i++){const an=a+i*Math.PI/2;ctx.beginPath();ctx.moveTo(128,78);ctx.lineTo(128+Math.cos(an)*24,78+Math.sin(an)*24);ctx.stroke();}
+    for(let i=0;i<5;i++)drawImg(SPR.pumpkin,20+i*52,152);}
+  else for(let i=0;i<3;i++){ctx.drawImage(TILE.goldroof,104+i*16,92);ctx.drawImage(i===1?TILE.cdoor:TILE.cwall,104+i*16,108);}
   for(let x=10;x<W-10;x+=12){ctx.fillStyle=['#e03838','#ffd83a','#3a86e8','#94dc64','#ff6fae'][(x/12)%5|0];ctx.fillRect(x,40+Math.round(Math.sin(x/20)*3),8,6);}
   ctx.fillStyle='#21142b';ctx.fillRect(10,40,W-20,1);
-  // guests, popping in one by one
-  const n=Math.min(FEST_GUESTS.length,Math.floor((f.t-10)/6));
-  FEST_GUESTS.forEach((k,i)=>{if(i>=n)return;const s=SPR[k];if(!s)return;
+  const n=Math.min(S.guests.length,Math.floor((f.t-10)/6));
+  S.guests.forEach((k,i)=>{if(i>=n)return;const s=SPR[k];if(!s)return;
     const row=i%2,x=14+Math.floor(i/2)*18+(row?9:0),y=(row?196:178)+Math.round(Math.sin((tick+i*9)/12)*1);
     drawImg(i%3===0?flipOf(s):s,x-(s.width>>1),y-s.height);});
   drawPip(stageOfRank(G.rank),0,Math.floor(tick/14)%2,false,128,160,2);
-  const L=FEST_LINES[f.line];
+  const L=S.lines[f.line];
   if(f.t>=40){box(10,10,W-20,22,'#fff8ec','#21142b');
     txt(L[1],16,13,5,'#ec6c24');
     txt(L[2].slice(0,Math.floor(f.shown)),16,22,5,'#21142b');
@@ -3361,6 +3591,35 @@ function drawCredits(){
   CREDITS.forEach(l=>{if(l==='')y+=8;else l.forEach((s,j)=>{const big=l===CREDITS[0]||l[0]==='TO BE CONTINUED...';if(y>-12&&y<H+4)txt(s,W/2,y,big?8:6,big?'#ffd83a':'#fff8ec',{align:'center'});y+=big?14:11;});});
   drawPip(stageOfRank(G.rank),0,Math.floor(tick/14)%2,false,W/2,Math.max(150,y+20),2);
   if(c.t>CREDITS.length*14+120&&Math.floor(c.t/25)%2)txt('Press Z to keep playing',W/2,H-14,6,'#b8a8d8',{align:'center'});
+}
+
+/* ---- Cap'n Pinch sails in with the treasure map (end of the village chapter) ---- */
+let PIN=null;
+const PINCH_LINES=["Ahoy, Pip! Cap'n Pinch be here! I sailed all night to find ye!","While scrubbin' me ship's hold, I found an OLD TREASURE MAP!","It leads to the PIRATE SEAS! Gold, volcanoes... and a gull named Captain Squawkbeard!","Get yer sea legs ready, matey. A grand adventure awaits ye!"];
+function startPinch(){PIN={t:0,line:0,shown:0};state='pinch';fade=0;SFX.fanfare();}
+function updatePinch(){
+  const p=PIN;p.t++;if(p.t<40){fade=1-p.t/40;return;}fade=0;
+  if(p.t<260){if(p.t%30===0)SFX.flap();return;}
+  const L=PINCH_LINES[p.line];
+  if(p.shown<L.length){p.shown+=TEXT_SPEED_MUL[SET.speed];if(pressed.a)p.shown=L.length;}
+  else if(pressed.a){p.line++;p.shown=0;SFX.menu();
+    if(p.line>=PINCH_LINES.length){PIN=null;G.flags.pinchMap=1;G.flags.seasReady=1;save();state='play';
+      const sq={x:40*16+8,y:89*16+12};P.x=sq.x;P.y=sq.y+24;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;
+      say([{who:'me',text:"The Pirate Seas! I wonder what's out there... Cap'n Pinch said to meet at the city harbor when I'm ready."}]);}}
+}
+function drawPinch(){
+  const p=PIN;
+  for(let i=0;i<9;i++){ctx.fillStyle=['#ff8a60','#ff9a6a','#ffaa78','#ffba88','#ffca98','#ffd8a8','#ffe0b8','#ffe8c8','#fff0d8'][i];ctx.fillRect(0,i*14,W,14);}
+  ctx.fillStyle='#fff3a0';ctx.beginPath();ctx.arc(190,110,16,0,7);ctx.fill();
+  ctx.fillStyle='#2a5fb0';ctx.fillRect(0,120,W,H-120);ctx.fillStyle='#3a70c8';for(let x=0;x<W;x+=10)ctx.fillRect(x,122+Math.round(Math.sin((x+tick*2)/9)*2),6,2);
+  const sx=Math.round(lerp(300,110,Math.min(1,p.t/240))),sy=134+Math.round(Math.sin(tick/14)*2);
+  ctx.fillStyle='#21142b';ctx.fillRect(sx-4,sy-52,3,52);ctx.fillStyle='#fff8ec';ctx.beginPath();ctx.moveTo(sx,sy-50);ctx.lineTo(sx+34,sy-14);ctx.lineTo(sx,sy-14);ctx.fill();
+  ctx.fillStyle='#e03838';ctx.fillRect(sx-4,sy-56,12,5);
+  for(let i=0;i<5;i++)ctx.drawImage(TILE.ship,sx-40+i*16,sy-12,16,16);
+  drawImg(SPR.crab,sx-12,sy-12-SPR.crab.height+4+Math.round(Math.sin(tick/9)*1));
+  if(p.t>=260){const L=PINCH_LINES[p.line];box(10,150,W-20,60,'#fff8ec','#21142b');txt("CAP'N PINCH",16,155,5,'#ec6c24');
+    wrap(L.slice(0,Math.floor(p.shown)),5,W-36).forEach((l,i)=>txt(l,16,166+i*10,5,'#21142b'));
+    if(p.shown>=L.length&&Math.floor(tick/15)%2)txt('v',W-22,198,5,'#ec6c24');}
 }
 
 /* ===== src/systems/city2.js ===== */
@@ -3556,6 +3815,237 @@ function makeCityEnts(){
   updateSchedules(true);
 }
 
+/* ===== src/systems/village.js ===== */
+/* ---------------- Chicklandia Village: materials, building, residents, happiness, seasons, contests ---------------- */
+/* ---- calendar ---- */
+function seasonNow(){const d=dayNum()-1,i=Math.floor(d/SEASON_DAYS)%4;return {i,name:SEASONS[i],year:Math.floor(d/(SEASON_DAYS*4))};}
+function daysToNextSeason(){return SEASON_DAYS-((dayNum()-1)%SEASON_DAYS);}
+/* ---- numbers ---- */
+function builtList(kind){return Object.entries(G.vil.b).filter(([id,b])=>b.done&&(!kind||b.kind===kind)).map(([id,b])=>Object.assign({id},b));}
+function happiness(){
+  let h=0;for(const b of builtList())h+=BUILDING_TYPES[b.kind].happy;
+  h+=Object.keys(G.vil.res).length*HAPPY_WISH;h+=Object.keys(G.vil.contest).length*HAPPY_CONTEST;return h;
+}
+function buildTime(){return has('master')?Math.round(BUILD_TIME/2):BUILD_TIME;}
+function costOf(kind){const c=Object.assign({},BUILDING_TYPES[kind].cost);if(has('master')&&c.wood>1)c.wood--;return c;}
+function costText(c){return [c.seeds?c.seeds+' SEEDS':'',...MATS.filter(m=>c[m]).map(m=>c[m]+' '+MAT_NAME[m])].filter(Boolean).join(', ');}
+function missingFor(c){const out=[];if((c.seeds||0)>G.seeds)out.push((c.seeds-G.seeds)+' SEEDS');for(const m of MATS)if((c[m]||0)>G.vil.mat[m])out.push((c[m]-G.vil.mat[m])+' '+MAT_NAME[m]);return out;}
+function payCost(c){G.seeds-=c.seeds||0;for(const m of MATS)G.vil.mat[m]-=c[m]||0;}
+function matsLine(){return MATS.map(m=>MAT_NAME[m]+' '+G.vil.mat[m]).join('   ');}
+function gainMat(kind,n,x,y){G.vil.mat[kind]+=n;SFX.pick();float(x,y-16,'+'+n+' '+MAT_NAME[kind],'#ffd83a');}
+/* ---- opening the village ---- */
+function openVillage(){
+  if(G.vil.open)return;G.vil.open=true;
+  for(const [c,r] of VILLAGE_ROAD)setTile(c,r,'=');
+  if(!G.areas.includes('village'))G.areas.push('village');
+  toast('The village road is open! South of the city market.','#94dc64');save();
+}
+/* ---- entities ---- */
+function padCenter(p){return {x:(p.c+1)*16,y:(p.r+2)*16-2};}
+function makeVillageEnts(){
+  for(const p of PADS){const q=padCenter(p);addEnt({type:'vpad',id:p.id,pad:p,x:q.x,y:q.y,w:30});}
+  for(const n of NODES)addEnt({type:'vnode',id:n.id,kind:n.kind,x:n.c*16+8,y:n.r*16+12});
+  for(const s of VSHEEP)addEnt({type:'vsheep',id:s.id,x:s.c*16+8,y:s.r*16+12,ph:s.c*3,solid:true,w:14});
+  for(const [c,r] of CROP_ROWS)addPlot(c,r,false);
+  addEnt({type:'vmail',x:37*16+8,y:88*16+12});
+  addEnt({type:'vboard',x:41*16+8,y:88*16+12});
+  addEnt({type:'vwhistle',x:44*16+8,y:90*16+12});
+  addEnt({type:'vcontest',x:21*16+8,y:88*16+12});
+  addEnt({type:'windmill',x:29*16+8,y:89*16+14,solid:true,w:26});
+  addEnt({type:'scarecrow',x:37*16+8,y:100*16+12});
+  const sc=seasonNow();
+  addEnt({type:'vsculpt',x:24*16+8,y:90*16+12,solid:true,w:16});
+  // snowballs for the winter contest, pumpkin patch is a normal garden row
+  if(G.vil.contest.snowStage===undefined)G.vil.snow=G.vil.snow||0;
+  for(const [i,[c,r]] of [[4,87],[11,89],[13,92]].entries())if(sc.name==='WINTER'&&!(G.vil.contest['WINTER_'+sc.year])&&!G.collected.has('sb'+i+'_'+sc.year))spawnItem('sb'+i+'_'+sc.year,'snowball',c*16+8,r*16+12);
+  relocateResidents();
+}
+function relocateResidents(){
+  for(const id in G.vil.res){const e=ents.find(x=>x.id===id),p=PADS.find(q=>q.id===G.vil.res[id]);if(!e||!p)continue;
+    const q=padCenter(p),k=Object.keys(G.vil.res).indexOf(id);Object.assign(e,{x:q.x-10+(k%3)*10,y:q.y+14,sched:null});e.vres=true;}
+}
+/* ---- per-frame upkeep (called from updatePlay) ---- */
+let lastSeason=-1;
+function updateVillage(){
+  if(!G.vil.open)return;
+  if(tick%30===0){
+    for(const [id,b] of Object.entries(G.vil.b))if(!b.done&&G.clock-b.t0>=b.dur){b.done=true;
+      const t=BUILDING_TYPES[b.kind];toast(t.name+' is finished!','#94dc64');SFX.questDone();shake=4;gainGP(GP.build);
+      const p=PADS.find(q=>q.id===id),q=padCenter(p);puff(q.x,q.y-12,16,['#ffd83a','#fff8ec','#94dc64'],1.6,0.05);save();}
+    checkLetters();
+    const s=seasonNow();if(lastSeason!==s.i+s.year*4){if(lastSeason!==-1&&regionAt()&&regionAt().area==='village')toast('It is '+s.name+' in the village!','#ffd83a');lastSeason=s.i+s.year*4;}
+  }
+}
+function freeBuilding(kind){const taken=Object.values(G.vil.res);return builtList(kind).find(b=>!taken.includes(b.id));}
+function checkLetters(){
+  for(const r of RESIDENTS){const q='v_'+r.id;if(G.q[q]===0&&freeBuilding(r.needs)){G.q[q]=1;G.vil.letters.push(r.id);toast('A letter arrived at the village mailbox!','#ff9cd0');SFX.chirp();}}
+}
+/* ---- building ---- */
+let VB=null;      // the pad being built on
+function tryBuild(kind){
+  const pad=VB.pad,t=BUILDING_TYPES[kind],c=costOf(kind);
+  if(t.only==='river'&&!pad.river)return {s:'A mill must be built beside the river!',c:'#ff8080'};
+  const miss=missingFor(c);if(miss.length){SFX.deny();return {s:'You still need '+miss.join(', ')+'.',c:'#ff8080'};}
+  payCost(c);G.vil.b[pad.id]={kind,t0:G.clock,dur:buildTime(),done:false};
+  SFX.cash();shake=3;const q=padCenter(pad);puff(q.x,q.y-8,12,['#c49a5c','#fff8ec'],1.4,0.06);
+  state='play';SH=null;VB=null;toast('Construction started!','#ffd83a');save();return null;
+}
+function padAction(e){
+  const b=G.vil.b[e.id];
+  if(!b){VB={pad:e.pad};openCatalog('build');return;}
+  const t=BUILDING_TYPES[b.kind];
+  if(!b.done){const pct=Math.min(99,Math.floor((G.clock-b.t0)/b.dur*100));say([{who:'me',text:"The "+t.name+" is going up! About "+pct+"% done. The builders are busy!"}]);return;}
+  const who=Object.keys(G.vil.res).find(id=>G.vil.res[id]===e.id);
+  if(b.kind==='mill'){
+    if(G.vil.millDay!==dayNum()){G.vil.millDay=dayNum();addSeeds(2,2,0);float(e.x,e.y-34,'+2 SEEDS (flour sale)','#ffd83a');SFX.seed();save();
+      say([{who:'me',text:"The mill ground some flour and sold it. Two seeds in the till!"}]);}
+    else say([{who:'me',text:"The mill is busy grinding. More flour tomorrow!"}]);return;}
+  if(b.kind==='clinic'){G.hearts=maxHearts();SFX.pick();float(e.x,e.y-34,'All better!','#94dc64');
+    say([{who:'me',text:"A cozy bed, a warm blanket and a cup of tea. All my hearts are full!"}]);return;}
+  say([{who:'me',text:who?(RESIDENTS.find(r=>r.id===who).name+" lives here. "+RESIDENTS.find(r=>r.id===who).home):"A lovely "+t.name+"."+(['home','bakery','school','band'].includes(b.kind)?" Maybe a friend would like to live here?":"")}]);
+}
+/* ---- mailbox and residents ---- */
+function mailboxAction(){
+  const id=G.vil.letters[0];
+  if(!id){say([{who:'me',text:G.vil.open?"No new mail. Friends will write when there's a place for them to live!":""}]);return;}
+  const r=RESIDENTS.find(x=>x.id===id),give=r.give,miss=missingFor(Object.assign({},give));
+  const L=[{who:'me',text:"A letter from "+r.name+": \"Dear Pip, I'd love to move to your village! My one wish: "+r.wish+"\""}];
+  L.push({who:'me',text:matsLine()+".   Give "+costText(give)+"?",choices:['Give it!','Later'],cb:i=>{
+    if(i!==0)return;
+    const m=missingFor(give);if(m.length){SFX.deny();say([{who:'me',text:"I still need "+m.join(', ')+". I'll find more!"}]);return;}
+    payCost(give);moveIn(id);}});
+  say(L);
+}
+function moveIn(id){
+  const r=RESIDENTS.find(x=>x.id===id),b=freeBuilding(r.needs);
+  G.vil.letters=G.vil.letters.filter(x=>x!==id);
+  if(!b){toast('The home is gone?!','#ff8080');return;}
+  G.vil.res[id]=b.id;relocateResidents();
+  const qid='v_'+id;reward(QUESTS[qid].reward,qid);
+  const e=ents.find(x=>x.id===id);
+  toast(r.name+' '+r.how+'!','#94dc64');SFX.fanfare();
+  const p=PADS.find(q=>q.id===b.id),q=padCenter(p);for(let i=0;i<14;i++)puff(q.x,q.y-10,1,['#ff6fae','#ffd83a','#fff8ec','#94dc64'],2,0.05);
+  if(e)say([{who:e,text:r.home}]);save();
+}
+/* ---- gathering ---- */
+function villagePeck(e,f,pr){
+  if(e.type==='vnode'&&G.vil.nodes[e.id]!==dayNum()&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-6-f.y)<14){
+    if(e.kind==='stone'&&!has('carry')){SFX.clunk();float(e.x,e.y-16,'Too heavy! Learn CARRY','#ff9cd0');return true;}
+    if(!has('peck')&&e.kind!=='clay'){SFX.clunk();float(e.x,e.y-16,'Too tough!');return true;}
+    G.vil.nodes[e.id]=dayNum();gainMat(e.kind,NODE_YIELD[e.kind]+(wearing('overalls')?1:0),e.x,e.y);puff(e.x,e.y-4,8,['#c49a5c','#e8d8b0'],1.2,0.06);SFX.brk();save();return true;}
+  if(e.type==='vsheep'&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-5-f.y)<14){
+    if(G.vil.shear[e.id]===dayNum()){float(e.x,e.y-18,'Baa! (Come back tomorrow)','#fff8ec');SFX.menu();return true;}
+    G.vil.shear[e.id]=dayNum();gainMat('wool',2+(wearing('overalls')?1:0),e.x,e.y);puff(e.x,e.y-8,8,['#fff8ec','#e8e8f0'],1.2,0.04);save();return true;}
+  if(e.type==='vsculpt'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-5-f.y)<16){sculptAction();return true;}
+  return false;
+}
+/* ---- other interactables ---- */
+function villageAction(f){
+  for(const e of ents){if(!onCur(e))continue;
+    if(e.type==='vpad'&&Math.abs(f.x-e.x)<26&&Math.abs(f.y-(e.y-10))<24){padAction(e);return true;}
+    if(e.type==='vmail'&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-5))<14){mailboxAction();return true;}
+    if(e.type==='vboard'&&Math.abs(f.x-e.x)<16&&Math.abs(f.y-(e.y-5))<14){openCatalog('board');return true;}
+    if(e.type==='vcontest'&&Math.abs(f.x-e.x)<16&&Math.abs(f.y-(e.y-5))<14){openCatalog('contest');return true;}
+    if(e.type==='vwhistle'&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-5))<14){whistleAction(e);return true;}}
+  return false;
+}
+function whistleAction(e){
+  if(!has('whistle')){say([{who:'me',text:"A whistle post! If only I knew how to whistle for helpers. Dash the sheepdog might teach me!"}]);return;}
+  say([{who:'me',text:"Who shall I whistle for?",choices:['The sheep','The beaver'],cb:i=>{
+    const k=i===0?'wool':'wood',day=G.vil.whistle[k];
+    if(day===dayNum()){say([{who:'me',text:i===0?"The sheep already brought wool today!":"The beaver already hauled logs today!"}]);return;}
+    G.vil.whistle[k]=dayNum();SFX.magic();gainMat(k,2+(wearing('overalls')?1:0),e.x,e.y);
+    toast(i===0?'A sheep trots over with a bundle of wool!':'A beaver drags in a stack of logs!','#ffd83a');save();}}]);
+}
+/* ---- skills ---- */
+// Green Wings: a flap over crop rows waters them
+function greenWings(dx,dy){
+  if(!has('green'))return;
+  for(const e of ents){if(e.type!=='plot')continue;const s=G.plots[e.id];if(!s||s.p>=1)continue;
+    const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
+    if(along>-8&&along<56&&lat<28){s.p=Math.min(1,s.p+0.12);s.w=(s.w||0)+1;puff(e.x,e.y-6,6,['#a6d0ff','#fff8ec'],1,0.08);float(e.x,e.y-14,'Watered!','#a6d0ff');}}
+}
+/* ---- seasons: drawing ---- */
+function drawSeasonFX(cx,cy){
+  const rg=regionAt();if(!rg||rg.area!=='village')return;
+  const s=seasonNow();ctx.fillStyle=SEASON_TINT[s.name];ctx.fillRect(0,HUD,W,VH);
+  const n=s.name==='WINTER'?36:s.name==='AUTUMN'?18:s.name==='SPRING'?12:6;
+  for(let i=0;i<n;i++){
+    const sp=0.5+(i%4)*0.18,x=((i*53+tick*(s.name==='WINTER'?0.25:0.5)*(1+i%3*0.2))%(W+20))-10,y=HUD+((i*37+tick*sp)%VH);
+    if(s.name==='WINTER'){ctx.fillStyle='#ffffff';ctx.fillRect(Math.round(x),Math.round(y),2,2);}
+    else if(s.name==='AUTUMN'){ctx.fillStyle=['#e8a422','#e03838','#f37d22'][i%3];ctx.fillRect(Math.round(x),Math.round(y+Math.sin(tick/9+i)*3),3,2);}
+    else if(s.name==='SPRING'){ctx.fillStyle=i%2?'#ffb0d0':'#fff8ec';ctx.fillRect(Math.round(x),Math.round(y),2,2);}
+    else{if(tick%40<20){ctx.fillStyle='rgba(255,255,200,0.7)';ctx.fillRect(Math.round(x),Math.round(HUD+((i*61)%VH)),1,1);}}}
+}
+function seasonPlotMul(){const n=seasonNow().name;return n==='SPRING'?1.25:n==='WINTER'?0.5:1;}
+/* ---- contests (Windmill Hill) ---- */
+function contestKey(){const s=seasonNow();return s.name+'_'+s.year;}
+function contestDone(){return !!G.vil.contest[contestKey()];}
+function contestWin(){
+  const s=seasonNow(),k=contestKey();if(G.vil.contest[k])return;
+  G.vil.contest[k]=1;addSeeds(4,2,0);gainGP(8);
+  const first=!G.vil.contestFirst;if(first){G.vil.contestFirst=1;}
+  toast('You won the '+s.name+' contest! +4 seeds, village happier!','#ffd83a');SFX.fanfare();save();
+}
+function contestInfo(){
+  const s=seasonNow();
+  return {SPRING:{name:'EGG RACE',desc:'Catch 20 eggs before 5 crack!',icon:'egg'},SUMMER:{name:'KITE CATCH',desc:'Catch 15 kites riding the summer wind!',icon:'kite'},
+    AUTUMN:{name:'GIANT PUMPKIN',desc:'Grow a pumpkin in the meadow and water it with Green Wings. Weigh in at 24 or more!',icon:'pumpkin'},
+    WINTER:{name:'SNOW SCULPTURE',desc:'Gather 3 snowballs around the hill and add them to the sculpture!',icon:'snowball'}}[s.name];
+}
+function startContest(){
+  const s=seasonNow();
+  if(s.name==='SPRING'){state='play';SH=null;startEgg('barnaby');EG.contest=true;return;}
+  if(s.name==='SUMMER'){state='play';SH=null;startMG('ffly','barnaby');MG.contest=true;MG.goal=15;return;}
+  if(s.name==='AUTUMN'){G.sacks.pumpkin=(G.sacks.pumpkin||0)+(G.sacks.pumpkin?0:1);state='play';SH=null;
+    say([{who:ents.find(e=>e.id==='barnaby')||'me',text:"Plant this pumpkin seed in a meadow crop row. Water it with a Green Wings flap, then bring the harvest to the scales!"}]);return;}
+  state='play';SH=null;say([{who:ents.find(e=>e.id==='barnaby')||'me',text:"Find 3 snowballs around the hill and roll them to the sculpture by the stage!"}]);
+}
+function sculptAction(){
+  const n=G.vil.snow||0;
+  if(seasonNow().name!=='WINTER'){say([{who:'me',text:"A snowy stage waits for winter, when the sculpture contest starts."}]);return;}
+  if(contestDone()){say([{who:'me',text:"What a masterpiece! The judges loved it."}]);return;}
+  if(G.items.snowball>0){G.items.snowball--;G.vil.snow=n+1;SFX.pop();toast('Added to the sculpture! ('+G.vil.snow+'/3)','#a6e0ff');
+    if(G.vil.snow>=3){G.vil.snow=0;contestWin();}save();return;}
+  say([{who:'me',text:"The sculpture needs "+(3-n)+" more snowballs. Look around the hill!"}]);
+}
+function pumpkinWeigh(plotState){   // returns weight in pounds
+  return 16+(plotState.w||0)*4+(hash2(dayNum(),plotState.t||3)%6);
+}
+
+/* ---- drawing the village entities ---- */
+function drawVillageEnt(e,sx,sy){
+  switch(e.type){
+    case 'vpad':{
+      const b=G.vil.b[e.id];e.solid=!!b;
+      if(!b){if(G.vil.open&&tick%90<40){ctx.fillStyle='rgba(255,236,140,0.8)';ctx.fillRect(sx-1,sy-14,2,6);ctx.fillRect(sx-3,sy-12,6,2);}break;}
+      const img=SPR['b_'+b.kind];
+      if(b.done){shadow(sx,sy+1,14);ctx.drawImage(img,sx-16,sy-30);if(b.kind==='bakery'&&tick%20<10){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillRect(sx+8,sy-34-(tick%30)/5|0,3,3);}}
+      else{const k=Math.min(1,(G.clock-b.t0)/b.dur),h=Math.max(1,Math.round(34*k));
+        ctx.drawImage(img,0,34-h,32,h,sx-16,sy-30+34-h,32,h);ctx.drawImage(SPR.scaffold,sx-16,sy-30);
+        ctx.fillStyle='#21142b';ctx.fillRect(sx-12,sy-36,24,5);ctx.fillStyle='#94dc64';ctx.fillRect(sx-11,sy-35,Math.round(22*k),3);
+        if(tick%16===0)puff(e.x+(Math.random()-.5)*20,e.y-14,1,['#c49a5c','#fff8ec'],0.8,0.05);}
+      break;}
+    case 'vnode':{if(G.vil.nodes[e.id]===dayNum())break;const s=SPR['node_'+e.kind];shadow(sx,sy+1,7);drawImg(s,sx-(s.width>>1),sy+1-s.height);
+      if(tick%70<5){ctx.fillStyle='#fff';ctx.fillRect(sx+3,sy-s.height,1,1);}break;}
+    case 'vsheep':{let s=SPR.sheep;if(Math.floor(e.ph/40)%2)s=flipOf(s);shadow(sx,sy+1,10);drawImg(s,sx-(s.width>>1),sy+2-s.height+Math.floor((tick+e.ph)/40)%2);
+      if(G.vil.shear[e.id]===dayNum()){ctx.fillStyle='rgba(60,60,90,0.18)';ctx.fillRect(sx-8,sy-12,16,10);}break;}
+    case 'vmail':{drawImg(SPR.mailbox,sx-(SPR.mailbox.width>>1),sy-SPR.mailbox.height+1);if(G.vil.letters.length){const b=Math.round(Math.sin(tick/8)*2);ctx.fillStyle='#ff6fae';ctx.fillRect(sx-3,sy-17+b,7,5);ctx.fillStyle='#fff8ec';ctx.fillRect(sx-2,sy-16+b,5,1);}break;}
+    case 'vboard':drawImg(SPR.board,sx-(SPR.board.width>>1),sy-SPR.board.height+1);break;
+    case 'vwhistle':drawImg(SPR.whistlePost,sx-(SPR.whistlePost.width>>1),sy-SPR.whistlePost.height+1);break;
+    case 'vcontest':{drawImg(SPR.board,sx-(SPR.board.width>>1),sy-SPR.board.height+1);const i=contestInfo();if(SPR[i.icon]&&!contestDone())drawImg(SPR[i.icon],sx-(SPR[i.icon].width>>1),sy-SPR.board.height-SPR[i.icon].height-1+Math.round(Math.sin(tick/12)*1.5));break;}
+    case 'scarecrow':drawImg(SPR.scarecrow,sx-(SPR.scarecrow.width>>1),sy-SPR.scarecrow.height+1);break;
+    case 'windmill':{shadow(sx,sy+1,18);ctx.drawImage(SPR.windmillBase,sx-20,sy-62);
+      const cx=sx,cy=sy-50,a=tick/40;ctx.strokeStyle='#21142b';ctx.lineWidth=3;
+      for(let i=0;i<4;i++){const an=a+i*Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(an)*24,cy+Math.sin(an)*24);ctx.stroke();}
+      ctx.strokeStyle='#f6ead0';ctx.lineWidth=1;for(let i=0;i<4;i++){const an=a+i*Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(an)*23,cy+Math.sin(an)*23);ctx.stroke();}
+      ctx.fillStyle='#21142b';ctx.fillRect(cx-2,cy-2,5,5);break;}
+    case 'vsculpt':{ctx.fillStyle='#21142b';ctx.fillRect(sx-9,sy-4,18,5);ctx.fillStyle='#c49a5c';ctx.fillRect(sx-8,sy-3,16,3);
+      const n=G.vil.snow||0,done=contestDone()&&seasonNow().name==='WINTER';
+      if(done||n>0){const s=SPR.snowSculpture[Math.min(2,done?2:n-1)];drawImg(s,sx-(s.width>>1),sy-4-s.height);}break;}
+  }
+}
+
 /* ===== src/systems/city.js ===== */
 /* ---------------- city systems: treats, special seeds, parcels, museum, library, decorations ---------------- */
 /* ---- bakery buffs (one in-game day) ---- */
@@ -3569,7 +4059,7 @@ function overChasm(){return tileAt(Math.floor(P.x/16),Math.floor((P.y-3)/16))===
 let PL=null;   // planting menu
 function plantChoices(){
   const L=[];if(G.seeds>=1)L.push('plain');
-  for(const k of ['speedy','giant','moon'])if(G.sacks[k]>0)L.push(k);
+  for(const k of ['speedy','giant','moon','pumpkin'])if(G.sacks[k]>0)L.push(k);
   return L;
 }
 function plantSeed(e,k){
@@ -3702,13 +4192,14 @@ function shopBuy(price,what,fn){
 /* ===== src/ui/growth.js ===== */
 /* ---------------- growth tree ---------------- */
 let growPage=0;
-const TREE=()=>growPage===1?SKILLS2:SKILLS;
+const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:SKILLS;
+function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),2];}
 function openGrow(){state='grow';SFX.menu();growMsg=null;growPage=G.part2?1:0;growSel=0;const i=TREE().findIndex(s=>!has(s.id)&&s.req.every(has));if(i>=0)growSel=i;}
 function skillState(s){if(has(s.id))return'learned';if(!s.req.every(has))return'locked';if(TRAIN[s.id]&&G.train[s.id]!==2)return'train';return'open';}
 function updateGrow(){
   if(lvlAnim>0)lvlAnim--;
   if(pressed.grow||pressed.back||pressed.quest){state='play';SFX.menu();return;}
-  if(pressed.b){const pg=G.part2?[0,1,2]:[0,2];growPage=pg[(pg.indexOf(growPage)+1)%pg.length];growSel=0;growMsg=null;SFX.menu();return;}
+  if(pressed.b){const pg=growPages();growPage=pg[(pg.indexOf(growPage)+1)%pg.length];growSel=0;growMsg=null;SFX.menu();return;}
   if(growPage===2)return;
   const SKILLS=TREE();
   const cur=SKILLS[growSel];
@@ -3900,7 +4391,7 @@ function drawWorld(){
   const ocx=camX,ocy=camY;camX=cx;camY=cy;
   for(const e of list){if(e.type==='player')drawPlayer();else drawEnt(e);}
   for(const p of parts){ctx.fillStyle=p.c;ctx.fillRect(Math.round(p.x-camX),Math.round(p.y-camY+HUD),2,2);}
-  camX=ocx;camY=ocy;
+  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);
 }
 function drawPlayer(){
   const st=stage(),sx=Math.round(P.x-camX),sy=Math.round(P.y-camY+HUD);
@@ -3943,6 +4434,7 @@ function drawEnt(e){
       ctx.fillStyle='#e8c88a';ctx.fillRect(sx-3,sy-7,2,2);ctx.fillRect(sx,sy-8,2,2);ctx.fillRect(sx+2,sy-7,2,2);ctx.fillRect(sx-4,sy-6,2,1);
       if(tick%90<8){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-9,1,1);}break;}
     case 'fmound':case 'star':case 'flag':case 'vane':case 'cduck':case 'decor':case 'exhibit':case 'easel':case 'nook':drawCityEnt(e,sx,sy);break;
+    case 'vpad':case 'vnode':case 'vsheep':case 'vmail':case 'vboard':case 'vwhistle':case 'vcontest':case 'windmill':case 'scarecrow':case 'vsculpt':drawVillageEnt(e,sx,sy);break;
     case 'worm':{const s=SPR.worm[Math.floor((tick+e.phase)/12)%2];drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'carrot':{const s=SPR.carrot,w=Math.floor((tick+e.x)/40)%2;drawImg(s,sx-(s.width>>1)+w,sy+2-s.height);break;}
     case 'mound':{const s=SPR.mound;drawImg(s,sx-(s.width>>1),sy+2-s.height);if(senseNear(e.x,e.y)&&(e.has==='seed'||e.has==='bone')&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx-1,sy-8,2,2);ctx.fillRect(sx+4,sy-5,1,1);}break;}
@@ -4003,7 +4495,7 @@ function drawHUD(){
   if(inBeyond()){
     const cl0=cellAt(),rid=cl0.region.id;
     if(rid==='cityin'||rid==='rooftops'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
-    const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':'F: FLY',220,18,5,'#ffd83a',{align:'right'});
+    const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':a==='village'&&G.vil.open?seasonNow().name:'F: FLY',220,18,5,'#ffd83a',{align:'right'});
     // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
     const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor((31-(cs.cols-1))/cs.cols)),h=Math.min(8,Math.floor((27-(cs.rows-1))/cs.rows));
     for(const c of cs.cells){const cur=CS.x===c.sx&&CS.y===c.sy,vis=G.visited.has(c.sx+','+c.sy);
@@ -4045,9 +4537,10 @@ function drawBubble(){
 function drawGrow(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);
   if(growPage===2){drawJournal();return;}
-  box(4,4,W-8,H-8,'#241838',growPage?'#a6e0ff':'#ffd83a');
+  const gcol=growPage===1?'#a6e0ff':growPage===3?'#94dc64':'#ffd83a';
+  box(4,4,W-8,H-8,'#241838',gcol);
   const SKILLS=TREE();
-  txt(growPage?'SKY TREE':'GROWTH TREE',W/2,10,9,growPage?'#a6e0ff':'#ffd83a',{align:'center',shadow:true});
+  txt(growPage===1?'SKY TREE':growPage===3?'VILLAGE TREE':'GROWTH TREE',W/2,10,9,gcol,{align:'center',shadow:true});
   txt('X: next page',W/2,22,5,'#8a7ab0',{align:'center'});
   const big=lvlAnim>0?1:0;drawPip(stage(),0,Math.floor(tick/12)%2,lvlAnim>60,28,46,1+big);
   txt(RANKS[G.rank-1].name,48,24,6,'#ffd83a');txt('LV '+level()+'   GROWTH '+G.gp,48,34,5,'#b8a8d8');
@@ -4087,6 +4580,7 @@ function drawQuests(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
   if(questPage===2){drawTrainingPage();return;}
   if(questPage===3){drawCityPage();return;}
+  if(questPage===5){drawVillagePage();return;}
   if(questPage===4){drawSleuthPage();return;}
   txt(questPage===1?'QUESTS - PART 2':'QUESTS',W/2,12,9,'#ffd83a',{align:'center',shadow:true});
   if(questPage){
@@ -4173,6 +4667,7 @@ function render(){
   else if(state==='flying')drawFlying();
   else if(state==='p2intro')drawP2Intro();
   else if(state==='festival')drawFestival();
+  else if(state==='pinch')drawPinch();
   else if(state==='credits')drawCredits();
   else if(state==='map'){drawWorld();drawEnvFX();drawHUD();TQ=[];drawMap();}
   else{
@@ -4211,7 +4706,7 @@ function MINIMAP_BEYOND(){
 }
 
 // quest-log pages: 0 farm, 1 part 2, 3 city, 2 training, 4 detective notes (only while a Detective Cap is owned)
-function questPages(){const p=[0];if(G.part2)p.push(1,3);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
+function questPages(){const p=[0];if(G.part2)p.push(1,3);if(G.vil.open)p.push(5);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
 function drawCityPage(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
   txt('QUESTS - CITY',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
@@ -4239,6 +4734,20 @@ function drawSleuthPage(){
   txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }
 
+function drawVillagePage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#94dc64');
+  txt('QUESTS - VILLAGE',W/2,10,9,'#94dc64',{align:'center',shadow:true});
+  ORDER4.forEach((id,i)=>{const y=21+i*15,q=QUESTS[id],st=G.q[id];
+    box(10,y,W-20,13,st===2?'#23402a':'#1d1430',st===2?'#94dc64':(st===1?'#ffd83a':'#4a3a66'));
+    if(st===0){txt('???',16,y+4,5,'#6a5a90');txt(id==='vfound'?'see Bucky':id==='vharvest'?'later':'build for them',W-16,y+4,5,'#6a5a90',{align:'right'});return;}
+    txt(q.title,16,y+4,5,st===2?'#94dc64':'#fff8ec');
+    txt(st===2?'DONE!':q.prog(),W-16,y+4,5,st===2?'#94dc64':(q.check()?'#ffd83a':'#d8c8f8'),{align:'right'});});
+  const s=seasonNow();
+  txt('HAPPY '+happiness()+'/'+FINALE_HAPPY+'   '+s.name+' ('+daysToNextSeason()+'d)',W/2,H-30,5,'#ffd83a',{align:'center'});
+  txt(matsLine(),W/2,H-21,5,'#c49a5c',{align:'center'});
+  txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
+}
+
 /* ===== src/main.js ===== */
 /* ---------------- loop ---------------- */
 function update(){
@@ -4259,6 +4768,7 @@ function update(){
     case 'catalog':updateCatalog();break;
     case 'plant':updatePlant();break;
     case 'festival':updateFestival();break;
+    case 'pinch':updatePinch();break;
     case 'credits':updateCredits();break;
     case 'grow':updateGrow();updateAmbient();break;
     case 'quests':if(pressed.b){{const pg=questPages();questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;

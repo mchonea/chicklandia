@@ -5,6 +5,7 @@ function action(){
   const f=frontPoint();
   for(const e of ents){if(e.type!=='npc'||!onCur(e))continue;
     if(Math.abs(f.x-e.x)<e.w/2+7&&f.y>e.y-20&&f.y<e.y+7){talkTo(e);return;}}
+  if(villageAction(f))return;
   for(const e of ents){if(e.type==='nook'&&onCur(e)&&Math.abs(f.x-e.x)<16&&Math.abs(f.y-(e.y-4))<12){useNook();return;}}
   for(const e of ents){if(e.type==='bowl'&&has('fly')&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){useBowl(e);return;}}
   for(const e of ents){if(e.type==='chest'&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){openChest();return;}}
@@ -23,7 +24,7 @@ function peck(f){
   if(MG&&MG.type==='ffly')for(const e of ents){if(e.type==='ffly'&&Math.abs(e.x-f.x)<15&&Math.abs(e.y-8-f.y)<15){
     e.dead=true;MG.score++;SFX.chirp();puff(e.x,e.y-8,6,['#e8ff70','#fff8ec'],0.8,0);float(e.x,e.y-16,''+MG.score,'#e8ff70');return;}}
   for(const e of ents){
-    if(hazardPeck(e,f,pr)||cityPeck(e,f,pr))return;
+    if(hazardPeck(e,f,pr)||cityPeck(e,f,pr)||villagePeck(e,f,pr))return;
     if(e.type==='worm'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
       e.dead=true;G.collected.add(e.id);G.items.worm++;tasteFood('worm');SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#9a6234']);strawBonus(e.x,e.y);
       float(e.x,e.y-14,'WORM '+Math.min(G.items.worm,3)+'/3','#f6a6b6');
@@ -99,7 +100,7 @@ function wingFlap(){
       parts.push({x:c*16+8,y:r*16+10,vx:dx*s+(Math.random()-.5)*1.5,vy:dy*s-Math.random()*1.5,g:0.03,life:40,c:['#ec6c24','#e03838','#c98a00','#9a6234'][i%4]});}
       revealHidden(c,r);save();}
   }
-  hazardFlap(dx,dy);
+  hazardFlap(dx,dy);greenWings(dx,dy);
   for(const e of ents){
     if(!((e.type==='fox'&&!e.gone)||(e.type==='goose'&&!e.blown)))continue;
     const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
@@ -229,6 +230,7 @@ function collect(e){
     case 'shell':G.items.shell++;SFX.pick();float(e.x,e.y-16,'SHELL '+Math.min(5,G.items.shell)+'/5','#f6a6b6');break;
     case 'eagleEgg':G.items.eagleEgg=1;SFX.quest();toast("Found Elda's egg! Carry it gently...");break;
     case 'yarn':G.items.yarn=1;SFX.quest();toast("Found Whiskers' yarn!");break;
+    case 'pebble':case 'plank':case 'snowball':G.items[e.kind]++;SFX.pick();float(e.x,e.y-16,({pebble:'PEBBLE',plank:'PLANK',snowball:'SNOWBALL'})[e.kind]+' x'+G.items[e.kind],'#fff8ec');break;
     case 'hat':case 'whisk':case 'collarBell':{const b=BORROWED.find(x=>x.kind===e.kind);G.items[b.item]=1;SFX.quest();toast('Found '+b.name+'! Return it.','#ff9cd0');break;}
     case 'pepper':case 'salt':case 'mushroom':G.items[e.kind]=1;SFX.pick();toast('Got '+({pepper:'MOUNTAIN PEPPER',salt:'SEA SALT',mushroom:'a FOREST MUSHROOM'})[e.kind]+'!','#ff9cd0');break;
     case 'seashell':case 'plume':case 'fossil':G.hold[e.kind]++;SFX.pick();toast('Found '+({seashell:'a pretty SEASHELL',plume:'a rare FEATHER',fossil:'a FOSSIL'})[e.kind]+'! Take it to the museum.','#c49a5c');break;
@@ -285,7 +287,7 @@ function updatePlay(){
   if(pressed.pause||pressed.back){openPause();return;}
   if(checkRankUp())return;
   if(tick%30===0){updateSchedules(false);checkBuffExpiry();}
-  updateSunbeam();updateBabysit();updateRace();
+  updateSunbeam();updateBabysit();updateRace();updateVillage();
   if(pressed.grow){openGrow();return;}
   if(pressed.quest){state='quests';questPage=G.part2?1:0;SFX.menu();return;}
   if(pressed.wear){openWardrobe();return;}

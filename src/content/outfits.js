@@ -11,6 +11,7 @@ const OUTFITS=[
   {id:'chef',name:'CHEF HAT',price:4,bonus:'Foodie: every food you taste for the first time gives +1 extra growth.',desc:'A tall white hat. Smells like cinnamon.'},
   {id:'detective',name:'DETECTIVE CAP',price:4,bonus:'Sharp eyes: the quest log shows WHERE each task is.',desc:'Elementary, my dear chick!'},
   {id:'goggles',name:'RACING GOGGLES',bonus:'Speedy: +15% speed while gliding or flying.',how:'Win the Rooftop Race at the Toy Shop.',desc:'Zoom zoom! Strapped on tight.'},
+  {id:'overalls',name:'FARMER CAP',bonus:'Strong arms: gathering at the village gives +1 material.',how:'Help Bucky start the village.',desc:'Straw in the pockets, mud on the boots.'},
   {id:'pirate',name:'PIRATE',bonus:'Treasure sense: hidden treasures and secrets sparkle.',how:'Win a game under the moon.',desc:'Arr! Yo ho ho and a bucket of seeds!'}];
 const ACCESSORY_IDS=['bow','shades','ears','crown','goggles'];   // fit the accessory slot that opens at rank 7
 const SHOP=['straw','astronaut','shades','ninja','chef','detective'];

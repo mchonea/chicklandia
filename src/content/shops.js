@@ -3,6 +3,7 @@
 // special garden seeds (Seed & Feed). grow = speed multiplier, yield = seeds per harvest; moon only grows at night and also drops a petal.
 const SEED_TYPES={
   plain:{name:'PLAIN SEED',grow:1,yield:3,spr:'seed'},
+  pumpkin:{name:'GIANT PUMPKIN',grow:0.4,yield:4,spr:'pumpkin',pumpkin:true,desc:'The autumn contest pumpkin.'},
   speedy:{name:'SPEEDY SPROUT',price:1,grow:2,yield:2,spr:'sprout',desc:'Grows twice as fast! Gives 2 seeds.'},
   giant:{name:'GIANT SUNFLOWER',price:3,grow:0.5,yield:6,spr:'giant',desc:'Slow, but gives a whopping 6 seeds!'},
   moon:{name:'MOONFLOWER',price:2,grow:1,yield:4,night:true,petal:true,spr:'moonSeed',desc:'Only grows at night. Gives 4 seeds and a rare petal for the Museum.'}};
@@ -36,6 +37,22 @@ const JOB_TARGETS=[
   ['sandy','LIFEGUARD SANDY','on the beach'],['rocco','ROCCO','by the city fountain (daytime)'],['cleo','CLEO','in the market (daytime)']];
 
 const SHOPS={
+  build:{title:'BUILD HERE',owner:'beaver',color:'#c49a5c',leave:'CANCEL',bye:'Take your time. Good builders plan!',
+    items:()=>BUILD_ORDER.map(k=>{const t=BUILDING_TYPES[k],c=costOf(k),pad=VB&&VB.pad;
+      return {name:t.name,price:c.seeds,icon:'b_'+k,desc:t.desc+' NEEDS: '+costText(Object.assign({},c,{seeds:0})).replace(/^, /,'')+'.',bonus:'Village happiness +'+t.happy+(has('master')?'. Master Builder: half the time!':''),
+        off:t.only==='river'&&!(pad&&pad.river),offMsg:'A mill must be built beside the river!',act:()=>tryBuild(k)};})},
+  contest:{title:'WINDMILL FESTIVAL',owner:'beaver',color:'#ffd83a',leave:'LEAVE',bye:'See you at the next festival!',
+    items:()=>{const i=contestInfo(),s=seasonNow();return [
+      {name:i.name,tag:contestDone()?'WON':'ENTER',on:contestDone(),icon:i.icon,desc:i.desc,off:contestDone(),offMsg:'You already won this season! Come back next season.',act:()=>{startContest();}},
+      {name:'SEASON: '+s.name,tag:daysToNextSeason()+'d left',icon:'star',desc:'Seasons change every '+SEASON_DAYS+' days. Each season has its own contest.',off:true,offMsg:daysToNextSeason()+' day(s) until the next season.'},
+      {name:'WINS SO FAR',tag:''+Object.keys(G.vil.contest).length,icon:'token',desc:'Every contest you win makes the village happier.',off:true,offMsg:'Each win adds '+HAPPY_CONTEST+' happiness.'}];}},
+  board:{title:'VILLAGE BOARD',owner:'beaver',color:'#94dc64',leave:'LEAVE',bye:'Our village is growing!',
+    items:()=>[
+      {name:'HAPPINESS',tag:happiness()+'/'+FINALE_HAPPY,icon:'token',desc:'Buildings, friends moving in and contest wins make the village happy.',off:true,offMsg:happiness()>=FINALE_HAPPY?'Happy enough for the Grand Harvest! Talk to Barnaby.':'Keep building, and help friends move in!'},
+      {name:'FRIENDS HOME',tag:Object.keys(G.vil.res).length+'/'+RESIDENTS.length,icon:'mailbox',desc:'Friends write when a building they want exists.',off:true,offMsg:'Check the mailbox for letters!'},
+      {name:'MATERIALS',tag:'',icon:'m_wood',desc:matsLine(),off:true,offMsg:matsLine()},
+      {name:'BUILDINGS',tag:''+builtList().length+'/'+PADS.length,icon:'b_home',desc:'Pads in the square and by the river.',off:true,offMsg:'Gather wood, stone, wool and clay!'},
+      {name:'SEASON',tag:seasonNow().name,icon:'star',desc:'Contests at Windmill Hill each season.',off:true,offMsg:daysToNextSeason()+' day(s) until the next season.'}]},
   boutique:{title:"MAGGIE'S BOUTIQUE",owner:'magpie',color:'#ff9cd0',leave:'LEAVE SHOP',bye:'Come back soon, darling!',
     items:()=>SHOP.map(id=>{const o=OUTFITS.find(x=>x.id===id),own=G.outfits.includes(id);
       return {name:o.name,price:own?null:priceOf(o),tag:own?(wearing(id)?'ON':'OWN'):null,own,on:wearing(id),desc:o.desc,bonus:o.bonus,outfit:id,

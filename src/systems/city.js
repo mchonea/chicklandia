@@ -11,7 +11,7 @@ function overChasm(){return tileAt(Math.floor(P.x/16),Math.floor((P.y-3)/16))===
 let PL=null;   // planting menu
 function plantChoices(){
   const L=[];if(G.seeds>=1)L.push('plain');
-  for(const k of ['speedy','giant','moon'])if(G.sacks[k]>0)L.push(k);
+  for(const k of ['speedy','giant','moon','pumpkin'])if(G.sacks[k]>0)L.push(k);
   return L;
 }
 function plantSeed(e,k){

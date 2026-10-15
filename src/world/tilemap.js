@@ -79,6 +79,7 @@ function drawTile(ch,c,r,sx,sy,wf){
     case 'x':img=TILE.dam[wf];break;
     case 'a':img=TILE.roofC;break;
     case '1':img=TILE.brickDoor;break;
+    case '7':img=TILE.pad;break;
     case '5':img=TILE.ship;break;
     case '6':img=TILE.stackCrate;break;
     case '8':img=TILE.roofWalk;break;

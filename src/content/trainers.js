@@ -27,5 +27,19 @@ const TRAIN={
     intro:["Hey hey! Wanna know the secret to my super-strong teeth? PRACTICE!","There are 3 old tree stumps in the forest that need clearing out. Peck 'em to splinters!","Do that, and I'll teach you the SUPER PECK!"],
     remind:()=>Math.min(3,G.items.stump)+"/3 stumps smashed. They're around the forest edge and the deep woods!",
     done:["Look at those splinters! You've got the power, kid!","Now you can learn SUPER PECK in your Sky Tree. Press E!"],
-    hint:()=>"Smash the 3 old tree stumps in the forest for Bucky."}
+    hint:()=>"Smash the 3 old tree stumps in the forest for Bucky."},
+  whistle:{phase:4,who:'dash',whoName:'DASH',skill:'WHISTLE',title:'Sheepdog School',avail:()=>G.vil.open&&has('carry'),item:'pebble',need:3,noun:'whistle pebbles',
+    spawn:[['pb0',56,99],['pb1',62,106],['pb2',51,102]],
+    lock:"Learn CARRY first. Then Dash the sheepdog, out in the meadow pasture, will teach you to WHISTLE!",
+    intro:["Woof! You're the chick who started the village! I'm Dash, the sheepdog.","A good whistle can call every helper in the meadow. I'll teach you!","First, find 3 smooth WHISTLE PEBBLES in the meadow. They make the best whistle sound!"],
+    remind:()=>Math.min(3,G.items.pebble)+"/3 whistle pebbles. Look around the pasture and the meadow paths!",
+    done:["Perfect pebbles! Now put your beak like THIS... and blow!","Tweeeet! There! Learn WHISTLE in the Village Tree. Press E!"],
+    hint:()=>"Find 3 smooth pebbles in the meadow for Dash."},
+  master:{phase:4,who:'barnaby',whoName:'BARNABY',skill:'MASTER BUILDER',title:'Master Class',avail:()=>builtList().length>=2,item:'plank',need:3,noun:'fine planks',
+    spawn:[['pl0',9,100],['pl1',13,103],['pl2',3,101]],
+    lock:"Build 2 buildings, and Foreman Barnaby will teach you to be a MASTER BUILDER!",
+    intro:["Ho ho! Two buildings already? Bucky's cousin is impressed!","A master builder works fast and wastes no wood. I'll show you the tricks!","Bring me 3 FINE PLANKS from the riverside. Straight and strong. Then class begins!"],
+    remind:()=>Math.min(3,G.items.plank)+"/3 fine planks. They're scattered around the riverside!",
+    done:["Beautiful planks! Hammer like this, measure twice, cut once!","Now learn MASTER BUILDER in the Village Tree. Press E!"],
+    hint:()=>"Find 3 fine planks at the riverside for Foreman Barnaby."}
 };
