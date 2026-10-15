@@ -30,21 +30,21 @@ function eraseSave(){
 }
 function bar10(n){return '['+'|'.repeat(n)+'.'.repeat(10-n)+']';}
 function drawPause(){
-  ctx.fillStyle='rgba(18,10,30,0.88)';ctx.fillRect(0,0,W,H);box(24,14,W-48,H-28,'#241838','#ffd83a');
+  ctx.fillStyle='rgba(18,28,44,0.88)';ctx.fillRect(0,0,W,H);box(24,14,W-48,H-28,'#24364a','#ffe05a');
   if(pauseMode==='controls'){
-    txt('CONTROLS',W/2,22,9,'#ffd83a',{align:'center',shadow:true});
+    txt('CONTROLS',W/2,22,9,'#ffe05a',{align:'center',shadow:true});
     const L=TOUCH?[['D-PAD','Walk'],['A','Peck / talk / OK'],['B','Wing flap (or page)'],['GROW','Skills & growth'],['QUESTS','Quest log'],['OUTFIT','Closet'],['MAP','Fly map (Part 2)'],['X','Close / back'],['MENU','Pause']]
       :[['ARROWS / WASD','Walk'],['Z / SPACE','Peck / talk / OK'],['X','Wing flap (or page)'],['E','Skills & growth'],['Q','Quest log'],['C','Closet'],['F','Fly map (Part 2)'],['ESC','Close / back'],['P','Pause'],['M','Mute music']];
-    L.forEach(([k,v],i)=>{txt(k,36,40+i*14,6,'#ffd83a');txt(v,120,40+i*14,6,'#fff8ec');});
-    txt('Press A to go back',W/2,H-30,5,'#b8a8d8',{align:'center'});return;}
-  txt('PAUSED',W/2,22,10,'#ffd83a',{align:'center',shadow:true});
+    L.forEach(([k,v],i)=>{txt(k,36,40+i*14,6,'#ffe05a');txt(v,120,40+i*14,6,'#fff8ec');});
+    txt('Press A to go back',W/2,H-30,5,'#b9d1dd',{align:'center'});return;}
+  txt('PAUSED',W/2,22,10,'#ffe05a',{align:'center',shadow:true});
   const val=[null,null,bar10(SET.music),bar10(SET.sound),TEXT_SPEEDS[SET.speed],SET.big?'ON':'OFF',null];
   PAUSE_ROWS.forEach((r,i)=>{const y=44+i*20,sel=i===pauseSel;
-    if(sel)box(32,y-4,W-64,16,'#3b2a56','#fff8ec');
-    txt((sel?'> ':'  ')+r,40,y,7,sel?'#fff8ec':'#b8a8d8');
-    if(val[i])txt(val[i],W-40,y,7,sel?'#ffd83a':'#8a7ab0',{align:'right'});});
-  txt('LEFT/RIGHT change   ESC resume',W/2,H-30,5,'#b8a8d8',{align:'center'});
-  if(pauseMode==='erase'){box(44,88,168,58,'#1d1430','#ff8080');
+    if(sel)box(32,y-4,W-64,16,'#29465b','#fff8ec');
+    txt((sel?'> ':'  ')+r,40,y,7,sel?'#fff8ec':'#b9d1dd');
+    if(val[i])txt(val[i],W-40,y,7,sel?'#ffe05a':'#98b3c7',{align:'right'});});
+  txt('LEFT/RIGHT change   ESC resume',W/2,H-30,5,'#b9d1dd',{align:'center'});
+  if(pauseMode==='erase'){box(44,88,168,58,'#192639','#ff8080');
     txt('Erase your saved game?',W/2,96,6,'#ff8080',{align:'center'});txt('This cannot be undone.',W/2,108,5,'#fff8ec',{align:'center'});
-    ['Yes','No'].forEach((o,i)=>txt((eraseSel===i?'> ':'  ')+o,W/2-30+i*60,124,8,eraseSel===i?'#fff8ec':'#8a7ab0',{align:'center'}));}
+    ['Yes','No'].forEach((o,i)=>txt((eraseSel===i?'> ':'  ')+o,W/2-30+i*60,124,8,eraseSel===i?'#fff8ec':'#98b3c7',{align:'center'}));}
 }

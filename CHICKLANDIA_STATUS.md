@@ -1,6 +1,14 @@
 # Chicklandia — Project Status
 
-*Review date: October 14, 2026*
+*Review date: October 15, 2026*
+
+## Bright Adventure graphics refresh (October 15, 2026)
+
+- **Implemented at the original resolution:** 16 px tiles and 256 × 224 canvas. Bright Adventure uses navy outlines, leafy greens, warm gold and clear blue water throughout sprites, buildings, effects and UI.
+- Redrawn tree canopies and fruit, clustered bush and leaf-pile shading, quieter grass/path/sand/snow/cloud textures, wider interior floorboards and city paving, and finer pond shorelines. Pip has forehead highlights and belly shading across the existing growth/animation system; hen, pig and sheep shading is refined. Clay sprites now have their missing `O` palette shade instead of the magenta fallback.
+- Menu panels, text accents, shadows and touch-control colors follow the same direction. World layout, collisions, save format, sprite sizes and outfit head anchors remain unchanged.
+- **Verified:** build succeeds; all 389 existing smoke/city/village/seas/sky checks pass, plus three graphics checks for canvas resolution, 16 × 16 tiles and growth-frame dimensions/anchors. Results: `examples/graphics-checks.json`. Review gallery: `examples/graphics-review.html`; run `node tools/serve.mjs 8081` to use its isolated gameplay-check origin. Existing visual concepts use frozen reference assets under `examples/reference-art/`.
+- This is a unified palette and pixel-art refinement pass; existing NPC silhouettes and region-specific landmarks are preserved, rather than every asset receiving a new silhouette.
 
 ## 0. Phase 1 progress (updated Oct 14, 2026)
 
@@ -20,12 +28,12 @@ Pip now grows through **growth points (GP)**. Data: `src/content/ranks.js` (rank
 | 2 | Little Chick | 40 | | +5% speed |
 | 3 | Growing Chick | 100 | | hidden things twinkle when close |
 | 4 | Big Chick | 170 | | +1 heart |
-| 5 | Almost a Chicken | 210 | learned Flight | fly-map trip takes half as long |
-| 6 | Young Chicken | 300 | | harvests +1 seed; new white-feather sprite |
-| 7 | Grown-Up Chicken | 390 | Coming-of-Age Festival | +1 heart, accessory slot; adult sprite |
-| 8 | Village Hero | 650 | village finale | sash; village gathering always +1 material |
-| 9 | Captain of the Seas | 850 | beat Squawkbeard | badge; air lasts 50% longer, sailing 20% faster |
-| 10 | Legend of Chicklandia | 1100 | beat the Storm Dragon | golden aura; +1 heart, Wing Flap recharges twice as fast |
+| 5 | Almost a Chicken | 235 | learned Flight | fly-map trip takes half as long |
+| 6 | Young Chicken | 350 | | harvests +1 seed; new white-feather sprite |
+| 7 | Grown-Up Chicken | 420 | Coming-of-Age Festival | +1 heart, accessory slot; adult sprite |
+| 8 | Village Hero | 780 | village finale | sash; village gathering always +1 material |
+| 9 | Captain of the Seas | 960 | beat Squawkbeard | badge; air lasts 50% longer, sailing 20% faster |
+| 10 | Legend of Chicklandia | 1190 | beat the Storm Dragon | golden aura; +1 heart, Wing Flap recharges twice as fast |
 
 **Where growth comes from** (as built): quest 10 (Part 1) / 12 (Part 2); training 8; skill 5; first taste of a food 4; minigame first win 8, repeat 2 (max 3 a day); secret area 6; hidden seed 2; new outfit 3; coop upgrade 6; garden harvest 1; snack bowl 1 per seed (the bowl is in both coops once Flight is learned).
 
@@ -160,6 +168,17 @@ The four areas are joined by **cloud stairways** (swirling portals with a label:
 
 **Tests.** `tests/sky.js` (with `tests/walk.js`; 184 checks): regions and tiles; Elda, hatching, naming (presets, letters, erase, 10-letter limit, empty-name block); the hatchling follows; the sky gate; a **static reachability proof** (every pick-up, person, chest, soil tile, chime, door and portal is reachable with exactly the skills that should be needed, and the locked islands are NOT reachable without them); pads, vents, Cloud Walk, wind and the scarf, Dive-Bomb and the barrier, both chests, the secret nest, rain walls, lightning (hit and dodge), Thunder Peck through a save; the chime puzzle and sky farming; every quest, trainer, shop and Sky Tree skill; all three boss stages, the retry, the flyover, the gathering, rank 10 and the credits; free play; save round trip and loading an old (pre-sky) save; the fly map's two pages; every quest/grow/journal page rendering; darkness, rain and the minimap; the museum. Smoke, city, village and seas tests still pass. **Not verified:** touch on a real device (naming screen, X on the fly map, the peck button in mid-air), the music by ear, a human playthrough of the dragon (difficulty and fairness of the lightning), or how long the sky takes.
 
+
+## 0g. Playtest fixes and economy rebalance (Oct 15, 2026; local, not committed)
+
+From the first human playtest (see the playtest notes in section 7).
+
+- **Closet (costume page).** With 17 slots in a 3-wide grid, the bottom rows ran under the detail panel. Now 5 across, 4 rows on screen (it scrolls), one sprite per cell, a gold ON badge, and a big name/description/bonus panel.
+- **Detective Cap.** The notes page used to appear whenever the cap was owned, listed only 3 chapters, and nothing told you it worked. Now: wear the cap and the quest log opens on DETECTIVE NOTES (first page), listing every open task from every chapter (and new ones from friends you have met) with WHERE to find it; Up/Down scrolls; equipping shows a toast.
+- **Growth.** Rank thresholds raised so a full playthrough of the content before a gate lands at about 90-95% instead of 120%: rank 5 210->235, 6 300->350, 7 390->420, 8 650->780, 9 850->960, 10 1100->1190 (ranks 2-4 unchanged). Snack bowl: 1 growth per 2 seeds, at most 8 growth a day.
+- **Seeds.** Quest rewards are unchanged (the dialogue states them). Sinks up about 40-50%: Sky/Village/Sea/Sky II tree costs (e.g. Super Peck tree 21->30, village tree 25->34), coop upgrades 4/6/8 -> 6/9/12, buildings 4-6 -> 6-9, ship upgrades 8/10/12 -> 12/15/18. Sources trimmed: garden grows 50% slower (GROW 5400->8100) and yields plain 2 / giant 5 / moon 3 / star-fruit 4 (was 3/6/4/5), museum exhibits 5-6 -> 3-4 seeds, parcels 2 -> 1, watermill 2 -> 1 a day, Squawkbeard's chest 20 -> 12 seeds, Polly's chest 6 -> 4.
+- **Also fixed:** the Village Tree and village quest page appear as soon as Bucky's village quest starts; a village friend whose letter went missing now gets a new one.
+- **Not yet verified by a human:** whether the new numbers feel right. Tune the constants named above (the cost fields in `src/content/skills.js`, `coop.js`, `village.js`, `seas.js`, `sky.js`; the rank `gp` values in `src/content/ranks.js`; the snack bowl in `src/systems/ranks.js`; `GROW` in `src/systems/part2.js`).
 
 ## 1. Snapshot
 
@@ -318,6 +337,12 @@ row 6   Sandy Shore  —  Tide Pools   —    Market Square    (Part 2)
 18. **The title screen re-reads the save every frame.** It works, but it's wasteful.
 19. **Golden Wings has no visual** beyond occasional sparkles.
 20. **Tiny text on phones.** Some 5-pixel text is hard to read on small screens.
+
+### Playtest notes (human playtest in progress, Oct 15, 2026; not yet acted on)
+
+- **Costume page is hard to read** (the closet / outfit screen, key C). Needs a layout and legibility pass.
+- **Detective Cap may not be working.** Its bonus is that the quest log shows WHERE each task is (the detective notes page and location lines). Needs checking in play.
+- **Growth and seed economy are too generous.** The player is over full on both growth (rank gates fill early) and seeds long before the end of Phase 2. Needs rebalancing: GP values, quest and hidden-seed rewards, and the seed sinks. The budgets written for each phase (sections 0b-0f) assume the current numbers.
 
 ## 8. Testing status
 

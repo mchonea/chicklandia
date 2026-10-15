@@ -8,7 +8,7 @@ Object.assign(QUESTS,{
     intro:["Well, well... a FLYING chick! Haven't seen one of those in a hundred years. And I'm 112!","I'm Granny Shell. I grow the finest sunflowers in the forest.","My old legs are too slow for acorn hunting, though. Peck the big oak trees and bring me 3 acorns, dearie?"],
     remind:()=>Math.min(3,G.items.acorn)+"/3 acorns, dearie. Give the big oak trees a good peck!",
     done:["Ooh, lovely plump acorns! Now let me teach you something special...","This is how you GROW seeds! Plant a seed in soft soil, wait a while, and it grows into a sunflower full of MORE seeds.","Use my garden plots right here whenever you like. Peck a plot to plant or harvest. Here's 2 seeds to start!"],
-    onDone:()=>{G.items.acorn-=3;G.thumb=true;toast('You learned GARDENING!','#94dc64');},
+    onDone:()=>{G.items.acorn-=3;G.thumb=true;toast('You learned GARDENING!','#a1d970');},
     after:()=>["Seeds grow twice as fast in the rain. Nature's watering can!",hint2()],
     hint:()=>"Granny Shell in the forest wants 3 acorns. Peck the big oak trees!"},
   bucky:{title:'Dam Builder',check:()=>G.items.stick>=4,prog:()=>Math.min(4,G.items.stick)+'/4 sticks',reward:3,

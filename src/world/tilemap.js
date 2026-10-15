@@ -35,10 +35,10 @@ function drawTile(ch,c,r,sx,sy,wf){
     case 'm':img=TILE.mud;break;
     case 'r':img=TILE.reeds;break;
     case 'W':{ctx.drawImage(TILE.water[(wf+(c+r)%2)%2],sx,sy);ctx.fillStyle=PAL.c;
-      if(tileAt(c,r-1)!=='W')ctx.fillRect(sx,sy,16,2);
-      if(tileAt(c,r+1)!=='W'){ctx.fillRect(sx,sy+14,16,2);}
-      if(tileAt(c-1,r)!=='W')ctx.fillRect(sx,sy,2,16);
-      if(tileAt(c+1,r)!=='W')ctx.fillRect(sx+14,sy,2,16);
+      if(tileAt(c,r-1)!=='W')ctx.fillRect(sx,sy,16,1);
+      if(tileAt(c,r+1)!=='W'){ctx.fillRect(sx,sy+15,16,1);}
+      if(tileAt(c-1,r)!=='W')ctx.fillRect(sx,sy,1,16);
+      if(tileAt(c+1,r)!=='W')ctx.fillRect(sx+15,sy,1,16);
       return;}
     case 'F':{const v=(tileAt(c,r-1)==='F'||tileAt(c,r+1)==='F')&&tileAt(c-1,r)!=='F'&&tileAt(c+1,r)!=='F';img=v?TILE.fenceV:TILE.fenceH;break;}
     case 'H':img=TILE.tall;break;

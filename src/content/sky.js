@@ -74,10 +74,10 @@ for(const b of SKY_BUILDINGS){const d=SKO[b.door[0]];b.door=[d[0]+b.door[1],d[1]
   DOORS[b.door[0]+','+b.door[1]]={x:b.in.x,y:b.in.y,b};}
 /* ---- the Sky Tree II: Updraft is free to buy; the other three are taught (see TRAIN in this file's quests) ---- */
 const SKILLS5=[
-  {id:'updraft',name:'UPDRAFT',cost:5,req:[],x:44,y:96,desc:'Step on an updraft vent to ride the wind up to the islands above!',learn:'Ride the updraft vents!'},
-  {id:'cloudwalk',name:'CLOUD WALK',cost:6,req:['updraft'],x:112,y:62,desc:'Light as a feather: walk across the thin, wispy clouds. Taught by Zephyr.',learn:'Thin clouds hold you now!'},
-  {id:'divebomb',name:'DIVE-BOMB',cost:6,req:['updraft'],x:112,y:130,desc:'Bounce on a bouncy cloud, press peck in mid-air, and SLAM down! Cracks cloud barriers. Taught by your chick.',learn:'Peck in mid-air to DIVE-BOMB!'},
-  {id:'thunder',name:'THUNDER PECK',cost:8,req:['cloudwalk','divebomb'],x:196,y:96,desc:'Your peck crackles with lightning and shatters storm crystals. Taught by Starla.',learn:'Your peck crackles with lightning!'}];
+  {id:'updraft',name:'UPDRAFT',cost:7,req:[],x:44,y:96,desc:'Step on an updraft vent to ride the wind up to the islands above!',learn:'Ride the updraft vents!'},
+  {id:'cloudwalk',name:'CLOUD WALK',cost:8,req:['updraft'],x:112,y:62,desc:'Light as a feather: walk across the thin, wispy clouds. Taught by Zephyr.',learn:'Thin clouds hold you now!'},
+  {id:'divebomb',name:'DIVE-BOMB',cost:8,req:['updraft'],x:112,y:130,desc:'Bounce on a bouncy cloud, press peck in mid-air, and SLAM down! Cracks cloud barriers. Taught by your chick.',learn:'Peck in mid-air to DIVE-BOMB!'},
+  {id:'thunder',name:'THUNDER PECK',cost:11,req:['cloudwalk','divebomb'],x:196,y:96,desc:'Your peck crackles with lightning and shatters storm crystals. Taught by Starla.',learn:'Your peck crackles with lightning!'}];
 /* ---- outfits (1 or 2 per region), foods, secret ---- */
 OUTFITS.push(
   {id:'scarf',name:'CLOUD SCARF',bonus:'Soft as a cloud: strong winds and wind lanes cannot push you around.',how:'Dive-bomb into the hidden pocket in Cloud Meadows.',desc:'A scarf that smells like rain and sunshine.'},
@@ -86,8 +86,8 @@ OUTFITS.push(
   {id:'stormcap',name:'STORM CAP',price:6,bonus:'Rain-proof: rain walls cannot hurt you, and lightning warns you a little earlier.',desc:'A snug cap that keeps off the drizzle.'});
 ACCESSORY_IDS.push('scarf');
 FOODS.push({id:'starfruit',name:'STAR-FRUIT',spr:'starfruit'},{id:'cake',name:'STAR CAKE',spr:'cake'},{id:'cloudberry',name:'CLOUDBERRY',color:'#e6f2ff'},
-  {id:'skyhoney',name:'SKY HONEY',color:'#ffd83a'},{id:'stormtea',name:'STORM TEA',color:'#a8b8e0'});
-EXHIBITS.push({id:'shard',item:'shard',name:'STORM SHARDS',need:3,desc:'Three shards of storm crystal.',where:'Past the crystal walls in the Storm Peaks.',reward:{seeds:6,gp:12}},
-  {id:'cloudbloom',item:'cloudbloom',name:'CLOUD BLOOMS',need:3,desc:'Three flowers that only grow on clouds.',where:'On the sky islands of the Meadows and the Gardens.',reward:{seeds:6,gp:12}});
+  {id:'skyhoney',name:'SKY HONEY',color:'#ffe05a'},{id:'stormtea',name:'STORM TEA',color:'#a8b8e0'});
+EXHIBITS.push({id:'shard',item:'shard',name:'STORM SHARDS',need:3,desc:'Three shards of storm crystal.',where:'Past the crystal walls in the Storm Peaks.',reward:{seeds:4,gp:12}},
+  {id:'cloudbloom',item:'cloudbloom',name:'CLOUD BLOOMS',need:3,desc:'Three flowers that only grow on clouds.',where:'On the sky islands of the Meadows and the Gardens.',reward:{seeds:4,gp:12}});
 SECRET_IDS.push({id:'skynest',name:'THE LAST CLOUD'});
-SEED_TYPES.star={name:'STAR-FRUIT SEED',price:3,grow:0.8,yield:5,spr:'starfruit',star:true,desc:'Grows glowing star-fruit. Gives 5 seeds and a star-fruit.'};
+SEED_TYPES.star={name:'STAR-FRUIT SEED',price:3,grow:0.8,yield:4,spr:'starfruit',star:true,desc:'Grows glowing star-fruit. Gives 4 seeds and a star-fruit.'};

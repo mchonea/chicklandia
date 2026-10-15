@@ -14,7 +14,7 @@ function resize(){
   const dpr=window.devicePixelRatio||1;
   cv.width=Math.floor(innerWidth*dpr);cv.height=Math.floor(innerHeight*dpr);
   const portrait=TOUCH&&innerHeight>innerWidth;            // phones held upright: game on top, controls below
-  let k=Math.min(cv.width/W,(portrait?cv.height*0.58:cv.height)/H);if(k>=2&&!TOUCH)k=Math.floor(k);
+  let k=Math.min(cv.width/W,(portrait?cv.height*0.58:cv.height)/H);if(k>=2&&!TOUCH){const f=Math.floor(k);if(k/f<1.12)k=f;}   // crisp whole-number pixels, unless that would leave a big empty border: then fill the window
   K=k;OX=Math.floor((cv.width-W*K)/2);OY=portrait?Math.floor(10*dpr):Math.floor((cv.height-H*K)/2);
   layoutTouch();
 }

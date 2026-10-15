@@ -4,12 +4,12 @@ const MATS=['wood','stone','wool','clay'];
 const MAT_NAME={wood:'WOOD',stone:'STONE',wool:'WOOL',clay:'CLAY'};
 // building types. cost.seeds + materials. happy = village happiness it adds. only: 'river' pads only.
 const BUILDING_TYPES={
-  home:{name:'COZY HOME',cost:{seeds:4,wood:3,clay:1},happy:5,desc:'A snug little house for a friend to move into.'},
-  bakery:{name:'BAKERY BRANCH',cost:{seeds:5,wood:2,stone:2,clay:2},happy:6,desc:'Warm bread smells. A friend baker could live here.'},
-  mill:{name:'WATERMILL',cost:{seeds:6,wood:4,stone:3},happy:6,only:'river',desc:'Turns the river into flour. Gives 2 seeds every day!'},
-  band:{name:'BANDSTAND',cost:{seeds:6,wood:4,clay:2},happy:8,desc:'Music and dancing! Villagers love it.'},
-  school:{name:'SCHOOL',cost:{seeds:6,wood:3,stone:2,wool:2},happy:6,desc:'A little school with a big bell.'},
-  clinic:{name:'CLINIC',cost:{seeds:6,wood:2,stone:2,wool:3},happy:6,desc:'Rest and heal here. Free full hearts any time!'}};
+  home:{name:'COZY HOME',cost:{seeds:6,wood:3,clay:1},happy:5,desc:'A snug little house for a friend to move into.'},
+  bakery:{name:'BAKERY BRANCH',cost:{seeds:8,wood:2,stone:2,clay:2},happy:6,desc:'Warm bread smells. A friend baker could live here.'},
+  mill:{name:'WATERMILL',cost:{seeds:9,wood:4,stone:3},happy:6,only:'river',desc:'Turns the river into flour. Gives 1 seed every day!'},
+  band:{name:'BANDSTAND',cost:{seeds:9,wood:4,clay:2},happy:8,desc:'Music and dancing! Villagers love it.'},
+  school:{name:'SCHOOL',cost:{seeds:9,wood:3,stone:2,wool:2},happy:6,desc:'A little school with a big bell.'},
+  clinic:{name:'CLINIC',cost:{seeds:9,wood:2,stone:2,wool:3},happy:6,desc:'Rest and heal here. Free full hearts any time!'}};
 const BUILD_ORDER=['home','bakery','mill','band','school','clinic'];
 const BUILD_TIME=Math.round(DAY*0.2);                 // one build takes about a minute (half with Master Builder)
 // pads (tile col,row of the top-left tile of a 2x2 pad). river: next to the water.

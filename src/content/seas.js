@@ -15,8 +15,8 @@ const SEA_NODES=[
   {id:'fortress',name:"SQUAWKBEARD'S SHIP",mx:222,my:128,arrive:spx('fort',3,8),need:()=>G.sea.lv.cannon>=1&&!!G.flags.lit,lock:'Needs the SEED CANNON and a lit lighthouse'}];
 // ship upgrades: seeds + salvage. Each unlocks a farther place.
 const SHIP_UPGRADES=[
-  {id:'sails',name:'BETTER SAILS',seeds:8,salv:{sailcloth:3},icon:'sailcloth',desc:'Faster and bolder! Unlocks VOLCANO ISLE.'},
-  {id:'hull',name:'STRONGER HULL',seeds:10,salv:{hullplank:4},icon:'hullplank',desc:'Planks that shrug off waves. Unlocks LIGHTHOUSE ROCK.'},
+  {id:'sails',name:'BETTER SAILS',seeds:18,salv:{sailcloth:3},icon:'sailcloth',desc:'Faster and bolder! Unlocks VOLCANO ISLE.'},
+  {id:'hull',name:'STRONGER HULL',seeds:15,salv:{hullplank:4},icon:'hullplank',desc:'Planks that shrug off waves. Unlocks LIGHTHOUSE ROCK.'},
   {id:'cannon',name:'SEED CANNON',seeds:12,salv:{cannonpart:2},icon:'cannonpart',desc:'Shoots seeds! Needed to take on CAPTAIN SQUAWKBEARD.'}];
 const SALV_NAME={sailcloth:'SAILCLOTH',hullplank:'HULL PLANKS',cannonpart:'CANNON PARTS'};
 // pick-ups: [id, kind, island, col, row]

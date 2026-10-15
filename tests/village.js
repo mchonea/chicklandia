@@ -33,7 +33,7 @@ const wp=ents.find(e=>e.type==='vwhistle');G.vil.whistle={};whistleAction(wp);dl
 // 5. building
 G.vil.mat={wood:60,stone:60,wool:60,clay:60};G.seeds=200;
 const pad0=ents.find(e=>e.type==='vpad'&&e.id==='p0');VB={pad:pad0.pad};ok('build_home',tryBuild('home')===null&&!!G.vil.b.p0&&!G.vil.b.p0.done);
-ok('building_costs',G.seeds===196&&G.vil.mat.wood===57&&G.vil.mat.clay===59);
+ok('building_costs',G.seeds===194&&G.vil.mat.wood===57&&G.vil.mat.clay===59);
 G.clock+=BUILD_TIME+5;updateVillage();tick=Math.ceil(tick/30)*30;updateVillage();ok('building_finishes',G.vil.b.p0.done===true);
 ok('mill_only_by_river',(()=>{VB={pad:ents.find(e=>e.id==='p1').pad};const r=tryBuild('mill');return r&&r.c==='#ff8080';})());
 VB={pad:ents.find(e=>e.id==='p8').pad};ok('mill_on_river',tryBuild('mill')===null);

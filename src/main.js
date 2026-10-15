@@ -2,7 +2,7 @@
 /* ---------------- loop ---------------- */
 function update(){
   tick++;
-  if(pressed.mute){musicOn=!musicOn;applyVolumes();if(G&&state!=='title')toast(musicOn?'Music on':'Music off','#a6e0ff');}
+  if(pressed.mute){musicOn=!musicOn;applyVolumes();if(G&&state!=='title')toast(musicOn?'Music on':'Music off','#b2e7e0');}
   if(fade>0&&(state==='play'||state==='title')&&!trans){fade=Math.max(0,fade-0.04);}
   if(G&&(state==='play'||state==='talk'||state==='warp'))updateEnv();
   wantTrack=state==='title'?'farm':state==='egg'?'mini':G?pickTrack():'farm';
@@ -27,7 +27,8 @@ function update(){
     case 'naming':updateNaming();break;
     case 'flyover':updateFlyover();break;
     case 'grow':updateGrow();updateAmbient();break;
-    case 'quests':if(pressed.b){{const pg=questPages();questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;
+    case 'quests':if(questPage===4){if(pressed.down){sleuthTop++;SFX.menu();}if(pressed.up){sleuthTop=Math.max(0,sleuthTop-1);SFX.menu();}}
+      if(pressed.b){{const pg=questPages();questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;
     case 'map':updateMap();break;
     case 'flying':updateFlying();break;
     case 'p2intro':updateP2Intro();break;

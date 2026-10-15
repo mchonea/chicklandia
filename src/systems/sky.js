@@ -44,12 +44,12 @@ function updateSky(){
   // the sky gate on the snowy peak
   for(const e of ents){if(e.type!=='sgate'||!onCur(e)||state!=='play'||P.hop)continue;
     if(Math.abs(P.x-e.x)<12&&Math.abs(P.y-e.y)<12&&warpCool<=0){
-      if(!G.sky.hatched){if(P.bubbleCd<=0){P.bubbleCd=240;float(e.x,e.y-26,G.flags.skyMap?'The clouds shimmer. Wait for the egg!':'A faint swirl of cloud...','#a6e0ff');}continue;}
+      if(!G.sky.hatched){if(P.bubbleCd<=0){P.bubbleCd=240;float(e.x,e.y-26,G.flags.skyMap?'The clouds shimmer. Wait for the egg!':'A faint swirl of cloud...','#b2e7e0');}continue;}
       warpCool=80;const a=skpA(SKY_NODES.meadows.at);
-      if(!G.sky.open){G.sky.open=1;save();say([{who:'me',text:"A stairway of clouds, just like the ancient map! "+(G.sky.name||'My chick')+" is tugging my wing. Let's climb!"}],()=>warpTo(a.x,a.y,3,null,()=>toast('Welcome to the CLOUD MEADOWS!','#a6e0ff')));}
-      else warpTo(a.x,a.y,3,null,()=>toast('Up the cloud stairs...','#a6e0ff'));}}
+      if(!G.sky.open){G.sky.open=1;save();say([{who:'me',text:"A stairway of clouds, just like the ancient map! "+(G.sky.name||'My chick')+" is tugging my wing. Let's climb!"}],()=>warpTo(a.x,a.y,3,null,()=>toast('Welcome to the CLOUD MEADOWS!','#b2e7e0')));}
+      else warpTo(a.x,a.y,3,null,()=>toast('Up the cloud stairs...','#b2e7e0'));}}
   const rg=regionAt();if(!rg||!rg.sky){STRIKES.length=0;return;}
-  if(P.hop&&P.hop.sky&&!P.hop.slam&&pressed.a&&has('divebomb')&&P.hop.t>6){P.hop.slam=true;SFX.gust();float(P.x,P.y-26-P.z,'DIVE!','#ffd83a');}
+  if(P.hop&&P.hop.sky&&!P.hop.slam&&pressed.a&&has('divebomb')&&P.hop.t>6){P.hop.slam=true;SFX.gust();float(P.x,P.y-26-P.z,'DIVE!','#ffe05a');}
   const under=tileAt(Math.floor(P.x/16),Math.floor((P.y-3)/16));
   if(!P.hop&&state==='play'){
     if(under==='ε'||under==='ζ'){if(!wearing('scarf'))moveP(under==='ε'?0.9:-0.9,0,false);else if(tick%120===0)float(P.x,P.y-24,'Cozy scarf!','#ff9cd0');}
@@ -70,15 +70,15 @@ function skyLaunch(e){
   const q=wearing('quill'),to=e.to||{x:e.x,y:e.y};
   P.x=e.x;P.y=e.y;P.hop={x0:P.x,y0:P.y,x1:to.x,y1:to.y,t:0,d:Math.round((e.to?40:46)*(q?0.8:1)),hz:e.to?34:44,sky:true};skyCool=P.hop.d+30;   // time to walk off the cloud before it bounces again
   e.sq=10;SFX.hop();puff(e.x,e.y-4,8,['#ffffff','#e6f2ff'],1.4,0.05);
-  if(!e.to&&has('divebomb')&&!G.sky.dbTip){G.sky.dbTip=1;toast('Press peck in mid-air to DIVE-BOMB!','#ffd83a');}
+  if(!e.to&&has('divebomb')&&!G.sky.dbTip){G.sky.dbTip=1;toast('Press peck in mid-air to DIVE-BOMB!','#ffe05a');}
 }
 function ventUse(e){
-  if(!has('updraft')){skyCool=120;float(e.x,e.y-26,'Strong wind! Learn UPDRAFT.','#a6e0ff');SFX.deny();return;}
+  if(!has('updraft')){skyCool=120;float(e.x,e.y-26,'Strong wind! Learn UPDRAFT.','#b2e7e0');SFX.deny();return;}
   P.x=e.x;P.y=e.y;P.hop={x0:P.x,y0:P.y,x1:e.to.x,y1:e.to.y,t:0,d:Math.round(46*(wearing('quill')?0.8:1)),hz:46,sky:true};skyCool=P.hop.d+30;
-  SFX.gust();puff(e.x,e.y-6,10,['#ffffff','#a6e0ff'],1.2,-0.04);
+  SFX.gust();puff(e.x,e.y-6,10,['#ffffff','#b2e7e0'],1.2,-0.04);
 }
 function portalUse(e){
-  if(e.down){warpCool=80;const o=gateOut();warpTo(o.x,o.y,0,null,()=>toast('Down the cloud stairs...','#a6e0ff'));return;}
+  if(e.down){warpCool=80;const o=gateOut();warpTo(o.x,o.y,0,null,()=>toast('Down the cloud stairs...','#b2e7e0'));return;}
   if(e.id==='p1lair'&&G.sky.boss<4){warpCool=80;warpTo(e.to.x,e.to.y,1,null,()=>skyBossStart());return;}
   if(e.id==='lairp1'){SKB=null;ents=ents.filter(x=>!['sdragon','scrys','sbell'].includes(x.type));STRIKES.length=0;}
   warpCool=80;warpTo(e.to.x,e.to.y,e.to.x>e.x?3:2,null,null);
@@ -86,18 +86,18 @@ function portalUse(e){
 function skyLand(h){
   if(!h.slam)return;
   shake=7;SFX.brk();
-  for(let i=0;i<16;i++){const a=i/16*Math.PI*2;parts.push({x:P.x,y:P.y-2,vx:Math.cos(a)*2.2,vy:Math.sin(a)*1.2,g:0,life:18,c:i%2?'#ffffff':'#ffd83a'});}
+  for(let i=0;i<16;i++){const a=i/16*Math.PI*2;parts.push({x:P.x,y:P.y-2,vx:Math.cos(a)*2.2,vy:Math.sin(a)*1.2,g:0,life:18,c:i%2?'#ffffff':'#ffe05a'});}
   let n=0;const c0=Math.floor(P.x/16),r0=Math.floor((P.y-3)/16);
   for(let dr=-3;dr<=3;dr++)for(let dc=-3;dc<=3;dc++){const c=c0+dc,r=r0+dr;
     if(tileAt(c,r)==='κ'&&Math.hypot(c*16+8-P.x,r*16+8-(P.y-3))<=44){setTile(c,r,'α');n++;puff(c*16+8,r*16+8,10,['#ffffff','#a8b4c8'],1.6,0.06);}}
   for(const e of ents)if(e.type==='sbell'&&!e.rung&&Math.hypot(e.x-P.x,e.y-P.y)<26)ringBell(e);
-  if(n){toast('SLAM! The cloud barrier cracks!','#ffd83a');save();}
+  if(n){toast('SLAM! The cloud barrier cracks!','#ffe05a');save();}
 }
 function skyBump(ix,iy){
   if(!skyRegion()||P.bubbleCd>0)return false;
   const [dx,dy]=[ix?Math.sign(ix):0,iy?Math.sign(iy):0],t=tileAt(Math.floor((P.x+dx*9)/16),Math.floor((P.y-3+dy*7)/16));
   const msg={γ:"This cloud is too thin to stand on... Cloud Walk could do it!",κ:"A cloud barrier! Something heavy, falling from above, might crack it.",θ:"A storm crystal, buzzing with lightning!",η:null}[t];
-  if(msg){P.bubbleCd=200;float(P.x,P.y-26,msg.length>34?msg.slice(0,msg.lastIndexOf(' ',34))+'...':msg,'#a6e0ff');return true;}
+  if(msg){P.bubbleCd=200;float(P.x,P.y-26,msg.length>34?msg.slice(0,msg.lastIndexOf(' ',34))+'...':msg,'#b2e7e0');return true;}
   return false;
 }
 /* ---- storms ---- */
@@ -128,23 +128,23 @@ function smashCrystal(c,r){
 }
 function ringChime(e){
   e.ring=20;SFX.blip({small:980,mid:720,big:470}[e.id]);
-  if(G.sky.chimes>=1){float(e.x,e.y-20,'The garden hums...','#94dc64');return;}
+  if(G.sky.chimes>=1){float(e.x,e.y-20,'The garden hums...','#a1d970');return;}
   chimeSeq.push(e.id);
-  if(chimeSeq.some((k,i)=>k!==CHIME_TUNE[i])){chimeSeq=[];SFX.deny();float(e.x,e.y-20,'...off-key. Try again!','#b8a8d8');return;}
-  float(e.x,e.y-20,chimeSeq.length+'/3','#ffd83a');
+  if(chimeSeq.some((k,i)=>k!==CHIME_TUNE[i])){chimeSeq=[];SFX.deny();float(e.x,e.y-20,'...off-key. Try again!','#b9d1dd');return;}
+  float(e.x,e.y-20,chimeSeq.length+'/3','#ffe05a');
   if(chimeSeq.length>=3){chimeSeq=[];G.sky.chimes=1;SFX.fanfare();shake=4;toast('The chimes sing! A chest appears!','#ff9cd0');
-    const p=skp('g1',7,9);addEnt({type:'skychest',id:'chimechest',kind:'chime',x:p.x,y:p.y,solid:true,w:16});puff(p.x,p.y-8,16,['#ffd83a','#fff8ec','#ff9cd0'],1.8,0.04);save();}
+    const p=skp('g1',7,9);addEnt({type:'skychest',id:'chimechest',kind:'chime',x:p.x,y:p.y,solid:true,w:16});puff(p.x,p.y-8,16,['#ffe05a','#fff8ec','#ff9cd0'],1.8,0.04);save();}
 }
 function openSkyChest(e){
   if(e.kind==='chime'){e.dead=true;G.sky.chimes=2;SFX.chest();shake=3;G.sacks.star=(G.sacks.star||0)+3;addSeeds(4,2,0);
-    toast('3 STAR-FRUIT seeds and 4 seeds!','#ffd83a');say([{who:'me',text:"The garden chest held star-fruit seeds and a few seeds! Time to plant."}]);}
+    toast('3 STAR-FRUIT seeds and 4 seeds!','#ffe05a');say([{who:'me',text:"The garden chest held star-fruit seeds and a few seeds! Time to plant."}]);}
   else if(e.kind==='scarf'){e.dead=true;SFX.chest();shake=5;
     if(grantOutfit('scarf'))toast('Found the CLOUD SCARF!','#ff9cd0');say([{who:'me',text:"A hidden pocket in the clouds, and a CLOUD SCARF inside! Press C to wear it."}]);}
   save();
 }
 function peckNest(e){
-  if(G.sky.nest){float(e.x,e.y-16,'An empty old nest.','#b8a8d8');SFX.clunk();return;}
-  G.sky.nest=1;SFX.chirp();puff(e.x,e.y-6,12,['#c49a5c','#fff8ec','#ffd83a'],1.4,0.05);addSeeds(3,2,0);secretFound('skynest');
+  if(G.sky.nest){float(e.x,e.y-16,'An empty old nest.','#b9d1dd');SFX.clunk();return;}
+  G.sky.nest=1;SFX.chirp();puff(e.x,e.y-6,12,['#b69965','#fff8ec','#ffe05a'],1.4,0.05);addSeeds(3,2,0);secretFound('skynest');
   say([{who:'me',text:"The last cloud of the island! A tiny, ancient nest, and three seeds tucked inside."}]);save();
 }
 /* ---- hatching ---- */
@@ -168,15 +168,15 @@ function drawHatch(){
   const cx=128,cy=168;
   if(t<195){const w=t<150?Math.sin(t/4)*Math.min(14,t/8):0,e=SPR.eagleEgg;
     ctx.save();ctx.translate(cx,cy);ctx.rotate(w*0.03);ctx.drawImage(e,-e.width*3,-e.height*6,e.width*6,e.height*6);
-    if(t>=150){ctx.fillStyle='#21142b';ctx.fillRect(-4,-22,2,10);ctx.fillRect(-2,-14,6,2);ctx.fillRect(2,-12,2,8);}
+    if(t>=150){ctx.fillStyle='#202840';ctx.fillRect(-4,-22,2,10);ctx.fillRect(-2,-14,6,2);ctx.fillRect(2,-12,2,8);}
     ctx.restore();}
   else{const e=SPR.eaglet,k=Math.min(1,(t-195)/20);
-    ctx.fillStyle='#fff8ec';ctx.fillRect(cx-22,cy-8,16,10);ctx.fillRect(cx+8,cy-8,16,10);ctx.fillStyle='#21142b';ctx.fillRect(cx-22,cy-9,16,2);ctx.fillRect(cx+8,cy-9,16,2);
+    ctx.fillStyle='#fff8ec';ctx.fillRect(cx-22,cy-8,16,10);ctx.fillRect(cx+8,cy-8,16,10);ctx.fillStyle='#202840';ctx.fillRect(cx-22,cy-9,16,2);ctx.fillRect(cx+8,cy-9,16,2);
     ctx.drawImage(e,Math.round(cx-e.width*2*k),Math.round(cy-e.height*4*k-Math.sin(t/6)*1.5),Math.round(e.width*4*k),Math.round(e.height*4*k));
-    if(t%5===0)parts.push({x:cx-12+Math.random()*24+camX,y:cy-30+camY,vx:(Math.random()-.5)*1.5,vy:-0.8-Math.random(),g:0.02,life:30,c:['#ffd83a','#fff8ec','#ff6fae'][(Math.random()*3)|0]});}
+    if(t%5===0)parts.push({x:cx-12+Math.random()*24+camX,y:cy-30+camY,vx:(Math.random()-.5)*1.5,vy:-0.8-Math.random(),g:0.02,life:30,c:['#ffe05a','#fff8ec','#ff6fae'][(Math.random()*3)|0]});}
   for(const p of parts){ctx.fillStyle=p.c;ctx.fillRect(Math.round(p.x-camX),Math.round(p.y-camY),2,2);}
   const msg=t<150?'The egg is wobbling...':t<195?'Crack... crack...':t<290?'A tiny eaglet blinks up at you!':'Press Z';
-  box(40,16,176,22,'#fff8ec','#21142b');txt(msg,W/2,23,7,'#21142b',{align:'center'});
+  box(40,16,176,22,'#fff8ec','#202840');txt(msg,W/2,23,7,'#202840',{align:'center'});
 }
 const NAME_ROWS=[['SKY','NIMBLE','PEEPER','ZIPPY'],'ABCDEFG'.split(''),'HIJKLMN'.split(''),'OPQRSTU'.split(''),['V','W','X','Y','Z','DEL','OK']];
 function openNaming(){NAMEUI={s:'',row:0,col:0};state='naming';HAT=null;}
@@ -195,17 +195,17 @@ function updateNaming(){
   updateAmbient();
 }
 function drawNaming(){
-  const N=NAMEUI;ctx.fillStyle='#241838';ctx.fillRect(0,0,W,H);
-  for(let i=0;i<30;i++){ctx.fillStyle=(i+Math.floor(tick/12))%4?'#3b2a56':'#ffd83a';ctx.fillRect((i*53)%W,(i*37+Math.floor(tick/4))%H,1,1);}
-  box(10,8,W-20,H-16,'#1d1430','#ffd83a');txt('NAME YOUR CHICK!',W/2,14,9,'#ffd83a',{align:'center',shadow:true});
+  const N=NAMEUI;ctx.fillStyle='#24364a';ctx.fillRect(0,0,W,H);
+  for(let i=0;i<30;i++){ctx.fillStyle=(i+Math.floor(tick/12))%4?'#29465b':'#ffe05a';ctx.fillRect((i*53)%W,(i*37+Math.floor(tick/4))%H,1,1);}
+  box(10,8,W-20,H-16,'#192639','#ffe05a');txt('NAME YOUR CHICK!',W/2,14,9,'#ffe05a',{align:'center',shadow:true});
   const e=SPR.eaglet;ctx.drawImage(e,Math.round(W/2-e.width*1.5),32,e.width*3,e.height*3);
-  box(54,64,148,18,'#fff8ec','#21142b');let nm=N.s;if(Math.floor(tick/20)%2&&N.s.length<10)nm+='_';txt(nm,W/2,70,9,'#21142b',{align:'center'});
+  box(54,64,148,18,'#fff8ec','#202840');let nm=N.s;if(Math.floor(tick/20)%2&&N.s.length<10)nm+='_';txt(nm,W/2,70,9,'#202840',{align:'center'});
   NAME_ROWS.forEach((row,ri)=>{const y=ri===0?90:106+(ri-1)*17,n=row.length,cw=ri===0?42:ri===4?(ri===4?30:26):26;
     const total=ri===0?4*44:n*28,x0=Math.round((W-total)/2);
     row.forEach((k,ci)=>{const w=ri===0?42:26,x=ri===0?x0+ci*44:x0+ci*28,sel=ri===N.row&&ci===N.col;
-      box(x,y,w,ri===0?13:15,sel?'#ffd83a':'#3b2a56',sel?'#fff8ec':'#6a5a90');
-      txt(k,x+w/2,y+(ri===0?4:5),ri===0?5:6,sel?'#21142b':(k==='OK'?'#94dc64':k==='DEL'?'#ff8080':'#fff8ec'),{align:'center'});});});
-  txt('Z: pick     X: erase',W/2,H-22,5,'#b8a8d8',{align:'center'});
+      box(x,y,w,ri===0?13:15,sel?'#ffe05a':'#29465b',sel?'#fff8ec':'#7896ae');
+      txt(k,x+w/2,y+(ri===0?4:5),ri===0?5:6,sel?'#202840':(k==='OK'?'#a1d970':k==='DEL'?'#ff8080':'#fff8ec'),{align:'center'});});});
+  txt('Z: pick     X: erase',W/2,H-22,5,'#b9d1dd',{align:'center'});
 }
 function finishNaming(){
   const name=NAMEUI.s;NAMEUI=null;state='play';G.sky.name=name;G.sky.hatched=1;
@@ -215,7 +215,7 @@ function finishNaming(){
   const el=ents.find(e=>e.id==='elda');
   say([{who:el||'me',text:name+"! What a fine, strong name. Screeee!"},
     {who:el||'me',text:"The old map shows a stairway of clouds just east of my nest. "+name+" belongs up there, in the sky, and so do you."},
-    {who:'me',text:"A cloud stairway! Come on, "+name+"! Let's see the Sky Kingdom!"}],()=>{toast('A cloud stairway shimmers east of Elda!','#a6e0ff');save();});
+    {who:'me',text:"A cloud stairway! Come on, "+name+"! Let's see the Sky Kingdom!"}],()=>{toast('A cloud stairway shimmers east of Elda!','#b2e7e0');save();});
 }
 /* ---- quest marker and hint for the sky ---- */
 function skyHint(){
@@ -248,7 +248,7 @@ const SKY_MAP_ORDER=['meadows','gardens','skycity','peaks'];
 function skyMapNodes(){return SKY_MAP_ORDER.filter(k=>k==='meadows'||G.areas.includes(k));}
 for(const k of SKY_MAP_ORDER){const a=skpA(SKY_NODES[k].at);DEST[k]={x:a.x,y:a.y,mx:SKY_NODES[k].mx,my:SKY_NODES[k].my,icon:SKY_NODES[k].icon};}
 function drawSkyMap(){
-  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(6,6,W-12,H-12,'#cfe8ff','#5a78b8');
+  ctx.fillStyle='rgba(18,28,44,0.94)';ctx.fillRect(0,0,W,H);box(6,6,W-12,H-12,'#cfe8ff','#5a78b8');
   for(let i=0;i<5;i++)cloud(10+i*52,28+(i%2)*12,1+(i%2));
   txt('THE SKY KINGDOM',W/2,14,8,'#21408a',{align:'center'});
   const nodes=skyMapNodes();
@@ -260,8 +260,8 @@ function drawSkyMap(){
     box(d.mx-15,d.my-15,30,30,open?'#fff8ec':'#9aa8c8',open?'#21408a':'#6a78a8');
     if(open){const cl=ctx.fillStyle;
       if(k==='meadows'){ctx.fillStyle='#e6f2ff';ctx.fillRect(d.mx-10,d.my-1,20,8);ctx.fillRect(d.mx-6,d.my-6,12,7);ctx.fillStyle='#c8dcf0';ctx.fillRect(d.mx-10,d.my+6,20,2);}
-      else if(k==='gardens'){ctx.fillStyle='#94dc64';ctx.fillRect(d.mx-9,d.my+2,18,6);ctx.fillStyle='#ff6fae';ctx.fillRect(d.mx-6,d.my-6,4,6);ctx.fillStyle='#ffd83a';ctx.fillRect(d.mx+2,d.my-8,4,8);}
-      else if(k==='skycity'){ctx.fillStyle='#e8b070';ctx.fillRect(d.mx-9,d.my-4,18,12);ctx.fillStyle='#e03838';ctx.fillRect(d.mx-10,d.my-8,20,4);ctx.fillStyle='#21142b';ctx.fillRect(d.mx-2,d.my+1,4,7);}
+      else if(k==='gardens'){ctx.fillStyle='#a1d970';ctx.fillRect(d.mx-9,d.my+2,18,6);ctx.fillStyle='#ff6fae';ctx.fillRect(d.mx-6,d.my-6,4,6);ctx.fillStyle='#ffe05a';ctx.fillRect(d.mx+2,d.my-8,4,8);}
+      else if(k==='skycity'){ctx.fillStyle='#e8b070';ctx.fillRect(d.mx-9,d.my-4,18,12);ctx.fillStyle='#eb6654';ctx.fillRect(d.mx-10,d.my-8,20,4);ctx.fillStyle='#202840';ctx.fillRect(d.mx-2,d.my+1,4,7);}
       else{ctx.fillStyle='#6a78a8';ctx.fillRect(d.mx-10,d.my-2,20,9);ctx.fillRect(d.mx-6,d.my-8,12,7);ctx.fillStyle='#ffe84a';ctx.fillRect(d.mx-1,d.my-6,3,8);}}
     else txt('?',d.mx,d.my-4,8,'#6a78a8',{align:'center'});
     txt(open?AREA_LABEL[k]:'???',d.mx,d.my+19,5,open?'#21408a':'#6a78a8',{align:'center'});

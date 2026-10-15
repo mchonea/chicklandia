@@ -27,7 +27,7 @@ Object.assign(QUESTS,{
     hint:()=>has('updraft')?"Collect Zephyr's 4 sky feathers on the islands: use bouncy clouds and updraft vents.":"Learn UPDRAFT in your Sky Tree, then ride the vents to the islands for Zephyr's feathers."},
   sk_moon:{title:'Sky Seeds',loc:'GARDENS: Fern',check:()=>G.sky.harv.moon>=1&&G.sky.harv.star>=1,prog:()=>(G.sky.harv.moon>=1?'moon ok':'moon?')+' / '+(G.sky.harv.star>=1?'star ok':'star?'),reward:5,
     intro:["Chirp! Welcome to the Floating Gardens! I'm Fern. Nothing grows like it does up here.","Sky soil is magic: everything grows three times as fast! Moonflowers, too, but only at night.","Take these: two STAR-FRUIT seeds and two MOONFLOWER seeds. Grow one of each and show me!",
-      {t:"Plant them in the soil blocks. Press peck on the soil!",fx:()=>{G.sacks.star=(G.sacks.star||0)+2;G.sacks.moon=(G.sacks.moon||0)+2;toast('Got 2 STAR-FRUIT and 2 MOONFLOWER seeds!','#ffd83a');}}],
+      {t:"Plant them in the soil blocks. Press peck on the soil!",fx:()=>{G.sacks.star=(G.sacks.star||0)+2;G.sacks.moon=(G.sacks.moon||0)+2;toast('Got 2 STAR-FRUIT and 2 MOONFLOWER seeds!','#ffe05a');}}],
     remind:()=>(G.sky.harv.star>=1?'':'Grow a STAR-FRUIT. ')+(G.sky.harv.moon>=1?'':'Grow a MOONFLOWER. '+NIGHT_HINT)+' Peck the soil to plant!',
     done:["Gorgeous! A star-fruit AND a moonflower!","You've got the touch, little gardener. A crown of sun-blooms for you!"],
     onDone:()=>{if(grantOutfit('bloom'))toast('Got the SUN-BLOOM CROWN!','#ff9cd0');},
@@ -94,13 +94,13 @@ const SKY_FOOD=(id,name,price,spr,desc,heal)=>({name,price,icon:spr,tag:G.taste[
   act:()=>shopBuy(price,'Yum! '+name+'!',()=>{G.hearts=Math.min(maxHearts(),G.hearts+heal);tasteFood(id);})});
 const shopOutfit=(id)=>{const o=OUTFITS.find(x=>x.id===id),own=G.outfits.includes(id);
   return {name:o.name,price:own?null:priceOf(o),tag:own?(wearing(id)?'ON':'OWN'):null,own,on:wearing(id),desc:o.desc,bonus:o.bonus,outfit:id,
-    act:()=>{if(own){setWear(id);return {s:wearing(id)?'Wearing it! Gorgeous!':'Taken off.',c:'#94dc64'};}
+    act:()=>{if(own){setWear(id);return {s:wearing(id)?'Wearing it! Gorgeous!':'Taken off.',c:'#a1d970'};}
       return shopBuy(priceOf(o),'Sold! Looking fabulous!',()=>{grantOutfit(id);setWear(id,true);});}};};
 Object.assign(SHOPS,{
   plume:{title:'FEATHER BOUTIQUE',owner:'plumeKeeper',color:'#ff9cd0',leave:'LEAVE SHOP',bye:'Come back soon, darling!',
     items:()=>[shopOutfit('quill'),
       {name:'SKY FEATHER',price:null,icon:'skyfeather',desc:'Feathers from the islands make fine gifts.',off:true,offMsg:'Zephyr collects the best ones!'}]},
-  starstand:{title:'STAR-FRUIT STAND',owner:'starla',color:'#ffd83a',leave:'LEAVE',bye:'Hoo! Stay glowing!',
+  starstand:{title:'STAR-FRUIT STAND',owner:'starla',color:'#ffe05a',leave:'LEAVE',bye:'Hoo! Stay glowing!',
     items:()=>[
       {name:'STAR-FRUIT SEED',price:SEED_TYPES.star.price,tag:G.sacks.star?'x'+G.sacks.star:null,icon:'starfruit',desc:SEED_TYPES.star.desc+' Plant it in the sky soil.',
         act:()=>shopBuy(SEED_TYPES.star.price,'Got a star-fruit seed! Plant it in the Floating Gardens.',()=>{G.sacks.star=(G.sacks.star||0)+1;})},

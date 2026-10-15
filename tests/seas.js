@@ -69,7 +69,7 @@ c.tp(arrive('cove').x,arrive('cove').y);reset();
 for(const id of ['x0','x1','x2']){const e=ents.find(x=>x.id===id);P.x=e.x;P.y=e.y+12;P.dir=1;seaPeck(e,frontPoint(),{x:e.x-8,y:e.y-8,w:16,h:16});}
 ok('chest_rises',G.sea.chest===1&&ents.some(e=>e.type==='seachest'));
 talk('polly');ok('polly_started',G.q.sea_xmarks===1);
-const ch=ents.find(e=>e.type==='seachest');const sd=G.seeds;openSeaChest(ch);reset();ok('chest_gives_loot',G.sea.chest===2&&G.seeds===sd+6&&G.sea.salv.hullplank===1);
+const ch=ents.find(e=>e.type==='seachest');const sd=G.seeds;openSeaChest(ch);reset();ok('chest_gives_loot',G.sea.chest===2&&G.seeds===sd+4&&G.sea.salv.hullplank===1);
 talk('polly');ok('polly_done',G.q.sea_xmarks===2);
 // smugglers
 talk('sam');ok('sam_started',G.q.sea_smug===1);G.items.crate=3;talk('sam');ok('sam_done',G.q.sea_smug===2&&G.sea.salv.sailcloth===1);
@@ -82,7 +82,7 @@ talk('ember');ok('ember_springs_started',G.q.sea_springs===1);G.items.sunstone=3
 talk('ember');ok('forge_started',G.q.sea_forge===1);G.items.ironore=2;talk('ember');ok('forge_done',G.q.sea_forge===2&&G.sea.salv.cannonpart===2);
 // 9. ship upgrades
 G.sea.lv={sails:0,hull:0,cannon:0};G.sea.salv.sailcloth=3;G.sea.salv.hullplank=4;G.sea.salv.cannonpart=2;
-const s0=G.seeds;for(const u of SHIP_UPGRADES)buyUpgrade(u);ok('upgrades_bought',G.sea.lv.sails&&G.sea.lv.hull&&G.sea.lv.cannon&&G.seeds===s0-30&&G.sea.salv.sailcloth===0);
+const s0=G.seeds;for(const u of SHIP_UPGRADES)buyUpgrade(u);ok('upgrades_bought',G.sea.lv.sails&&G.sea.lv.hull&&G.sea.lv.cannon&&G.seeds===s0-45&&G.sea.salv.sailcloth===0);
 ok('nodes_unlock',SEA_NODES.find(n=>n.id==='volcano').need()&&SEA_NODES.find(n=>n.id==='lighthouse').need()&&!SEA_NODES.find(n=>n.id==='fortress').need());
 // 10. lighthouse puzzle
 c.tp(arrive('lighthouse').x,arrive('lighthouse').y);reset();talk('gus');ok('gus_started',G.q.sea_light===1);
@@ -119,5 +119,7 @@ G.sea.boss=1;c.tp(arrive('fortress').x,arrive('fortress').y);reset();fortressSta
 // 13. save round trip
 reset();c.tp(arrive('harbor').x,arrive('harbor').y);save();const sv=JSON.parse(localStorage.getItem('chicklandia_save_v2'));ok('save_has_sea',!!sv.sea&&sv.sea.lv.cannon===1);
 c.continueGame();G=c.G;ok('load_keeps_sea',G.sea.open&&G.sea.lv.cannon===1&&G.flags.seas===1&&G.rank===9);
+// F at sea opens the sea chart (never the sky map, which has no node for the sea) from the flagship and every island
+for(const n of ['fortress','cove','reef','volcano','lighthouse']){const a=SEA_NODES.find(x=>x.id===n).arrive;reset();c.tp(a.x,a.y);G.sea.boss=4;pressed.fly=true;c.step(1);ok('F_sails_from_'+n,state==='sail');state='play';SAIL=null;}
 R.allPass=Object.values(R).every(v=>v===true);return R;
 })()

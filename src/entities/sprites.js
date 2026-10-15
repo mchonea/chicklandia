@@ -2,9 +2,9 @@
 /* ---------------- sprites ---------------- */
 const SPR={};
 SPR.hen=makeSprite([
-'......rr......','.....rrrr.....','....tttttt....','...tttttttt...','...tkttttkt...','...tttoottt...',
+'......rr......','.....rrrr.....','....tnnttt....','...tnnttttt...','...tkttttkt...','...tttoottt...',
 '....ttrrtt....','..ttttrrtttt..','.tttttttttttt.','.tTTwwwwwwTTt.','.tTTTwwwwTTTt.','.ttTTwwwwTTtt.',
-'..ttttwwtttt..','...tttttttt...','.....o..o.....','....oo..oo....']);
+'..ttTTwwTTtt..','...tTTTTTTt...','.....o..o.....','....oo..oo....']);
 SPR.cow=makeSprite([
 '....n........n....','....nn......nn....','...wwwwwwwwwwww...','bbbwbbbwwwwwwwwbbb','.bbwbbbwwwwwwwwbb.',
 '...wbkbwwwwwkww...','...wbbbwwwwwwww...','...wwwwwwwwwwww...','....pppppppppp....','....pPppppppPp....',
@@ -13,7 +13,7 @@ SPR.cow=makeSprite([
 SPR.pig=makeSprite([
 '..pp........pp..','..pPpp....ppPp..','..pppppppppppp..','.pppppppppppppp.','.ppkppppppppkpp.',
 '.ppppPPPPPPpppp.','.ppppPkPPkPpppp.','.ppppPPPPPPpppp.','.pppppppppppppp.','pppppppppppppppp',
-'pppppppppppppppp','.pppppppppppppp.','..pppppppppppp..','..pp.pp..pp.pp..','..BB.BB..BB.BB..']);
+'pppppppppppppppp','.ppPPPPPPPPpppp.','..pPPPPPPPPppp..','..pp.pp..pp.pp..','..BB.BB..BB.BB..']);
 SPR.duck=makeSprite([
 '...uuuu........','..uuuuuuu......','..wkwwww.......','ooowwwww.......','oooowwww.......',
 '...wwwww.......','....wwww.......','...wwwwwww...ww','..wwwwwwwwwwwww','..wwweeeeewwww.',
@@ -21,7 +21,7 @@ SPR.duck=makeSprite([
 SPR.duckling=makeSprite(['..yyyy...','.yykyyy..','ooyyyyy..','..yyyyyy.','..yYYyyyy','..yyyyyy.','...o..o..']);
 const SHEEP=['....nnnnnnnn....','..nnnnnnnnnnnn..','.nnnnEEEEEEnnnn.','EEnnEEEEEEEEnnEE','.EnnEwkEEkwEnnE.',
 '.nnnEEEEEEEEnnn.','.nnnnEEppEEnnnn.','nnnnnnEEEEnnnnnn','nnnnnnnnnnnnnnnn','nnnnnnnnnnnnnnnn',
-'.nnnnnnnnnnnnnn.','..nnnnnnnnnnnn..','...EE......EE...','...EE......EE...'];
+'.nnwnnnnnwnnnnn.','..nnEEEnnnEEnn..','...EE......EE...','...EE......EE...'];
 SPR.sheep=makeSprite(SHEEP);
 SPR.sheepBow=makeSprite(['....nnnrrnnn....',...SHEEP.slice(1)].map((r,i)=>i===1?'..nnnnnrrnnnnn..':r));
 SPR.rooster=makeSprite([
@@ -171,6 +171,13 @@ function chickSprite(stage,dir,frame,flap,gold=false){
   if(stage>=6&&dir===0){const wy=Math.floor(hy+hr*0.4)+1;put(Wd/2-1,wy,'r');put(Wd/2,wy,'r');put(Wd/2-1,wy+1,'R');put(Wd/2,wy+1,'R');}
   if(stage>=6&&side){const tx=cx+rx+S*0.06;for(let k=0;k<4;k++){put(tx+k*0.9,by-ry*0.4-k*1.1,k%2?'q':'Y');put(tx+k*0.9+0.9,by-ry*0.4-k*1.1+0.9,'q');}}
   if(stage>=5&&!flap&&!side){ell(cx-rx+1.3,by+0.5,1.6,ry*0.62,gold?'Q':stage>=6?'q':'Y');ell(Wd-(cx-rx+1.3),by+0.5,1.6,ry*0.62,gold?'Q':stage>=6?'q':'Y');}
+  // Clustered belly shade and a small forehead highlight, on the original grid.
+  // Keep head anchors and sprite bounds stable for every outfit and growth stage.
+  for(let j=Math.ceil(by+ry*0.42);j<foot;j++)for(let i=0;i<Wd;i++){
+    if(g[j][i]===BC)g[j][i]=stage>=6?'n':WC;
+  }
+  if(stage<6){const ly=Math.max(0,Math.floor(hy-hr*0.65)),lx=Math.floor(hx-hr*0.35);
+    for(let i=0;i<Math.max(1,Math.floor(hr*0.7));i++)if(g[ly]&&g[ly][lx+i]===BC)put(lx+i,ly,'w');}
   if(dir===0){const xl=Math.floor(hx-hr*0.45),xr=Wd-1-xl,ey=Math.floor(hy);put(xl,ey,'k');put(xr,ey,'k');
     const by2=Math.floor(hy+hr*0.4);put(Wd/2-1,by2,'o');put(Wd/2,by2,'o');
     if(stage<2){put(xl-1,by2,'p');put(xr+1,by2,'p');}}

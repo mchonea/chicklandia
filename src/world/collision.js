@@ -41,7 +41,7 @@ function entMove(e,dx,dy){if(!entBlocked(e,e.x+dx,e.y))e.x+=dx;if(!entBlocked(e,
 function puff(x,y,n,colors,spd=1.2,grav=0.04){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=Math.random()*spd+0.3;
   parts.push({x,y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-0.6,g:grav,life:25+Math.random()*20,c:colors[(Math.random()*colors.length)|0]});}}
 function float(x,y,s,color='#fff'){floats.push({x,y,s,color,life:60});}
-function toast(s,color='#ffd83a'){toasts.push({s:tt(s),color,t:0});}
+function toast(s,color='#ffe05a'){toasts.push({s:tt(s),color,t:0});}
 function updateAmbient(){
   for(const p of parts){p.x+=p.vx;p.y+=p.vy;p.vy+=p.g;p.vx*=0.97;p.life--;}parts=parts.filter(p=>p.life>0);
   for(const f of floats){f.y-=0.35;f.life--;}floats=floats.filter(f=>f.life>0);

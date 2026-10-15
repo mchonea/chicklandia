@@ -1,0 +1,30 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Chicklandia — graphics review</title>
+<style>body{margin:24px;background:#161f30;color:#fff8ec;font:14px/1.5 system-ui}h1{font-size:28px}p{color:#b2c9d8}#gallery{display:grid;grid-template-columns:repeat(2,512px);gap:20px}figure{margin:0}canvas{width:512px;height:448px;image-rendering:pixelated}figcaption{padding:8px 0;color:#ffe05a}iframe{position:fixed;width:768px;height:672px;left:-3000px}button{padding:12px;background:#ffe05a;color:#202840;border:0;cursor:pointer}pre{white-space:pre-wrap;max-height:180px;overflow:auto}#atlas{width:1024px;height:auto;image-rendering:pixelated}</style>
+<h1>Bright Adventure · 16 px graphics review</h1><p>Live game rendering across regions, growth stages, outfits and menus. This review runs on a separate local origin to keep play saves separate.</p><button id="run">Run gameplay checks</button><pre id="results">Loading…</pre><div id="gallery"></div><h2>Character and terrain atlas</h2><canvas id="atlas" width="512" height="512"></canvas><iframe id="game" title="Isolated game review"></iframe>
+<script>
+const frame=document.getElementById('game'),results=document.getElementById('results');
+const boot=Promise.all([fetch('../index.html').then(r=>r.text()),fetch('../src/main.js').then(r=>r.text())]).then(([html,main])=>{main=main.replace('if(/[?&]debug=1(&|$)/.test(location.search))','if(true)');html=html.replace('<script src="src/main.js"><\/script>','<script>'+main+'<\/script>');frame.srcdoc=html.replace('<head>','<head><base href="'+location.origin+'/"><script>window.requestAnimationFrame=()=>0;<\/script>');});
+function snapshot(label,setup){const win=frame.contentWindow;win.eval(setup+';render()');const fig=document.createElement('figure'),caption=document.createElement('figcaption'),c=document.createElement('canvas');c.width=256;c.height=224;const output=win.eval('({canvas:cv,x:OX,y:OY,k:K})'),x=c.getContext('2d');x.imageSmoothingEnabled=false;x.drawImage(output.canvas,output.x,output.y,256*output.k,224*output.k,0,0,256,224);caption.textContent=label;fig.append(caption,c);document.getElementById('gallery').append(fig);}
+frame.onload=async()=>{if(!frame.contentWindow.document.getElementById('c'))return;try{await frame.contentWindow.document.fonts.ready;const win=frame.contentWindow;
+win.eval("newGame();G.autoMom=0;G.clock=DAY*.3;G.part2=true;G.vil.open=true;G.sky.open=1;G.sky.hatched=1;G.sea.open=true;G.gp=0;G.skills=new Set(SKILLS.map(s=>s.id));G.hearts=maxHearts();fade=0;state='play';tick=100;SET.music=0;SET.sound=0;");
+snapshot('Farm · Pip, coop and foliage',"G.rank=1;P.x=112;P.y=112;CS={x:0,y:0};camX=0;camY=0");
+snapshot('Pond · shoreline and animals',"CS={x:0,y:1};camX=0;camY=192;P.x=120;P.y=300");
+snapshot('Barn · interior materials',"CS={x:1,y:2};camX=256;camY=384;P.x=370;P.y=500");
+snapshot('Mountains · snow and pine',"CS={x:0,y:4};camX=0;camY=768;P.x=120;P.y=900");
+snapshot('Forest · oak and river',"CS={x:0,y:5};camX=0;camY=960;P.x=120;P.y=1080");
+snapshot('City · brick, paving and storefronts',"CS={x:3,y:5};camX=768;camY=960;P.x=880;P.y=1080");
+snapshot('Beach · sand and palm',"CS={x:0,y:6};camX=0;camY=1152;P.x=120;P.y=1270");
+snapshot('Village · buildings and greenery',"CS={x:2,y:7};camX=512;camY=1344;P.x=630;P.y=1460");
+snapshot('Pirate cove · coastal materials',"CS={x:0,y:9};camX=0;camY=1728;P.x=120;P.y=1840");
+snapshot('Volcano · lava and stone',"CS={x:0,y:11};camX=0;camY=2112;P.x=120;P.y=2220");
+snapshot('Cloud meadows · sky palette',"CS={x:0,y:17};camX=0;camY=3264;P.x=120;P.y=3380");
+snapshot('Storm peaks · crystals and hazards',"CS={x:3,y:19};camX=768;camY=3648;P.x=890;P.y=3760");
+snapshot('Farm · night readability',"G.clock=DAY*.8;CS={x:0,y:0};camX=0;camY=0;P.x=112;P.y=112");
+snapshot('Growth tree · panels and icons',"G.clock=DAY*.3;state='grow';growPage=0");
+snapshot('Pause · panel contrast',"state='pause'");
+snapshot('Outfits · original head anchors',"state='wardrobe';wardSel=0");
+const a=document.getElementById('atlas').getContext('2d');a.fillStyle='#202840';a.fillRect(0,0,512,512);
+const atlas=win.eval(`(()=>{const a=[];for(let st=0;st<7;st++)for(let dir=0;dir<4;dir++)for(let f=0;f<2;f++)a.push(chickSprite(st,dir===3?2:dir,f,false));for(let st=0;st<7;st++)a.push(chickSprite(st,0,0,true));for(const s of Object.values(SPR))if(s instanceof HTMLCanvasElement)a.push(s);for(const s of Object.values(TILE))if(s instanceof HTMLCanvasElement)a.push(s);return a})()`);let ax=4,ay=4,row=0;for(const s of atlas){if(ax+s.width>512){ax=4;ay+=row+5;row=0}a.drawImage(s,ax,ay);ax+=s.width+5;row=Math.max(row,s.height)}results.textContent='Review ready · '+atlas.length+' sprite/tile samples · native canvas 256 × 224';
+}catch(e){results.textContent='ERROR: '+e.stack;}};
+document.getElementById('run').onclick=async()=>{if(location.port!=='8081'){results.textContent='Gameplay checks require the isolated review server on port 8081.';return;}const win=frame.contentWindow;results.textContent='Running checks…';let report={};try{win.eval(await(await fetch('../tests/walk.js')).text());for(const suite of ['smoke','city','village','seas','sky']){report[suite]=await win.eval(await(await fetch('../tests/'+suite+'.js')).text());results.textContent=JSON.stringify(report,null,2)}report.graphics=win.eval(`(()=>{const bad=[];for(let st=0;st<7;st++)for(let dir=0;dir<3;dir++)for(let f=0;f<2;f++)for(const flap of [false,true])for(const gold of [false,true]){const s=chickSprite(st,dir,f,flap,gold);if(!s.head||s.width!==s.S+(flap?10:0)+2||s.height!==s.S+3)bad.push([st,dir,f,flap,gold]);}return {dimensions:W===256&&H===224&&TS===16,tiles:Object.values(TILE).flat().every(c=>c.width===16&&c.height===16),growthFrames:bad.length===0}})()`);results.textContent=JSON.stringify(report,null,2)}catch(e){results.textContent=JSON.stringify(report,null,2)+'\nERROR '+e.stack;}};
+</script></html>

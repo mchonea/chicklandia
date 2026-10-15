@@ -27,9 +27,9 @@ function updateVoyage(){
   const v=VOY;v.t++;if(v.t%14===0)SFX.splash&&SFX.splash();
   if(v.t>=v.dur){VOY=null;state='play';const n=v.to;G.sea.visited[n.id]=1;
     if(n.id==='fortress'){warpTo(n.arrive.x,n.arrive.y,3,null,()=>fortressArrive());}
-    else warpTo(n.arrive.x,n.arrive.y,3,null,()=>toast('Welcome to '+n.name+'!','#a6e0ff'));}
+    else warpTo(n.arrive.x,n.arrive.y,3,null,()=>toast('Welcome to '+n.name+'!','#b2e7e0'));}
 }
-const SEA_COL={harbor:'#c49a5c',cove:'#f2dca0',reef:'#ff9cd0',volcano:'#e8683c',lighthouse:'#e8e8f0',fortress:'#8a8a9a'};
+const SEA_COL={harbor:'#b69965',cove:'#f2dca0',reef:'#ff9cd0',volcano:'#e8683c',lighthouse:'#e8e8f0',fortress:'#8a8a9a'};
 function drawSea(sel,shipAt){
   for(let i=0;i<14;i++){ctx.fillStyle=['#1f4fa0','#2358ac','#2860b8','#2c68c0','#306fc8','#3476cf','#387dd6','#3c84dc','#408be2','#4492e8','#4899ee','#4ca0f2','#50a7f6','#54aefa'][i];ctx.fillRect(0,i*16,W,16);}
   for(let k=0;k<30;k++){const x=(k*47+tick*0.4)%W,y=(k*29)%H;ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillRect(Math.round(x),y,6,1);ctx.fillRect(Math.round(x)+2,y+1,3,1);}
@@ -40,26 +40,26 @@ function drawSea(sel,shipAt){
   ctx.setLineDash([]);
   nodes.forEach((n,i)=>{const open=n.need(),s=i===sel;
     if(s){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.beginPath();ctx.arc(n.mx,n.my,19,0,7);ctx.fill();}
-    ctx.fillStyle='#21142b';ctx.beginPath();ctx.arc(n.mx,n.my,17,0,7);ctx.fill();
+    ctx.fillStyle='#202840';ctx.beginPath();ctx.arc(n.mx,n.my,17,0,7);ctx.fill();
     ctx.fillStyle=open?SEA_COL[n.id]:'#4a5a7a';ctx.beginPath();ctx.arc(n.mx,n.my,15,0,7);ctx.fill();
-    if(open){ctx.fillStyle='#21142b';
+    if(open){ctx.fillStyle='#202840';
       if(n.id==='volcano'){ctx.beginPath();ctx.moveTo(n.mx-9,n.my+8);ctx.lineTo(n.mx,n.my-9);ctx.lineTo(n.mx+9,n.my+8);ctx.fill();ctx.fillStyle='#ffb030';ctx.fillRect(n.mx-2,n.my-9,4,3);}
-      else if(n.id==='lighthouse'){ctx.fillRect(n.mx-3,n.my-9,6,17);ctx.fillStyle='#e03838';ctx.fillRect(n.mx-3,n.my-3,6,4);ctx.fillStyle='#ffd83a';ctx.fillRect(n.mx-2,n.my-11,4,3);}
-      else if(n.id==='fortress'){ctx.fillStyle='#fff8ec';ctx.fillRect(n.mx-4,n.my-5,8,7);ctx.fillStyle='#21142b';ctx.fillRect(n.mx-3,n.my-3,2,2);ctx.fillRect(n.mx+1,n.my-3,2,2);ctx.fillRect(n.mx-1,n.my+2,2,2);}
-      else if(n.id==='reef'){ctx.fillStyle='#e03838';ctx.fillRect(n.mx-6,n.my,3,8);ctx.fillRect(n.mx-1,n.my-5,3,13);ctx.fillRect(n.mx+4,n.my+1,3,7);}
-      else if(n.id==='cove'){ctx.fillStyle='#2f7d3a';ctx.fillRect(n.mx-1,n.my-8,3,12);ctx.fillRect(n.mx-7,n.my-8,14,3);}
-      else{ctx.fillStyle='#9a6234';ctx.fillRect(n.mx-8,n.my+2,16,4);ctx.fillRect(n.mx-6,n.my-6,3,8);ctx.fillRect(n.mx+3,n.my-6,3,8);}}
+      else if(n.id==='lighthouse'){ctx.fillRect(n.mx-3,n.my-9,6,17);ctx.fillStyle='#eb6654';ctx.fillRect(n.mx-3,n.my-3,6,4);ctx.fillStyle='#ffe05a';ctx.fillRect(n.mx-2,n.my-11,4,3);}
+      else if(n.id==='fortress'){ctx.fillStyle='#fff8ec';ctx.fillRect(n.mx-4,n.my-5,8,7);ctx.fillStyle='#202840';ctx.fillRect(n.mx-3,n.my-3,2,2);ctx.fillRect(n.mx+1,n.my-3,2,2);ctx.fillRect(n.mx-1,n.my+2,2,2);}
+      else if(n.id==='reef'){ctx.fillStyle='#eb6654';ctx.fillRect(n.mx-6,n.my,3,8);ctx.fillRect(n.mx-1,n.my-5,3,13);ctx.fillRect(n.mx+4,n.my+1,3,7);}
+      else if(n.id==='cove'){ctx.fillStyle='#2d664e';ctx.fillRect(n.mx-1,n.my-8,3,12);ctx.fillRect(n.mx-7,n.my-8,14,3);}
+      else{ctx.fillStyle='#a66c46';ctx.fillRect(n.mx-8,n.my+2,16,4);ctx.fillRect(n.mx-6,n.my-6,3,8);ctx.fillRect(n.mx+3,n.my-6,3,8);}}
     else txt('?',n.mx,n.my-4,8,'#c8d0e8',{align:'center'});
   });
   const at=nodes.find(n=>n.id===shipAt);if(at&&!VOY)ctx.drawImage(SPR.shipIcon,at.mx-12,at.my-28);
 }
 function drawSail(){
   drawSea(SAIL.sel,curNode());
-  box(8,8,W-16,16,'#1d1430','#a6e0ff');txt('WHERE TO, CAPTAIN?',W/2,13,7,'#a6e0ff',{align:'center'});
-  const n=SEA_NODES[SAIL.sel];box(8,H-34,W-16,26,'#1d1430','#6a5a90');
-  txt(n.need()?n.name:'???',W/2,H-30,7,n.need()?'#fff8ec':'#8a7ab0',{align:'center'});
-  txt(n.need()?(n.id===curNode()?'You are here.':'Z: set sail     ESC: close'):n.lock,W/2,H-19,5,n.need()?'#b8a8d8':'#ff8080',{align:'center'});
-  txt('SHIP: '+SEA_LEVEL_NAMES[Math.min(3,shipLevel())],W-14,28,5,'#ffd83a',{align:'right'});
+  box(8,8,W-16,16,'#192639','#b2e7e0');txt('WHERE TO, CAPTAIN?',W/2,13,7,'#b2e7e0',{align:'center'});
+  const n=SEA_NODES[SAIL.sel];box(8,H-34,W-16,26,'#192639','#7896ae');
+  txt(n.need()?n.name:'???',W/2,H-30,7,n.need()?'#fff8ec':'#98b3c7',{align:'center'});
+  txt(n.need()?(n.id===curNode()?'You are here.':'Z: set sail     ESC: close'):n.lock,W/2,H-19,5,n.need()?'#b9d1dd':'#ff8080',{align:'center'});
+  txt('SHIP: '+SEA_LEVEL_NAMES[Math.min(3,shipLevel())],W-14,28,5,'#ffe05a',{align:'right'});
 }
 function drawVoyage(){
   const v=VOY,k=Math.min(1,v.t/v.dur),x=lerp(v.from.mx,v.to.mx,k),y=lerp(v.from.my,v.to.my,k);
@@ -67,16 +67,16 @@ function drawVoyage(){
   for(let i=0;i<5;i++){const t=(v.t*1.5+i*9)%40;ctx.fillStyle='rgba(255,255,255,'+(1-t/40)+')';ctx.fillRect(Math.round(x-t*0.6+6),Math.round(y+3+i%2),2,1);}
   txt('Sailing to '+v.to.name+'...',W/2,H-20,6,'#fff8ec',{align:'center',shadow:true});
 }
-function fortressArrive(){if(G.sea.boss<4)fortressStart();else toast("Squawkbeard's old ship. It's quiet now.",'#a6e0ff');}
+function fortressArrive(){if(G.sea.boss<4)fortressStart();else toast("Squawkbeard's old ship. It's quiet now. Press F to sail home.",'#b2e7e0');}
 /* ---- ship upgrades (used by the ship menu) ---- */
 function upgradeNeeds(u){return costTextSeas(u);}
 function costTextSeas(u){return u.seeds+' SEEDS, '+Object.entries(u.salv).map(([k,n])=>n+' '+SALV_NAME[k]+' (have '+G.sea.salv[k]+')').join(', ');}
 function buyUpgrade(u){
-  if(G.sea.lv[u.id])return {s:'Already installed!',c:'#94dc64'};
+  if(G.sea.lv[u.id])return {s:'Already installed!',c:'#a1d970'};
   const miss=[];if(G.seeds<u.seeds)miss.push((u.seeds-G.seeds)+' seeds');for(const k in u.salv)if(G.sea.salv[k]<u.salv[k])miss.push((u.salv[k]-G.sea.salv[k])+' '+SALV_NAME[k]);
   if(miss.length){SFX.deny();return {s:'Still need '+miss.join(', ')+'.',c:'#ff8080'};}
   G.seeds-=u.seeds;for(const k in u.salv)G.sea.salv[k]-=u.salv[k];G.sea.lv[u.id]=1;SFX.questDone();gainGP(GP.upgrade);shake=4;
-  toast(u.name+' installed!','#ffd83a');save();return {s:u.name+' is on the ship!',c:'#ffd83a'};
+  toast(u.name+' installed!','#ffe05a');save();return {s:u.name+' is on the ship!',c:'#ffe05a'};
 }
 /* ---- entities ---- */
 function makeSeaEnts(){
@@ -107,10 +107,10 @@ function updateSeas(){
   const rg=regionAt();if(!rg)return;
   if(rg.sea){
     const under=tileAt(Math.floor(P.x/16),Math.floor((P.y-3)/16));
-    if(under==='>'||under==='<'){if(!has('sealegs')&&!P.hop){moveP(under==='>'?0.8:-0.8,0,false);}else if(tick%90===0)float(P.x,P.y-24,'Sea legs!','#a6e0ff');}
+    if(under==='>'||under==='<'){if(!has('sealegs')&&!P.hop){moveP(under==='>'?0.8:-0.8,0,false);}else if(tick%90===0)float(P.x,P.y-24,'Sea legs!','#b2e7e0');}
     if(under==='{'&&P.inv<=0&&!P.hop&&!(P.dashT>0)){hurt({x:P.x,y:P.y});if(lastSafe){P.x=lastSafe.x;P.y=lastSafe.y;float(P.x,P.y-24,'Hot hot hot!','#ffb030');}}
     else if(under!=='{'&&under!=='w'&&!P.hop)lastSafe={x:P.x,y:P.y};
-    if(under==='}'){if(++springT%120===0&&G.hearts<maxHearts()){G.hearts++;SFX.pick();float(P.x,P.y-24,'Ahh... +1','#94dc64');}}else springT=0;
+    if(under==='}'){if(++springT%120===0&&G.hearts<maxHearts()){G.hearts++;SFX.pick();float(P.x,P.y-24,'Ahh... +1','#a1d970');}}else springT=0;
   }
   // swim/dive handling: air meter in deep reef
   if(inDeep()){
@@ -119,21 +119,21 @@ function updateSeas(){
   }else G.air=AIR_MAX;
   for(const e of ents){
     if(e.type==='swarp'&&onCur(e)&&warpCool<=0&&state==='play'&&!WARP&&Math.abs(P.x-e.x)<10&&Math.abs(P.y-e.y)<10){
-      if(e.dive&&!has('dive')){warpCool=60;float(e.x,e.y-20,'Learn DIVE first!','#a6e0ff');SFX.deny();continue;}
-      warpCool=50;warpTo(e.to.x,e.to.y,e.up?1:0,null,()=>{if(e.dive){G.air=AIR_MAX;toast('Blub blub! Watch your AIR.','#a6e0ff');}else if(e.up)toast('Fresh air!','#a6e0ff');});}
+      if(e.dive&&!has('dive')){warpCool=60;float(e.x,e.y-20,'Learn DIVE first!','#b2e7e0');SFX.deny();continue;}
+      warpCool=50;warpTo(e.to.x,e.to.y,e.up?1:0,null,()=>{if(e.dive){G.air=AIR_MAX;toast('Blub blub! Watch your AIR.','#b2e7e0');}else if(e.up)toast('Fresh air!','#b2e7e0');});}
   }
   updateSeaQuests();
 }
 function surface(gasp){
   const up=ents.find(e=>e.type==='swarp'&&e.up&&regionAt()===regionOfPos(e.x,e.y));
   const t=(ents.find(e=>e.type==='swarp'&&e.up&&e.to&&regionOfPos(e.x,e.y)===regionAt())||ents.find(e=>e.type==='swarp'&&e.up)).to;
-  G.air=AIR_MAX;warpCool=60;warpTo(t.x,t.y,1,null,()=>toast(gasp?'Pop! Pip bobs up gasping for air.':'Fresh air!','#a6e0ff'));
+  G.air=AIR_MAX;warpCool=60;warpTo(t.x,t.y,1,null,()=>toast(gasp?'Pop! Pip bobs up gasping for air.':'Fresh air!','#b2e7e0'));
 }
 /* ---- skills: Dash, Cannon Peck ---- */
 function tryDash(){
   if(!has('dash')||P.dashCd>0||P.hop||P.flying)return;
   P.dashT=14;P.dashCd=70;P.inv=Math.max(P.inv,18);SFX.gust();
-  const [dx,dy]=DIRV[P.dir];for(let i=0;i<8;i++)parts.push({x:P.x-dx*8,y:P.y-6-dy*8,vx:-dx*(1+Math.random()),vy:-dy*(1+Math.random())-0.3,g:0,life:14,c:i%2?'#fff8ec':'#ffd83a'});
+  const [dx,dy]=DIRV[P.dir];for(let i=0;i<8;i++)parts.push({x:P.x-dx*8,y:P.y-6-dy*8,vx:-dx*(1+Math.random()),vy:-dy*(1+Math.random())-0.3,g:0,life:14,c:i%2?'#fff8ec':'#ffe05a'});
 }
 let prevA=false,aHold=0;
 function updateCharge(){
@@ -144,7 +144,7 @@ function updateCharge(){
 }
 function cannonPeck(){
   const [dx,dy]=DIRV[P.dir];SFX.brk();shake=5;P.peckT=14;
-  for(let i=0;i<18;i++)parts.push({x:P.x+dx*10,y:P.y-6+dy*10,vx:dx*(2+Math.random()*3),vy:dy*(2+Math.random()*3),g:0,life:20,c:i%2?'#ffd83a':'#ff6fae'});
+  for(let i=0;i<18;i++)parts.push({x:P.x+dx*10,y:P.y-6+dy*10,vx:dx*(2+Math.random()*3),vy:dy*(2+Math.random()*3),g:0,life:20,c:i%2?'#ffe05a':'#ff6fae'});
   let hit=0;
   for(const e of ents){if(!onCur(e))continue;
     const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
@@ -154,5 +154,5 @@ function cannonPeck(){
     else if(e.type==='jelly'){e.stun=150;e.hx=e.x+dx*40;e.hy=e.y+dy*40;hit++;}
     else if(e.type==='boss'){bossHit(2);hit++;}
     else if(e.type==='barrel'){e.vx=dx*3;e.vy=dy*3;e.back=true;hit++;}}
-  if(hit)float(P.x,P.y-24,'KAPOW!','#ffd83a');
+  if(hit)float(P.x,P.y-24,'KAPOW!','#ffe05a');
 }

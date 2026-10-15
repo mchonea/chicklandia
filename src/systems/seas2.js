@@ -29,15 +29,15 @@ function updSpark(e){
   else{e.up=0;e.x=e.bx;e.y=e.by;}
 }
 function updBubbles(e){if(e.cool>0){e.cool--;return;}
-  if(Math.abs(P.x-e.x)<12&&Math.abs(P.y-6-e.y)<14){G.air=Math.min(AIR_MAX,(G.air||0)+1500);e.cool=700;SFX.pop();float(e.x,e.y-18,'AIR!','#a6e0ff');}}
+  if(Math.abs(P.x-e.x)<12&&Math.abs(P.y-6-e.y)<14){G.air=Math.min(AIR_MAX,(G.air||0)+1500);e.cool=700;SFX.pop();float(e.x,e.y-18,'AIR!','#b2e7e0');}}
 /* ---- peck / flap hooks ---- */
 function seaPeck(e,f,pr){
   if(e.type==='gullp'&&!e.gone&&ov(pr,{x:e.x-9,y:e.y-9,w:18,h:16})){gullKnock(e);return true;}
   if(e.type==='jelly'&&ov(pr,{x:e.x-10,y:e.y-10,w:20,h:16})){e.stun=140;e.hx=e.x+(e.x<P.x?-26:26);e.flash=10;SFX.brk();float(e.x,e.y-14,'BLOOP!','#ff9cd0');return true;}
   if(e.type==='xmark'&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-4-f.y)<14){
     if(!has('peck')){SFX.clunk();float(e.x,e.y-14,'Too hard to dig!');return true;}
-    e.dead=true;G.sea.dug[e.id]=1;SFX.brk();puff(e.x,e.y-4,14,['#e8d8b0','#c49a5c','#fff8ec'],1.4,0.08);
-    const n=Object.keys(G.sea.dug).length;toast('Dug up a spot! ('+n+'/3)','#ffd83a');
+    e.dead=true;G.sea.dug[e.id]=1;SFX.brk();puff(e.x,e.y-4,14,['#e8d8b0','#b69965','#fff8ec'],1.4,0.08);
+    const n=Object.keys(G.sea.dug).length;toast('Dug up a spot! ('+n+'/3)','#ffe05a');
     if(n>=3){G.sea.chest=1;const p=spx('coveE',8,3);addEnt({type:'seachest',x:p.x,y:p.y,solid:true,w:16});toast('A treasure chest rises from the sand!','#ff9cd0');SFX.questDone();}
     save();return true;}
   if(e.type==='seachest'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<16){openSeaChest(e);return true;}
@@ -48,13 +48,13 @@ function seaPeck(e,f,pr){
 function seaTalkChest(f){for(const e of ents)if(e.type==='seachest'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<16){openSeaChest(e);return true;}return false;}
 function openSeaChest(e){
   if(G.sea.chest===2){say([{who:'me',text:"An empty chest. What a treasure it was!"}]);return;}
-  G.sea.chest=2;e.opened=true;SFX.chest();shake=3;addSeeds(6,2,0);G.sea.salv.hullplank+=1;
-  toast('TREASURE! 6 seeds and a HULL PLANK!','#ffd83a');say([{who:'me',text:"Pieces of eight! Six seeds and a sturdy plank for the ship. Let's tell Polly!"}]);save();
+  G.sea.chest=2;e.opened=true;SFX.chest();shake=3;addSeeds(4,2,0);G.sea.salv.hullplank+=1;
+  toast('TREASURE! 4 seeds and a HULL PLANK!','#ffe05a');say([{who:'me',text:"Pieces of eight! Four seeds and a sturdy plank for the ship. Let's tell Polly!"}]);save();
 }
 function seaFlap(dx,dy){
   for(const e of ents){if(e.type!=='barrel'||e.back)continue;
     const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
-    if(along>-6&&along<54&&lat<24){e.back=true;e.st='back';SFX.gust();float(e.x,e.y-14,'WHOOSH!','#a6e0ff');}}
+    if(along>-6&&along<54&&lat<24){e.back=true;e.st='back';SFX.gust();float(e.x,e.y-14,'WHOOSH!','#b2e7e0');}}
 }
 /* ---- Lighthouse puzzle ---- */
 const BRAZIERS=[['sun',3,5],['moon',11,5],['star',3,9],['wave',11,9]];
@@ -62,9 +62,9 @@ function makeSeaQuestEnts(){
   BRAZIERS.forEach(([k,c,r])=>{const p=spx('lightE',c,r);addEnt({type:'brazier',sym:k,x:p.x,y:p.y,solid:true,w:12,lit:!!G.flags.lit});});
 }
 function lightBrazier(e){
-  if(G.flags.lit){float(e.x,e.y-20,'Already glowing!','#ffd83a');return;}
+  if(G.flags.lit){float(e.x,e.y-20,'Already glowing!','#ffe05a');return;}
   const next=SUN_ORDER[G.sea.lamps||0];
-  if(e.sym===next){e.lit=true;G.sea.lamps=(G.sea.lamps||0)+1;SFX.magic();puff(e.x,e.y-8,12,['#ffb030','#ffd83a'],1.4,-0.02);float(e.x,e.y-20,(G.sea.lamps)+'/4','#ffd83a');
+  if(e.sym===next){e.lit=true;G.sea.lamps=(G.sea.lamps||0)+1;SFX.magic();puff(e.x,e.y-8,12,['#ffb030','#ffe05a'],1.4,-0.02);float(e.x,e.y-20,(G.sea.lamps)+'/4','#ffe05a');
     if(G.sea.lamps>=4){G.flags.lit=1;toast('THE LIGHTHOUSE IS LIT! Tell Keeper Gus.','#ff9cd0');SFX.fanfare();shake=6;}save();}
   else{G.sea.lamps=0;for(const b of ents)if(b.type==='brazier')b.lit=false;SFX.deny();float(e.x,e.y-20,'Fizzle! Wrong order.','#ff8080');puff(e.x,e.y-6,8,['#8a8a9a','#e8e8f0'],1,0.04);}
 }
@@ -82,7 +82,7 @@ function startBossStage(st){
   const o=SO.fort,bx=o[0]*16+128,by=o[1]*16+34;
   BOSS={st,hp:st===1?4:3,max:st===1?4:3,t:0,intro:90};
   addEnt({type:'boss',st:'enter',x:bx,y:by,hx:bx,hy:by,t:0,flash:0,flip:false,tx:bx,ty:by});
-  toast(st===1?'STAGE 1: Peck him when he lands!':'STAGE 2: Flap the barrels back at him!','#ffd83a');
+  toast(st===1?'STAGE 1: Peck him when he lands!':'STAGE 2: Flap the barrels back at him!','#ffe05a');
 }
 function bossEnt(){return ents.find(e=>e.type==='boss');}
 function bossHit(n){
@@ -92,7 +92,7 @@ function bossHit(n){
   if(BOSS.st===1){b.st='rise';b.t=0;}
 }
 function stageClear(){
-  const next=G.sea.boss+1;toast('Stage cleared!','#94dc64');SFX.questDone();save();
+  const next=G.sea.boss+1;toast('Stage cleared!','#a1d970');SFX.questDone();save();
   const b=bossEnt();if(b)b.dead=true;
   say([{who:'me',text:next===2?"He's mad now! He's throwing barrels! WING FLAP blows them right back at him!":"He's running! After him through the sky! DASH to catch him and GLIDE to dodge!"}],
     ()=>{if(next===3&&!(has('dash')&&has('glide'))){G.sea.boss=2;startBossStage(2);toast('Stage 3 needs DASH and GLIDE. Learn them first!','#ff9cd0');say([{who:'me',text:"I need DASH (Sea Tree) and GLIDE (Sky Tree) to catch him in the air!"}]);}else startBossStage(next);});
@@ -124,13 +124,13 @@ function updBarrel(e){
   const b=bossEnt();
   if(e.st==='fall'){e.t++;if(e.t>=36){e.st='roll';e.vx=e.dirx*1.7;e.vy=0;e.x=SO.fort[0]*16+(e.dirx>0?36:236);SFX.bonk&&SFX.bonk();}return;}
   if(e.st==='roll'){e.x+=e.vx;e.t++;
-    if(Math.abs(P.x-e.x)<10&&Math.abs(P.y-4-e.y)<9&&P.inv<=0&&!P.hop&&!(P.dashT>0)){hurt(e);e.dead=true;puff(e.x,e.y,8,['#c49a5c','#fff8ec'],1.4,0.05);}
+    if(Math.abs(P.x-e.x)<10&&Math.abs(P.y-4-e.y)<9&&P.inv<=0&&!P.hop&&!(P.dashT>0)){hurt(e);e.dead=true;puff(e.x,e.y,8,['#b69965','#fff8ec'],1.4,0.05);}
     if(e.x<SO.fort[0]*16+20||e.x>SO.fort[0]*16+236)e.dead=true;return;}
   if(e.st==='back'&&b){const vx=b.x-e.x,vy=b.y-e.y,d=Math.hypot(vx,vy)||1;e.x+=vx/d*3.4;e.y+=vy/d*3.4;
     if(d<16){e.dead=true;bossHit(1);}}
 }
 function bossRetry(){
-  toast('Pinch fishes you out! Try this stage again!','#ffd83a');
+  toast('Pinch fishes you out! Try this stage again!','#ffe05a');
   const o=SO.fort;P.x=o[0]*16+60;P.y=o[1]*16+8*16+12;P.inv=60;P.kt=0;G.hearts=maxHearts();
   if(state==='chase'){state='play';CH=null;}
   startBossStage(Math.min(G.sea.boss||1,3)===3&&!(has('dash')&&has('glide'))?2:Math.max(1,Math.min(3,G.sea.boss||1)));
@@ -140,7 +140,7 @@ let CH=null;
 function startChase(){
   ents=ents.filter(e=>!['boss','barrel'].includes(e.type));
   CH={t:0,x:56,y:110,hp:3,bx:206,by:100,bph:0,balls:[],inv:0,dashT:0,dashCd:0,flash:0,bstun:0,intro:80};
-  state='chase';fade=0;toast('STAGE 3: Catch him in the sky!','#ffd83a');SFX.fanfare();
+  state='chase';fade=0;toast('STAGE 3: Catch him in the sky!','#ffe05a');SFX.fanfare();
 }
 function updateChase(){
   const c=CH;c.t++;
@@ -155,9 +155,9 @@ function updateChase(){
   if(c.bstun<=0){c.bx+=(206-c.bx)*0.04+(c.bx>200&&c.dashT>0?0:0);c.by=110+Math.sin(c.bph*2)*54;}
   if(c.t%38===0)c.balls.push({x:W+10,y:60+((c.t*53)%130),v:1.9+Math.min(1,c.t/1500)});
   for(const b of c.balls){b.x-=b.v;if(c.inv<=0&&Math.abs(b.x-c.x)<9&&Math.abs(b.y-c.y)<9){b.x=-99;G.hearts--;c.inv=70;SFX.hurt();shake=5;
-      if(G.hearts<=0){G.hearts=maxHearts();toast('Pinch fishes you out! Try again!','#ffd83a');startChase();return;}}}
+      if(G.hearts<=0){G.hearts=maxHearts();toast('Pinch fishes you out! Try again!','#ffe05a');startChase();return;}}}
   c.balls=c.balls.filter(b=>b.x>-20);
-  if(c.dashT>0&&c.bstun<=0&&Math.abs(c.x-c.bx)<22&&Math.abs(c.y-c.by)<20){c.hp--;c.bstun=50;c.bx=min2(240,c.bx+30);c.flash=20;SFX.brk();shake=6;toast(c.hp>0?'HIT! '+c.hp+' to go!':'GOT HIM!','#ffd83a');
+  if(c.dashT>0&&c.bstun<=0&&Math.abs(c.x-c.bx)<22&&Math.abs(c.y-c.by)<20){c.hp--;c.bstun=50;c.bx=min2(240,c.bx+30);c.flash=20;SFX.brk();shake=6;toast(c.hp>0?'HIT! '+c.hp+' to go!':'GOT HIM!','#ffe05a');
     if(c.hp<=0){bossWin();return;}}
 }
 function min2(a,b){return a<b?a:b;}
@@ -170,15 +170,15 @@ function drawChase(){
   if(!(c.inv>0&&Math.floor(c.inv/3)%2)){if(c.dashT>0){ctx.fillStyle='rgba(255,216,58,0.5)';ctx.fillRect(Math.round(c.x-40),Math.round(c.y-4),40,6);}
     drawPip(stage(),3,Math.floor(c.t/5)%2,true,Math.round(c.x),Math.round(c.y+8),1);}
   for(let i=0;i<maxHearts();i++)drawImg(i<G.hearts?SPR.heart:SPR.heartE,8+i*9,8);
-  box(70,6,116,14,'#1d1430','#ff8080');txt('SQUAWKBEARD',78,10,5,'#fff8ec');for(let i=0;i<3;i++){ctx.fillStyle=i<c.hp?'#ff8080':'#4a3a66';ctx.fillRect(150+i*10,10,8,6);}
+  box(70,6,116,14,'#192639','#ff8080');txt('SQUAWKBEARD',78,10,5,'#fff8ec');for(let i=0;i<3;i++){ctx.fillStyle=i<c.hp?'#ff8080':'#425b72';ctx.fillRect(150+i*10,10,8,6);}
   txt(has('dash')?'Z or SHIFT: DASH into him!':'You need DASH!',W/2,H-14,5,'#fff8ec',{align:'center',shadow:true});
-  if(c.intro>0)txt('GET READY!',W/2,100,10,'#ffd83a',{align:'center',shadow:true});
+  if(c.intro>0)txt('GET READY!',W/2,100,10,'#ffe05a',{align:'center',shadow:true});
 }
 function bossWin(){
   CH=null;state='play';G.sea.boss=4;G.flags.seas=1;G.flags.skyMap=1;
   ents=ents.filter(e=>!['boss','barrel'].includes(e.type));
   const o=SO.fort;P.x=o[0]*16+60;P.y=o[1]*16+8*16+12;P.inv=60;
-  reward(QUESTS.sea_boss.reward,'sea_boss');addSeeds(20,2,0);toast('Squawkbeard dropped his chest: 20 golden seeds!','#ffd83a');SFX.fanfare();save();
+  reward(QUESTS.sea_boss.reward,'sea_boss');addSeeds(12,2,0);toast('Squawkbeard dropped his chest: 12 golden seeds!','#ffe05a');SFX.fanfare();save();
   finaleRank(9,startSeaEnding);
 }
 function startSeaEnding(){

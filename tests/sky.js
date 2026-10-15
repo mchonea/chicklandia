@@ -173,9 +173,9 @@ G.clock=Math.round(DAY*0.7);const r0=G.plots[pl.id].p;step(60);const dStar=G.plo
 ok('sky_plots_grow_fast',dStar>3*(1/GROW)*60*0.8*0.8);
 G.plots[pl.id].p=1;G.plots[pl2.id].p=1;
 const s1=G.seeds;P.x=pl.x;P.y=pl.y+12;P.dir=1;usePlot(pl);
-ok('starfruit_harvest',G.items.starfruit===1&&G.sky.harv.star===1&&G.taste.starfruit===1&&G.seeds===s1+5+(G.rank>=6?1:0));
+ok('starfruit_harvest',G.items.starfruit===1&&G.sky.harv.star===1&&G.taste.starfruit===1&&G.seeds===s1+4+(G.rank>=6?1:0));
 usePlot(pl2);ok('moonflower_harvest',G.sky.harv.moon===1&&G.hold.petal>=1);
-G.outfits.push('bloom');setWear('bloom',true);G.plots[pl.id]={p:1,k:'star'};const s2=G.seeds;usePlot(pl);ok('bloom_bonus',G.seeds===s2+5+(G.rank>=6?1:0)+1);setWear(null);G.outfits=G.outfits.filter(o=>o!=='bloom');
+G.outfits.push('bloom');setWear('bloom',true);G.plots[pl.id]={p:1,k:'star'};const s2=G.seeds;usePlot(pl);ok('bloom_bonus',G.seeds===s2+4+(G.rank>=6?1:0)+1);setWear(null);G.outfits=G.outfits.filter(o=>o!=='bloom');
 G.items.starfruit=0;
 /* ---- 7. quests, trainers, shops ---- */
 G.clock=Math.round(DAY*0.3);G.skills=new Set(['peck','quick','hop','glide','flap','swim']);setWear(null);
@@ -307,10 +307,11 @@ goto('lair',8,8);ok('lair_dark',skyDark()===0.42);
 /* ---- 14. museum collectibles and the journal ---- */
 ok('exhibits_6',EXHIBITS.length===6&&EXHIBITS.every(x=>G.museum[x.id]!==undefined&&G.hold[x.item]!==undefined));
 {const ex=ents.filter(e=>e.type==='exhibit');ok('exhibit_ents',ex.length===6&&ex.every(e=>isFinite(e.x)&&isFinite(e.y)&&regionOfPos(e.x,e.y).id==='cityin'));}
-{reset();const shd=ents.find(e=>e.id==='shd0');P.x=shd.x;P.y=shd.y;checkPickups();ok('shard_pickup',G.hold.shard===1);G.hold.shard=3;G.hold.cloudbloom=3;const s5=G.seeds;donateAll();ok('donate_sky',G.museum.shard===3&&G.museum.cloudbloom===3&&G.seeds===s5+12);}
+{reset();const shd=ents.find(e=>e.id==='shd0');P.x=shd.x;P.y=shd.y;checkPickups();ok('shard_pickup',G.hold.shard===1);G.hold.shard=3;G.hold.cloudbloom=3;const s5=G.seeds;donateAll();ok('donate_sky',G.museum.shard===3&&G.museum.cloudbloom===3&&G.seeds===s5+8);}
 {let e2=null;try{jpage=1;state='grow';growPage=2;c.step(1);jpage=0;c.step(1);state='play';}catch(e){e2=e;}ok('journal_sheets',!e2);}
 ok('taste_log_17',FOODS.length===17&&['starfruit','cake','cloudberry','skyhoney','stormtea'].every(id=>FOODS.some(f=>f.id===id)));
 ok('outfits_16',OUTFITS.length===16&&['scarf','bloom','quill','stormcap'].every(id=>OUTFITS.some(o=>o.id===id)));
+ok('every_skill_has_icon',[SKILLS,SKILLS2,SKILLS3,SKILLS4,SKILLS5].flat().every(s=>!!ICON[s.id]));
 R.allPass=Object.values(R).every((v,i,a)=>true)&&!Object.keys(R).some(k=>k[0]==='!');
 for(const k of Object.keys(R))if(k!=='allPass'&&k[0]!=='!'&&R[k]!==true&&k!=='err')R.allPass=false;
 return R;

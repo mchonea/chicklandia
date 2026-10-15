@@ -25,7 +25,7 @@ function talkTo(e){
     if(e.home){it(e.sib.homeLine);say(L);return;}
     if(G.q.penny===0){it("Shhh! We're playing hide-and-seek! Go talk to Penny in the coop if you want to play!");say(L);return;}
     it(e.sib.found);
-    say(L,()=>{puff(e.x,e.y-6,10,['#ffd83a','#fff8ec']);G.sibs.push(e.id);e.home=true;Object.assign(e,at(...((G.coop&&G.coop.lv>=3)?FAMILY_POS[e.id]:e.sib.home)));SFX.chirp();
+    say(L,()=>{puff(e.x,e.y-6,10,['#ffe05a','#fff8ec']);G.sibs.push(e.id);e.home=true;Object.assign(e,at(...((G.coop&&G.coop.lv>=3)?FAMILY_POS[e.id]:e.sib.home)));SFX.chirp();
       toast(G.sibs.length>=3?'Found all 3! Go tell Penny.':'Found '+e.name+'! ('+G.sibs.length+'/3)');save();});
     return;
   }

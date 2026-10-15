@@ -13,7 +13,7 @@ Object.assign(QUESTS,{
       {t:"The road is open now. Gather wood, stone, wool and clay, then use the building pads in the Village Square!",fx:()=>{openVillage();}}],
     remind:()=>builtList().length?"Great, a building is up! Tell me about it!":"Go south from the city market to the Village Square. Peck logs, stone and clay at the Riverside, and wool from the sheep. Then build on a pad!",
     done:["Look at that! A real building in our village! Beaver-tail slap!","Take these seeds, and this cap. Every builder needs one!"],
-    onDone:()=>{grantOutfit('overalls');toast('Got the FARMER CAP! Press C to wear.','#ffd83a');},
+    onDone:()=>{grantOutfit('overalls');toast('Got the FARMER CAP! Press C to wear.','#ffe05a');},
     after:()=>["The village is lovely! Foreman Barnaby is running the building site."],
     hint:()=>"Walk south from the city market to find the village. Gather materials, then build on a pad in the Village Square."},
   vharvest:{title:'The Grand Harvest',loc:'VILLAGE: Foreman Barnaby',

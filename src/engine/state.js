@@ -23,7 +23,7 @@ function setWear(id,forceOn){
   else if(ACCESSORY_IDS.includes(id))G.acc=id;
   else G.wear=id;
   G.hearts=Math.min(G.hearts,maxHearts());}
-function strawBonus(x,y){if(wearing('straw')&&Math.random()<0.25){G.seeds++;G.earned++;SFX.seed();float(x,y-26,'+1 SEED (hat!)','#ffd83a');}}
+function strawBonus(x,y){if(wearing('straw')&&Math.random()<0.25){G.seeds++;G.earned++;SFX.seed();float(x,y-26,'+1 SEED (hat!)','#ffe05a');}}
 
 function freshState(){
   return {seeds:0,skills:new Set(),hearts:3,q:{mom:0,daisy:0,pig:0,duck:0,sheep:0,rooster:0,penny:0,clyde:0,squeaks:0,biscuit:0,whiskers:0,
@@ -64,7 +64,7 @@ function continueGame(){
   G.train=Object.assign({},s.train||{});migrateSave(s);
   G.sacks=Object.assign(G.sacks,s.sacks||{});if(s.vil)G.vil=Object.assign(G.vil,s.vil);if(s.sea)G.sea=Object.assign(G.sea,s.sea);if(s.sky){G.sky=Object.assign(G.sky,s.sky);G.sky.harv=Object.assign({moon:0,star:0},s.sky.harv||{});}G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
   migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();state='play';fade=1;fadeColor='#000';
-  if(G.growMsgOnLoad){G.growMsgOnLoad=false;toast("You've grown! You are now a "+RANKS[G.rank-1].name+'!','#94dc64');}
+  if(G.growMsgOnLoad){G.growMsgOnLoad=false;toast("You've grown! You are now a "+RANKS[G.rank-1].name+'!','#a1d970');}
 }
 
 /* ---------------- entities ---------------- */

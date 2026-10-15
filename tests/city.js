@@ -27,7 +27,7 @@ plantSeed(pl[0],'plain');plantSeed(pl[1],'speedy');plantSeed(pl[2],'giant');plan
 for(let i=0;i<300;i++)updatePlots();
 const pr=k=>G.plots[pl[k].id].p;ok('speedy_faster',pr(1)>pr(0)*1.9&&pr(2)<pr(0)*0.6&&pr(3)===0);
 night();for(let i=0;i<300;i++)updatePlots();ok('moon_grows_at_night',pr(3)>0);
-G.plots[pl[3].id].p=1;const sd=G.seeds,pt=G.hold.petal;usePlot(pl[3]);ok('moon_harvest',G.seeds===sd+4+(G.rank>=6?1:0)&&G.hold.petal===pt+1);
+G.plots[pl[3].id].p=1;const sd=G.seeds,pt=G.hold.petal;usePlot(pl[3]);ok('moon_harvest',G.seeds===sd+3+(G.rank>=6?1:0)&&G.hold.petal===pt+1);
 // 6. bakery buffs
 noon();reset();const sp0=speed();buy('bakery','CORN MUFFIN');ok('muffin_speed',Math.abs(speed()/sp0-1.1)<0.001&&buffActive('muffin'));
 ok('only_one_treat',buy('bakery','SEED BUN').c==='#ff8080');
@@ -37,9 +37,9 @@ ok('treats_are_foods',!!(G.taste.muffin&&G.taste.tart));
 // 7. post office: jobs, parcel, delivery
 G.jobs={day:0,list:[]};refreshJobs();const jobs=G.jobs.list.length;ok('jobs_made',jobs>=1&&jobs<=2);
 const j=G.jobs.list[0];SHOPS.post.items()[0].act();ok('job_taken',j.st===1);
-c.tp(30*16,70*16);reset();const tgt=find(j.to);dlg=null;const sd2=G.seeds,gp2=G.gp;c.talk(j.to);dlg.lines.forEach(l=>l.fx&&l.fx());ok('job_delivered',j.st===2&&G.seeds===sd2+2&&G.gp===gp2+3);reset();
+c.tp(30*16,70*16);reset();const tgt=find(j.to);dlg=null;const sd2=G.seeds,gp2=G.gp;c.talk(j.to);dlg.lines.forEach(l=>l.fx&&l.fx());ok('job_delivered',j.st===2&&G.seeds===sd2+1&&G.gp===gp2+3);reset();
 // 8. museum: finds, donation, rewards
-G.hold.seashell=5;G.hold.plume=4;const gm=G.gp,sm=G.seeds;donateAll();ok('exhibits_complete',G.museum.seashell===5&&G.museum.plume===4&&G.gp===gm+20&&G.seeds===sm+10);
+G.hold.seashell=5;G.hold.plume=4;const gm=G.gp,sm=G.seeds;donateAll();ok('exhibits_complete',G.museum.seashell===5&&G.museum.plume===4&&G.gp===gm+20&&G.seeds===sm+6);
 ok('nothing_left_to_donate',donateAll().c==='#ff8080');
 // 9. library gives hints
 reset();readGuide(BOOKS[0]);ok('guide_speaks',state==='talk'&&dlg.lines.length>=1);reset();
@@ -89,7 +89,7 @@ c.continueGame();G=c.G;ok('load_keeps_city_state',G.museum.seashell===5&&G.decor
 // 15. extras: rooftop secret, city hidden seeds, quest pages
 c.newGame();G=c.G;G.autoMom=0;G.part2=true;['hop','glide'].forEach(s=>G.skills.add(s));reset();startRace();for(let i=0;i<60;i++)c.step(1);ok('rooftops_secret',!!G.secrets.rooftops);G.race=null;
 const sh=ents.find(e=>e.id==='seed_harbor'),g2=G.gp,sp=G.sp2;collect(sh);ok('city_hidden_seed',G.sp2===sp+1&&G.gp===g2+2);
-ok('sleuth_page_needs_cap',!questPages().includes(4));G.outfits.push('detective');ok('sleuth_page_with_cap',questPages().includes(4)&&questPages().includes(3));
+ok('sleuth_page_needs_cap',!questPages().includes(4));G.outfits.push('detective');ok('sleuth_page_needs_wearing',!questPages().includes(4));setWear('detective',true);ok('sleuth_page_with_cap',questPages()[0]===4&&questPages().includes(3));
 ok('tally_cap',TOTAL_SEEDS2===38);
 R.allPass=Object.values(R).every(v=>v===true);return R;
 })()

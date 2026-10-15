@@ -1,9 +1,10 @@
 'use strict';
 /* ---------------- palette & helpers ---------------- */
-const PAL={k:'#21142b',w:'#fff8ec',y:'#ffd83a',Y:'#e8a422',o:'#f37d22',r:'#e03838',R:'#962430',
-  p:'#f6a6b6',P:'#d06f8a',b:'#9a6234',B:'#5e3a1c',g:'#5cb84c',G:'#2f7d3a',l:'#94dc64',u:'#3a86e8',
-  U:'#1f55a8',c:'#a6e0ff',e:'#a8a8b8',E:'#62627a',t:'#ecd09a',T:'#c49a5c',n:'#f6ead0',f:'#ec6c24',
-  q:'#ffd21e',Q:'#c98a00',m:'#7a5230'};
+// Bright Adventure: cool ink, leafy shadows, warm gold and clear blue water.
+const PAL={k:'#202840',w:'#fff8ec',y:'#ffe05a',Y:'#e8a02c',o:'#f07832',r:'#eb6654',R:'#a43d43',
+  p:'#f6a6b6',P:'#d06f8a',b:'#a66c46',B:'#594437',g:'#55aa62',G:'#2d664e',l:'#a1d970',u:'#409dc5',
+  U:'#306a9d',c:'#b2e7e0',e:'#a9b7c5',E:'#64758b',t:'#e8cd98',T:'#b69965',n:'#f6ead0',f:'#ec6c24',
+  q:'#ffd21e',Q:'#c98a00',m:'#7a5230',O:'#b85432'};
 function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
 function hash2(x,y){let h=(x*374761393+y*668265263)|0;h=Math.imul(h^(h>>>13),1274126177);return (h^(h>>>16))>>>0;}
 function mk(w,h,fn){const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');fn(x);return c;}

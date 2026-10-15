@@ -148,41 +148,47 @@ function drawPip(st,dir,fr,flap,cx,bottom,sc=1,wear,acc){
 }
 function rankFlair(x0,y0,w,h,sc,dir){
   const t=tick;
-  if(G.rank>=8){ctx.fillStyle='#e03838';for(let i=0;i<h*0.5;i++){ctx.fillRect(Math.round(x0+w*sc*0.2+i*sc*0.9),Math.round(y0+h*sc*0.45+i*sc*0.6),2*sc,sc);}
-    ctx.fillStyle='#ffd83a';ctx.fillRect(Math.round(x0+w*sc*0.2),Math.round(y0+h*sc*0.45),sc,sc);}
-  if(G.rank>=9){ctx.fillStyle='#21142b';ctx.fillRect(Math.round(x0+w*sc*0.55),Math.round(y0+h*sc*0.55),4*sc,3*sc);ctx.fillStyle='#ffd83a';ctx.fillRect(Math.round(x0+w*sc*0.55+sc),Math.round(y0+h*sc*0.55+sc),2*sc,sc);}
+  if(G.rank>=8){ctx.fillStyle='#eb6654';for(let i=0;i<h*0.5;i++){ctx.fillRect(Math.round(x0+w*sc*0.2+i*sc*0.9),Math.round(y0+h*sc*0.45+i*sc*0.6),2*sc,sc);}
+    ctx.fillStyle='#ffe05a';ctx.fillRect(Math.round(x0+w*sc*0.2),Math.round(y0+h*sc*0.45),sc,sc);}
+  if(G.rank>=9){ctx.fillStyle='#202840';ctx.fillRect(Math.round(x0+w*sc*0.55),Math.round(y0+h*sc*0.55),4*sc,3*sc);ctx.fillStyle='#ffe05a';ctx.fillRect(Math.round(x0+w*sc*0.55+sc),Math.round(y0+h*sc*0.55+sc),2*sc,sc);}
   if(G.rank>=10&&t%20<10){ctx.fillStyle='#fff8ec';ctx.fillRect(Math.round(x0+((t*7)%(w*sc))),Math.round(y0+((t*5)%(h*sc))),sc,sc);}
 }
-/* ---- closet: none + every outfit, 3 across ---- */
-const WARD_COLS=3;
-function openWardrobe(){state='wardrobe';SFX.menu();wardSel=Math.max(0,[null,...OUTFITS.map(o=>o.id)].indexOf(G.wear||G.acc));}
+/* ---- closet: none + every outfit, 5 across, 4 rows on screen (it scrolls), details in a big panel ---- */
+const WARD_COLS=5,WARD_ROWS=4;let wardTop=0;
+function openWardrobe(){state='wardrobe';SFX.menu();wardSel=Math.max(0,[null,...OUTFITS.map(o=>o.id)].indexOf(G.wear||G.acc));wardTop=0;wardScroll();}
+function wardScroll(){const r=Math.floor(wardSel/WARD_COLS);if(r<wardTop)wardTop=r;if(r>=wardTop+WARD_ROWS)wardTop=r-WARD_ROWS+1;}
 function updateWardrobe(){
   if(pressed.wear||pressed.back||pressed.grow||pressed.quest){state='play';SFX.menu();return;}
   const n=OUTFITS.length+1;let m=false;
   if(pressed.left){wardSel=(wardSel+n-1)%n;m=true;}if(pressed.right){wardSel=(wardSel+1)%n;m=true;}
-  if(pressed.up){wardSel=(wardSel+n-WARD_COLS)%n;m=true;}if(pressed.down){wardSel=(wardSel+WARD_COLS)%n;m=true;}
-  if(m)SFX.menu();
-  if(pressed.a){const id=wardSel?OUTFITS[wardSel-1].id:null;if(id&&!G.outfits.includes(id))SFX.deny();else{setWear(id);SFX.pick();save();}}
+  if(pressed.up){wardSel=wardSel-WARD_COLS>=0?wardSel-WARD_COLS:Math.min(n-1,Math.floor((n-1)/WARD_COLS)*WARD_COLS+wardSel%WARD_COLS);m=true;}
+  if(pressed.down){wardSel=wardSel+WARD_COLS<n?wardSel+WARD_COLS:wardSel%WARD_COLS;m=true;}
+  if(m){SFX.menu();wardScroll();}
+  if(pressed.a){const id=wardSel?OUTFITS[wardSel-1].id:null;if(id&&!G.outfits.includes(id))SFX.deny();else{setWear(id);SFX.pick();if(id==='detective'&&wearing('detective'))toast('Detective notes added to your quest log! (Q)','#c49a5c');save();}}
 }
 function drawWardrobe(){
-  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ffd83a');
-  txt("PIP'S CLOSET",W/2,8,8,'#ffd83a',{align:'center',shadow:true});
-  txt(G.outfits.length+'/'+OUTFITS.length+' found'+(G.rank>=7?'   OUTFIT + ACCESSORY':''),W/2,18,5,'#b8a8d8',{align:'center'});
-  const n=OUTFITS.length+1;
-  for(let i=0;i<n;i++){
-    const col=i%WARD_COLS,row=Math.floor(i/WARD_COLS),x=12+col*78,y=27+row*34,o=i?OUTFITS[i-1]:null,id=o?o.id:null,own=!id||G.outfits.includes(id),sel=i===wardSel,on=id?wearing(id):(!G.wear&&!G.acc);
-    if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(x-2,y-2,78,34);}
-    box(x,y,74,30,on?'#3a3010':'#1d1430',on?'#ffd83a':'#4a3a66');
-    if(own){drawPip(stage(),0,0,false,x+14,y+28,1,id);wrap(o?o.name:'NONE',5,46).slice(0,3).forEach((l,j)=>txt(l,x+27,y+5+j*8,5,on?'#ffd83a':'#fff8ec'));}
-    else{txt('?',x+14,y+10,10,'#4a3a66',{align:'center'});txt('???',x+27,y+10,5,'#6a5a90');}
+  ctx.fillStyle='rgba(18,28,44,0.96)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#24364a','#ffe05a');
+  txt("PIP'S CLOSET",W/2,8,8,'#ffe05a',{align:'center',shadow:true});
+  txt(G.outfits.length+'/'+OUTFITS.length+' found'+(G.rank>=7?'   (1 outfit + 1 accessory)':''),W/2,19,5,'#b9d1dd',{align:'center'});
+  const n=OUTFITS.length+1,CW=44,CH=33,X0=Math.round((W-(WARD_COLS*(CW+3)-3))/2);
+  for(let k=0;k<WARD_ROWS*WARD_COLS;k++){
+    const i=wardTop*WARD_COLS+k;if(i>=n)break;
+    const col=k%WARD_COLS,row=Math.floor(k/WARD_COLS),x=X0+col*(CW+3),y=28+row*(CH+2),o=i?OUTFITS[i-1]:null,id=o?o.id:null,own=!id||G.outfits.includes(id),sel=i===wardSel,on=id?wearing(id):(!G.wear&&!G.acc);
+    if(sel){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.fillRect(x-2,y-2,CW+4,CH+4);}
+    box(x,y,CW,CH,on?'#3a3010':'#192639',on?'#ffe05a':'#425b72');
+    if(own){drawPip(stage(),0,0,false,x+CW/2,y+CH-3,1,id);if(!id)txt('NONE',x+CW/2,y+3,5,'#b9d1dd',{align:'center'});}
+    else txt('?',x+CW/2,y+10,10,'#425b72',{align:'center'});
+    if(on&&id)txt('ON',x+CW-3,y+3,5,'#ffe05a',{align:'right'});
   }
+  if(wardTop>0)txt('^',W/2,25,5,'#b9d1dd',{align:'center'});
+  if((wardTop+WARD_ROWS)*WARD_COLS<n)txt('v',W/2,28+WARD_ROWS*(CH+2)-1,5,'#b9d1dd',{align:'center'});
   const o=wardSel?OUTFITS[wardSel-1]:null,own=!o||G.outfits.includes(o.id);
-  box(12,166,W-24,52,'#1d1430','#6a5a90');
-  txt(own?(o?o.name:'NO OUTFIT'):'???',20,171,7,'#ffd83a');
+  box(8,172,W-16,46,'#192639','#7896ae');
+  txt(own?(o?o.name:'NO OUTFIT'):'???',14,176,8,'#ffe05a');
+  txt(own?(o?(wearing(o.id)?'Wearing it!':'Z: wear'):'Z: take all off'):'Not found yet',W-14,177,5,own?'#a1d970':'#98b3c7',{align:'right'});
   const desc=!o?'Just plain, fluffy Pip.':own?o.desc:(o.how||"Sold at Maggie's Boutique on Main Street in the city ("+o.price+" seeds).");
-  wrap(desc,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,182+i*8,5,'#d8c8f8'));
-  if(o)wrap('BONUS: '+o.bonus,5,W-44).slice(0,2).forEach((l,i)=>txt(l,20,199+i*8,5,own?'#94dc64':'#6a8a60'));
-  txt(own?(o?(wearing(o.id)?'Wearing it!':'Z: wear'):'Z: take all off'):'Not found yet',W-20,171,5,own?'#94dc64':'#8a7ab0',{align:'right'});
+  wrap(desc,5,W-34).slice(0,2).forEach((l,i)=>txt(l,14,187+i*8,5,'#e6f0f5'));
+  if(o)wrap('BONUS: '+o.bonus,5,W-34).slice(0,2).forEach((l,i)=>txt(l,14,203+i*8,5,own?'#a1d970':'#6a8a60'));
 }
 
 /* ---- minigames ---- */
@@ -218,7 +224,7 @@ function endMG(){
 }
 function drawMG(){
   if(!MG)return;const left=Math.max(0,Math.ceil((MG.limit-MG.t)/60));
-  box(52,H-22,152,16,'#1d1430','#e8ff70');
+  box(52,H-22,152,16,'#192639','#e8ff70');
   txt((MG.type==='bonk'?'CARROTS ':'FIREFLIES ')+MG.score+'/'+MG.goal+'   '+left+'s',W/2,H-17,6,'#e8ff70',{align:'center'});
 }
 function startEgg(host){EG={host:host||'penny',px:128,eggs:[],splats:[],score:0,miss:0,t:0,next:50,over:0,win:false};state='egg';SFX.magic();}
@@ -246,7 +252,7 @@ function endEgg(){
 function drawEgg(){
   const e=EG;
   for(let y=24;y<H;y+=16)for(let x=0;x<W;x+=16)ctx.drawImage(TILE.straw,x,y);
-  ctx.fillStyle='#1d1430';ctx.fillRect(0,0,W,24);
+  ctx.fillStyle='#192639';ctx.fillRect(0,0,W,24);
   ctx.fillStyle=PAL.k;ctx.fillRect(0,46,W,8);ctx.fillStyle=PAL.b;ctx.fillRect(0,47,W,5);ctx.fillStyle=PAL.T;ctx.fillRect(0,47,W,1);
   [44,100,156,212].forEach((hx,i)=>{const s=i%2?flipOf(SPR.hen):SPR.hen;drawImg(s,hx-(s.width>>1),48-s.height+(Math.floor((tick+i*7)/20)%2));});
   for(const g of e.eggs)drawImg(g.gold?SPR.goldEgg:SPR.egg,g.x-3,g.y-3);
@@ -254,10 +260,10 @@ function drawEgg(){
   drawPip(stage(),0,(keys.left||keys.right)?Math.floor(tick/7)%2:0,false,e.px,214,1);
   ctx.fillStyle=PAL.k;ctx.fillRect(e.px-13,190,26,9);ctx.fillStyle=PAL.b;ctx.fillRect(e.px-12,191,24,7);
   ctx.fillStyle=PAL.T;for(let i=-10;i<12;i+=4)ctx.fillRect(e.px+i,191,1,7);
-  txt('EGG CATCH',8,9,6,'#ffd83a');txt(e.score+' / 20',W/2,8,8,'#fff8ec',{align:'center'});
+  txt('EGG CATCH',8,9,6,'#ffe05a');txt(e.score+' / 20',W/2,8,8,'#fff8ec',{align:'center'});
   for(let i=0;i<5;i++)drawImg(i<5-e.miss?SPR.heart:SPR.heartE,W-54+i*10,8);
-  if(e.t<120&&!e.over)txt('Catch 20 eggs!',W/2,110,8,'#21142b',{align:'center'});
-  if(e.over){box(48,86,160,40,'#1d1430','#ffd83a');txt(e.win?'YOU WIN!':'OOPS!',W/2,96,10,e.win?'#ffd83a':'#ff8080',{align:'center'});
+  if(e.t<120&&!e.over)txt('Catch 20 eggs!',W/2,110,8,'#202840',{align:'center'});
+  if(e.over){box(48,86,160,40,'#192639','#ffe05a');txt(e.win?'YOU WIN!':'OOPS!',W/2,96,10,e.win?'#ffe05a':'#ff8080',{align:'center'});
     txt(e.score+' eggs caught',W/2,112,6,'#fff8ec',{align:'center'});}
 }
 

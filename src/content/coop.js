@@ -23,6 +23,6 @@ function migrateSave(s){
 const COOP_IN={x:640,y:939};
 const FAMILY_POS={mom:[39,52],penny:[42,53],peep:[37,54],cheep:[38,55],tweet:[41,55]};
 // upgrades unlock as you help animals out here (need = Part 2 quests done), and cost a few seeds
-const UPGRADES=[null,null,{cost:4,need:2,text:'A bigger coop, 2 more garden plots, and MAMA HEN moves in!'},
-  {cost:6,need:5,text:'A family wing, 2 more plots, faster growing, and PENNY & the TRIPLETS move in!'},
-  {cost:8,need:9,text:'The DREAM COOP! A golden roof, 2 more plots, super-fast growing, and a big party!'}];
+const UPGRADES=[null,null,{cost:6,need:2,text:'A bigger coop, 2 more garden plots, and MAMA HEN moves in!'},
+  {cost:9,need:5,text:'A family wing, 2 more plots, faster growing, and PENNY & the TRIPLETS move in!'},
+  {cost:12,need:9,text:'The DREAM COOP! A golden roof, 2 more plots, super-fast growing, and a big party!'}];

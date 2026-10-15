@@ -11,23 +11,23 @@ const SKILLS=[
   {id:'fly',name:'FLIGHT',cost:7,req:['flap'],x:226,y:94,desc:'Real, true FLIGHT! Head to the Big Fence and soar right over it!',learn:'You can FLY! Go to the Big Fence!'}
 ];
 const SKILLS2=[
-  {id:'swim',name:'SWIM',cost:4,req:[],x:44,y:72,desc:'Paddle through deep rivers and the ocean! Taught by Lifeguard Sandy.',learn:'You can swim in deep water!'},
-  {id:'glide',name:'GLIDE',cost:4,req:[],x:44,y:120,desc:'Spread your wings and glide right over chasms and gaps.',learn:'You can glide over chasms!'},
-  {id:'super',name:'SUPER PECK',cost:5,req:['glide'],x:120,y:120,desc:'A peck so mighty it smashes huge boulders! Taught by Bucky the beaver.',learn:'SUPER PECK smashes boulders!'},
-  {id:'golden',name:'GOLDEN WINGS',cost:8,req:['swim','super'],x:204,y:96,desc:'Shimmering golden wings! +1 heart and even faster feet.',learn:'+1 heart and speed! So shiny!'}
+  {id:'swim',name:'SWIM',cost:6,req:[],x:44,y:72,desc:'Paddle through deep rivers and the ocean! Taught by Lifeguard Sandy.',learn:'You can swim in deep water!'},
+  {id:'glide',name:'GLIDE',cost:6,req:[],x:44,y:120,desc:'Spread your wings and glide right over chasms and gaps.',learn:'You can glide over chasms!'},
+  {id:'super',name:'SUPER PECK',cost:7,req:['glide'],x:120,y:120,desc:'A peck so mighty it smashes huge boulders! Taught by Bucky the beaver.',learn:'SUPER PECK smashes boulders!'},
+  {id:'golden',name:'GOLDEN WINGS',cost:11,req:['swim','super'],x:204,y:96,desc:'Shimmering golden wings! +1 heart and even faster feet.',learn:'+1 heart and speed! So shiny!'}
 ];
 const STAGE_NAMES=['TEENY PEEP','LITTLE CHICK','GROWING CHICK','BIG CHICK','ALMOST A CHICKEN'];
 
 // Village Tree: whistle and master are taught by trainers (see trainers.js)
 const SKILLS3=[
-  {id:'carry',name:'CARRY',cost:5,req:[],x:44,y:96,desc:'Lift heavy stone and big loads. You need it for stone at the riverside!',learn:'You can carry heavy stone!'},
-  {id:'whistle',name:'WHISTLE',cost:6,req:['carry'],x:112,y:62,desc:'Whistle at the village whistle post for a helper to bring wool or wood. Taught by Dash.',learn:'Whistle for helpers at the post!'},
-  {id:'green',name:'GREEN WINGS',cost:6,req:['carry'],x:112,y:130,desc:'Flap over crop rows to water them and make them grow faster!',learn:'Flap over crops to water them!'},
-  {id:'master',name:'MASTER BUILDER',cost:8,req:['whistle','green'],x:196,y:96,desc:'Buildings go up twice as fast and need less wood. Taught by Foreman Barnaby.',learn:'Buildings finish twice as fast!'}];
+  {id:'carry',name:'CARRY',cost:7,req:[],x:44,y:96,desc:'Lift heavy stone and big loads. You need it for stone at the riverside!',learn:'You can carry heavy stone!'},
+  {id:'whistle',name:'WHISTLE',cost:8,req:['carry'],x:112,y:62,desc:'Whistle at the village whistle post for a helper to bring wool or wood. Taught by Dash.',learn:'Whistle for helpers at the post!'},
+  {id:'green',name:'GREEN WINGS',cost:8,req:['carry'],x:112,y:130,desc:'Flap over crop rows to water them and make them grow faster!',learn:'Flap over crops to water them!'},
+  {id:'master',name:'MASTER BUILDER',cost:11,req:['whistle','green'],x:196,y:96,desc:'Buildings go up twice as fast and need less wood. Taught by Foreman Barnaby.',learn:'Buildings finish twice as fast!'}];
 
 // Sea Tree: dive and cpeck are taught by Coral and Ember (see trainers.js)
 const SKILLS4=[
-  {id:'dive',name:'DIVE',cost:6,req:[],x:44,y:72,desc:'Dive into the dive pools at the Coral Reef. Watch your AIR meter! Taught by Coral.',learn:'You can dive underwater!'},
-  {id:'dash',name:'DASH',cost:5,req:[],x:44,y:124,desc:'Press SHIFT (or the DASH button) for a quick burst of speed that slips past danger!',learn:'Shift to DASH!'},
-  {id:'cpeck',name:'CANNON PECK',cost:7,req:['dash'],x:120,y:124,desc:'Hold the peck button, then let go: a mighty peck that knocks enemies far back! Taught by Ember.',learn:'Hold to charge a CANNON PECK!'},
-  {id:'sealegs',name:'SEA LEGS',cost:6,req:['dive'],x:204,y:96,desc:'No knockback on ship decks, and strong currents cannot push you around.',learn:'Steady on your feet!'}];
+  {id:'dive',name:'DIVE',cost:8,req:[],x:44,y:72,desc:'Dive into the dive pools at the Coral Reef. Watch your AIR meter! Taught by Coral.',learn:'You can dive underwater!'},
+  {id:'dash',name:'DASH',cost:7,req:[],x:44,y:124,desc:'Press SHIFT (or the DASH button) for a quick burst of speed that slips past danger!',learn:'Shift to DASH!'},
+  {id:'cpeck',name:'CANNON PECK',cost:10,req:['dash'],x:120,y:124,desc:'Hold the peck button, then let go: a mighty peck that knocks enemies far back! Taught by Ember.',learn:'Hold to charge a CANNON PECK!'},
+  {id:'sealegs',name:'SEA LEGS',cost:8,req:['dive'],x:204,y:96,desc:'No knockback on ship decks, and strong currents cannot push you around.',learn:'Steady on your feet!'}];

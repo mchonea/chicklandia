@@ -2,7 +2,7 @@
 /* ---------------- growth tree ---------------- */
 let growPage=0;
 const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:growPage===4?SKILLS4:growPage===5?SKILLS5:SKILLS;
-function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),...(G.sea.open?[4]:[]),...(G.sky.open?[5]:[]),2];}
+function growPages(){return [0,...(G.part2?[1]:[]),...((G.vil.open||G.q.vfound>=1)?[3]:[]),...(G.sea.open?[4]:[]),...(G.sky.open?[5]:[]),2];}
 function openGrow(){state='grow';SFX.menu();growMsg=null;growPage=G.part2?1:0;growSel=0;const i=TREE().findIndex(s=>!has(s.id)&&s.req.every(has));if(i>=0)growSel=i;}
 function skillState(s){if(has(s.id))return'learned';if(!s.req.every(has))return'locked';if(TRAIN[s.id]&&G.train[s.id]!==2)return'train';return'open';}
 function updateGrow(){
@@ -19,11 +19,11 @@ function updateGrow(){
     if(best>=0){growSel=best;growMsg=null;SFX.menu();}}
   if(pressed.a){
     const st=skillState(cur);
-    if(st==='learned'){growMsg={s:'Already learned!',c:'#94dc64'};SFX.deny();}
+    if(st==='learned'){growMsg={s:'Already learned!',c:'#a1d970'};SFX.deny();}
     else if(st==='locked'){growMsg={s:'Learn '+cur.req.filter(r=>!has(r)).map(r=>SKILLS.find(x=>x.id===r).name).join(' & ')+' first!',c:'#ff8080'};SFX.deny();}
     else if(st==='train'){growMsg={s:trainMsg(cur.id),c:'#ff9cd0'};SFX.deny();}
     else if(G.seeds<cur.cost){growMsg={s:'You need '+(cur.cost-G.seeds)+' more seed'+(cur.cost-G.seeds>1?'s':'')+'. Help the animals!',c:'#ff8080'};SFX.deny();}
-    else{G.seeds-=cur.cost;G.skills.add(cur.id);gainGP(GP.skill);G.hearts=maxHearts();lvlAnim=110;SFX.lvl();growMsg={s:cur.learn,c:'#ffd83a'};toast(cur.name+': '+cur.learn);save();}
+    else{G.seeds-=cur.cost;G.skills.add(cur.id);gainGP(GP.skill);G.hearts=maxHearts();lvlAnim=110;SFX.lvl();growMsg={s:cur.learn,c:'#ffe05a'};toast(cur.name+': '+cur.learn);save();}
   }
 }
 

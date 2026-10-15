@@ -61,10 +61,10 @@ const INTRO3={rocco:"Rocco the raccoon lives in the den next to the city gate. H
   portrait:"Pablo the peacock paints in the artist studio in the residential lane."};
 // museum exhibits (id = the item you carry)
 const EXHIBITS=[
-  {id:'seashell',item:'seashell',name:'SEASHELLS',need:5,desc:'Five shells from the shore.',where:'Look for pretty shells on the beach and in the tide pools!',reward:{seeds:5,gp:10}},
-  {id:'plume',item:'plume',name:'FEATHERS',need:4,desc:'Four feathers from faraway places.',where:'Feathers drift down in the field, forest, mountains and park.',reward:{seeds:5,gp:10}},
-  {id:'fossil',item:'fossil',name:'FOSSILS',need:4,desc:'Old bones dug out of the ground.',where:'Peck the strange dirt mounds (needs Strong Peck).',reward:{seeds:5,gp:10}},
-  {id:'petal',item:'petal',name:'MOON PETALS',need:3,desc:'Three rare petals.',where:'Grow Moonflowers at night in your garden.',reward:{seeds:6,gp:12}}];
+  {id:'seashell',item:'seashell',name:'SEASHELLS',need:5,desc:'Five shells from the shore.',where:'Look for pretty shells on the beach and in the tide pools!',reward:{seeds:3,gp:10}},
+  {id:'plume',item:'plume',name:'FEATHERS',need:4,desc:'Four feathers from faraway places.',where:'Feathers drift down in the field, forest, mountains and park.',reward:{seeds:3,gp:10}},
+  {id:'fossil',item:'fossil',name:'FOSSILS',need:4,desc:'Old bones dug out of the ground.',where:'Peck the strange dirt mounds (needs Strong Peck).',reward:{seeds:3,gp:10}},
+  {id:'petal',item:'petal',name:'MOON PETALS',need:3,desc:'Three rare petals.',where:'Grow Moonflowers at night in your garden.',reward:{seeds:4,gp:12}}];
 // where the museum finds hide (tile col,row)
 const FINDS=[
   ...[[5,74],[8,76],[12,75],[20,74],[28,77]].map(([c,r],i)=>({id:'ms'+i,kind:'seashell',c,r})),

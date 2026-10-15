@@ -15,13 +15,13 @@ function costText(c){return [c.seeds?c.seeds+' SEEDS':'',...MATS.filter(m=>c[m])
 function missingFor(c){const out=[];if((c.seeds||0)>G.seeds)out.push((c.seeds-G.seeds)+' SEEDS');for(const m of MATS)if((c[m]||0)>G.vil.mat[m])out.push((c[m]-G.vil.mat[m])+' '+MAT_NAME[m]);return out;}
 function payCost(c){G.seeds-=c.seeds||0;for(const m of MATS)G.vil.mat[m]-=c[m]||0;}
 function matsLine(){return MATS.map(m=>MAT_NAME[m]+' '+G.vil.mat[m]).join('   ');}
-function gainMat(kind,n,x,y){G.vil.mat[kind]+=n;SFX.pick();float(x,y-16,'+'+n+' '+MAT_NAME[kind],'#ffd83a');}
+function gainMat(kind,n,x,y){G.vil.mat[kind]+=n;SFX.pick();float(x,y-16,'+'+n+' '+MAT_NAME[kind],'#ffe05a');}
 /* ---- opening the village ---- */
 function openVillage(){
   if(G.vil.open)return;G.vil.open=true;
   for(const [c,r] of VILLAGE_ROAD)setTile(c,r,'=');
   if(!G.areas.includes('village'))G.areas.push('village');
-  toast('The village road is open!','#94dc64');save();
+  toast('The village road is open!','#a1d970');save();
 }
 /* ---- entities ---- */
 function padCenter(p){return {x:(p.c+1)*16,y:(p.r+2)*16-2};}
@@ -55,15 +55,17 @@ function updateVillage(){
   if(!G.vil.open)return;
   if(tick%30===0){
     for(const [id,b] of Object.entries(G.vil.b))if(!b.done&&G.clock-b.t0>=b.dur){b.done=true;
-      const t=BUILDING_TYPES[b.kind];toast(t.name+' is finished!','#94dc64');SFX.questDone();shake=4;gainGP(GP.build);
-      const p=PADS.find(q=>q.id===id),q=padCenter(p);puff(q.x,q.y-12,16,['#ffd83a','#fff8ec','#94dc64'],1.6,0.05);save();}
+      const t=BUILDING_TYPES[b.kind];toast(t.name+' is finished!','#a1d970');SFX.questDone();shake=4;gainGP(GP.build);
+      const p=PADS.find(q=>q.id===id),q=padCenter(p);puff(q.x,q.y-12,16,['#ffe05a','#fff8ec','#a1d970'],1.6,0.05);save();}
     checkLetters();
-    const s=seasonNow();if(lastSeason!==s.i+s.year*4){if(lastSeason!==-1&&regionAt()&&regionAt().area==='village')toast('It is '+s.name+' in the village!','#ffd83a');lastSeason=s.i+s.year*4;spawnSeasonItems();}
+    const s=seasonNow();if(lastSeason!==s.i+s.year*4){if(lastSeason!==-1&&regionAt()&&regionAt().area==='village')toast('It is '+s.name+' in the village!','#ffe05a');lastSeason=s.i+s.year*4;spawnSeasonItems();}
   }
 }
 function freeBuilding(kind){const taken=Object.values(G.vil.res);return builtList(kind).find(b=>!taken.includes(b.id));}
 function checkLetters(){
-  for(const r of RESIDENTS){const q='v_'+r.id;if(G.q[q]===0&&freeBuilding(r.needs)){G.q[q]=1;G.vil.letters.push(r.id);toast('A letter arrived at the village mailbox!','#ff9cd0');SFX.chirp();}}
+  // a friend whose letter went missing (quest started, never moved in, no letter in the box) gets a fresh letter
+  for(const r of RESIDENTS){const q='v_'+r.id;if(G.vil.res[r.id]||G.vil.letters.includes(r.id))continue;
+    if((G.q[q]===0||G.q[q]===1)&&freeBuilding(r.needs)){const fresh=G.q[q]===0;G.q[q]=1;G.vil.letters.push(r.id);toast(fresh?'A letter arrived at the village mailbox!':'A letter is waiting at the village mailbox!','#ff9cd0');SFX.chirp();}}
 }
 /* ---- building ---- */
 let VB=null;      // the pad being built on
@@ -72,8 +74,8 @@ function tryBuild(kind){
   if(t.only==='river'&&!pad.river)return {s:'A mill must be built beside the river!',c:'#ff8080'};
   const miss=missingFor(c);if(miss.length){SFX.deny();return {s:'You still need '+miss.join(', ')+'.',c:'#ff8080'};}
   payCost(c);G.vil.b[pad.id]={kind,t0:G.clock,dur:buildTime(),done:false};
-  SFX.cash();shake=3;const q=padCenter(pad);puff(q.x,q.y-8,12,['#c49a5c','#fff8ec'],1.4,0.06);
-  state='play';SH=null;VB=null;toast('Construction started!','#ffd83a');save();return null;
+  SFX.cash();shake=3;const q=padCenter(pad);puff(q.x,q.y-8,12,['#b69965','#fff8ec'],1.4,0.06);
+  state='play';SH=null;VB=null;toast('Construction started!','#ffe05a');save();return null;
 }
 function padAction(e){
   const b=G.vil.b[e.id];
@@ -82,10 +84,10 @@ function padAction(e){
   if(!b.done){const pct=Math.min(99,Math.floor((G.clock-b.t0)/b.dur*100));say([{who:'me',text:"The "+t.name+" is going up! About "+pct+"% done. The builders are busy!"}]);return;}
   const who=Object.keys(G.vil.res).find(id=>G.vil.res[id]===e.id);
   if(b.kind==='mill'){
-    if(G.vil.millDay!==dayNum()){G.vil.millDay=dayNum();addSeeds(2,2,0);float(e.x,e.y-34,'+2 SEEDS (flour sale)','#ffd83a');SFX.seed();save();
-      say([{who:'me',text:"The mill ground some flour and sold it. Two seeds in the till!"}]);}
+    if(G.vil.millDay!==dayNum()){G.vil.millDay=dayNum();addSeeds(1,2,0);float(e.x,e.y-34,'+1 SEED (flour sale)','#ffe05a');SFX.seed();save();
+      say([{who:'me',text:"The mill ground some flour and sold it. One seed in the till!"}]);}
     else say([{who:'me',text:"The mill is busy grinding. More flour tomorrow!"}]);return;}
-  if(b.kind==='clinic'){G.hearts=maxHearts();SFX.pick();float(e.x,e.y-34,'All better!','#94dc64');
+  if(b.kind==='clinic'){G.hearts=maxHearts();SFX.pick();float(e.x,e.y-34,'All better!','#a1d970');
     say([{who:'me',text:"A cozy bed, a warm blanket and a cup of tea. All my hearts are full!"}]);return;}
   say([{who:'me',text:who?(RESIDENTS.find(r=>r.id===who).name+" lives here. "+RESIDENTS.find(r=>r.id===who).home):"A lovely "+t.name+"."+(['home','bakery','school','band'].includes(b.kind)?" Maybe a friend would like to live here?":"")}]);
 }
@@ -94,7 +96,7 @@ function mailboxAction(){
   const id=G.vil.letters[0];
   if(!id){say([{who:'me',text:G.vil.open?"No new mail. Friends will write when there's a place for them to live!":""}]);return;}
   const r=RESIDENTS.find(x=>x.id===id),give=r.give,miss=missingFor(Object.assign({},give));
-  const L=[{who:'me',text:"A letter from "+r.name+": \"Dear Pip, I'd love to move to your village! My one wish: "+r.wish+"\""}];
+  const L=[{who:'me',text:"A letter from "+r.name+": \"Dear Pip, I'd love to move to your village! My one wish: "+r.wish+"\""+(G.vil.letters.length>1?" ("+(G.vil.letters.length-1)+" more letter"+(G.vil.letters.length>2?'s':'')+" waiting.)":'')}];
   L.push({who:'me',text:matsLine()+".   Give "+costText(give)+"?",choices:['Give it!','Later'],cb:i=>{
     if(i!==0)return;
     const m=missingFor(give);if(m.length){SFX.deny();say([{who:'me',text:"I still need "+m.join(', ')+". I'll find more!"}]);return;}
@@ -108,8 +110,8 @@ function moveIn(id){
   G.vil.res[id]=b.id;relocateResidents();
   const qid='v_'+id;reward(QUESTS[qid].reward,qid);
   const e=ents.find(x=>x.id===id);
-  toast(r.name+' '+r.how+'!','#94dc64');SFX.fanfare();
-  const p=PADS.find(q=>q.id===b.id),q=padCenter(p);for(let i=0;i<14;i++)puff(q.x,q.y-10,1,['#ff6fae','#ffd83a','#fff8ec','#94dc64'],2,0.05);
+  toast(r.name+' '+r.how+'!','#a1d970');SFX.fanfare();
+  const p=PADS.find(q=>q.id===b.id),q=padCenter(p);for(let i=0;i<14;i++)puff(q.x,q.y-10,1,['#ff6fae','#ffe05a','#fff8ec','#a1d970'],2,0.05);
   if(e)say([{who:e,text:r.home}]);save();
 }
 /* ---- gathering ---- */
@@ -117,7 +119,7 @@ function villagePeck(e,f,pr){
   if(e.type==='vnode'&&G.vil.nodes[e.id]!==dayNum()&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-6-f.y)<14){
     if(e.kind==='stone'&&!has('carry')){SFX.clunk();float(e.x,e.y-16,'Too heavy! Learn CARRY','#ff9cd0');return true;}
     if(!has('peck')&&e.kind!=='clay'){SFX.clunk();float(e.x,e.y-16,'Too tough!');return true;}
-    G.vil.nodes[e.id]=dayNum();gainMat(e.kind,NODE_YIELD[e.kind]+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);puff(e.x,e.y-4,8,['#c49a5c','#e8d8b0'],1.2,0.06);SFX.brk();save();return true;}
+    G.vil.nodes[e.id]=dayNum();gainMat(e.kind,NODE_YIELD[e.kind]+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);puff(e.x,e.y-4,8,['#b69965','#e8d8b0'],1.2,0.06);SFX.brk();save();return true;}
   if(e.type==='vsheep'&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-5-f.y)<14){
     if(G.vil.shear[e.id]===dayNum()){float(e.x,e.y-18,'Baa! (Come back tomorrow)','#fff8ec');SFX.menu();return true;}
     G.vil.shear[e.id]=dayNum();gainMat('wool',2+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);puff(e.x,e.y-8,8,['#fff8ec','#e8e8f0'],1.2,0.04);save();return true;}
@@ -140,7 +142,7 @@ function whistleAction(e){
     const k=i===0?'wool':'wood',day=G.vil.whistle[k];
     if(day===dayNum()){say([{who:'me',text:i===0?"The sheep already brought wool today!":"The beaver already hauled logs today!"}]);return;}
     G.vil.whistle[k]=dayNum();SFX.magic();gainMat(k,2+((wearing('overalls')||G.rank>=8)?1:0),e.x,e.y);
-    toast(i===0?'A sheep trots over with a bundle of wool!':'A beaver drags in a stack of logs!','#ffd83a');save();}}]);
+    toast(i===0?'A sheep trots over with a bundle of wool!':'A beaver drags in a stack of logs!','#ffe05a');save();}}]);
 }
 /* ---- skills ---- */
 // Green Wings: a flap over crop rows waters them
@@ -158,7 +160,7 @@ function drawSeasonFX(cx,cy){
   for(let i=0;i<n;i++){
     const sp=0.5+(i%4)*0.18,x=((i*53+tick*(s.name==='WINTER'?0.25:0.5)*(1+i%3*0.2))%(W+20))-10,y=HUD+((i*37+tick*sp)%VH);
     if(s.name==='WINTER'){ctx.fillStyle='#ffffff';ctx.fillRect(Math.round(x),Math.round(y),2,2);}
-    else if(s.name==='AUTUMN'){ctx.fillStyle=['#e8a422','#e03838','#f37d22'][i%3];ctx.fillRect(Math.round(x),Math.round(y+Math.sin(tick/9+i)*3),3,2);}
+    else if(s.name==='AUTUMN'){ctx.fillStyle=['#e8a02c','#eb6654','#f07832'][i%3];ctx.fillRect(Math.round(x),Math.round(y+Math.sin(tick/9+i)*3),3,2);}
     else if(s.name==='SPRING'){ctx.fillStyle=i%2?'#ffb0d0':'#fff8ec';ctx.fillRect(Math.round(x),Math.round(y),2,2);}
     else{if(tick%40<20){ctx.fillStyle='rgba(255,255,200,0.7)';ctx.fillRect(Math.round(x),Math.round(HUD+((i*61)%VH)),1,1);}}}
 }
@@ -170,7 +172,7 @@ function contestWin(){
   const s=seasonNow(),k=contestKey();if(G.vil.contest[k])return;
   G.vil.contest[k]=1;addSeeds(4,2,0);gainGP(8);
   const first=!G.vil.contestFirst;if(first){G.vil.contestFirst=1;}
-  toast('You won the '+s.name+' contest! +4 seeds, village happier!','#ffd83a');SFX.fanfare();save();
+  toast('You won the '+s.name+' contest! +4 seeds, village happier!','#ffe05a');SFX.fanfare();save();
 }
 function contestInfo(){
   const s=seasonNow();
@@ -190,7 +192,7 @@ function sculptAction(){
   const n=G.vil.snow||0;
   if(seasonNow().name!=='WINTER'){say([{who:'me',text:"A snowy stage waits for winter, when the sculpture contest starts."}]);return;}
   if(contestDone()){say([{who:'me',text:"What a masterpiece! The judges loved it."}]);return;}
-  if(G.items.snowball>0){G.items.snowball--;G.vil.snow=n+1;SFX.pop();toast('Added to the sculpture! ('+G.vil.snow+'/3)','#a6e0ff');
+  if(G.items.snowball>0){G.items.snowball--;G.vil.snow=n+1;SFX.pop();toast('Added to the sculpture! ('+G.vil.snow+'/3)','#b2e7e0');
     if(G.vil.snow>=3){G.vil.snow=0;contestWin();}save();return;}
   say([{who:'me',text:"The sculpture needs "+(3-n)+" more snowballs. Look around the hill!"}]);
 }
@@ -208,8 +210,8 @@ function drawVillageEnt(e,sx,sy){
       if(b.done){shadow(sx,sy+1,14);ctx.drawImage(img,sx-16,sy-30);if(b.kind==='bakery'&&tick%20<10){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillRect(sx+8,sy-34-(tick%30)/5|0,3,3);}}
       else{const k=Math.min(1,(G.clock-b.t0)/b.dur),h=Math.max(1,Math.round(34*k));
         ctx.drawImage(img,0,34-h,32,h,sx-16,sy-30+34-h,32,h);ctx.drawImage(SPR.scaffold,sx-16,sy-30);
-        ctx.fillStyle='#21142b';ctx.fillRect(sx-12,sy-36,24,5);ctx.fillStyle='#94dc64';ctx.fillRect(sx-11,sy-35,Math.round(22*k),3);
-        if(tick%16===0)puff(e.x+(Math.random()-.5)*20,e.y-14,1,['#c49a5c','#fff8ec'],0.8,0.05);}
+        ctx.fillStyle='#202840';ctx.fillRect(sx-12,sy-36,24,5);ctx.fillStyle='#a1d970';ctx.fillRect(sx-11,sy-35,Math.round(22*k),3);
+        if(tick%16===0)puff(e.x+(Math.random()-.5)*20,e.y-14,1,['#b69965','#fff8ec'],0.8,0.05);}
       break;}
     case 'vnode':{if(G.vil.nodes[e.id]===dayNum())break;const s=SPR['node_'+e.kind];shadow(sx,sy+1,7);drawImg(s,sx-(s.width>>1),sy+1-s.height);
       if(tick%70<5){ctx.fillStyle='#fff';ctx.fillRect(sx+3,sy-s.height,1,1);}break;}
@@ -221,11 +223,11 @@ function drawVillageEnt(e,sx,sy){
     case 'vcontest':{drawImg(SPR.board,sx-(SPR.board.width>>1),sy-SPR.board.height+1);const i=contestInfo();if(SPR[i.icon]&&!contestDone())drawImg(SPR[i.icon],sx-(SPR[i.icon].width>>1),sy-SPR.board.height-SPR[i.icon].height-1+Math.round(Math.sin(tick/12)*1.5));break;}
     case 'scarecrow':drawImg(SPR.scarecrow,sx-(SPR.scarecrow.width>>1),sy-SPR.scarecrow.height+1);break;
     case 'windmill':{shadow(sx,sy+1,18);ctx.drawImage(SPR.windmillBase,sx-20,sy-62);
-      const cx=sx,cy=sy-50,a=tick/40;ctx.strokeStyle='#21142b';ctx.lineWidth=3;
+      const cx=sx,cy=sy-50,a=tick/40;ctx.strokeStyle='#202840';ctx.lineWidth=3;
       for(let i=0;i<4;i++){const an=a+i*Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(an)*24,cy+Math.sin(an)*24);ctx.stroke();}
       ctx.strokeStyle='#f6ead0';ctx.lineWidth=1;for(let i=0;i<4;i++){const an=a+i*Math.PI/2;ctx.beginPath();ctx.moveTo(cx,cy);ctx.lineTo(cx+Math.cos(an)*23,cy+Math.sin(an)*23);ctx.stroke();}
-      ctx.fillStyle='#21142b';ctx.fillRect(cx-2,cy-2,5,5);break;}
-    case 'vsculpt':{ctx.fillStyle='#21142b';ctx.fillRect(sx-9,sy-4,18,5);ctx.fillStyle='#c49a5c';ctx.fillRect(sx-8,sy-3,16,3);
+      ctx.fillStyle='#202840';ctx.fillRect(cx-2,cy-2,5,5);break;}
+    case 'vsculpt':{ctx.fillStyle='#202840';ctx.fillRect(sx-9,sy-4,18,5);ctx.fillStyle='#b69965';ctx.fillRect(sx-8,sy-3,16,3);
       const n=G.vil.snow||0,done=contestDone()&&seasonNow().name==='WINTER';
       if(done||n>0){const s=SPR.snowSculpture[Math.min(2,done?2:n-1)];drawImg(s,sx-(s.width>>1),sy-4-s.height);}break;}
   }

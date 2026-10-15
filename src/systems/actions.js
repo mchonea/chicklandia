@@ -21,34 +21,34 @@ function peck(f){
   P.peckT=12;SFX.peck();
   const pr={x:f.x-8,y:f.y-8,w:16,h:16};
   if(MG&&MG.type==='bonk')for(const e of ents){if(e.type==='hole'&&e.up>0&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-6-f.y)<14){
-    MG.score+=e.gold?2:1;e.up=0;SFX.bonk();puff(e.x,e.y-8,8,e.gold?['#ffd21e','#2f7d3a']:['#f37d22','#2f7d3a']);float(e.x,e.y-18,e.gold?'+2!':'+1','#ffd83a');return;}}
+    MG.score+=e.gold?2:1;e.up=0;SFX.bonk();puff(e.x,e.y-8,8,e.gold?['#ffd21e','#2d664e']:['#f07832','#2d664e']);float(e.x,e.y-18,e.gold?'+2!':'+1','#ffe05a');return;}}
   if(MG&&MG.type==='ffly')for(const e of ents){if(e.type==='ffly'&&Math.abs(e.x-f.x)<15&&Math.abs(e.y-8-f.y)<15){
     e.dead=true;MG.score++;SFX.chirp();puff(e.x,e.y-8,6,['#e8ff70','#fff8ec'],0.8,0);float(e.x,e.y-16,''+MG.score,'#e8ff70');return;}}
   for(const e of ents){
     if(hazardPeck(e,f,pr)||cityPeck(e,f,pr)||villagePeck(e,f,pr)||seaPeck(e,f,pr)||skyPeck(e,f,pr))return;
     if(e.type==='worm'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
-      e.dead=true;G.collected.add(e.id);G.items.worm++;tasteFood('worm');SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#9a6234']);strawBonus(e.x,e.y);
+      e.dead=true;G.collected.add(e.id);G.items.worm++;tasteFood('worm');SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#a66c46']);strawBonus(e.x,e.y);
       float(e.x,e.y-14,'WORM '+Math.min(G.items.worm,3)+'/3','#f6a6b6');
       if(G.items.worm===3&&G.q.mom===1)toast('Go show Mama Hen!');save();return;}
     if(e.type==='carrot'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
-      e.dead=true;G.collected.add(e.id);G.items.carrot++;tasteFood('carrot');SFX.pick();puff(e.x,e.y-4,8,['#f37d22','#2f7d3a','#9a6234']);strawBonus(e.x,e.y);
-      float(e.x,e.y-14,'CARROT '+Math.min(G.items.carrot,3)+'/3','#f37d22');save();return;}
+      e.dead=true;G.collected.add(e.id);G.items.carrot++;tasteFood('carrot');SFX.pick();puff(e.x,e.y-4,8,['#f07832','#2d664e','#a66c46']);strawBonus(e.x,e.y);
+      float(e.x,e.y-14,'CARROT '+Math.min(G.items.carrot,3)+'/3','#f07832');save();return;}
     if(e.type==='mound'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
       if(!has('peck')){SFX.clunk();float(e.x,e.y-14,'Too hard to dig!');return;}
-      e.dead=true;G.collected.add(e.id);SFX.brk();puff(e.x,e.y-4,14,['#9a6234','#5e3a1c','#c49a5c'],1.4,0.08);
+      e.dead=true;G.collected.add(e.id);SFX.brk();puff(e.x,e.y-4,14,['#a66c46','#594437','#b69965'],1.4,0.08);
       if(e.has==='bone')spawnItem('bone','bone',e.x,e.y,true);
       else if(e.has==='seed')spawnItem('seed_mound','seed',e.x,e.y,true);
-      else float(e.x,e.y-16,e.has,'#d8c8f8');
+      else float(e.x,e.y-16,e.has,'#d5e5eb');
       save();return;}
     if((e.type==='fox'&&!e.gone)||(e.type==='goose'&&!e.blown)){
       if(ov(pr,{x:e.x-8,y:e.y-12,w:16,h:14})){hitEnemy(e);return;}}
     if(e.type==='stump'&&Math.abs(e.x-f.x)<13&&Math.abs(e.y-5-f.y)<13){
       if(!has('peck')){SFX.clunk();float(e.x,e.y-16,'Too tough!');return;}
-      e.dead=true;G.collected.add(e.id);G.items.stump++;SFX.brk();shake=4;puff(e.x,e.y-6,14,['#9a6234','#5e3a1c','#c49a5c'],1.6,0.08);
-      float(e.x,e.y-18,'STUMP '+Math.min(3,G.items.stump)+'/3','#c49a5c');if(G.items.stump>=3)toast('All stumps smashed! Tell Bucky.','#ff9cd0');save();return;}
+      e.dead=true;G.collected.add(e.id);G.items.stump++;SFX.brk();shake=4;puff(e.x,e.y-6,14,['#a66c46','#594437','#b69965'],1.6,0.08);
+      float(e.x,e.y-18,'STUMP '+Math.min(3,G.items.stump)+'/3','#b69965');if(G.items.stump>=3)toast('All stumps smashed! Tell Bucky.','#ff9cd0');save();return;}
     if(e.type==='berry'&&Math.abs(e.x-f.x)<13&&Math.abs(e.y-5-f.y)<13){
       if(G.items.snowberry){float(e.x,e.y-16,'You have a snowberry!');SFX.clunk();}
-      else{G.items.snowberry=1;tasteFood('snowberry');SFX.pick();puff(e.x,e.y-6,6,['#fff8ec','#2f7d3a']);toast('Picked a SNOWBERRY!');save();}return;}
+      else{G.items.snowberry=1;tasteFood('snowberry');SFX.pick();puff(e.x,e.y-6,6,['#fff8ec','#2d664e']);toast('Picked a SNOWBERRY!');save();}return;}
     if(e.type==='fishspot'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<14){
       if(G.items.fish){float(e.x,e.y-16,'You already have a fish!');SFX.clunk();}
       else{G.items.fish=1;tasteFood('fish');SFX.splash();puff(e.x,e.y-4,10,['#a6d0ff','#fff8ec'],1.2,0.08);toast('Caught a FISH!');save();}return;}
@@ -57,25 +57,25 @@ function peck(f){
   if(t==='R'||t==='C'){if(has('peck'))breakTile(c,r,t);else{SFX.clunk();float(c*16+8,r*16,'Too hard!');}}
   else if(t==='A'){if(has('peck'))shakeTree(c,r,f);else{SFX.clunk();float(c*16+8,r*16,'*wobble*');}}
   else if(t==='q')shakeTree(c,r,f,'acorn');
-  else if(t==='M'){if(has('super')){setTile(c,r,'g');SFX.brk();shake=8;puff(c*16+8,r*16+8,18,['#a8a8b8','#62627a','#fff8ec'],2,0.08);save();if(!G.flags.mo&&c<16&&r>=48&&r<60)freeMo();}
+  else if(t==='M'){if(has('super')){setTile(c,r,'g');SFX.brk();shake=8;puff(c*16+8,r*16+8,18,['#a9b7c5','#64758b','#fff8ec'],2,0.08);save();if(!G.flags.mo&&c<16&&r>=48&&r<60)freeMo();}
     else{SFX.clunk();float(c*16+8,r*16,'Too big! Need SUPER PECK');}}
-  else if(t==='Z'){if(has('peck')){setTile(c,r,'Y');SFX.brk();shake=4;puff(c*16+8,r*16+8,12,['#9a6234','#5e3a1c','#c49a5c'],1.4,0.08);toast('A secret trapdoor!');save();}
+  else if(t==='Z'){if(has('peck')){setTile(c,r,'Y');SFX.brk();shake=4;puff(c*16+8,r*16+8,12,['#a66c46','#594437','#b69965'],1.4,0.08);toast('A secret trapdoor!');save();}
     else{SFX.clunk();float(c*16+8,r*16,'*creeeak*');}}
   else if(t==='θ'){if(has('thunder'))smashCrystal(c,r);else{SFX.clunk();float(c*16+8,r*16,'*zzzt* Too buzzy!','#c898f8');}}
-  else if(t==='κ'){SFX.clunk();float(c*16+8,r*16,'Needs a big SLAM!','#a6e0ff');}
+  else if(t==='κ'){SFX.clunk();float(c*16+8,r*16,'Needs a big SLAM!','#b2e7e0');}
   else if(t==='h'||t==='T'||t==='u'){SFX.clunk();}
 }
 function setTile(c,r,ch){tiles[r][c]=ch;G.mods[c+','+r]=ch;}
 function breakTile(c,r,t){
   setTile(c,r,'.');SFX.brk();shake=4;
-  puff(c*16+8,r*16+8,14,t==='R'?['#a8a8b8','#62627a','#fff8ec']:['#9a6234','#5e3a1c','#c49a5c'],1.6,0.08);
+  puff(c*16+8,r*16+8,14,t==='R'?['#a9b7c5','#64758b','#fff8ec']:['#a66c46','#594437','#b69965'],1.6,0.08);
   revealHidden(c,r);save();
 }
 function revealHidden(c,r){
   const h=HIDDEN[c+','+r];if(h&&!G.collected.has(h.id)){spawnItem(h.id,h.kind,c*16+8,r*16+12,true);SFX.chirp();puff(c*16+8,r*16+6,8,['#ffd21e','#fff8ec'],1,0);}
 }
 function shakeTree(c,r,f,kind='apple'){
-  const k=c+','+r;shake=3;puff(c*16+8,r*16+4,8,['#2f7d3a','#5cb84c','#94dc64'],1.2,0.05);
+  const k=c+','+r;shake=3;puff(c*16+8,r*16+4,8,['#2d664e','#55aa62','#a1d970'],1.2,0.05);
   if(G.picked[k]){SFX.clunk();float(c*16+8,r*16,'No more '+kind+'s');return;}
   let ac=c-f.dx,ar=r-f.dy;if(solidTile(tileAt(ac,ar),false))ac=c,ar=r+1;
   const x=ac*16+8+(f.dx?0:4),y=ar*16+12;G.picked[k]=[x,y,kind];
@@ -94,13 +94,13 @@ function wingFlap(){
   P.flapCd=G.rank>=10?20:40;P.flapAnim=22;SFX.gust();
   const [dx,dy]=DIRV[P.dir];
   for(let i=0;i<18;i++){const s=1.5+Math.random()*2;parts.push({x:P.x+dx*8+(dy?(Math.random()-.5)*20:0),y:P.y-6+dy*8+(dx?(Math.random()-.5)*16:0),
-    vx:dx*s+(Math.random()-.5)*0.4,vy:dy*s+(Math.random()-.5)*0.4,g:0,life:22+Math.random()*10,c:i%3?'#fff8ec':'#a6e0ff'});}
+    vx:dx*s+(Math.random()-.5)*0.4,vy:dy*s+(Math.random()-.5)*0.4,g:0,life:22+Math.random()*10,c:i%3?'#fff8ec':'#b2e7e0'});}
   const seen=new Set();
   for(const dist of [12,26,40])for(const lat of [-8,0,8]){
     const x=P.x+dx*dist+(dy?lat:0),y=P.y-4+dy*dist+(dx?lat:0),c=Math.floor(x/16),r=Math.floor(y/16),k=c+','+r;
     if(seen.has(k))continue;seen.add(k);
     if(tileAt(c,r)==='L'){const burrow=c===18&&r===16;setTile(c,r,burrow?'^':'.');if(burrow){toast('A secret hole!');SFX.chirp();}for(let i=0;i<14;i++){const s=1+Math.random()*2;
-      parts.push({x:c*16+8,y:r*16+10,vx:dx*s+(Math.random()-.5)*1.5,vy:dy*s-Math.random()*1.5,g:0.03,life:40,c:['#ec6c24','#e03838','#c98a00','#9a6234'][i%4]});}
+      parts.push({x:c*16+8,y:r*16+10,vx:dx*s+(Math.random()-.5)*1.5,vy:dy*s-Math.random()*1.5,g:0.03,life:40,c:['#ec6c24','#eb6654','#c98a00','#a66c46'][i%4]});}
       revealHidden(c,r);save();}
   }
   hazardFlap(dx,dy);greenWings(dx,dy);seaFlap(dx,dy);
@@ -124,7 +124,7 @@ function tryHop(dx,dy){
 function updateHop(){
   const h=P.hop;h.t++;if(h.slam){if(h.t<h.d*0.5)h.t=Math.ceil(h.d*0.5);h.t+=2;}
   const p=Math.min(1,h.t/h.d);P.x=lerp(h.x0,h.x1,p);P.y=lerp(h.y0,h.y1,p);P.z=Math.sin(p*Math.PI)*(h.hz||(wearing('astronaut')?26:14));P.moving=true;
-  if(h.t>=h.d){P.hop=null;P.z=0;puff(P.x,P.y,4,['#ecd09a','#fff8ec'],0.6,0);if(h.sky)skyLand(h);}
+  if(h.t>=h.d){P.hop=null;P.z=0;puff(P.x,P.y,4,['#e8cd98','#fff8ec'],0.6,0);if(h.sky)skyLand(h);}
 }
 let WARP=null;
 function warpTo(x,y,dir,after,then){WARP={t:0,x,y,dir,after,then};state='warp';SFX.door();}
@@ -208,13 +208,13 @@ function updDuckling(e){
     if(p){if(Math.abs(p.x-e.x)>0.3)e.flip=p.x>e.x;e.x+=(p.x-e.x)*0.5;e.y+=(p.y-e.y)*0.5;}
     const duck=ents.find(n=>n.id==='duck');
     if(duck&&Math.abs(duck.x-e.x)<36&&Math.abs(duck.y-e.y)<30){
-      e.mode='home';G.home.push(e.id);placeHome();SFX.chirp();float(duck.x,duck.y-26,'Quack! '+G.home.length+'/3','#a6e0ff');
+      e.mode='home';G.home.push(e.id);placeHome();SFX.chirp();float(duck.x,duck.y-26,'Quack! '+G.home.length+'/3','#b2e7e0');
       let i=0;for(const d of ents)if(d.type==='duckling'&&d.mode==='follow')d.fi=i++;
       if(G.home.length===3&&G.q.duck===1)toast('All ducklings home! Talk to Mrs. Quackers.');
       save();
     }
   }else if(e.mode==='wait'&&onCur(e)&&Math.abs(P.x-e.x)<13&&Math.abs(P.y-e.y)<13){
-    e.fi=ents.filter(d=>d.type==='duckling'&&d.mode==='follow').length;e.mode='follow';SFX.chirp();float(e.x,e.y-14,'Peep!','#ffd83a');
+    e.fi=ents.filter(d=>d.type==='duckling'&&d.mode==='follow').length;e.mode='follow';SFX.chirp();float(e.x,e.y-14,'Peep!','#ffe05a');
   }
 }
 function updItem(e){
@@ -224,25 +224,25 @@ function updItem(e){
 function collect(e){
   e.dead=true;G.collected.add(e.id);
   switch(e.kind){
-    case 'seed':{const rr=regionOfPos(e.x,e.y);if(rr&&rr.sky)addSeeds(1,2,0);else addSeeds(1,inBeyond(e.x,e.y)?2:1);}gainGP(GP.hiddenSeed);SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffd83a');toast('Found a hidden seed!');break;
+    case 'seed':{const rr=regionOfPos(e.x,e.y);if(rr&&rr.sky)addSeeds(1,2,0);else addSeeds(1,inBeyond(e.x,e.y)?2:1);}gainGP(GP.hiddenSeed);SFX.seed();float(e.x,e.y-16,'+1 SEED','#ffe05a');toast('Found a hidden seed!');break;
     case 'bell':G.items.bell=1;SFX.quest();toast("Found Daisy's bell!");break;
     case 'apple':G.items.apple++;tasteFood('apple');SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'APPLE '+Math.min(3,G.items.apple)+'/3','#ff8080');break;
     case 'bone':G.items.bone=1;SFX.quest();toast("Found Biscuit's bone!");break;
     case 'horseshoe':G.items.horseshoe++;SFX.pick();float(e.x,e.y-16,'HORSESHOE '+Math.min(3,G.items.horseshoe)+'/3','#d8dce8');if(G.items.horseshoe>=3)toast('Found all 3! Bring them to Clyde.','#ff9cd0');break;
     case 'ring':G.items.ring++;SFX.pick();float(e.x,e.y-16,'LIFE RING '+Math.min(3,G.items.ring)+'/3','#ff8080');if(G.items.ring>=3)toast('Found all 3! Bring them to Sandy.','#ff9cd0');break;
-    case 'acorn':G.items.acorn++;tasteFood('acorn');SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'ACORN x'+G.items.acorn,'#c49a5c');break;
-    case 'stick':G.items.stick++;SFX.pick();float(e.x,e.y-16,'STICK '+Math.min(4,G.items.stick)+'/4','#c49a5c');break;
+    case 'acorn':G.items.acorn++;tasteFood('acorn');SFX.pick();strawBonus(e.x,e.y);float(e.x,e.y-16,'ACORN x'+G.items.acorn,'#b69965');break;
+    case 'stick':G.items.stick++;SFX.pick();float(e.x,e.y-16,'STICK '+Math.min(4,G.items.stick)+'/4','#b69965');break;
     case 'shell':G.items.shell++;SFX.pick();float(e.x,e.y-16,'SHELL '+Math.min(5,G.items.shell)+'/5','#f6a6b6');break;
     case 'eagleEgg':G.items.eagleEgg=1;SFX.quest();toast("Found Elda's egg! Carry it gently...");break;
     case 'yarn':G.items.yarn=1;SFX.quest();toast("Found Whiskers' yarn!");break;
-    case 'sailcloth':case 'hullplank':case 'cannonpart':G.sea.salv[e.kind]++;SFX.pick();toast('Got '+SALV_NAME[e.kind]+'! ('+G.sea.salv[e.kind]+')','#ffd83a');break;
+    case 'sailcloth':case 'hullplank':case 'cannonpart':G.sea.salv[e.kind]++;SFX.pick();toast('Got '+SALV_NAME[e.kind]+'! ('+G.sea.salv[e.kind]+')','#ffe05a');break;
     case 'pearl':case 'wreckbell':case 'crate':case 'sunstone':case 'ironore':case 'conch':case 'powderkeg':G.items[e.kind]++;SFX.pick();float(e.x,e.y-16,({pearl:'PEARL',wreckbell:'THE BELL!',crate:'CRATE',sunstone:'SUNSTONE',ironore:'IRON ORE',conch:'CONCH',powderkeg:'POWDER KEG'})[e.kind]+(e.kind==='wreckbell'?'':' x'+G.items[e.kind]),'#fff8ec');break;
     case 'lamb':case 'skyfeather':case 'chime':case 'peg':case 'cloudpuff':case 'bolt':case 'rod':{G.items[e.kind]++;SFX.pick();const need={lamb:3,skyfeather:4,chime:3,peg:3,cloudpuff:3,bolt:3,rod:3}[e.kind],have=G.items[e.kind];
       float(e.x,e.y-16,SKY_ITEM_NAME[e.kind]+' '+Math.min(need,have)+'/'+need,'#fff8ec');if(have===need)toast('Got all '+need+'!','#ff9cd0');break;}
     case 'pebble':case 'plank':case 'snowball':G.items[e.kind]++;SFX.pick();float(e.x,e.y-16,({pebble:'PEBBLE',plank:'PLANK',snowball:'SNOWBALL'})[e.kind]+' x'+G.items[e.kind],'#fff8ec');break;
     case 'hat':case 'whisk':case 'collarBell':{const b=BORROWED.find(x=>x.kind===e.kind);G.items[b.item]=1;SFX.quest();toast('Found '+b.name+'! Return it.','#ff9cd0');break;}
     case 'pepper':case 'salt':case 'mushroom':G.items[e.kind]=1;SFX.pick();toast('Got '+({pepper:'MOUNTAIN PEPPER',salt:'SEA SALT',mushroom:'a FOREST MUSHROOM'})[e.kind]+'!','#ff9cd0');break;
-    case 'seashell':case 'plume':case 'fossil':case 'shard':case 'cloudbloom':G.hold[e.kind]++;SFX.pick();toast('Found '+({seashell:'a pretty SEASHELL',plume:'a rare FEATHER',fossil:'a FOSSIL',shard:'a STORM SHARD',cloudbloom:'a CLOUD BLOOM'})[e.kind]+'! Take it to the museum.','#c49a5c');break;
+    case 'seashell':case 'plume':case 'fossil':case 'shard':case 'cloudbloom':G.hold[e.kind]++;SFX.pick();toast('Found '+({seashell:'a pretty SEASHELL',plume:'a rare FEATHER',fossil:'a FOSSIL',shard:'a STORM SHARD',cloudbloom:'a CLOUD BLOOM'})[e.kind]+'! Take it to the museum.','#b69965');break;
     case 'feather':G.items.feather++;SFX.quest();toast('Golden feather! ('+Math.min(3,G.items.feather)+'/3)');break;
   }
   puff(e.x,e.y-6,8,['#ffd21e','#fff8ec'],1,0);save();
@@ -300,7 +300,7 @@ function updatePlay(){
   updateSunbeam();updateBabysit();updateRace();updateVillage();updateSeas();updateSky();updateCharge();
   if(pressed.dash)tryDash();
   if(pressed.grow){openGrow();return;}
-  if(pressed.quest){state='quests';questPage=G.part2?1:0;SFX.menu();return;}
+  if(pressed.quest){state='quests';questPage=wearing('detective')?4:(G.part2?1:0);sleuthTop=0;SFX.menu();return;}
   if(pressed.wear){openWardrobe();return;}
   if(pressed.fly){if(G.part2)openMap();return;}
   if(has('golden')&&tick%24===0)parts.push({x:P.x+(Math.random()-.5)*12,y:P.y-8-Math.random()*8,vx:0,vy:-0.3,g:0,life:20,c:'#ffd21e'});
