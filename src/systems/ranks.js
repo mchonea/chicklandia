@@ -15,7 +15,7 @@ function gainGP(n,note){
   G.gp+=n;
   if(P&&state!=='title')float(P.x,P.y-30,'+'+n+' GROWTH','#94dc64');
 }
-function questGP(id){gainGP(ORDER3.includes(id)?GP.quest3:ORDER2.includes(id)?GP.quest2:GP.quest1);}
+function questGP(id){gainGP((ORDER3.includes(id)||ORDER4.includes(id))?GP.quest3:ORDER2.includes(id)?GP.quest2:GP.quest1);}
 function tasteFood(id){
   if(!G||G.taste[id])return;G.taste[id]=1;gainGP(GP.taste);
   if(wearing('chef'))gainGP(1);

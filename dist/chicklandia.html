@@ -1249,6 +1249,7 @@ const RESIDENTS=[
   {id:'rooster',name:'SIR CLUCKINGTON',needs:'band',give:{stone:2},wish:"a big stone stage to crow from. It needs 2 STONE.",home:"COCK-A-DOODLE-DOO! Every morning, at the top of my lungs!",how:'moves in by the bandstand'}];
 // one-time and daily events
 const FINALE_HAPPY=100;                               // happiness needed for the Grand Harvest Festival
+const GP_BUILD_NOTE='each finished building gives GP.build growth';
 const HAPPY_WISH=8,HAPPY_CONTEST=5;
 const SEASONS=['SPRING','SUMMER','AUTUMN','WINTER'];
 const SEASON_DAYS=3;                                 // in-game days per season
@@ -1300,7 +1301,7 @@ const RANKS=[
     react:"The Legend of Chicklandia... is my baby!",letter:"Dear Pip, a legend! Now come home for dinner. Mama"}
 ];
 // growth points per source (see CHICKLANDIA_STATUS.md for the budget)
-const GP={quest1:10,quest2:12,quest3:14,training:8,skill:5,taste:4,mgFirst:8,mgRepeat:2,mgPerDay:3,secret:6,hiddenSeed:2,outfit:3,coop:6,harvest:1,snack:1};
+const GP={quest1:10,quest2:12,quest3:14,build:4,training:8,skill:5,taste:4,mgFirst:8,mgRepeat:2,mgPerDay:3,secret:6,hiddenSeed:2,outfit:3,coop:6,harvest:1,snack:1};
 // Taste Log: foods Pip can try for the first time (4 growth each)
 const FOODS=[
   {id:'worm',name:'WORM',spr:'worm0'},{id:'carrot',name:'CARROT',spr:'carrot'},{id:'apple',name:'APPLE',spr:'apple'},
@@ -2363,7 +2364,7 @@ function hint(){
   if(!has('fly'))return "You've grown so much! Keep spending seeds in your Growth Tree until you learn FLIGHT!";
   return "Go on, fly over that Big Fence! Mama is so proud of you!";
 }
-function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id))?2:1,ORDER3.includes(id)?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
+function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id)||ORDER4.includes(id))?2:1,(ORDER3.includes(id)||ORDER4.includes(id))?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
 function say(lines,onEnd){lines.forEach(l=>l.text=tt(l.text));dlg={lines,i:0,shown:0,onEnd};state='talk';}
 function talkTo(e){
   const L=[];const it=(t,fx)=>L.push({who:e,text:t,fx});const me=t=>L.push({who:'me',text:t});
@@ -3371,7 +3372,7 @@ function gainGP(n,note){
   G.gp+=n;
   if(P&&state!=='title')float(P.x,P.y-30,'+'+n+' GROWTH','#94dc64');
 }
-function questGP(id){gainGP(ORDER3.includes(id)?GP.quest3:ORDER2.includes(id)?GP.quest2:GP.quest1);}
+function questGP(id){gainGP((ORDER3.includes(id)||ORDER4.includes(id))?GP.quest3:ORDER2.includes(id)?GP.quest2:GP.quest1);}
 function tasteFood(id){
   if(!G||G.taste[id])return;G.taste[id]=1;gainGP(GP.taste);
   if(wearing('chef'))gainGP(1);
@@ -3838,7 +3839,7 @@ function openVillage(){
   if(G.vil.open)return;G.vil.open=true;
   for(const [c,r] of VILLAGE_ROAD)setTile(c,r,'=');
   if(!G.areas.includes('village'))G.areas.push('village');
-  toast('The village road is open! South of the city market.','#94dc64');save();
+  toast('The village road is open!','#94dc64');save();
 }
 /* ---- entities ---- */
 function padCenter(p){return {x:(p.c+1)*16,y:(p.r+2)*16-2};}
@@ -3853,11 +3854,8 @@ function makeVillageEnts(){
   addEnt({type:'vcontest',x:21*16+8,y:88*16+12});
   addEnt({type:'windmill',x:29*16+8,y:89*16+14,solid:true,w:26});
   addEnt({type:'scarecrow',x:37*16+8,y:100*16+12});
-  const sc=seasonNow();
   addEnt({type:'vsculpt',x:24*16+8,y:90*16+12,solid:true,w:16});
-  // snowballs for the winter contest, pumpkin patch is a normal garden row
-  if(G.vil.contest.snowStage===undefined)G.vil.snow=G.vil.snow||0;
-  for(const [i,[c,r]] of [[4,87],[11,89],[13,92]].entries())if(sc.name==='WINTER'&&!(G.vil.contest['WINTER_'+sc.year])&&!G.collected.has('sb'+i+'_'+sc.year))spawnItem('sb'+i+'_'+sc.year,'snowball',c*16+8,r*16+12);
+  spawnSeasonItems();
   relocateResidents();
 }
 function relocateResidents(){
@@ -3865,6 +3863,11 @@ function relocateResidents(){
     const q=padCenter(p),k=Object.keys(G.vil.res).indexOf(id);Object.assign(e,{x:q.x-10+(k%3)*10,y:q.y+14,sched:null});e.vres=true;}
 }
 /* ---- per-frame upkeep (called from updatePlay) ---- */
+function spawnSeasonItems(){
+  ents=ents.filter(e=>!(e.type==='item'&&e.kind==='snowball'));
+  const sc=seasonNow();
+  if(sc.name==='WINTER'&&!contestDone())[[4,87],[11,89],[13,92]].forEach(([c,r],i)=>spawnItem('sb'+i+'_'+sc.year,'snowball',c*16+8,r*16+12));
+}
 let lastSeason=-1;
 function updateVillage(){
   if(!G.vil.open)return;
@@ -3873,7 +3876,7 @@ function updateVillage(){
       const t=BUILDING_TYPES[b.kind];toast(t.name+' is finished!','#94dc64');SFX.questDone();shake=4;gainGP(GP.build);
       const p=PADS.find(q=>q.id===id),q=padCenter(p);puff(q.x,q.y-12,16,['#ffd83a','#fff8ec','#94dc64'],1.6,0.05);save();}
     checkLetters();
-    const s=seasonNow();if(lastSeason!==s.i+s.year*4){if(lastSeason!==-1&&regionAt()&&regionAt().area==='village')toast('It is '+s.name+' in the village!','#ffd83a');lastSeason=s.i+s.year*4;}
+    const s=seasonNow();if(lastSeason!==s.i+s.year*4){if(lastSeason!==-1&&regionAt()&&regionAt().area==='village')toast('It is '+s.name+' in the village!','#ffd83a');lastSeason=s.i+s.year*4;spawnSeasonItems();}
   }
 }
 function freeBuilding(kind){const taken=Object.values(G.vil.res);return builtList(kind).find(b=>!taken.includes(b.id));}

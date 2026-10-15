@@ -27,7 +27,7 @@ const RANKS=[
     react:"The Legend of Chicklandia... is my baby!",letter:"Dear Pip, a legend! Now come home for dinner. Mama"}
 ];
 // growth points per source (see CHICKLANDIA_STATUS.md for the budget)
-const GP={quest1:10,quest2:12,quest3:14,training:8,skill:5,taste:4,mgFirst:8,mgRepeat:2,mgPerDay:3,secret:6,hiddenSeed:2,outfit:3,coop:6,harvest:1,snack:1};
+const GP={quest1:10,quest2:12,quest3:14,build:4,training:8,skill:5,taste:4,mgFirst:8,mgRepeat:2,mgPerDay:3,secret:6,hiddenSeed:2,outfit:3,coop:6,harvest:1,snack:1};
 // Taste Log: foods Pip can try for the first time (4 growth each)
 const FOODS=[
   {id:'worm',name:'WORM',spr:'worm0'},{id:'carrot',name:'CARROT',spr:'carrot'},{id:'apple',name:'APPLE',spr:'apple'},

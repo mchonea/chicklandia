@@ -21,7 +21,7 @@ function openVillage(){
   if(G.vil.open)return;G.vil.open=true;
   for(const [c,r] of VILLAGE_ROAD)setTile(c,r,'=');
   if(!G.areas.includes('village'))G.areas.push('village');
-  toast('The village road is open! South of the city market.','#94dc64');save();
+  toast('The village road is open!','#94dc64');save();
 }
 /* ---- entities ---- */
 function padCenter(p){return {x:(p.c+1)*16,y:(p.r+2)*16-2};}
@@ -36,11 +36,8 @@ function makeVillageEnts(){
   addEnt({type:'vcontest',x:21*16+8,y:88*16+12});
   addEnt({type:'windmill',x:29*16+8,y:89*16+14,solid:true,w:26});
   addEnt({type:'scarecrow',x:37*16+8,y:100*16+12});
-  const sc=seasonNow();
   addEnt({type:'vsculpt',x:24*16+8,y:90*16+12,solid:true,w:16});
-  // snowballs for the winter contest, pumpkin patch is a normal garden row
-  if(G.vil.contest.snowStage===undefined)G.vil.snow=G.vil.snow||0;
-  for(const [i,[c,r]] of [[4,87],[11,89],[13,92]].entries())if(sc.name==='WINTER'&&!(G.vil.contest['WINTER_'+sc.year])&&!G.collected.has('sb'+i+'_'+sc.year))spawnItem('sb'+i+'_'+sc.year,'snowball',c*16+8,r*16+12);
+  spawnSeasonItems();
   relocateResidents();
 }
 function relocateResidents(){
@@ -48,6 +45,11 @@ function relocateResidents(){
     const q=padCenter(p),k=Object.keys(G.vil.res).indexOf(id);Object.assign(e,{x:q.x-10+(k%3)*10,y:q.y+14,sched:null});e.vres=true;}
 }
 /* ---- per-frame upkeep (called from updatePlay) ---- */
+function spawnSeasonItems(){
+  ents=ents.filter(e=>!(e.type==='item'&&e.kind==='snowball'));
+  const sc=seasonNow();
+  if(sc.name==='WINTER'&&!contestDone())[[4,87],[11,89],[13,92]].forEach(([c,r],i)=>spawnItem('sb'+i+'_'+sc.year,'snowball',c*16+8,r*16+12));
+}
 let lastSeason=-1;
 function updateVillage(){
   if(!G.vil.open)return;
@@ -56,7 +58,7 @@ function updateVillage(){
       const t=BUILDING_TYPES[b.kind];toast(t.name+' is finished!','#94dc64');SFX.questDone();shake=4;gainGP(GP.build);
       const p=PADS.find(q=>q.id===id),q=padCenter(p);puff(q.x,q.y-12,16,['#ffd83a','#fff8ec','#94dc64'],1.6,0.05);save();}
     checkLetters();
-    const s=seasonNow();if(lastSeason!==s.i+s.year*4){if(lastSeason!==-1&&regionAt()&&regionAt().area==='village')toast('It is '+s.name+' in the village!','#ffd83a');lastSeason=s.i+s.year*4;}
+    const s=seasonNow();if(lastSeason!==s.i+s.year*4){if(lastSeason!==-1&&regionAt()&&regionAt().area==='village')toast('It is '+s.name+' in the village!','#ffd83a');lastSeason=s.i+s.year*4;spawnSeasonItems();}
   }
 }
 function freeBuilding(kind){const taken=Object.values(G.vil.res);return builtList(kind).find(b=>!taken.includes(b.id));}

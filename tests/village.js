@@ -58,7 +58,7 @@ const season=(d)=>{G.clock=(d-1)*DAY+Math.round(DAY*0.3);};
 season(1);ok('spring',seasonNow().name==='SPRING');season(4);ok('summer',seasonNow().name==='SUMMER');season(7);ok('autumn',seasonNow().name==='AUTUMN');season(10);ok('winter',seasonNow().name==='WINTER');season(13);ok('year_two',seasonNow().name==='SPRING'&&seasonNow().year===1);
 season(1);const h0=happiness();contestWin();ok('contest_win_counts',contestDone()&&happiness()===h0+HAPPY_CONTEST);const w1=G.vil.contest[contestKey()];contestWin();ok('contest_once_per_season',Object.keys(G.vil.contest).length===1);
 season(7);G.sacks.pumpkin=1;const plot=ents.find(e=>e.type==='plot'&&!e.coop);plantSeed(plot,'pumpkin');G.plots[plot.id].w=3;G.plots[plot.id].p=1;const cw=Object.keys(G.vil.contest).length;usePlot(plot);ok('pumpkin_contest',Object.keys(G.vil.contest).length===cw+1&&!!G.taste.pumpkin);
-season(10);ok('winter_plots_slower',seasonPlotMul()===0.5);
+season(10);tick=Math.ceil(tick/30)*30;lastSeason=-1;updateVillage();ok('snowballs_appear_in_winter',ents.filter(e=>e.type==='item'&&e.kind==='snowball').length===3);ok('winter_plots_slower',seasonPlotMul()===0.5);
 G.items.snowball=3;for(let i=0;i<3;i++)sculptAction();ok('snow_sculpture',contestDone());
 // 8. grand harvest finale
 G.flags.village=0;ok('finale_needs_happiness',happiness()>=FINALE_HAPPY);

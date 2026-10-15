@@ -70,6 +70,29 @@ City (region "city", 6 outdoor screens)           Interiors (region "cityin", 13
 
 **Tests.** `tests/city.js` (with `tests/walk.js`) checks opening hours, entering and leaving every building on foot, buying, special seeds, treats, parcels, museum, all six quests, schedules, the race and the save round trip. `tests/smoke.js` still passes. **Not verified:** touch on a real device, a human playthrough of the quests, the sound of the new interactions.
 
+## 0d. Phase 4 (Chicklandia Village): built (Oct 14, 2026)
+
+```
+Windmill Hill (0,7)(1,7)  | Village Square (2,7)(3,7)  <- road south from the city Market Square (opens after Bucky's survey)
+Riverside     (0,8)(1,8)  | Meadow Farmlands (2,8)(3,8)
+```
+
+**Unlock.** After the Coming-of-Age Festival, Bucky (deep woods) starts "A Village At Last": the market road opens, the fly map gets a Village node, and Pip gets the Farmer Cap when the first building is finished.
+
+**Code map.** Data: `src/content/village.js` (building types, pads, material spots, residents and wishes, seasons), `src/content/quests_village.js` (9 quests + hints), `src/regions/village.js` (4 regions / 8 screens), skills in `src/content/skills.js` (SKILLS3), trainers in `src/content/trainers.js`. Logic: `src/systems/village.js` (materials, building, mailbox, residents, seasons, contests), `src/systems/festival.js` (Grand Harvest + Cap'n Pinch scene). Art: `src/entities/sprites_village.js`.
+
+**How it plays.** Peck wood, clay and stone at the Riverside and shear sheep in the meadow (wood/stone/clay come back each in-game day; stone needs CARRY). Spend seeds + materials on the 10 building pads (home, bakery branch, watermill (river pads only), bandstand, school, clinic); a building takes about a minute to finish (half with Master Builder, which also saves 1 wood). When a matching building stands, a friend writes to the village mailbox with one wish; give the materials and they move in (Porkchop, Whiskers, Clyde, Daisy, Doe, Penny, Sir Cluckington). Mill pays 2 seeds a day, clinic heals. Village happiness = buildings + 8 per friend + 5 per contest win; the Grand Harvest Festival needs all 7 friends and 100 happiness: talk to Foreman Barnaby. The festival makes Pip a **Village Hero (rank 8)**, then Cap'n Pinch sails into the harbor with the treasure map (sets `flags.pinchMap`, which Phase 5 will use).
+
+**Village Tree** (new page in the Growth screen): Carry, Whistle (taught by Dash, needs 3 pebbles), Green Wings (flap waters crops), Master Builder (taught by Foreman Barnaby, needs 3 fine planks and 2 buildings).
+
+**Seasons.** A season lasts 3 in-game days (spring, summer, autumn, winter). They tint the village, add falling petals/leaves/snow, and change crop speed (winter half, spring +25%). Each season Windmill Hill has one contest (egg race, kite catch, giant pumpkin, snow sculpture) that can be won once per season.
+
+**Growth budget added by the village:** quests 9 x 14 = 126, skills 4 x 5 = 20, trainings 2 x 8 = 16, each finished building 4 (10 pads = 40), contest wins 8 each (first year 32), pumpkin food 4, Farmer Cap 3: about 241. Running total of fixed content: Part 1 246 + Part 2 182 + city 169 + village 241 = 838; rank 8 needs 650 (78%).
+
+**Seed budget:** sources: village quests 42 (6 + 7 x 4 + 8), contests 4 each, mill 2 a day, harvests, parcels. Sinks: buildings 4-6 seeds each, Village Tree 25, plus everything older.
+
+**Tests.** `tests/village.js` (with `tests/walk.js`) checks the closed road, walking to every village spot and pad, gathering and CARRY, both trainers, whistle, building, materials, letters, all 7 move-ins, happiness, seasons, all contest types, the Grand Harvest, rank 8, the Pinch scene and the save round trip. Smoke and city tests still pass. **Not verified:** touch on a device, the sound, a human playthrough, how long a full village takes to build.
+
 ## 1. Snapshot
 
 | | |

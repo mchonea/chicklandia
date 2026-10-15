@@ -38,6 +38,7 @@ const RESIDENTS=[
   {id:'rooster',name:'SIR CLUCKINGTON',needs:'band',give:{stone:2},wish:"a big stone stage to crow from. It needs 2 STONE.",home:"COCK-A-DOODLE-DOO! Every morning, at the top of my lungs!",how:'moves in by the bandstand'}];
 // one-time and daily events
 const FINALE_HAPPY=100;                               // happiness needed for the Grand Harvest Festival
+const GP_BUILD_NOTE='each finished building gives GP.build growth';
 const HAPPY_WISH=8,HAPPY_CONTEST=5;
 const SEASONS=['SPRING','SUMMER','AUTUMN','WINTER'];
 const SEASON_DAYS=3;                                 // in-game days per season
