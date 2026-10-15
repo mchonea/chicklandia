@@ -44,6 +44,7 @@
   <div id="dpad"><div class="arm u">&#9650;</div><div class="arm d">&#9660;</div><div class="arm l">&#9664;</div><div class="arm r">&#9654;</div><div class="hub"></div></div>
   <button class="act" id="btnA" data-k="a"><b>A</b><small>PECK</small></button>
   <button class="act" id="btnB" data-k="b"><b>B</b><small>FLAP</small></button>
+  <button class="act" id="btnD" data-k="dash"><b>D</b><small>DASH</small></button>
   <div id="menu">
     <button data-k="grow">GROW</button><button data-k="quest">QUESTS</button><button data-k="wear">OUTFIT</button><button data-k="fly" id="btnMap">MAP</button>
     <button data-k="pause">&#9776;</button><button data-k="back">&#10005;</button><button data-k="mute">&#9835;</button><button data-k="full" id="btnFull">&#9974;</button>
@@ -84,6 +85,7 @@ function layoutTouch(){
     const a=Math.min(88,pad*0.56),b=Math.round(a*0.78);
     S('btnA',{right:'16px',left:'auto',bottom:safe(16+pad*0.42),width:a,height:a});
     S('btnB',{right:(24+a)+'px',left:'auto',bottom:safe(14),width:b,height:b});
+    S('btnD',{right:(32+a+b)+'px',left:'auto',bottom:safe(14),width:b,height:b});
   }else{
     const bar=gx,big=bar>=130;
     const pad=Math.min(big?bar-24:150,vh*0.48,170);
@@ -91,6 +93,7 @@ function layoutTouch(){
     const a=Math.min(84,big?bar*0.46:78),b=Math.round(a*0.78);
     S('btnA',{right:(big?(bar-a)/2:16)+'px',left:'auto',bottom:safe(24+b),width:a,height:a});
     S('btnB',{right:(big?Math.max(6,(bar-a)/2-b*0.35):24+a)+'px',left:'auto',bottom:safe(12),width:b,height:b});
+    S('btnD',{right:(big?(bar-a)/2:16)+'px',left:'auto',bottom:safe(32+a+b),width:b,height:b});
     if(big)S('menu',{left:(vw-bar+8)+'px',right:'8px',top:'8px',justifyContent:'center'});
     else S('menu',{left:'8px',right:'8px',top:'6px',justifyContent:'flex-end'});
   }
@@ -255,6 +258,17 @@ TILE.roofWalk=mk(16,16,x=>{P_(x,'#d8805c',0,0,16,16);for(let j=0;j<16;j+=4){P_(x
 TILE.shelf=mk(16,16,x=>{P_(x,'B',0,0,16,16);P_(x,'k',0,0,16,1);P_(x,'k',0,7,16,1);P_(x,'k',0,15,16,1);const cs=['r','u','y','g','p','o'];for(let i=0;i<6;i++){P_(x,cs[i],1+i*2+(i>2?1:0),1,2,6);P_(x,cs[(i+2)%6],1+i*2+(i>2?1:0),8,2,7);}});
 TILE.pedestal=mk(16,16,x=>{x.drawImage(TILE.floor,0,0);P_(x,'k',2,7,12,9);P_(x,'e',3,8,10,7);P_(x,'E',3,13,10,2);P_(x,'k',3,1,10,7);P_(x,'c',4,2,8,5);P_(x,'w',5,2,1,2);});
 TILE.pad=mk(16,16,x=>{x.drawImage(TILE.dirt,0,0);P_(x,'B',0,0,2,2);P_(x,'B',14,0,2,2);P_(x,'B',0,14,2,2);P_(x,'B',14,14,2,2);P_(x,'T',3,3,10,1);P_(x,'T',3,12,10,1);});
+// sea tiles
+TILE.coral=mk(16,16,x=>{x.drawImage(TILE.sand[0],0,0);P_(x,'k',2,6,5,9);P_(x,'#ff6fae',3,6,3,8);P_(x,'k',7,3,6,12);P_(x,'#e03838',8,3,4,11);P_(x,'k',11,7,4,8);P_(x,'#f6a6b6',11,7,3,7);P_(x,'#fff8ec',4,7,1,1);P_(x,'#fff8ec',9,4,1,1);});
+TILE.seaweed=mk(16,16,x=>{x.drawImage(TILE.sand[1],0,0);for(const [i,h] of [[3,10],[7,13],[11,9]]){P_(x,'G',i,15-h,2,h);P_(x,'g',i+1,15-h+1,1,h-2);P_(x,'l',i,15-h,1,2);}});
+TILE.curR=[0,1,2,3].map(f=>mk(16,16,x=>{x.drawImage(TILE.water[0],0,0);P_(x,'c',0,0,16,1);for(const j of [4,10]){for(let i=-4;i<16;i+=8){const o=((i+f*2+16)%16);P_(x,'w',o,j,4,1);P_(x,'w',o+3,j-1,1,3);}}}));
+TILE.curL=[0,1,2,3].map(f=>mk(16,16,x=>{x.drawImage(TILE.water[1],0,0);P_(x,'c',0,0,16,1);for(const j of [4,10]){for(let i=-4;i<16;i+=8){const o=((i-f*2+32)%16);P_(x,'w',o,j,4,1);P_(x,'w',o,j-1,1,3);}}}));
+TILE.lava=[0,1].map(f=>mk(16,16,x=>{P_(x,'#a8301c',0,0,16,16);for(let n=0;n<8;n++)P_(x,n%2?'#f37d22':'#ffb030',(n*5+f*3)%14,(n*7+f*2)%14,3,2);P_(x,'#ffd83a',(5+f*4)%12,(8+f*3)%12,2,1);P_(x,'#6a1810',0,0,16,1);}));
+TILE.spring=[0,1].map(f=>mk(16,16,x=>{P_(x,'#46b8c8',0,0,16,16);P_(x,'#8ae0e8',2+f*3,3,4,2);P_(x,'#8ae0e8',9-f*2,9,4,2);P_(x,'#fff8ec',5+f*4,6,1,1);P_(x,'#2a8aa0',0,15,16,1);P_(x,'#e8e0d0',0,0,16,1);}));
+TILE.obsidian=mk(16,16,x=>{P_(x,'#3a2a4a',0,0,16,16);const r=mulberry(777);for(let n=0;n<8;n++)P_(x,'#5a4a6a',(r()*13)|0,(r()*14)|0,3,1);P_(x,'#1a0e24',0,0,16,1);P_(x,'#7a6a8a',2,3,2,1);});
+TILE.deck=mk(16,16,x=>{P_(x,'#b8844c',0,0,16,16);for(let i=0;i<16;i+=4)P_(x,'#8a5c30',i,0,1,16);P_(x,'#d0a068',1,2,2,1);P_(x,'#d0a068',9,9,2,1);});
+TILE.wreck=mk(16,16,x=>{P_(x,'k',0,0,16,16);P_(x,'#4a3a2a',1,1,14,14);for(let j=3;j<16;j+=4)P_(x,'#2a1c10',1,j,14,1);P_(x,'#6a5a3a',3,5,3,1);P_(x,'#2a6a4a',2,12,5,2);});
+TILE.wreckDeck=mk(16,16,x=>{P_(x,'#6a5a3a',0,0,16,16);for(let i=0;i<16;i+=5)P_(x,'#3a2c1c',i,0,1,16);P_(x,'#8a7a5a',2,4,2,1);});
 function groundFor(c,r,h){
   switch(groundOf(c,r)){
     case 'snow':return TILE.snow[h%2];
@@ -281,7 +295,7 @@ TILE.exit=mk(16,16,x=>{x.drawImage(TILE.floor,0,0);P_(x,'k',1,0,14,16);P_(x,'#ff
      ground    'grass'|'snow'|'sand'|'cobble' (what shows under transparent tiles)   beyond: true for Part 2 areas
      kinds     optional per-screen kind override   labels: optional per-screen names (rooms, secrets)
      area      key used by the fly map / area discovery (defaults to none)                                  */
-const REGIONS={},REGION_LIST=[],CELL={},WALK=new Set();
+const REGIONS={},REGION_LIST=[],CELL={},WALK=new Set(),ROAM=new Set();   // WALK = outdoor screens, ROAM = screens you can walk between (outdoor + roam regions like caves)
 let MW=0,MH=0,MAP=[];
 const AREA_IDS=['farm','mountains','coop','forest','city','beach'];
 function defineRegion(d){REGIONS[d.id]=d;REGION_LIST.push(d);}
@@ -307,6 +321,7 @@ function buildWorld(){
       const cell={region:r,sx:cx,sy:cy,gx,gy,i,rows:Array.isArray(sc)?sc:sc.rows,meta,id:meta.id,kind:meta.kind||(r.kinds&&r.kinds[i])||r.kind,label:meta.label||(r.labels&&r.labels[i])};
       CELL[cx+','+cy]=cell;r.cells.push(cell);maxX=Math.max(maxX,cx);maxY=Math.max(maxY,cy);
       if(cell.kind==='outdoor')WALK.add(cx+','+cy);
+      if(cell.kind==='outdoor'||r.roam)ROAM.add(cx+','+cy);
     }
   }
   MW=(maxX+1)*16;MH=(maxY+1)*12;MAP=[];
@@ -758,6 +773,42 @@ defineRegion({id:'vmeadow',name:'MEADOW FARMLANDS',kind:'outdoor',origin:[2,8],g
   grid('T',[['r',1,1,14,10,'.'],['r',7,0,8,5,'='],['r',0,5,15,6,'='],['r',2,2,5,3,'V'],['r',2,8,5,9,'V'],['p',11,2,'A'],['p',13,2,'A'],['p',12,4,'A'],['p',10,9,'u'],['p',13,8,'u']]),
   grid('T',[['r',1,1,14,10,'.'],['r',7,0,8,5,'='],['r',0,5,8,6,'='],['r',9,2,14,9,'F'],['r',10,3,13,8,'.'],['r',9,5,9,6,'.'],['r',2,2,5,3,'V'],['r',2,8,5,9,'V']])]});
 
+/* ===== src/regions/seas.js ===== */
+/* regions: the Pirate Seas (4 islands, 11 screens). Reached only by ship from the city harbor.
+     Pirate Cove (0,9)(1,9) + smuggler caves (0,15)(1,15)    Coral Reef (3,9)(4,9) + deep reef (3,11)(4,11) [underwater, air meter]
+     Volcano Isle (0,11)(1,11)                               Lighthouse Rock (0,13)(1,13)    Squawkbeard's flagship (3,13)
+   Islands are separated by empty screens so you can only reach them by ship.
+   ) coral (solid)  ] seaweed  < > current (pushes Pip)  { lava (hurts)  } hot spring (heals)  " obsidian path (fire-safe)
+   \` ship deck  3 planks  w deep water  ~ sand  N cliff  2 palm  ( beach rock  R rock (peck it)  */
+// land helpers: an island is a block of ground with a dock on the west
+const dock=(r0=8)=>['r',0,r0,3,r0+1,'3'];
+defineRegion({id:'cove',name:'PIRATE COVE',kind:'outdoor',origin:[0,9],grid:[2,1],ground:'sand',beyond:true,area:'cove',music:'cove',sea:true,mm:'sea',
+ screens:[
+  grid('w',[['r',2,1,15,10,'~'],dock(),['p',4,3,'2'],['p',7,2,'2'],['p',12,3,'2'],['p',5,6,'2'],['p',12,8,'2'],['r',8,3,10,4,'a'],['r',8,5,10,5,'U'],['p',3,2,'('],['p',13,1,'('],['p',6,9,'('],['r',2,4,2,5,'W']]),
+  grid('w',[['r',0,1,13,10,'~'],['r',3,1,10,2,'N'],['p',2,4,'2'],['p',12,4,'2'],['p',5,8,'2'],['p',11,7,'2'],['p',8,6,'R'],['p',9,8,'('],['p',1,9,'('],['p',13,9,'(']])]});
+defineRegion({id:'cavecove',name:'SMUGGLER CAVES',kind:'cave',origin:[0,15],grid:[2,1],ground:'sand',beyond:true,area:'cove',music:'cave',roam:true,sea:true,mm:'sea',
+ screens:[
+  grid('%',[['r',1,1,14,10,'-'],['r',6,10,9,11,'-'],['r',4,3,5,4,'%'],['r',10,6,11,7,'%'],['r',2,8,3,9,'%'],['r',0,5,0,6,'-'],['r',15,5,15,6,'-']]),
+  grid('%',[['r',1,1,14,10,'-'],['r',0,5,0,6,'-'],['r',7,3,8,4,'%'],['r',3,7,4,8,'%'],['r',11,2,12,3,'%'],['r',12,8,13,9,'%']])]});
+defineRegion({id:'reef',name:'CORAL REEF',kind:'outdoor',origin:[3,9],grid:[2,1],ground:'sand',beyond:true,area:'reef',music:'reef',sea:true,mm:'sea',
+ screens:[
+  grid('w',[['r',2,1,15,10,'~'],dock(),['r',5,6,10,6,'>'],['p',4,3,'2'],['p',11,2,')'],['p',12,3,')'],['p',6,8,')'],['p',9,9,')'],['p',13,8,'('],['p',4,9,'('],['r',2,2,3,2,'(']]),
+  grid('w',[['r',0,1,13,10,'~'],['r',7,5,9,5,'<'],['p',3,3,')'],['p',4,3,')'],['p',11,3,'2'],['p',10,8,')'],['p',6,9,'('],['p',12,6,'('],['p',2,7,'2']])]});
+defineRegion({id:'deepreef',name:'DEEP REEF',kind:'water',origin:[3,11],grid:[2,1],ground:'sand',beyond:true,area:'reef',music:'reef',roam:true,sea:true,mm:'sea',
+ screens:[
+  grid('~',[['r',0,0,15,0,')'],['r',0,11,15,11,')'],['r',0,0,0,11,')'],['r',3,2,4,3,')'],['r',10,2,11,3,')'],['r',7,8,8,9,')'],['r',13,6,14,8,')'],['r',2,8,2,9,']'],['r',6,5,6,6,']'],['r',11,9,12,9,']'],['p',9,3,']'],['p',3,5,']']]),
+  grid('~',[['r',0,0,15,0,')'],['r',0,11,15,11,')'],['r',15,0,15,11,')'],['r',0,0,0,4,')'],['r',0,7,0,11,')'],['r',3,2,4,3,')'],['r',11,8,12,9,')'],['r',7,2,9,2,')'],['r',5,5,10,7,'\\'],['r',6,6,9,6,'/'],['p',7,7,'/'],['p',8,7,'/'],['p',2,8,']'],['p',13,4,']'],['p',13,5,']']])]});
+defineRegion({id:'volcano',name:'VOLCANO ISLE',kind:'outdoor',origin:[0,11],grid:[2,1],ground:'cobble',beyond:true,area:'volcano',music:'volcano',sea:true,mm:'sea',
+ screens:[
+  grid('w',[['r',2,1,15,10,'='],dock(),['r',6,1,8,10,'{'],['r',6,5,8,6,'"'],['r',9,5,15,6,'"'],['r',2,5,5,6,'"'],['r',11,2,12,3,'}'],['p',3,2,'N'],['p',4,2,'N'],['p',13,9,'N'],['p',10,9,'N'],['r',3,8,5,9,'"']]),
+  grid('w',[['r',0,1,13,10,'='],['r',5,1,10,3,'N'],['r',0,5,13,6,'"'],['r',8,4,9,8,'{'],['r',8,5,9,6,'"'],['r',2,7,3,9,'{'],['p',12,8,'}'],['p',13,8,'}'],['p',12,2,'N']])]});
+defineRegion({id:'lighthouse',name:'LIGHTHOUSE ROCK',kind:'outdoor',origin:[0,13],grid:[2,1],ground:'cobble',beyond:true,area:'lighthouse',music:'lighthouse',sea:true,mm:'sea',
+ screens:[
+  grid('w',[['r',2,1,15,10,'='],dock(),['p',4,2,'N'],['p',12,3,'N'],['p',10,8,'N'],['p',3,9,'N'],['r',7,5,9,5,'>'],['p',13,6,'(']]),
+  grid('w',[['r',0,1,13,10,'='],['r',5,1,9,3,'U'],['r',5,0,9,0,'a'],['p',7,3,'1'],['p',2,3,'N'],['p',12,8,'N'],['p',3,8,'N'],['p',11,3,'(']])]});
+defineRegion({id:'fortress',name:"SQUAWKBEARD'S SHIP",kind:'outdoor',origin:[3,13],grid:[1,1],ground:'sand',beyond:true,area:'fortress',music:'boss',sea:true,mm:'sea',
+ screens:[grid('w',[['r',1,1,14,10,'`'],['r',1,1,14,1,'F'],['r',1,10,14,10,'F'],['r',1,1,1,10,'F'],['r',14,1,14,10,'F'],['r',0,8,2,9,'`'],['p',3,2,'6'],['p',12,2,'6'],['p',3,9,'6'],['p',12,9,'6'],['r',7,1,8,1,'`']])]});
+
 /* ===== src/world/tilemap.js ===== */
 /* ---------------- tile map: built from the regions, plus door/solid/hidden data ---------------- */
 // F fence  H big fence  T tree  A apple tree  W water  h hay bale  R rock  C crate  L leaf pile
@@ -775,7 +826,7 @@ const EXITS=[{x:56,y:76},{x:328,y:76},{x:568,y:76}];
 buildWorld();
 let tiles=MAP.map(r=>r.split(''));
 function tileAt(c,r){if(c<0||r<0||c>=MW||r>=MH)return'F';return tiles[r][c];}
-const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456'.split(''));
+const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456)\\'.split(''));
 const FLOORISH=new Set('_:XoP'.split(''));
 function solidTile(ch,forPlayer=true){
   if(ch==='W')return !(forPlayer&&has('flutter'));
@@ -839,6 +890,16 @@ function drawTile(ch,c,r,sx,sy,wf){
     case 'x':img=TILE.dam[wf];break;
     case 'a':img=TILE.roofC;break;
     case '1':img=TILE.brickDoor;break;
+    case ')':img=TILE.coral;break;
+    case ']':img=TILE.seaweed;break;
+    case '<':img=TILE.curL[Math.floor(tick/8)%4];break;
+    case '>':img=TILE.curR[Math.floor(tick/8)%4];break;
+    case '{':img=TILE.lava[Math.floor(tick/20+c+r)%2];break;
+    case '}':img=TILE.spring[Math.floor(tick/24+c)%2];break;
+    case '"':img=TILE.obsidian;break;
+    case '`':img=TILE.deck;break;
+    case '\\':img=TILE.wreck;break;
+    case '/':img=TILE.wreckDeck;break;
     case '7':img=TILE.pad;break;
     case '5':img=TILE.ship;break;
     case '6':img=TILE.stackCrate;break;
@@ -921,6 +982,13 @@ const SKILLS3=[
   {id:'whistle',name:'WHISTLE',cost:6,req:['carry'],x:112,y:62,desc:'Whistle at the village whistle post for a helper to bring wool or wood. Taught by Dash.',learn:'Whistle for helpers at the post!'},
   {id:'green',name:'GREEN WINGS',cost:6,req:['carry'],x:112,y:130,desc:'Flap over crop rows to water them and make them grow faster!',learn:'Flap over crops to water them!'},
   {id:'master',name:'MASTER BUILDER',cost:8,req:['whistle','green'],x:196,y:96,desc:'Buildings go up twice as fast and need less wood. Taught by Foreman Barnaby.',learn:'Buildings finish twice as fast!'}];
+
+// Sea Tree: dive and cpeck are taught by Coral and Ember (see trainers.js)
+const SKILLS4=[
+  {id:'dive',name:'DIVE',cost:6,req:[],x:44,y:72,desc:'Dive into the dive pools at the Coral Reef. Watch your AIR meter! Taught by Coral.',learn:'You can dive underwater!'},
+  {id:'dash',name:'DASH',cost:5,req:[],x:44,y:124,desc:'Press SHIFT (or the DASH button) for a quick burst of speed that slips past danger!',learn:'Shift to DASH!'},
+  {id:'cpeck',name:'CANNON PECK',cost:7,req:['dash'],x:120,y:124,desc:'Hold the peck button, then let go: a mighty peck that knocks enemies far back! Taught by Ember.',learn:'Hold to charge a CANNON PECK!'},
+  {id:'sealegs',name:'SEA LEGS',cost:6,req:['dive'],x:204,y:96,desc:'No knockback on ship decks, and strong currents cannot push you around.',learn:'Steady on your feet!'}];
 
 /* ===== src/content/outfits.js ===== */
 /* content: outfits and the shop list. Data only (icons are drawn in systems/world.js). */
@@ -1136,7 +1204,21 @@ const TRAIN={
     intro:["Ho ho! Two buildings already? Bucky's cousin is impressed!","A master builder works fast and wastes no wood. I'll show you the tricks!","Bring me 3 FINE PLANKS from the riverside. Straight and strong. Then class begins!"],
     remind:()=>Math.min(3,G.items.plank)+"/3 fine planks. They're scattered around the riverside!",
     done:["Beautiful planks! Hammer like this, measure twice, cut once!","Now learn MASTER BUILDER in the Village Tree. Press E!"],
-    hint:()=>"Find 3 fine planks at the riverside for Foreman Barnaby."}
+    hint:()=>"Find 3 fine planks at the riverside for Foreman Barnaby."},
+  dive:{phase:5,who:'coral',whoName:'CORAL',skill:'DIVE',title:'Bubble Lessons',avail:()=>!!G.sea.visited.reef,item:'conch',need:3,noun:'conch shells',
+    spawn:[['cn0',69,112],['cn1',73,116],['cn2',67,113]],
+    lock:"Sail to the Coral Reef. Coral the octopus will teach you to DIVE!",
+    intro:["Bloop! A chick on my reef! I'm Coral, and I teach bubble breathing.","To dive, you need to listen to the sea. And what listens best? CONCH SHELLS!","Find 3 conch shells on the east beach of the reef, and I'll teach you!"],
+    remind:()=>Math.min(3,G.items.conch)+"/3 conch shells. Look around the east beach of the reef!",
+    done:["Lovely shells! Hold one to your ear... hear the sea? That's the secret!","Now learn DIVE in your Sea Tree. Press E! Mind your AIR down there."],
+    hint:()=>"Find 3 conch shells on the Coral Reef's east beach for Coral."},
+  cpeck:{phase:5,who:'ember',whoName:'EMBER',skill:'CANNON PECK',title:'Powder Keg Practice',avail:()=>!!G.sea.visited.volcano&&has('dash'),item:'powderkeg',need:3,noun:'powder kegs',
+    spawn:[['kg0',13,138],['kg1',20,135],['kg2',27,134]],
+    lock:"Learn DASH, then ask Ember on Volcano Isle to teach you the CANNON PECK!",
+    intro:["Hot stuff! I'm Ember. I teach the CANNON PECK: all your strength in one peck!","First you must learn what a big bang feels like. Three POWDER KEGS are scattered around the island.","Bring them to me (carefully!) and I'll show you how to charge a peck."],
+    remind:()=>Math.min(3,G.items.powderkeg)+"/3 powder kegs. They're on both parts of the island, on the dark paths!",
+    done:["Perfect kegs! Now: hold your peck, feel the power build... and RELEASE!","Learn CANNON PECK in your Sea Tree. Press E! Hold the peck button to charge."],
+    hint:()=>"Find 3 powder kegs on Volcano Isle for Ember."}
 };
 
 /* ===== src/content/coop.js ===== */
@@ -1257,6 +1339,53 @@ const SEASON_TINT={SPRING:'rgba(190,255,190,0.10)',SUMMER:'rgba(255,240,120,0.12
 // the road from the city market opens here (tile col,row of the two market-bottom tiles)
 const VILLAGE_ROAD=[[39,83],[40,83]];
 
+/* ===== src/content/seas.js ===== */
+/* content: the Pirate Seas. Data only: where everything is, what the ship upgrades cost, the sail map. */
+// top-left tile (col,row) of each screen group, so positions below read as screen-local numbers
+const SO={cove:[0,108],coveE:[16,108],reef:[48,108],reefE:[64,108],volc:[0,132],volcE:[16,132],deep:[48,132],deepE:[64,132],
+  light:[0,156],lightE:[16,156],fort:[48,156],cave:[0,180],caveE:[16,180]};
+const stile=(o,c,r)=>[SO[o][0]+c,SO[o][1]+r];                    // -> [col,row]
+const spx=(o,c,r)=>({x:(SO[o][0]+c)*16+8,y:(SO[o][1]+r)*16+12});   // -> pixel position (feet)
+// sail map: nodes are drawn on a little sea chart. arrive = where Pip lands (the dock)
+const SEA_NODES=[
+  {id:'harbor',name:'CITY HARBOR',mx:36,my:48,arrive:{x:69*16+8,y:78*16+12},need:()=>true},
+  {id:'cove',name:'PIRATE COVE',mx:100,my:92,arrive:spx('cove',3,8),need:()=>true},
+  {id:'reef',name:'CORAL REEF',mx:176,my:56,arrive:spx('reef',3,8),need:()=>true},
+  {id:'volcano',name:'VOLCANO ISLE',mx:58,my:158,arrive:spx('volc',3,8),need:()=>G.sea.lv.sails>=1,lock:'Needs BETTER SAILS'},
+  {id:'lighthouse',name:'LIGHTHOUSE ROCK',mx:150,my:172,arrive:spx('light',3,8),need:()=>G.sea.lv.hull>=1,lock:'Needs a STRONGER HULL'},
+  {id:'fortress',name:"SQUAWKBEARD'S SHIP",mx:222,my:128,arrive:spx('fort',3,8),need:()=>G.sea.lv.cannon>=1&&!!G.flags.lit,lock:'Needs the SEED CANNON and a lit lighthouse'}];
+// ship upgrades: seeds + salvage. Each unlocks a farther place.
+const SHIP_UPGRADES=[
+  {id:'sails',name:'BETTER SAILS',seeds:8,salv:{sailcloth:3},icon:'sailcloth',desc:'Faster and bolder! Unlocks VOLCANO ISLE.'},
+  {id:'hull',name:'STRONGER HULL',seeds:10,salv:{hullplank:4},icon:'hullplank',desc:'Planks that shrug off waves. Unlocks LIGHTHOUSE ROCK.'},
+  {id:'cannon',name:'SEED CANNON',seeds:12,salv:{cannonpart:2},icon:'cannonpart',desc:'Shoots seeds! Needed to take on CAPTAIN SQUAWKBEARD.'}];
+const SALV_NAME={sailcloth:'SAILCLOTH',hullplank:'HULL PLANKS',cannonpart:'CANNON PARTS'};
+// pick-ups: [id, kind, island, col, row]
+const SEA_ITEMS=[
+  ['sc0','sailcloth','cove',9,8],['sc1','sailcloth','cove',11,6],['sc2','sailcloth','cove',6,4],
+  ['hp0','hullplank','deepE',4,9],['hp1','hullplank','deepE',12,4],['hp2','hullplank','deepE',2,3],['hp3','hullplank','deepE',14,9],
+  ['pe0','pearl','deep',13,2],['pe1','pearl','deep',5,9],['pe2','pearl','deepE',12,10],
+  ['wbell','wreckbell','deepE',7,6],
+  ['cr0','crate','cave',12,3],['cr1','crate','cave',6,8],['cr2','crate','caveE',12,5],
+  ['ss0','sunstone','volc',4,8],['ss1','sunstone','volcE',2,5],['ss2','sunstone','volcE',11,9],
+  ['ore0','ironore','volcE',6,8],['ore1','ironore','volcE',12,5]];
+// retired pirates' treasure hunt: dig spots (any order) on the cove's east beach
+const XMARKS=[['x0','coveE',4,5],['x1','coveE',11,5],['x2','coveE',7,9]];
+// places Pip warps between (cave mouth <-> caves, dive pools <-> deep reef, lighthouse door)
+const SEA_WARPS=[
+  {id:'cave_in',at:['coveE',6,3],to:['cave',7,10],label:'CAVE'},{id:'cave_out',at:['cave',7,11],to:['coveE',6,4],label:'EXIT'},
+  {id:'cave2_in',at:['cave',14,5],to:['caveE',2,5],label:''},{id:'cave2_out',at:['caveE',1,5],to:['cave',13,5],label:''},
+  {id:'pool1',at:['reef',9,3],to:['deep',7,5],label:'DIVE',dive:true},{id:'pool2',at:['reefE',11,7],to:['deepE',4,6],label:'DIVE',dive:true},
+  {id:'up1',at:['deep',7,3],to:['reef',9,4],label:'UP',up:true},{id:'up2',at:['deepE',3,6],to:['reefE',11,8],label:'UP',up:true}];
+// characters of the Pirate Seas (positions are screen-local, see SO)
+const SEA_CAST=[
+  {id:'polly',name:'PEGLEG POLLY',spr:'parrot',o:'cove',c:9,r:7,voice:1500,w:12},
+  {id:'sam',name:'SALTY SAM',spr:'seaturtle',o:'cove',c:8,r:9,voice:150,w:16},
+  {id:'coral',name:'CORAL',spr:'octopus',o:'reef',c:6,r:4,voice:700,w:14},
+  {id:'ember',name:'EMBER',spr:'salamander',o:'volc',c:11,r:7,voice:480,w:12},
+  {id:'gus',name:'KEEPER GUS',spr:'gullkeeper',o:'lightE',c:7,r:6,voice:880,w:12}];
+const SEA_LEVEL_NAMES=['RICKETY','SAILING','SEA-WORTHY','FEARSOME'];
+
 /* ===== src/content/world_data.js ===== */
 /* content: farm family, dirt mounds, hidden items and signs */
 const SIBS=[
@@ -1301,7 +1430,7 @@ const RANKS=[
     react:"The Legend of Chicklandia... is my baby!",letter:"Dear Pip, a legend! Now come home for dinner. Mama"}
 ];
 // growth points per source (see CHICKLANDIA_STATUS.md for the budget)
-const GP={quest1:10,quest2:12,quest3:14,build:4,training:8,skill:5,taste:4,mgFirst:8,mgRepeat:2,mgPerDay:3,secret:6,hiddenSeed:2,outfit:3,coop:6,harvest:1,snack:1};
+const GP={quest1:10,quest2:12,quest3:14,build:4,upgrade:6,training:8,skill:5,taste:4,mgFirst:8,mgRepeat:2,mgPerDay:3,secret:6,hiddenSeed:2,outfit:3,coop:6,harvest:1,snack:1};
 // Taste Log: foods Pip can try for the first time (4 growth each)
 const FOODS=[
   {id:'worm',name:'WORM',spr:'worm0'},{id:'carrot',name:'CARROT',spr:'carrot'},{id:'apple',name:'APPLE',spr:'apple'},
@@ -1435,6 +1564,9 @@ const JOB_TARGETS=[
   ['sandy','LIFEGUARD SANDY','on the beach'],['rocco','ROCCO','by the city fountain (daytime)'],['cleo','CLEO','in the market (daytime)']];
 
 const SHOPS={
+  ship:{title:"CAPN PINCH'S SHIP",owner:'crab',color:'#a6e0ff',leave:'LEAVE',bye:'Fair winds, Captain!',
+    items:()=>[{name:'SET SAIL',tag:'GO',icon:'shipIcon',desc:'Open the sea chart and choose where to sail.',act:()=>{SH=null;openSailMap();}},
+      ...SHIP_UPGRADES.map(u=>({name:u.name,price:G.sea.lv[u.id]?null:u.seeds,tag:G.sea.lv[u.id]?'DONE':null,own:!!G.sea.lv[u.id],icon:u.icon,desc:u.desc+' NEEDS: '+costTextSeas(u)+'.',act:()=>buyUpgrade(u)}))]},
   build:{title:'BUILD HERE',owner:'beaver',color:'#c49a5c',leave:'CANCEL',bye:'Take your time. Good builders plan!',
     items:()=>BUILD_ORDER.map(k=>{const t=BUILDING_TYPES[k],c=costOf(k),pad=VB&&VB.pad;
       return {name:t.name,price:c.seeds,icon:'b_'+k,desc:t.desc+' NEEDS: '+costText(Object.assign({},c,{seeds:0})).replace(/^, /,'')+'.',bonus:'Village happiness +'+t.happy+(has('master')?'. Master Builder: half the time!':''),
@@ -1529,6 +1661,88 @@ function villageHint(){
   if(!G.flags.village)return happiness()>=FINALE_HAPPY?"The village is happy! Talk to Foreman Barnaby for the Grand Harvest Festival!":QUESTS.vharvest.hint();
   return null;
 }
+
+/* ===== src/content/quests_seas.js ===== */
+/* content: Pirate Seas quests (9) and the Sea Tree. Same shape as every other quest. */
+const AIR_MAX=3600;
+Object.assign(NAMES,{polly:'Pegleg Polly',sam:'Salty Sam',coral:'Coral',ember:'Ember',gus:'Keeper Gus',sea_cove:'Capn Pinch',sea_boss:'Capn Pinch'});
+const ORDER5=['sea_cove','sea_xmarks','sea_smug','sea_pearl','sea_wreck','sea_springs','sea_forge','sea_light','sea_boss'];
+Object.assign(QUEST_GIVER,{sea_cove:'pinch',sea_boss:'pinch',sea_xmarks:'polly',sea_smug:'sam',sea_pearl:'coral',sea_wreck:'coral',sea_springs:'ember',sea_forge:'ember',sea_light:'gus'});
+Object.assign(QUEST_OF,{polly:'sea_xmarks',sam:'sea_smug',coral:'sea_pearl',ember:'sea_springs',gus:'sea_light'});
+Object.assign(FOLLOWUP,{pinch:['sea_cove','sea_boss'],coral:'sea_wreck',ember:'sea_forge'});
+Object.assign(FOLLOW_GATE,{sea_cove:()=>!!G.flags.pinchMap,sea_boss:()=>!!G.flags.lit&&G.sea.lv.cannon>=1&&G.q.sea_cove===2});
+const SUN_ORDER=['sun','moon','star','wave'];
+Object.assign(QUESTS,{
+  sea_cove:{title:'Set Sail!',loc:'CITY: harbor, Capn Pinch',
+    check:()=>!!G.sea.visited.cove,prog:()=>G.sea.visited.cove?'arrived!':'sail to the cove',reward:5,
+    intro:["Arr! Ready fer the high seas, Pip? Me ship be tied up at the harbor!","I found that map in me hold. It starts at PIRATE COVE, where me old friends retired.","Talk to me or the ship to set sail. Visit the cove and say hello to Pegleg Polly!",
+      {t:"Ye'll need to upgrade the ship fer farther seas. Seeds and salvage, matey!",fx:()=>{G.sea.open=true;toast('The ship is ready! Talk to Pinch to sail.','#a6e0ff');}}],
+    remind:()=>"Talk to me or the ship at the harbor. Sail to PIRATE COVE!",
+    done:["Ye made it to the cove! Yarr, a natural sailor!","Here's 5 seeds. The sea be callin'!"],
+    after:()=>["Where to, matey? The ship awaits!"],
+    hint:()=>"Talk to Capn Pinch at the city harbor and sail to Pirate Cove."},
+  sea_xmarks:{title:'X Marks the Spot',loc:'COVE: Polly by the hut',
+    check:()=>G.sea.chest===2,prog:()=>G.sea.chest===2?'treasure!':Object.keys(G.sea.dug).length+'/3 spots dug',reward:5,
+    intro:["Squawk! A visitor! I'm Pegleg Polly. Retired pirate parrot. Pieces of eight!","I buried a treasure on the east beach long ago, and I forgot where! Squawk!","The map says THREE X marks. Peck them all and the chest will rise!"],
+    remind:()=>G.sea.chest===1?"The chest is up! Peck it to open it!":Object.keys(G.sea.dug).length+"/3 spots dug. Look for red X marks on the east beach of the cove!",
+    done:["TREASURE! Squawk squawk! Just as I remembered!","The seeds are yours, and a good plank for the hull. Yo ho ho!"],
+    after:()=>["Squawk! Pieces of eight! Pieces of eight!"],
+    hint:()=>"Polly's treasure: peck all 3 red X marks on the cove's east beach."},
+  sea_smug:{title:"Smugglers' Cave",loc:'COVE: Salty Sam, then the caves',
+    check:()=>G.items.crate>=3,prog:()=>Math.min(3,G.items.crate)+'/3 crates',reward:5,
+    intro:["Ahoy, little one. I'm Salty Sam. Slow, but I remember everything.","Sneaky smugglers stole three crates from our storehouse and hid them in the cave.","The cave mouth is in the cliff on the east beach. Watch out for snappy crabs!"],
+    remind:()=>Math.min(3,G.items.crate)+"/3 crates. The cave mouth is in the cliff on the east beach. Crabs inside!",
+    done:["My crates! Every last one! You're quicker than you look.","Take these seeds and a bolt of sailcloth for your ship."],
+    onDone:()=>{G.items.crate=0;G.sea.salv.sailcloth+=1;toast('Got a piece of SAILCLOTH!','#ffd83a');},
+    after:()=>["Slow and steady wins the sea race, Pip."],
+    hint:()=>"Find 3 stolen crates in the smuggler caves under the cove's east cliff."},
+  sea_pearl:{title:'Pearls for Coral',loc:'REEF: dive in the deep reef',
+    check:()=>G.items.pearl>=3,prog:()=>Math.min(3,G.items.pearl)+'/3 pearls',reward:5,
+    intro:["Bloop! Hello, dear. I'm Coral. My necklace broke and the pearls rolled into the deep reef!","If you can DIVE, bring me three. Stand by a dive pool and step in!","Mind your air, and the jellyfish. They're sweet, but wobbly."],
+    remind:()=>Math.min(3,G.items.pearl)+"/3 pearls. Dive in a pool on the reef beach. Watch your AIR!",
+    done:["My pearls! Oh, how they shine!","A little treasure for you, dear. Seeds!"],
+    onDone:()=>{G.items.pearl=0;},
+    after:()=>["Bloop! The reef has never looked prettier."],
+    hint:()=>has('dive')?"Dive in a pool at the Coral Reef and find 3 pearls for Coral.":"Coral will teach you to DIVE. Find 3 conch shells on the reef beach."},
+  sea_wreck:{title:'The Sunken Bell',loc:'REEF: the wreck in the deep reef',
+    check:()=>G.items.wreckbell>0,prog:()=>G.items.wreckbell?'bell found!':'search the wreck',reward:5,
+    intro:["Bloop! One more favor. An old ship sank in the deep reef long ago.","Its brass bell still rings in my dreams. Could you fetch it from the wreck?","And take the good planks lying around. A stronger hull needs them!"],
+    remind:()=>"The wreck is in the east part of the deep reef. Swim through the gap in its hull!",
+    done:["That's the bell! Ding... what a lovely sound!","Thank you, dear. Take your seeds, and a plank for your ship."],
+    onDone:()=>{G.items.wreckbell=0;G.sea.salv.hullplank+=1;toast('Got a HULL PLANK!','#ffd83a');},
+    after:()=>["Ding! Every morning the reef rings. Thank you!"],
+    hint:()=>"Dive to the sunken ship in the east deep reef and find its bell. Collect the hull planks nearby!"},
+  sea_springs:{title:'Warm Springs',loc:'VOLCANO: Ember by the forge',
+    check:()=>G.items.sunstone>=3,prog:()=>Math.min(3,G.items.sunstone)+'/3 sunstones',reward:5,
+    intro:["Whoa, a visitor! I'm Ember. I keep the forge and the hot springs.","The springs have gone cold! They need three SUNSTONES to heat up again.","Stay on the dark obsidian paths. Lava is not for chicks!"],
+    remind:()=>Math.min(3,G.items.sunstone)+"/3 sunstones. Follow the dark obsidian paths. Avoid the lava and the sparks!",
+    done:["Sunstones! Feel that warmth already!","The springs will heal anyone who stands in them. And here are seeds!"],
+    onDone:()=>{G.items.sunstone=0;},
+    after:()=>["Ahh... the springs are lovely. Tell all your friends."],
+    hint:()=>"Collect 3 sunstones on Volcano Isle for Ember. Stay on the obsidian paths."},
+  sea_forge:{title:'The Seed Cannon',loc:'VOLCANO: Ember by the forge',
+    check:()=>G.items.ironore>=2,prog:()=>Math.min(2,G.items.ironore)+'/2 iron ore',reward:5,
+    intro:["Now, about that ship of yours. A cannon that shoots SEEDS? I can forge one!","Bring me two lumps of IRON ORE from the hot side of the island.","Careful, the ore sits close to the lava."],
+    remind:()=>Math.min(2,G.items.ironore)+"/2 iron ore. Look on the east part of the island!",
+    done:["Iron ore! Watch the sparks... *clang clang clang*","Two cannon parts, hot off the anvil! Install them at the ship."],
+    onDone:()=>{G.items.ironore=0;G.sea.salv.cannonpart+=2;toast('Got 2 CANNON PARTS!','#ffd83a');},
+    after:()=>["Clang! Fire the seeds, not the lava."],
+    hint:()=>"Find 2 lumps of iron ore on the east side of Volcano Isle for Ember's forge."},
+  sea_light:{title:'Light the Lighthouse',loc:'LIGHTHOUSE ROCK: Keeper Gus',
+    check:()=>!!G.flags.lit,prog:()=>G.flags.lit?'lit!':(G.sea.lamps||0)+'/4 lit',reward:6,
+    intro:["Caw! I'm Keeper Gus. The big light has been dark for years.","Four braziers around the island feed it. They must be lit in the right order.","Sun wakes first. Moon follows. Star twinkles third. Wave sleeps last. Get it wrong and they fizzle!"],
+    remind:()=>"Light them in order: SUN, then MOON, then STAR, then WAVE. Peck a brazier to light it!",
+    done:["The light is ON! Ships for miles can see it!","And now the way to Squawkbeard's ship is clear. Be brave, Pip!"],
+    after:()=>["Caw! The beam sweeps the sea every night. Beautiful."],
+    hint:()=>"Light the 4 braziers on Lighthouse Rock in order: sun, moon, star, wave."},
+  sea_boss:{title:"Squawkbeard's Treasure",loc:'SEAS: Squawkbeard\'s ship',
+    check:()=>!!G.flags.seas,prog:()=>G.flags.seas?'won!':'defeat Squawkbeard',reward:10,
+    intro:["Pip, the lighthouse is lit and yer cannon is ready. Squawkbeard's ship be waiting!","He swoops, he throws barrels, and he flies like the wind. But ye've got wings too!","Sail to his ship, and bring back me map!"],
+    remind:()=>G.sea.lv.cannon>=1?"Sail to SQUAWKBEARD'S SHIP from the ship menu. Peck him when he lands!":"Install the SEED CANNON first. Ye need 2 cannon parts from Ember!",
+    done:[],after:()=>["The Pirate Seas be at peace, thanks to ye, Captain Pip!"],
+    hint:()=>"Sail to Squawkbeard's ship, peck him when he lands, blow back his barrels, and catch him in the sky!"}
+});
+// where Squawkbeard stands, braziers, etc live in systems/seas2.js
 
 /* ===== src/content/characters.js ===== */
 /* content: the cast. Each entry becomes an NPC in makeEnts(). part 1 = farm, part 2 = beyond. */
@@ -1673,6 +1887,16 @@ Object.assign(TALK,{
     if(trainTalk(e,it))return;
     it(G.flags.village?"The village is the pride of Chicklandia, Pip! And you built it.":"I'm Foreman Barnaby. I run the building site. Pads in the square, wood and stone at the riverside. Happy building!");},
   dash:(e,{it})=>{if(!G.vil.open)return false;if(trainTalk(e,it))return;it(G.flags.village?"Woof! Everything's peaceful. Even the sheep have a schedule now.":"Woof! I herd the sheep. Pebbles make great whistles, you know!");}
+});
+
+// ---- the seas ----
+Object.assign(TALK,{
+  pinch:(e,{it,ask})=>{
+    if(!G.flags.pinchMap||G.q.pinch!==2||G.q.sea_cove===0)return false;
+    if(G.q.sea_cove===1&&QUESTS.sea_cove.check())return false;
+    if(G.q.sea_boss===0&&G.flags.lit&&G.sea.lv.cannon>=1)return false;
+    if(G.q.sea_boss===1&&QUESTS.sea_boss.check())return false;
+    ask("Ready to sail, Captain? Upgrade the ship, or set sail?",['Ship menu','Not now'],i=>{if(i===0)openCatalog('ship');});}
 });
 
 /* ===== src/entities/sprites.js ===== */
@@ -1948,12 +2172,76 @@ SPR.snowSculpture=[makeSprite(['.www.','wwwww','wwwww']),makeSprite(['..ww..','.
 SPR.pumpkin=makeSprite(['..G..','.ooo.','ooooo','ooOoo','.ooo.']);
 SPR.kite=makeSprite(['..r..','.rrr.','rrrrr','.rrr.','..r..','..k..']);
 
+/* ===== src/entities/sprites_seas.js ===== */
+/* ---------------- Pirate Seas sprites ---------------- */
+SPR.parrot=makeSprite(['..rr....','.rrrrr..','.rkwrr..','oorrrr..','..rrGG..','..rGGG..','...GUU..','...U.U..','...oo...']);
+SPR.seaturtle=makeSprite(['.......GG.......','.....GGllGG.....','...GGlGGGGlGG...','..GlGGGGGGGGlG..','.GGGGlGGGGlGGGG.','tGGGlGGGGGGlGGGt','kktGGGGGGGGGGtt.','tktt.GGGGGG.tt..','.tt..tt..tt.tt..']);
+SPR.octopus=makeSprite(['...pppp...','..pppppp..','.ppwkppwkp','.pppppppp.','..pppPpp..','.pp.pp.pp.','pp..pp..pp','p..p..p..p']);
+SPR.salamander=makeSprite(['..oo..oo..','.oooooooo.','oowkoookwo','.oooooooo.','..oYYYYo..','.ooYYYYoo.','.oo.oo.oo.','oo.......o','o....ffff.']);
+SPR.gullkeeper=decorate(SPR.gull,x=>{P_(x,'#2a3a6a',2,0,5,2);P_(x,'#ffd21e',4,0,1,1);});
+SPR.gullp=makeSprite(['...www.....','..wwwww....','..wkwwrr...','oooww......','...wwwww...','...wwwwwww.','....eeeeew.','.....e..e..','...rrrr....']);
+SPR.squawk=mk(40,36,x=>{const R=(c,i,j,w,h)=>{x.fillStyle=c;x.fillRect(i,j,w,h);};
+  R('#21142b',8,6,24,22);R('#fff8ec',10,8,20,18);R('#e8e8f0',12,20,16,6);R('#21142b',4,14,8,10);R('#ec6c24',2,15,5,4);
+  R('#21142b',10,0,20,8);R('#e03838',11,1,18,5);R('#ffd21e',18,2,4,3);R('#21142b',12,12,5,5);R('#21142b',23,12,5,5);R('#fff8ec',13,13,2,2);R('#fff8ec',24,13,2,2);R('#21142b',14,13,1,2);R('#21142b',25,13,1,2);
+  R('#e03838',26,16,12,3);R('#21142b',30,22,8,6);R('#ec6c24',31,24,6,3);R('#21142b',14,28,4,6);R('#ec6c24',14,32,6,2);R('#21142b',22,28,4,6);R('#ec6c24',22,32,6,2);
+  R('#21142b',12,24,16,2);R('#6a5a90',14,25,12,1);});
+SPR.jelly=makeSprite(['..pppp..','.pppppp.','pwpppwpp','pppppppp','.p.pp.p.','p..p..p.','.p.p.p..']);
+SPR.spark=makeSprite(['..y..','.yoy.','yoooy','.yoy.','..y..']);
+// salvage and finds
+SPR.sailcloth=makeSprite(['wwwwww.','wnwwnww','wwnwwnw','wwwwwww','.wwwww.','..wwww.']);
+SPR.hullplank=makeSprite(['bbbbbbbb','bTbTbTbb','bbbbbbbb','BBBBBBBB']);
+SPR.cannonpart=makeSprite(['..eeee..','.eEEEEe.','eEeeeeEe','eEeeeeEe','.eEEEEe.','..eeee..']);
+SPR.pearl=makeSprite(['.ww.','wwcw','wwww','.ww.']);
+SPR.wreckbell=makeSprite(['..qq..','.qqqq.','qqQQqq','qQqqQq','qqqqqq','.qqqq.','..kk..']);
+SPR.conch=makeSprite(['..pp..','.pPpp.','pPpPpp','pppPp.','.ppp..']);
+SPR.crate=makeSprite(['kkkkkkkk','kbbTbbbk','kbTbbTbk','kTbbbbTk','kbbTbbbk','kkkkkkkk']);
+SPR.sunstone=makeSprite(['..oo..','.oyyo.','oyyyyo','.oyyo.','..oo..']);
+SPR.ironore=makeSprite(['.eeee.','eEeeEe','eeEeee','.eEee.']);
+SPR.powderkeg=makeSprite(['.bbbbb.','bTtTtTb','bBBBBBb','bTtTtTb','.bbbbb.']);
+SPR.brazier=makeSprite(['..oo..','.oyyo.','..yy..','.kkkk.','..kk..','.kkkk.']);
+SPR.brazierLit=makeSprite(['.oyyo.','oyyyyo','.yyyy.','.kkkk.','..kk..','.kkkk.']);
+SPR.xmark=makeSprite(['r...r','.r.r.','..r..','.r.r.','r...r']);
+SPR.chestSea=makeSprite(['.BBBBBBBBB.','BqqqqqqqqqB','BqQQQQQQQqB','BBBBBBBBBBB','BqqqkkqqqqB','BBBBBBBBBBB']);
+SPR.barrel=makeSprite(['.bbbbb.','bTtTtTb','bbbbbbb','bTtTtTb','.bbbbb.']);
+SPR.bubble=makeSprite(['.cc.','c..c','c..c','.cc.']);
+SPR.cannonball=makeSprite(['.kk.','kEEk','kEEk','.kk.']);
+// ship for the sail map and docks
+SPR.shipIcon=mk(34,30,x=>{const R=(c,i,j,w,h)=>{x.fillStyle=c;x.fillRect(i,j,w,h);};
+  R('#21142b',16,2,2,20);R('#fff8ec',18,3,12,12);R('#e8e8f0',18,13,12,2);R('#21142b',17,3,1,12);R('#e03838',16,0,6,3);
+  R('#21142b',3,20,28,7);R('#9a6234',4,21,26,5);R('#5e3a1c',4,24,26,2);R('#ffd21e',8,22,2,2);R('#ffd21e',14,22,2,2);R('#ffd21e',20,22,2,2);});
+// Sea Tree icons
+Object.assign(ICON,{
+  dive:makeSprite(['..cc....','.cwwc...','.cw.cc..','..cccuu.','.uuuuuuu','uuuuuuuu','.uuUUuu.','..uuuu..']),
+  dash:makeSprite(['....yy..','...yyy..','..yyyy.y','.yyyyyyy','..yyyy.y','...yyy..','....yy..']),
+  cannon:makeSprite(['..kkkk..','.kEEEEk.','kEeeeeEk','kEe..eEk','kEeeeeEk','.kEEEEk.','..kyyk..','...yy...']),
+  sealegs:makeSprite(['..bb.bb.','.bbbbbbb','bbTbbbTb','.bbbbbb.','..uuuu..','.uuuuuu.','.u.uu.u.','u..uu..u'])});
+
 /* ===== src/engine/settings.js ===== */
 /* ---------------- settings (saved separately from game progress) ---------------- */
 const SETTINGS_KEY='chicklandia_settings_v1';
 const SET=Object.assign({music:10,sound:10,speed:1,big:false},(()=>{try{return JSON.parse(localStorage.getItem(SETTINGS_KEY))||{};}catch(e){return {};}})());
 function saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(SET));}catch(e){}}
 const TEXT_SPEEDS=['SLOW','NORMAL','FAST'],TEXT_SPEED_MUL=[0.5,0.85,1.7];
+
+/* ===== src/engine/tracks_seas.js ===== */
+/* music for the Pirate Seas: one track per area (same format as TRACKS in audio.js) */
+const SEA_TRACKS={
+  cove:{bpm:126,lead:'square',lv:0.026,len:0.8,bass:'triangle',bv:0.07,
+    mel:[62,0,66,69,0,66,62,0, 64,0,67,71,0,67,64,0, 66,0,69,74,0,69,66,0, 64,67,71,0,67,0,0,0, 62,0,66,69,0,66,62,0, 67,0,71,74,0,71,67,0, 69,0,74,0,73,0,71,69, 66,0,62,0,0,0,0,0],
+    ch:[[38,45],[40,47],[42,49],[40,47],[38,45],[43,50],[45,52],[38,45]]},
+  reef:{bpm:88,lead:'sine',lv:0.06,len:1.6,bass:'sine',bv:0.06,
+    mel:[76,0,0,79,0,0,83,0, 81,0,0,79,0,0,76,0, 74,0,0,78,0,0,81,0, 79,0,0,76,0,0,0,0, 76,0,79,0,83,0,86,0, 84,0,81,0,79,0,76,0, 74,0,78,0,81,0,79,0, 76,0,0,0,0,0,0,0],
+    ch:[[40,47],[45,52],[38,45],[43,50],[40,47],[45,52],[47,54],[40,47]]},
+  volcano:{bpm:112,lead:'square',lv:0.024,len:0.9,bass:'triangle',bv:0.08,
+    mel:[57,0,60,0,57,0,64,0, 62,0,65,0,62,0,57,0, 55,0,59,0,55,0,62,0, 60,0,64,0,60,0,57,0, 57,0,60,0,57,0,64,0, 69,0,67,0,65,0,64,0, 62,0,60,0,59,0,57,0, 57,0,0,0,0,0,0,0],
+    ch:[[33,40],[38,45],[31,38],[36,43],[33,40],[41,48],[35,42],[33,40]]},
+  lighthouse:{bpm:96,lead:'triangle',lv:0.05,len:1.3,bass:'sine',bv:0.06,
+    mel:[72,0,76,79,0,76,72,0, 74,0,77,81,0,77,74,0, 76,0,79,83,0,79,76,0, 72,0,0,0,67,0,0,0, 72,0,76,79,84,0,79,0, 77,0,81,84,0,81,77,0, 79,0,83,86,0,83,79,0, 84,0,0,0,0,0,0,0],
+    ch:[[48,55],[41,48],[43,50],[48,55],[48,55],[41,48],[43,50],[48,55]]},
+  boss:{bpm:156,lead:'square',lv:0.03,len:0.75,bass:'triangle',bv:0.08,
+    mel:[69,0,72,69,0,76,0,72, 69,0,72,69,0,77,0,74, 71,0,74,71,0,78,0,74, 69,72,76,0,81,0,0,0, 69,0,72,69,0,76,0,72, 67,0,71,67,0,74,0,71, 65,0,69,65,0,72,0,69, 64,67,71,0,76,0,0,0],
+    ch:[[45,52],[45,52],[47,54],[45,52],[45,52],[43,50],[41,48],[40,47]]}
+};
 
 /* ===== src/engine/audio.js ===== */
 /* ---------------- audio ---------------- */
@@ -2054,6 +2342,7 @@ const TRACKS={
     mel:[65,0,69,72,0,69,0,72, 74,0,72,0,69,0,0,0, 70,0,74,77,0,74,0,77, 76,0,74,0,72,0,0,0, 65,0,69,72,0,69,72,74, 77,0,76,0,74,72,0,0, 70,72,74,0,72,70,69,67, 65,0,0,0,0,0,0,0],
     ch:[[41,48],[41,48],[46,53],[36,43],[41,48],[46,53],[36,43],[41,48]]}
 };
+Object.assign(TRACKS,SEA_TRACKS);
 let curTrack='farm',wantTrack='farm',nextT=0,step=0,rainGain=null;
 const mf=n=>440*Math.pow(2,(n-69)/12);
 function startMusic(){
@@ -2080,7 +2369,7 @@ function startMusic(){
 const keys={},pressed={};
 const KEYMAP={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',
   KeyZ:'a',Space:'a',KeyJ:'a',Enter:'a',NumpadEnter:'a',KeyX:'b',KeyK:'b',KeyE:'grow',Tab:'grow',KeyG:'grow',KeyQ:'quest',
-  KeyM:'mute',KeyC:'wear',KeyF:'fly',Escape:'back',KeyP:'pause',Backspace:'back'};
+  KeyM:'mute',KeyC:'wear',KeyF:'fly',Escape:'back',KeyP:'pause',ShiftLeft:'dash',ShiftRight:'dash',KeyV:'dash',Backspace:'back'};
 function press(k){if(!keys[k])pressed[k]=true;keys[k]=true;}
 addEventListener('keydown',e=>{const k=KEYMAP[e.code];initAudio();if(!k)return;e.preventDefault();if(e.repeat&&k!=='up'&&k!=='down'&&k!=='left'&&k!=='right')return;press(k);});
 addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)keys[k]=false;});
@@ -2123,6 +2412,7 @@ function updateTouchUI(){
   const menus=state==='grow'||state==='quests';
   show('menu',state!=='title'&&state!=='ending'&&state!=='p2intro'&&state!=='flying'&&state!=='egg');
   show('btnB',(state==='play'&&has('flap'))||(menus&&G&&G.part2));
+  show('btnD',(state==='play'||state==='chase')&&!!G&&has('dash'));
   show('btnMap',!!(G&&G.part2));
   let la='PECK',lb=menus?'PAGE':'FLAP';
   if(state==='title'||state==='ending'||state==='p2intro')la='START';
@@ -2167,9 +2457,9 @@ function strawBonus(x,y){if(wearing('straw')&&Math.random()<0.25){G.seeds++;G.ea
 
 function freshState(){
   return {seeds:0,skills:new Set(),hearts:3,q:{mom:0,daisy:0,pig:0,duck:0,sheep:0,rooster:0,penny:0,clyde:0,squeaks:0,biscuit:0,whiskers:0,
-      granny:0,bucky:0,doe:0,mo:0,elda:0,pidge:0,remy:0,pinch:0,sandy:0,rocco:0,cleo:0,cookoff:0,vane:0,babysit:0,portrait:0,vfound:0,v_pig:0,v_whiskers:0,v_clyde:0,v_daisy:0,v_doe:0,v_penny:0,v_rooster:0,vharvest:0},
-    items:{worm:0,bell:0,apple:0,feather:0,carrot:0,bone:0,yarn:0,letter:0,cheese:0,acorn:0,stick:0,shell:0,fish:0,snowberry:0,eagleEgg:0,horseshoe:0,puff:0,ring:0,stump:0,bhat:0,bwhisk:0,bbell:0,pepper:0,salt:0,mushroom:0,pebble:0,plank:0,snowball:0},collected:new Set(),mods:{},picked:{},foxGone:false,gooseGone:false,
-    sp1:0,sp2:0,earned:0,gp:0,rank:1,taste:{},secrets:{},mgFirst:{},mgDay:{d:-1,n:0},acc:null,accessoryUnlocked:false,snackFirst:false,snackEaten:0,growMsgOnLoad:false,vil:{open:false,b:{},mat:{wood:0,stone:0,wool:0,clay:0},res:{},letters:[],nodes:{},shear:{},whistle:{},skills:0,contest:{},decor:{}},time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
+      granny:0,bucky:0,doe:0,mo:0,elda:0,pidge:0,remy:0,pinch:0,sandy:0,rocco:0,cleo:0,cookoff:0,vane:0,babysit:0,portrait:0,sea_cove:0,sea_xmarks:0,sea_smug:0,sea_pearl:0,sea_wreck:0,sea_springs:0,sea_forge:0,sea_light:0,sea_boss:0,vfound:0,v_pig:0,v_whiskers:0,v_clyde:0,v_daisy:0,v_doe:0,v_penny:0,v_rooster:0,vharvest:0},
+    items:{worm:0,bell:0,apple:0,feather:0,carrot:0,bone:0,yarn:0,letter:0,cheese:0,acorn:0,stick:0,shell:0,fish:0,snowberry:0,eagleEgg:0,horseshoe:0,puff:0,ring:0,stump:0,bhat:0,bwhisk:0,bbell:0,pepper:0,salt:0,mushroom:0,pebble:0,plank:0,snowball:0,pearl:0,wreckbell:0,crate:0,sunstone:0,ironore:0,powderkeg:0,conch:0},collected:new Set(),mods:{},picked:{},foxGone:false,gooseGone:false,
+    sp1:0,sp2:0,earned:0,gp:0,rank:1,taste:{},secrets:{},mgFirst:{},mgDay:{d:-1,n:0},acc:null,accessoryUnlocked:false,snackFirst:false,snackEaten:0,growMsgOnLoad:false,sea:{open:false,lv:{sails:0,hull:0,cannon:0},salv:{sailcloth:0,hullplank:0,cannonpart:0},visited:{},dug:{},chest:0,lamps:0,boss:0},vil:{open:false,b:{},mat:{wood:0,stone:0,wool:0,clay:0},res:{},letters:[],nodes:{},shear:{},whistle:{},skills:0,contest:{},decor:{}},time:0,met:new Set(),home:[],sibs:[],visited:new Set(['0,0']),autoMom:0,won:false,
     clock:Math.round(DAY*0.07),weather:'clear',wInt:0,puddle:0,outfits:[],wear:null,best:{egg:0,bonk:0,ffly:0,race:0},sacks:{speedy:0,giant:0,moon:0},decor:{},buff:null,jobs:{day:0,list:[]},hold:{seashell:0,plume:0,fossil:0,petal:0},museum:{seashell:0,plume:0,fossil:0,petal:0},cellar:false,chest:false,
     part2:false,areas:['farm'],thumb:false,coop:null,plots:{},mail:{rocco:0,cleo:0,granny:0},flags:{},turtles:[],harvests:0,train:{}};
 }
@@ -2183,7 +2473,7 @@ function newGame(){
 function save(){
   if(!G)return;titleSave=undefined;
   try{localStorage.setItem(SAVE_KEY,JSON.stringify({sv:3,pos:toRegionPos(P.x,P.y),seeds:G.seeds,skills:[...G.skills],hearts:G.hearts,q:G.q,
-    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,gp:G.gp,rank:G.rank,taste:G.taste,secrets:G.secrets,mgFirst:G.mgFirst,mgDay:G.mgDay,acc:G.acc,accessoryUnlocked:G.accessoryUnlocked,snackFirst:G.snackFirst,snackEaten:G.snackEaten,sacks:G.sacks,vil:G.vil,decor:G.decor,buff:G.buff,jobs:G.jobs,hold:G.hold,museum:G.museum,
+    items:G.items,collected:[...G.collected],mods:G.mods,picked:G.picked,foxGone:G.foxGone,gooseGone:G.gooseGone,sp1:G.sp1,sp2:G.sp2,earned:G.earned,gp:G.gp,rank:G.rank,taste:G.taste,secrets:G.secrets,mgFirst:G.mgFirst,mgDay:G.mgDay,acc:G.acc,accessoryUnlocked:G.accessoryUnlocked,snackFirst:G.snackFirst,snackEaten:G.snackEaten,sacks:G.sacks,vil:G.vil,sea:G.sea,decor:G.decor,buff:G.buff,jobs:G.jobs,hold:G.hold,museum:G.museum,
     time:G.time,met:[...G.met],home:G.home,sibs:G.sibs,visited:[...G.visited],won:G.won,
     clock:G.clock,weather:G.weather,outfits:G.outfits,wear:G.wear,best:G.best,cellar:G.cellar,chest:G.chest,
     part2:G.part2,areas:G.areas,thumb:G.thumb,coop:G.coop,plots:G.plots,mail:G.mail,flags:G.flags,turtles:G.turtles,harvests:G.harvests,train:G.train,ov:2}));}catch(e){}
@@ -2202,7 +2492,7 @@ function continueGame(){
   {const p=s.pos?fromRegionPos(s.pos):{x:s.x,y:s.y};P=newPlayer(p.x,p.y);CS=s.pos?{x:Math.floor(p.x/256),y:Math.floor((p.y-1)/192)}:(s.cs||{x:0,y:0});if(!cellAt(CS)){P=newPlayer(56,76);CS={x:0,y:0};}}
   camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
   G.train=Object.assign({},s.train||{});migrateSave(s);
-  G.sacks=Object.assign(G.sacks,s.sacks||{});if(s.vil)G.vil=Object.assign(G.vil,s.vil);G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
+  G.sacks=Object.assign(G.sacks,s.sacks||{});if(s.vil)G.vil=Object.assign(G.vil,s.vil);if(s.sea)G.sea=Object.assign(G.sea,s.sea);G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
   migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();state='play';fade=1;fadeColor='#000';
   if(G.growMsgOnLoad){G.growMsgOnLoad=false;toast("You've grown! You are now a "+RANKS[G.rank-1].name+'!','#94dc64');}
 }
@@ -2241,6 +2531,7 @@ function makeEnts(){
   makeP2Ents();
   makeCityEnts();
   makeVillageEnts();
+  makeSeaEnts();
   if(!G.foxGone){const p=at(27,16);addEnt({type:'fox',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:1,sy:1,hp:3,wt:0,wx:0,wy:0,kt:0,stun:0,cool:0,flash:0,flip:false});}
   if(!G.gooseGone){const p=at(43,18);addEnt({type:'goose',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:2,sy:1,st:'idle',t:0,kt:0,cool:0,flash:0,flip:false,solid:true,w:14});}
 }
@@ -2364,7 +2655,7 @@ function hint(){
   if(!has('fly'))return "You've grown so much! Keep spending seeds in your Growth Tree until you learn FLIGHT!";
   return "Go on, fly over that Big Fence! Mama is so proud of you!";
 }
-function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id)||ORDER4.includes(id))?2:1,(ORDER3.includes(id)||ORDER4.includes(id))?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
+function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?2:1,(ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
 function say(lines,onEnd){lines.forEach(l=>l.text=tt(l.text));dlg={lines,i:0,shown:0,onEnd};state='talk';}
 function talkTo(e){
   const L=[];const it=(t,fx)=>L.push({who:e,text:t,fx});const me=t=>L.push({who:'me',text:t});
@@ -2383,7 +2674,8 @@ function talkTo(e){
   }
   const ask=(t,choices,cb)=>L.push({who:e,text:t,choices,cb});
   const spec=TALK[e.id];if(spec&&spec(e,{it,me,ask})!==false){say(L);return;}
-  let qid=QUEST_OF[e.id]||e.id;const base=qid;if(FOLLOWUP[e.id]&&G.q[e.id]===2&&G.q[FOLLOWUP[e.id]]!==2&&(!FOLLOW_GATE[e.id]||FOLLOW_GATE[e.id]()))qid=FOLLOWUP[e.id];
+  let qid=QUEST_OF[e.id]||e.id;const base=qid;
+  {let prev=base;for(const fq of [].concat(FOLLOWUP[e.id]||[])){if(G.q[prev]!==2)break;if(G.q[fq]!==2){if((!FOLLOW_GATE[e.id]||FOLLOW_GATE[e.id]())&&(!FOLLOW_GATE[fq]||FOLLOW_GATE[fq]()))qid=fq;break;}prev=fq;}}
   if(qid===base&&trainTalk(e,it)){say(L);return;}
   const q=QUESTS[qid];if(!q)return;
   const pushLine=l=>typeof l==='string'?it(l):(l.me?me(l.me):it(l.t,l.fx));
@@ -2430,6 +2722,7 @@ function action(){
   for(const e of ents){if(e.type!=='npc'||!onCur(e))continue;
     if(Math.abs(f.x-e.x)<e.w/2+7&&f.y>e.y-20&&f.y<e.y+7){talkTo(e);return;}}
   if(villageAction(f))return;
+  for(const e of ents){if(e.type==='shipdock'&&onCur(e)&&G.sea.open&&Math.abs(f.x-e.x)<26&&Math.abs(f.y-(e.y-4))<20){openCatalog('ship');return;}if(e.type==='seachest'&&onCur(e)&&Math.abs(f.x-e.x)<16&&Math.abs(f.y-(e.y-6))<16){openSeaChest(e);return;}}
   for(const e of ents){if(e.type==='nook'&&onCur(e)&&Math.abs(f.x-e.x)<16&&Math.abs(f.y-(e.y-4))<12){useNook();return;}}
   for(const e of ents){if(e.type==='bowl'&&has('fly')&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){useBowl(e);return;}}
   for(const e of ents){if(e.type==='chest'&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){openChest();return;}}
@@ -2448,7 +2741,7 @@ function peck(f){
   if(MG&&MG.type==='ffly')for(const e of ents){if(e.type==='ffly'&&Math.abs(e.x-f.x)<15&&Math.abs(e.y-8-f.y)<15){
     e.dead=true;MG.score++;SFX.chirp();puff(e.x,e.y-8,6,['#e8ff70','#fff8ec'],0.8,0);float(e.x,e.y-16,''+MG.score,'#e8ff70');return;}}
   for(const e of ents){
-    if(hazardPeck(e,f,pr)||cityPeck(e,f,pr)||villagePeck(e,f,pr))return;
+    if(hazardPeck(e,f,pr)||cityPeck(e,f,pr)||villagePeck(e,f,pr)||seaPeck(e,f,pr))return;
     if(e.type==='worm'&&Math.abs(e.x-f.x)<12&&Math.abs(e.y-4-f.y)<12){
       e.dead=true;G.collected.add(e.id);G.items.worm++;tasteFood('worm');SFX.pick();puff(e.x,e.y-4,6,['#f6a6b6','#9a6234']);strawBonus(e.x,e.y);
       float(e.x,e.y-14,'WORM '+Math.min(G.items.worm,3)+'/3','#f6a6b6');
@@ -2524,7 +2817,7 @@ function wingFlap(){
       parts.push({x:c*16+8,y:r*16+10,vx:dx*s+(Math.random()-.5)*1.5,vy:dy*s-Math.random()*1.5,g:0.03,life:40,c:['#ec6c24','#e03838','#c98a00','#9a6234'][i%4]});}
       revealHidden(c,r);save();}
   }
-  hazardFlap(dx,dy);greenWings(dx,dy);
+  hazardFlap(dx,dy);greenWings(dx,dy);seaFlap(dx,dy);
   for(const e of ents){
     if(!((e.type==='fox'&&!e.gone)||(e.type==='goose'&&!e.blown)))continue;
     const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
@@ -2587,8 +2880,8 @@ function bump(ix,iy){
 function hurt(src){
   if(P.inv>0||P.hop)return;
   G.hearts--;P.inv=80;const dx=P.x-src.x,dy=P.y-src.y,d=Math.hypot(dx,dy)||1;
-  P.kx=dx/d*3;P.ky=dy/d*3;P.kt=8;SFX.hurt();shake=8;float(P.x,P.y-22,'OUCH','#ff6060');
-  if(G.hearts<=0){G.hearts=0;state='faint';FT=0;}
+  P.kx=dx/d*3;P.ky=dy/d*3;P.kt=has('sealegs')&&seaRegion()?0:8;SFX.hurt();shake=8;float(P.x,P.y-22,'OUCH','#ff6060');
+  if(G.hearts<=0){if(bossActive()){bossRetry();return;}G.hearts=0;state='faint';FT=0;}
 }
 function trailPush(){const l=TRAIL[TRAIL.length-1];if(!l||l.x!==P.x||l.y!==P.y){TRAIL.push({x:P.x,y:P.y});if(TRAIL.length>120)TRAIL.shift();}}
 
@@ -2654,6 +2947,8 @@ function collect(e){
     case 'shell':G.items.shell++;SFX.pick();float(e.x,e.y-16,'SHELL '+Math.min(5,G.items.shell)+'/5','#f6a6b6');break;
     case 'eagleEgg':G.items.eagleEgg=1;SFX.quest();toast("Found Elda's egg! Carry it gently...");break;
     case 'yarn':G.items.yarn=1;SFX.quest();toast("Found Whiskers' yarn!");break;
+    case 'sailcloth':case 'hullplank':case 'cannonpart':G.sea.salv[e.kind]++;SFX.pick();toast('Got '+SALV_NAME[e.kind]+'! ('+G.sea.salv[e.kind]+')','#ffd83a');break;
+    case 'pearl':case 'wreckbell':case 'crate':case 'sunstone':case 'ironore':case 'conch':case 'powderkeg':G.items[e.kind]++;SFX.pick();float(e.x,e.y-16,({pearl:'PEARL',wreckbell:'THE BELL!',crate:'CRATE',sunstone:'SUNSTONE',ironore:'IRON ORE',conch:'CONCH',powderkeg:'POWDER KEG'})[e.kind]+(e.kind==='wreckbell'?'':' x'+G.items[e.kind]),'#fff8ec');break;
     case 'pebble':case 'plank':case 'snowball':G.items[e.kind]++;SFX.pick();float(e.x,e.y-16,({pebble:'PEBBLE',plank:'PLANK',snowball:'SNOWBALL'})[e.kind]+' x'+G.items[e.kind],'#fff8ec');break;
     case 'hat':case 'whisk':case 'collarBell':{const b=BORROWED.find(x=>x.kind===e.kind);G.items[b.item]=1;SFX.quest();toast('Found '+b.name+'! Return it.','#ff9cd0');break;}
     case 'pepper':case 'salt':case 'mushroom':G.items[e.kind]=1;SFX.pick();toast('Got '+({pepper:'MOUNTAIN PEPPER',salt:'SEA SALT',mushroom:'a FOREST MUSHROOM'})[e.kind]+'!','#ff9cd0');break;
@@ -2674,6 +2969,7 @@ function updateEnts(){
     if(e.type==='block'&&e.sl){const s=e.sl;s.t++;const p=Math.min(1,s.t/8);e.x=lerp(s.x0,e.bc*16+8,p);e.y=lerp(s.y0,e.br*16+16,p);if(s.t>=8){e.sl=null;checkPlates();}continue;}
     if(!onCur(e)&&!(e.type==='fox'&&e.gone)&&!(e.type==='goose'&&e.blown))continue;
     if(e.type==='fox')updFox(e);else if(e.type==='goose')updGoose(e);else if(e.type==='item')updItem(e);else if(e.type==='puff')updPuff(e);
+    else if(e.type==='gullp')updGull(e);else if(e.type==='jelly')updJelly(e);else if(e.type==='spark')updSpark(e);else if(e.type==='bubbles')updBubbles(e);else if(e.type==='boss')updBoss(e);else if(e.type==='barrel')updBarrel(e);
     else if(e.type==='bees')updBees(e);else if(e.type==='snowball')updBall(e);else if(e.type==='crab')updCrab(e);
   }
   ents=ents.filter(e=>!e.dead);
@@ -2689,12 +2985,12 @@ function checkEdges(){
     if(nightAmt()>0.3){warpTo(648,731,1,()=>{secretFound('grove');SFX.magic();toast('The Moonlit Grove...','#d890ff');});return;}
     if(P.bubbleCd<=0){P.bubbleCd=240;float(P.x,P.y-24,'These mushrooms look magical...','#d890ff');}
   }
-  if(!WALK.has(CS.x+','+CS.y)){
+  if(!ROAM.has(CS.x+','+CS.y)){
     if(tileAt(fc,Math.floor(P.y/16))==='X'){const cl=cellAt(),e=cl.region.id==='coop'?coopExit():cl.region.id==='cityin'?BUILDING_BY_ROOM[cl.id].out:(cl.region.id==='rooms'?EXITS:EXITS3)[cl.gx];if(e)warpTo(e.x,e.y,0);}
     return;}
   const L=CS.x*256,R=L+256,T=CS.y*192,B=T+192;let d=null;
   if(P.x-4<L)d=[-1,0];else if(P.x+4>R)d=[1,0];else if(P.y-6<T)d=[0,-1];else if(P.y>B)d=[0,1];
-  if(d&&WALK.has((CS.x+d[0])+','+(CS.y+d[1])))startTrans(d[0],d[1]);
+  if(d&&ROAM.has((CS.x+d[0])+','+(CS.y+d[1])))startTrans(d[0],d[1]);
 }
 function startTrans(dx,dy){trans={dx,dy,t:0,d:40,px0:P.x,py0:P.y,px1:P.x+dx*14,py1:P.y+dy*12};}
 function updateTrans(){
@@ -2711,7 +3007,8 @@ function updatePlay(){
   if(pressed.pause||pressed.back){openPause();return;}
   if(checkRankUp())return;
   if(tick%30===0){updateSchedules(false);checkBuffExpiry();}
-  updateSunbeam();updateBabysit();updateRace();updateVillage();
+  updateSunbeam();updateBabysit();updateRace();updateVillage();updateSeas();updateCharge();
+  if(pressed.dash)tryDash();
   if(pressed.grow){openGrow();return;}
   if(pressed.quest){state='quests';questPage=G.part2?1:0;SFX.menu();return;}
   if(pressed.wear){openWardrobe();return;}
@@ -2723,10 +3020,11 @@ function updatePlay(){
   if(P.hop)updateHop();
   else if(P.kt>0){P.kt--;moveP(P.kx,0,false);moveP(0,P.ky,false);}
   else{
+    if(P.dashT>0&&!ix&&!iy){const [ddx,ddy]=DIRV[P.dir];moveP(ddx*speed()*2.5,ddy*speed()*2.5,false);P.moving=true;}
     if(ix||iy){
       if(ix&&iy){if(!((P.dir===2&&ix<0)||(P.dir===3&&ix>0)||(P.dir===1&&iy<0)||(P.dir===0&&iy>0)))P.dir=ix<0?2:3;}
       else P.dir=ix<0?2:ix>0?3:iy<0?1:0;
-      const sp=speed()*(ix&&iy?0.72:1),single=!(ix&&iy);let mx=true,my=true;
+      const sp=speed()*(ix&&iy?0.72:1)*(P.dashT>0?2.5:1),single=!(ix&&iy);let mx=true,my=true;
       if(ix)mx=moveP(ix*sp,0,single);if(iy)my=moveP(0,iy*sp,single);
       P.moving=mx||my;trailPush();
       if(single&&((ix&&!mx)||(iy&&!my)))bump(ix,iy);
@@ -3042,6 +3340,7 @@ function hint2(){
   for(const id of ORDER3){if(G.q[id]===1&&QUESTS[id].check())return "Go tell "+NAMES[QUEST_GIVER[id]||id]+" the good news!";}
   for(const id of ORDER3){if(G.q[id]===1)return QUESTS[id].hint();}
   {const vh=villageHint();if(vh)return vh;}
+  {const sh=seaHint();if(sh)return sh;}
   if(G.coop&&G.coop.lv<4)return "Upgrade your coop! Read the sign next to it.";
   if(!G.flags.festival)return festivalReady()?"Talk to Granny Shell in the forest: it's time for the festival!":"Almost there! Keep growing: the city has shops and homes to explore, and garden harvests and the snack bowl help too.";
   return "Your Dream Coop is finished! What a journey, little one.";
@@ -3372,7 +3671,7 @@ function gainGP(n,note){
   G.gp+=n;
   if(P&&state!=='title')float(P.x,P.y-30,'+'+n+' GROWTH','#94dc64');
 }
-function questGP(id){gainGP((ORDER3.includes(id)||ORDER4.includes(id))?GP.quest3:ORDER2.includes(id)?GP.quest2:GP.quest1);}
+function questGP(id){gainGP((ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?GP.quest3:ORDER2.includes(id)?GP.quest2:GP.quest1);}
 function tasteFood(id){
   if(!G||G.taste[id])return;G.taste[id]=1;gainGP(GP.taste);
   if(wearing('chef'))gainGP(1);
@@ -3597,28 +3896,29 @@ function drawCredits(){
 /* ---- Cap'n Pinch sails in with the treasure map (end of the village chapter) ---- */
 let PIN=null;
 const PINCH_LINES=["Ahoy, Pip! Cap'n Pinch be here! I sailed all night to find ye!","While scrubbin' me ship's hold, I found an OLD TREASURE MAP!","It leads to the PIRATE SEAS! Gold, volcanoes... and a gull named Captain Squawkbeard!","Get yer sea legs ready, matey. A grand adventure awaits ye!"];
-function startPinch(){PIN={t:0,line:0,shown:0};state='pinch';fade=0;SFX.fanfare();}
+function startPinch(){PIN={t:0,line:0,shown:0,lines:PINCH_LINES,after:pinchAfter};state='pinch';fade=0;SFX.fanfare();}
+function pinchAfter(){G.flags.pinchMap=1;G.flags.seasReady=1;save();state='play';
+  const sq={x:40*16+8,y:89*16+12};P.x=sq.x;P.y=sq.y+24;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;
+  say([{who:'me',text:"The Pirate Seas! I wonder what's out there... Cap'n Pinch will be at the city harbor, next to his ship."}]);}
 function updatePinch(){
   const p=PIN;p.t++;if(p.t<40){fade=1-p.t/40;return;}fade=0;
-  if(p.t<260){if(p.t%30===0)SFX.flap();return;}
-  const L=PINCH_LINES[p.line];
+  if(p.t<(p.sunset?60:260)){if(p.t%30===0)SFX.flap();return;}
+  const L=p.lines[p.line];
   if(p.shown<L.length){p.shown+=TEXT_SPEED_MUL[SET.speed];if(pressed.a)p.shown=L.length;}
   else if(pressed.a){p.line++;p.shown=0;SFX.menu();
-    if(p.line>=PINCH_LINES.length){PIN=null;G.flags.pinchMap=1;G.flags.seasReady=1;save();state='play';
-      const sq={x:40*16+8,y:89*16+12};P.x=sq.x;P.y=sq.y+24;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;
-      say([{who:'me',text:"The Pirate Seas! I wonder what's out there... Cap'n Pinch said to meet at the city harbor when I'm ready."}]);}}
+    if(p.line>=p.lines.length){const after=p.after;PIN=null;after();}}
 }
 function drawPinch(){
   const p=PIN;
   for(let i=0;i<9;i++){ctx.fillStyle=['#ff8a60','#ff9a6a','#ffaa78','#ffba88','#ffca98','#ffd8a8','#ffe0b8','#ffe8c8','#fff0d8'][i];ctx.fillRect(0,i*14,W,14);}
   ctx.fillStyle='#fff3a0';ctx.beginPath();ctx.arc(190,110,16,0,7);ctx.fill();
   ctx.fillStyle='#2a5fb0';ctx.fillRect(0,120,W,H-120);ctx.fillStyle='#3a70c8';for(let x=0;x<W;x+=10)ctx.fillRect(x,122+Math.round(Math.sin((x+tick*2)/9)*2),6,2);
-  const sx=Math.round(lerp(300,110,Math.min(1,p.t/240))),sy=134+Math.round(Math.sin(tick/14)*2);
+  const sx=Math.round(lerp(300,110,Math.min(1,p.t/(p.sunset?40:240)))),sy=134+Math.round(Math.sin(tick/14)*2);
   ctx.fillStyle='#21142b';ctx.fillRect(sx-4,sy-52,3,52);ctx.fillStyle='#fff8ec';ctx.beginPath();ctx.moveTo(sx,sy-50);ctx.lineTo(sx+34,sy-14);ctx.lineTo(sx,sy-14);ctx.fill();
   ctx.fillStyle='#e03838';ctx.fillRect(sx-4,sy-56,12,5);
   for(let i=0;i<5;i++)ctx.drawImage(TILE.ship,sx-40+i*16,sy-12,16,16);
   drawImg(SPR.crab,sx-12,sy-12-SPR.crab.height+4+Math.round(Math.sin(tick/9)*1));
-  if(p.t>=260){const L=PINCH_LINES[p.line];box(10,150,W-20,60,'#fff8ec','#21142b');txt("CAP'N PINCH",16,155,5,'#ec6c24');
+  if(p.t>=(p.sunset?60:260)){const L=p.lines[p.line];box(10,150,W-20,60,'#fff8ec','#21142b');txt("CAP'N PINCH",16,155,5,'#ec6c24');
     wrap(L.slice(0,Math.floor(p.shown)),5,W-36).forEach((l,i)=>txt(l,16,166+i*10,5,'#21142b'));
     if(p.shown>=L.length&&Math.floor(tick/15)%2)txt('v',W-22,198,5,'#ec6c24');}
 }
@@ -4049,6 +4349,424 @@ function drawVillageEnt(e,sx,sy){
   }
 }
 
+/* ===== src/systems/seas.js ===== */
+/* ---------------- Pirate Seas: sailing, ship upgrades, warps, dive/air, skills, island hazards ---------------- */
+for(const c of SEA_CAST){const p=SO[c.o];CHARACTERS.push({id:c.id,name:c.name,spr:c.spr,c:p[0]+c.c,r:p[1]+c.r,voice:c.voice,w:c.w});}
+function seaRegion(){const r=regionAt();return !!r&&!!r.sea;}
+function inDeep(){const c=cellAt();return !!c&&c.kind==='water';}
+function shipLevel(){return G.sea.lv.sails+G.sea.lv.hull+G.sea.lv.cannon;}
+function curNode(){
+  const r=regionAt();if(r&&r.sea){const a=r.area;return a==='fortress'?'fortress':a;}
+  return 'harbor';
+}
+/* ---- sail map ---- */
+let SAIL=null,VOY=null;
+function openSailMap(){SAIL={sel:Math.max(0,SEA_NODES.findIndex(n=>n.id!==curNode()&&n.need()))};state='sail';SFX.menu();}
+function updateSail(){
+  if(pressed.back||pressed.fly||pressed.quest||pressed.grow){state='play';SAIL=null;SFX.menu();return;}
+  const cur=SEA_NODES.find(n=>n.id===curNode())||SEA_NODES[0],S=SAIL;
+  for(const [k,dx,dy] of [['up',0,-1],['down',0,1],['left',-1,0],['right',1,0]]){if(!pressed[k])continue;
+    let best=-1,bs=1e9;const c0=SEA_NODES[S.sel];
+    SEA_NODES.forEach((n,i)=>{if(i===S.sel)return;const vx=n.mx-c0.mx,vy=n.my-c0.my,al=vx*dx+vy*dy;if(al<=0)return;const sc=al+Math.abs(vx*dy-vy*dx)*2;if(sc<bs){bs=sc;best=i;}});
+    if(best>=0){S.sel=best;SFX.menu();}}
+  if(pressed.a){const n=SEA_NODES[S.sel];
+    if(n.id===cur.id){SFX.deny();return;}
+    if(!n.need()){SFX.deny();toast(n.lock,'#ff8080');return;}
+    VOY={from:cur,to:n,t:0,dur:G.sea.lv.sails>=1?100:150};SAIL=null;state='voyage';SFX.magic();}
+}
+function updateVoyage(){
+  const v=VOY;v.t++;if(v.t%14===0)SFX.splash&&SFX.splash();
+  if(v.t>=v.dur){VOY=null;state='play';const n=v.to;G.sea.visited[n.id]=1;
+    if(n.id==='fortress'){warpTo(n.arrive.x,n.arrive.y,3,null,()=>fortressArrive());}
+    else warpTo(n.arrive.x,n.arrive.y,3,null,()=>toast('Welcome to '+n.name+'!','#a6e0ff'));}
+}
+const SEA_COL={harbor:'#c49a5c',cove:'#f2dca0',reef:'#ff9cd0',volcano:'#e8683c',lighthouse:'#e8e8f0',fortress:'#8a8a9a'};
+function drawSea(sel,shipAt){
+  for(let i=0;i<14;i++){ctx.fillStyle=['#1f4fa0','#2358ac','#2860b8','#2c68c0','#306fc8','#3476cf','#387dd6','#3c84dc','#408be2','#4492e8','#4899ee','#4ca0f2','#50a7f6','#54aefa'][i];ctx.fillRect(0,i*16,W,16);}
+  for(let k=0;k<30;k++){const x=(k*47+tick*0.4)%W,y=(k*29)%H;ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillRect(Math.round(x),y,6,1);ctx.fillRect(Math.round(x)+2,y+1,3,1);}
+  const nodes=SEA_NODES;
+  ctx.strokeStyle='rgba(255,248,236,0.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  for(const n of nodes){if(n.id==='harbor')continue;const from=n.id==='volcano'||n.id==='cove'||n.id==='reef'?nodes[0]:n.id==='lighthouse'?nodes[3]:nodes[4];
+    if(!n.need())continue;ctx.beginPath();ctx.moveTo(from.mx,from.my);ctx.lineTo(n.mx,n.my);ctx.stroke();}
+  ctx.setLineDash([]);
+  nodes.forEach((n,i)=>{const open=n.need(),s=i===sel;
+    if(s){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.beginPath();ctx.arc(n.mx,n.my,19,0,7);ctx.fill();}
+    ctx.fillStyle='#21142b';ctx.beginPath();ctx.arc(n.mx,n.my,17,0,7);ctx.fill();
+    ctx.fillStyle=open?SEA_COL[n.id]:'#4a5a7a';ctx.beginPath();ctx.arc(n.mx,n.my,15,0,7);ctx.fill();
+    if(open){ctx.fillStyle='#21142b';
+      if(n.id==='volcano'){ctx.beginPath();ctx.moveTo(n.mx-9,n.my+8);ctx.lineTo(n.mx,n.my-9);ctx.lineTo(n.mx+9,n.my+8);ctx.fill();ctx.fillStyle='#ffb030';ctx.fillRect(n.mx-2,n.my-9,4,3);}
+      else if(n.id==='lighthouse'){ctx.fillRect(n.mx-3,n.my-9,6,17);ctx.fillStyle='#e03838';ctx.fillRect(n.mx-3,n.my-3,6,4);ctx.fillStyle='#ffd83a';ctx.fillRect(n.mx-2,n.my-11,4,3);}
+      else if(n.id==='fortress'){ctx.fillStyle='#fff8ec';ctx.fillRect(n.mx-4,n.my-5,8,7);ctx.fillStyle='#21142b';ctx.fillRect(n.mx-3,n.my-3,2,2);ctx.fillRect(n.mx+1,n.my-3,2,2);ctx.fillRect(n.mx-1,n.my+2,2,2);}
+      else if(n.id==='reef'){ctx.fillStyle='#e03838';ctx.fillRect(n.mx-6,n.my,3,8);ctx.fillRect(n.mx-1,n.my-5,3,13);ctx.fillRect(n.mx+4,n.my+1,3,7);}
+      else if(n.id==='cove'){ctx.fillStyle='#2f7d3a';ctx.fillRect(n.mx-1,n.my-8,3,12);ctx.fillRect(n.mx-7,n.my-8,14,3);}
+      else{ctx.fillStyle='#9a6234';ctx.fillRect(n.mx-8,n.my+2,16,4);ctx.fillRect(n.mx-6,n.my-6,3,8);ctx.fillRect(n.mx+3,n.my-6,3,8);}}
+    else txt('?',n.mx,n.my-4,8,'#c8d0e8',{align:'center'});
+  });
+  const at=nodes.find(n=>n.id===shipAt);if(at&&!VOY)ctx.drawImage(SPR.shipIcon,at.mx-12,at.my-28);
+}
+function drawSail(){
+  drawSea(SAIL.sel,curNode());
+  box(8,8,W-16,16,'#1d1430','#a6e0ff');txt('WHERE TO, CAPTAIN?',W/2,13,7,'#a6e0ff',{align:'center'});
+  const n=SEA_NODES[SAIL.sel];box(8,H-34,W-16,26,'#1d1430','#6a5a90');
+  txt(n.need()?n.name:'???',W/2,H-30,7,n.need()?'#fff8ec':'#8a7ab0',{align:'center'});
+  txt(n.need()?(n.id===curNode()?'You are here.':'Z: set sail     ESC: close'):n.lock,W/2,H-19,5,n.need()?'#b8a8d8':'#ff8080',{align:'center'});
+  txt('SHIP: '+SEA_LEVEL_NAMES[Math.min(3,shipLevel())],W-14,28,5,'#ffd83a',{align:'right'});
+}
+function drawVoyage(){
+  const v=VOY,k=Math.min(1,v.t/v.dur),x=lerp(v.from.mx,v.to.mx,k),y=lerp(v.from.my,v.to.my,k);
+  drawSea(-1,null);ctx.drawImage(SPR.shipIcon,Math.round(x-17),Math.round(y-28+Math.sin(tick/6)*2));
+  for(let i=0;i<5;i++){const t=(v.t*1.5+i*9)%40;ctx.fillStyle='rgba(255,255,255,'+(1-t/40)+')';ctx.fillRect(Math.round(x-t*0.6+6),Math.round(y+3+i%2),2,1);}
+  txt('Sailing to '+v.to.name+'...',W/2,H-20,6,'#fff8ec',{align:'center',shadow:true});
+}
+function fortressArrive(){if(G.sea.boss<4)fortressStart();else toast("Squawkbeard's old ship. It's quiet now.",'#a6e0ff');}
+/* ---- ship upgrades (used by the ship menu) ---- */
+function upgradeNeeds(u){return costTextSeas(u);}
+function costTextSeas(u){return u.seeds+' SEEDS, '+Object.entries(u.salv).map(([k,n])=>n+' '+SALV_NAME[k]+' (have '+G.sea.salv[k]+')').join(', ');}
+function buyUpgrade(u){
+  if(G.sea.lv[u.id])return {s:'Already installed!',c:'#94dc64'};
+  const miss=[];if(G.seeds<u.seeds)miss.push((u.seeds-G.seeds)+' seeds');for(const k in u.salv)if(G.sea.salv[k]<u.salv[k])miss.push((u.salv[k]-G.sea.salv[k])+' '+SALV_NAME[k]);
+  if(miss.length){SFX.deny();return {s:'Still need '+miss.join(', ')+'.',c:'#ff8080'};}
+  G.seeds-=u.seeds;for(const k in u.salv)G.sea.salv[k]-=u.salv[k];G.sea.lv[u.id]=1;SFX.questDone();gainGP(GP.upgrade);shake=4;
+  toast(u.name+' installed!','#ffd83a');save();return {s:u.name+' is on the ship!',c:'#ffd83a'};
+}
+/* ---- entities ---- */
+function makeSeaEnts(){
+  // docks: your ship waits at the end of each island's pier
+  for(const [o,c,r,key] of [['cove',0,8,'cove'],['reef',0,8,'reef'],['volc',0,8,'volcano'],['light',0,8,'lighthouse']]){const p=spx(o,c,r);addEnt({type:'shipdock',x:p.x,y:p.y+4,node:key});}
+  {const p=ents.find(e=>e.id==='pinch');if(G.flags.pinchMap&&p)Object.assign(p,at(69,78));}
+  for(const w of SEA_WARPS){const a=spx(...w.at),b=spx(...w.to);addEnt({type:'swarp',id:w.id,x:a.x,y:a.y,to:b,label:w.label,dive:w.dive,up:w.up});}
+  for(const [id,kind,o,c,r] of SEA_ITEMS){const p=spx(o,c,r);spawnItem(id,kind,p.x,p.y);}
+  for(const [id,o,c,r] of XMARKS){if(!G.sea.dug[id]){const p=spx(o,c,r);addEnt({type:'xmark',id,x:p.x,y:p.y+2});}}
+  if(G.sea.chest===1)addEnt({type:'seachest',x:spx('coveE',8,3).x,y:spx('coveE',8,3).y,solid:true,w:16});
+  // enemies
+  for(const [o,c,r,rng] of [['cove',5,9,3],['coveE',10,9,3],['cave',8,5,4],['cave',4,9,3],['caveE',8,6,4],['reefE',6,3,3]]){const p=spx(o,c,r);
+    addEnt({type:'crab',x:p.x,y:p.y,hx:p.x,hy:p.y,rng:rng*16,dir:1,sx:Math.floor(p.x/256),sy:Math.floor(p.y/192),stun:0,kt:0,kx:0,flash:0,cool:0});}
+  for(const [o,c,r] of [['cove',10,2],['coveE',6,6],['volcE',4,4],['light',8,5],['lightE',10,9]]){const p=spx(o,c,r);addEnt({type:'gullp',x:p.x,y:p.y-30,hx:p.x,hy:p.y-30,st:'patrol',t:0,ph:c*7,hp:1,sx:Math.floor(p.x/256),sy:Math.floor(p.y/192),down:0,flash:0});}
+  for(const [o,c,r] of [['deep',5,3],['deep',11,7],['deep',3,8],['deepE',3,4],['deepE',12,7],['deepE',9,9]]){const p=spx(o,c,r);addEnt({type:'jelly',x:p.x,y:p.y,hx:p.x,hy:p.y,ph:c*5,stun:0,sx:Math.floor(p.x/256),sy:Math.floor(p.y/192),flash:0});}
+  for(const [o,c,r] of [['deep',9,9],['deepE',10,2],['deepE',6,10],['deep',2,5]]){const p=spx(o,c,r);addEnt({type:'bubbles',x:p.x,y:p.y,ph:c});}
+  // lava sparks along the lava rivers
+  for(const [o,c,r] of [['volc',7,3],['volc',7,8],['volcE',9,6],['volcE',9,2],['volcE',3,8],['volc',6,9]]){const p=spx(o,c,r);addEnt({type:'spark',x:p.x,y:p.y,bx:p.x,by:p.y,t:Math.floor(Math.random()*160),sx:Math.floor(p.x/256),sy:Math.floor(p.y/192),up:0});}
+  makeSeaQuestEnts();
+}
+/* ---- per-frame ---- */
+let warpCool=0,lastSafe=null,lavaT=0,springT=0;
+function updateSeas(){
+  if(!G||!P)return;
+  if(warpCool>0)warpCool--;
+  if(P.dashT>0){P.dashT--;}
+  if(P.dashCd>0)P.dashCd--;
+  const rg=regionAt();if(!rg)return;
+  if(rg.sea){
+    const under=tileAt(Math.floor(P.x/16),Math.floor((P.y-3)/16));
+    if(under==='>'||under==='<'){if(!has('sealegs')&&!P.hop){moveP(under==='>'?0.8:-0.8,0,false);}else if(tick%90===0)float(P.x,P.y-24,'Sea legs!','#a6e0ff');}
+    if(under==='{'&&P.inv<=0&&!P.hop&&!(P.dashT>0)){hurt({x:P.x,y:P.y});if(lastSafe){P.x=lastSafe.x;P.y=lastSafe.y;float(P.x,P.y-24,'Hot hot hot!','#ffb030');}}
+    else if(under!=='{'&&under!=='w'&&!P.hop)lastSafe={x:P.x,y:P.y};
+    if(under==='}'){if(++springT%120===0&&G.hearts<maxHearts()){G.hearts++;SFX.pick();float(P.x,P.y-24,'Ahh... +1','#94dc64');}}else springT=0;
+  }
+  // swim/dive handling: air meter in deep reef
+  if(inDeep()){
+    G.air=Math.max(0,(G.air==null?AIR_MAX:G.air)-1);
+    if(G.air<=0&&state==='play'){surface(true);}
+  }else G.air=AIR_MAX;
+  for(const e of ents){
+    if(e.type==='swarp'&&onCur(e)&&warpCool<=0&&state==='play'&&!WARP&&Math.abs(P.x-e.x)<10&&Math.abs(P.y-e.y)<10){
+      if(e.dive&&!has('dive')){warpCool=60;float(e.x,e.y-20,'Learn DIVE first!','#a6e0ff');SFX.deny();continue;}
+      warpCool=50;warpTo(e.to.x,e.to.y,e.up?1:0,null,()=>{if(e.dive){G.air=AIR_MAX;toast('Blub blub! Watch your AIR.','#a6e0ff');}else if(e.up)toast('Fresh air!','#a6e0ff');});}
+  }
+  updateSeaQuests();
+}
+function surface(gasp){
+  const up=ents.find(e=>e.type==='swarp'&&e.up&&regionAt()===regionOfPos(e.x,e.y));
+  const t=(ents.find(e=>e.type==='swarp'&&e.up&&e.to&&regionOfPos(e.x,e.y)===regionAt())||ents.find(e=>e.type==='swarp'&&e.up)).to;
+  G.air=AIR_MAX;warpCool=60;warpTo(t.x,t.y,1,null,()=>toast(gasp?'Pop! Pip bobs up gasping for air.':'Fresh air!','#a6e0ff'));
+}
+/* ---- skills: Dash, Cannon Peck ---- */
+function tryDash(){
+  if(!has('dash')||P.dashCd>0||P.hop||P.flying)return;
+  P.dashT=14;P.dashCd=70;P.inv=Math.max(P.inv,18);SFX.gust();
+  const [dx,dy]=DIRV[P.dir];for(let i=0;i<8;i++)parts.push({x:P.x-dx*8,y:P.y-6-dy*8,vx:-dx*(1+Math.random()),vy:-dy*(1+Math.random())-0.3,g:0,life:14,c:i%2?'#fff8ec':'#ffd83a'});
+}
+let prevA=false,aHold=0;
+function updateCharge(){
+  const held=!!keys.a&&state==='play';
+  if(held)aHold++;
+  if(has('cpeck')&&prevA&&!held&&aHold>=32){cannonPeck();}
+  if(!held)aHold=0;prevA=held;P.charge=has('cpeck')&&held&&aHold>10?aHold:0;
+}
+function cannonPeck(){
+  const [dx,dy]=DIRV[P.dir];SFX.brk();shake=5;P.peckT=14;
+  for(let i=0;i<18;i++)parts.push({x:P.x+dx*10,y:P.y-6+dy*10,vx:dx*(2+Math.random()*3),vy:dy*(2+Math.random()*3),g:0,life:20,c:i%2?'#ffd83a':'#ff6fae'});
+  let hit=0;
+  for(const e of ents){if(!onCur(e))continue;
+    const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
+    if(along<-4||along>58||lat>18)continue;
+    if(e.type==='crab'){e.kx=dx*5;e.kt=18;e.stun=120;hit++;}
+    else if(e.type==='gullp'){gullKnock(e);hit++;}
+    else if(e.type==='jelly'){e.stun=150;e.hx=e.x+dx*40;e.hy=e.y+dy*40;hit++;}
+    else if(e.type==='boss'){bossHit(2);hit++;}
+    else if(e.type==='barrel'){e.vx=dx*3;e.vy=dy*3;e.back=true;hit++;}}
+  if(hit)float(P.x,P.y-24,'KAPOW!','#ffd83a');
+}
+
+/* ===== src/systems/seas2.js ===== */
+/* ---------------- Pirate Seas part 2: enemies, island puzzles, Captain Squawkbeard (3 stages), the ending ---------------- */
+/* ---- enemies ---- */
+function gullKnock(e){e.st='gone';e.gone=600;e.flash=10;SFX.honk();puff(e.x,e.y,10,['#fff8ec','#e8e8f0'],1.4,0.05);float(e.x,e.y-16,'SQUAWK!','#fff8ec');}
+function updGull(e){
+  if(e.flash>0)e.flash--;
+  if(e.gone>0){e.gone--;if(e.gone<=0){e.st='patrol';e.t=0;e.x=e.hx;e.y=e.hy;}return;}
+  e.t++;
+  const dx=P.x-e.x,dy=P.y-6-e.y;
+  if(e.st==='patrol'){e.x=e.hx+Math.cos(e.t/50+e.ph)*34;e.y=e.hy+Math.sin(e.t/37+e.ph)*8;e.flip=Math.sin(e.t/50+e.ph)>0;
+    if(e.t>90&&Math.hypot(P.x-e.hx,P.y-e.hy)<(wearing('ninja')?38:92)&&!P.hop){e.st='tell';e.t=0;e.tx=P.x;e.ty=P.y-6;SFX.honk();}}
+  else if(e.st==='tell'){e.x+=(Math.random()-.5)*1.2;if(e.t>=28){e.st='dive';e.t=0;e.tx=P.x;e.ty=P.y-6;}}
+  else if(e.st==='dive'){const vx=e.tx-e.x,vy=e.ty-e.y,d=Math.hypot(vx,vy)||1;e.flip=vx>0;
+    if(d>4&&e.t<44){e.x+=vx/d*3.2;e.y+=vy/d*3.2;}else{e.st='rest';e.t=0;}
+    if(Math.abs(P.x-e.x)<10&&Math.abs(P.y-6-e.y)<10&&P.inv<=0&&!P.hop){hurt(e);e.st='rest';e.t=0;}}
+  else if(e.st==='rest'){if(e.t>=36){e.st='rise';e.t=0;}}
+  else if(e.st==='rise'){const vx=e.hx-e.x,vy=e.hy-e.y,d=Math.hypot(vx,vy);if(d<3){e.st='patrol';e.t=-60;}else{e.x+=vx/d*1.4;e.y+=vy/d*1.4;}}
+}
+function updJelly(e){
+  if(e.flash>0)e.flash--;
+  if(e.stun>0){e.stun--;e.x+=(e.hx-e.x)*0.04;e.y+=(e.hy-e.y)*0.04;return;}
+  e.ph+=0.02;e.x=e.hx+Math.cos(e.ph*1.3)*22;e.y=e.hy+Math.sin(e.ph)*14;
+  if(Math.abs(P.x-e.x)<10&&Math.abs(P.y-6-e.y)<9&&P.inv<=0&&!P.hop){hurt(e);e.stun=60;}
+}
+function updSpark(e){
+  e.t++;const c=e.t%190;
+  if(c<44){const p=c/44;e.up=1;e.x=e.bx+Math.sin(p*Math.PI)*6;e.y=e.by-Math.sin(p*Math.PI)*38;
+    if(Math.abs(P.x-e.x)<8&&Math.abs(P.y-6-e.y)<9&&P.inv<=0&&!P.hop&&!(P.dashT>0))hurt(e);}
+  else{e.up=0;e.x=e.bx;e.y=e.by;}
+}
+function updBubbles(e){if(e.cool>0){e.cool--;return;}
+  if(Math.abs(P.x-e.x)<12&&Math.abs(P.y-6-e.y)<14){G.air=Math.min(AIR_MAX,(G.air||0)+1500);e.cool=700;SFX.pop();float(e.x,e.y-18,'AIR!','#a6e0ff');}}
+/* ---- peck / flap hooks ---- */
+function seaPeck(e,f,pr){
+  if(e.type==='gullp'&&!e.gone&&ov(pr,{x:e.x-9,y:e.y-9,w:18,h:16})){gullKnock(e);return true;}
+  if(e.type==='jelly'&&ov(pr,{x:e.x-10,y:e.y-10,w:20,h:16})){e.stun=140;e.hx=e.x+(e.x<P.x?-26:26);e.flash=10;SFX.brk();float(e.x,e.y-14,'BLOOP!','#ff9cd0');return true;}
+  if(e.type==='xmark'&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-4-f.y)<14){
+    if(!has('peck')){SFX.clunk();float(e.x,e.y-14,'Too hard to dig!');return true;}
+    e.dead=true;G.sea.dug[e.id]=1;SFX.brk();puff(e.x,e.y-4,14,['#e8d8b0','#c49a5c','#fff8ec'],1.4,0.08);
+    const n=Object.keys(G.sea.dug).length;toast('Dug up a spot! ('+n+'/3)','#ffd83a');
+    if(n>=3){G.sea.chest=1;const p=spx('coveE',8,3);addEnt({type:'seachest',x:p.x,y:p.y,solid:true,w:16});toast('A treasure chest rises from the sand!','#ff9cd0');SFX.questDone();}
+    save();return true;}
+  if(e.type==='seachest'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<16){openSeaChest(e);return true;}
+  if(e.type==='brazier'&&Math.abs(e.x-f.x)<14&&Math.abs(e.y-6-f.y)<14){lightBrazier(e);return true;}
+  if(e.type==='boss'&&e.st==='land'&&Math.abs(e.x-f.x)<22&&Math.abs(e.y-8-f.y)<20){bossHit(1);return true;}
+  return false;
+}
+function seaTalkChest(f){for(const e of ents)if(e.type==='seachest'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<16){openSeaChest(e);return true;}return false;}
+function openSeaChest(e){
+  if(G.sea.chest===2){say([{who:'me',text:"An empty chest. What a treasure it was!"}]);return;}
+  G.sea.chest=2;e.opened=true;SFX.chest();shake=3;addSeeds(6,2,0);G.sea.salv.hullplank+=1;
+  toast('TREASURE! 6 seeds and a HULL PLANK!','#ffd83a');say([{who:'me',text:"Pieces of eight! Six seeds and a sturdy plank for the ship. Let's tell Polly!"}]);save();
+}
+function seaFlap(dx,dy){
+  for(const e of ents){if(e.type!=='barrel'||e.back)continue;
+    const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
+    if(along>-6&&along<54&&lat<24){e.back=true;e.st='back';SFX.gust();float(e.x,e.y-14,'WHOOSH!','#a6e0ff');}}
+}
+/* ---- Lighthouse puzzle ---- */
+const BRAZIERS=[['sun',3,5],['moon',11,5],['star',3,9],['wave',11,9]];
+function makeSeaQuestEnts(){
+  BRAZIERS.forEach(([k,c,r])=>{const p=spx('lightE',c,r);addEnt({type:'brazier',sym:k,x:p.x,y:p.y,solid:true,w:12,lit:!!G.flags.lit});});
+}
+function lightBrazier(e){
+  if(G.flags.lit){float(e.x,e.y-20,'Already glowing!','#ffd83a');return;}
+  const next=SUN_ORDER[G.sea.lamps||0];
+  if(e.sym===next){e.lit=true;G.sea.lamps=(G.sea.lamps||0)+1;SFX.magic();puff(e.x,e.y-8,12,['#ffb030','#ffd83a'],1.4,-0.02);float(e.x,e.y-20,(G.sea.lamps)+'/4','#ffd83a');
+    if(G.sea.lamps>=4){G.flags.lit=1;toast('THE LIGHTHOUSE IS LIT! Tell Keeper Gus.','#ff9cd0');SFX.fanfare();shake=6;}save();}
+  else{G.sea.lamps=0;for(const b of ents)if(b.type==='brazier')b.lit=false;SFX.deny();float(e.x,e.y-20,'Fizzle! Wrong order.','#ff8080');puff(e.x,e.y-6,8,['#8a8a9a','#e8e8f0'],1,0.04);}
+}
+function updateSeaQuests(){
+  // the sunken bell and other pick-ups need nothing special; keep braziers in sync after loading
+  if(G.flags.lit)for(const e of ents)if(e.type==='brazier'&&!e.lit)e.lit=true;
+}
+/* ---- Captain Squawkbeard ---- */
+let BOSS=null;
+function bossActive(){const r=regionAt();return !!r&&r.id==='fortress'&&!!G.sea&&G.sea.boss>0&&G.sea.boss<4;}
+function fortressStart(){startBossStage(G.sea.boss>0&&G.sea.boss<4?G.sea.boss:1);}
+function startBossStage(st){
+  ents=ents.filter(e=>!['boss','barrel','bshadow'].includes(e.type));G.sea.boss=st;
+  if(st>=3){startChase();return;}
+  const o=SO.fort,bx=o[0]*16+128,by=o[1]*16+34;
+  BOSS={st,hp:st===1?4:3,max:st===1?4:3,t:0,intro:90};
+  addEnt({type:'boss',st:'enter',x:bx,y:by,hx:bx,hy:by,t:0,flash:0,flip:false,tx:bx,ty:by});
+  toast(st===1?'STAGE 1: Peck him when he lands!':'STAGE 2: Flap the barrels back at him!','#ffd83a');
+}
+function bossEnt(){return ents.find(e=>e.type==='boss');}
+function bossHit(n){
+  const b=bossEnt();if(!b||!BOSS||BOSS.intro>0||(b.st==='dazed'))return;
+  BOSS.hp-=n;b.flash=18;SFX.brk();shake=6;float(b.x,b.y-24,'SQUAWK!','#ff8080');puff(b.x,b.y-8,14,['#fff8ec','#e8e8f0','#ff8080'],1.8,0.05);
+  if(BOSS.hp<=0){b.st='dazed';b.t=0;ents=ents.filter(e=>e.type!=='barrel');return;}
+  if(BOSS.st===1){b.st='rise';b.t=0;}
+}
+function stageClear(){
+  const next=G.sea.boss+1;toast('Stage cleared!','#94dc64');SFX.questDone();save();
+  const b=bossEnt();if(b)b.dead=true;
+  say([{who:'me',text:next===2?"He's mad now! He's throwing barrels! WING FLAP blows them right back at him!":"He's running! After him through the sky! DASH to catch him and GLIDE to dodge!"}],
+    ()=>{if(next===3&&!(has('dash')&&has('glide'))){G.sea.boss=2;startBossStage(2);toast('Stage 3 needs DASH and GLIDE. Learn them first!','#ff9cd0');say([{who:'me',text:"I need DASH (Sea Tree) and GLIDE (Sky Tree) to catch him in the air!"}]);}else startBossStage(next);});
+  G.sea.boss=next>=3?(has('dash')&&has('glide')?3:2):next;
+}
+function updBoss(e){
+  const o=SO.fort,B=BOSS;if(!B)return;
+  if(e.flash>0)e.flash--;
+  if(B.intro>0){B.intro--;e.y=e.hy+Math.sin(tick/9)*3;return;}
+  e.t++;
+  if(e.st==='dazed'){e.y+=1.2;e.x+=(e.hx-e.x)*0.02;if(e.t>50)stageClear();return;}
+  if(B.st===1){
+    if(e.st==='enter'||e.st==='hover'){e.st='hover';e.x=e.hx+Math.sin(e.t/28)*58;e.y=e.hy+Math.sin(e.t/17)*5;e.flip=Math.cos(e.t/28)>0;
+      if(e.t>80){e.st='tell';e.t=0;e.tx=P.x;e.ty=P.y;}}
+    else if(e.st==='tell'){e.x+=(e.tx-e.x)*0.08;e.y=e.hy+Math.sin(e.t/4)*3;if(e.t===1)SFX.honk();if(e.t>=46){e.st='dive';e.t=0;}}
+    else if(e.st==='dive'){const gy=e.ty-4;e.x+=(e.tx-e.x)*0.3;e.y+=(gy-e.y)*0.28;
+      if(e.t>=14){e.st='land';e.t=0;e.x=e.tx;e.y=gy;shake=6;SFX.brk();puff(e.x,e.y+4,12,['#e8d8b0','#fff8ec'],1.6,0.06);
+        if(Math.abs(P.x-e.x)<20&&Math.abs(P.y-4-e.y)<18&&P.inv<=0&&!P.hop)hurt(e);}}
+    else if(e.st==='land'){if(e.t>=110){e.st='rise';e.t=0;}}
+    else if(e.st==='rise'){e.y+=(e.hy-e.y)*0.12;e.x+=(e.hx-e.x)*0.04;if(e.t>=34){e.st='hover';e.t=0;}}
+  }else{
+    e.st='perch';e.x=e.hx+Math.sin(e.t/50)*18;e.y=e.hy+Math.sin(e.t/13)*3;e.flip=Math.cos(e.t/50)<0;
+    if(e.t%140===70){const col=Math.max(2,Math.min(13,Math.round((P.x-o[0]*16)/16)))*16+8+o[0]*16;
+      const row=Math.max(3,Math.min(9,Math.round((P.y-o[1]*16)/16)));
+      addEnt({type:'barrel',st:'fall',t:0,x:col,y:o[1]*16+row*16+12,fy:o[1]*16+row*16+12,lane:row,dirx:Math.random()<0.5?1:-1,vx:0,vy:0});SFX.honk();}
+  }
+}
+function updBarrel(e){
+  const b=bossEnt();
+  if(e.st==='fall'){e.t++;if(e.t>=36){e.st='roll';e.vx=e.dirx*1.7;e.vy=0;e.x=SO.fort[0]*16+(e.dirx>0?36:236);SFX.bonk&&SFX.bonk();}return;}
+  if(e.st==='roll'){e.x+=e.vx;e.t++;
+    if(Math.abs(P.x-e.x)<10&&Math.abs(P.y-4-e.y)<9&&P.inv<=0&&!P.hop&&!(P.dashT>0)){hurt(e);e.dead=true;puff(e.x,e.y,8,['#c49a5c','#fff8ec'],1.4,0.05);}
+    if(e.x<SO.fort[0]*16+20||e.x>SO.fort[0]*16+236)e.dead=true;return;}
+  if(e.st==='back'&&b){const vx=b.x-e.x,vy=b.y-e.y,d=Math.hypot(vx,vy)||1;e.x+=vx/d*3.4;e.y+=vy/d*3.4;
+    if(d<16){e.dead=true;bossHit(1);}}
+}
+function bossRetry(){
+  toast('Pinch fishes you out! Try this stage again!','#ffd83a');
+  const o=SO.fort;P.x=o[0]*16+60;P.y=o[1]*16+8*16+12;P.inv=60;P.kt=0;G.hearts=maxHearts();
+  if(state==='chase'){state='play';CH=null;}
+  startBossStage(Math.min(G.sea.boss||1,3)===3&&!(has('dash')&&has('glide'))?2:Math.max(1,Math.min(3,G.sea.boss||1)));
+}
+/* ---- stage 3: the chase through the sky ---- */
+let CH=null;
+function startChase(){
+  ents=ents.filter(e=>!['boss','barrel'].includes(e.type));
+  CH={t:0,x:56,y:110,hp:3,bx:206,by:100,bph:0,balls:[],inv:0,dashT:0,dashCd:0,flash:0,bstun:0,intro:80};
+  state='chase';fade=0;toast('STAGE 3: Catch him in the sky!','#ffd83a');SFX.fanfare();
+}
+function updateChase(){
+  const c=CH;c.t++;
+  if(c.intro>0){c.intro--;return;}
+  if(c.inv>0)c.inv--;if(c.dashCd>0)c.dashCd--;if(c.flash>0)c.flash--;if(c.bstun>0)c.bstun--;
+  const sp=has('glide')?2.4:1.8;
+  const ix=(keys.right?1:0)-(keys.left?1:0),iy=(keys.down?1:0)-(keys.up?1:0);
+  if(c.dashT>0){c.dashT--;c.x+=4.6;}else{c.x+=ix*sp;c.y+=iy*sp;}
+  c.x=clamp(c.x,24,190);c.y=clamp(c.y,50,190);
+  if((pressed.dash||pressed.a)&&c.dashCd<=0&&has('dash')){c.dashT=14;c.dashCd=60;SFX.gust();}
+  c.bph+=0.03;
+  if(c.bstun<=0){c.bx+=(206-c.bx)*0.04+(c.bx>200&&c.dashT>0?0:0);c.by=110+Math.sin(c.bph*2)*54;}
+  if(c.t%38===0)c.balls.push({x:W+10,y:60+((c.t*53)%130),v:1.9+Math.min(1,c.t/1500)});
+  for(const b of c.balls){b.x-=b.v;if(c.inv<=0&&Math.abs(b.x-c.x)<9&&Math.abs(b.y-c.y)<9){b.x=-99;G.hearts--;c.inv=70;SFX.hurt();shake=5;
+      if(G.hearts<=0){G.hearts=maxHearts();toast('Pinch fishes you out! Try again!','#ffd83a');startChase();return;}}}
+  c.balls=c.balls.filter(b=>b.x>-20);
+  if(c.dashT>0&&c.bstun<=0&&Math.abs(c.x-c.bx)<22&&Math.abs(c.y-c.by)<20){c.hp--;c.bstun=50;c.bx=min2(240,c.bx+30);c.flash=20;SFX.brk();shake=6;toast(c.hp>0?'HIT! '+c.hp+' to go!':'GOT HIM!','#ffd83a');
+    if(c.hp<=0){bossWin();return;}}
+}
+function min2(a,b){return a<b?a:b;}
+function drawChase(){
+  const c=CH;drawSky(c.t*2);ctx.fillStyle='#2a5fb0';ctx.fillRect(0,170,W,54);
+  for(let i=0;i<20;i++){const x=((i*37-c.t*3)%W+W)%W;ctx.fillStyle='rgba(255,255,255,0.4)';ctx.fillRect(x,172+(i*7)%40,10,1);}
+  for(let i=0;i<4;i++){const x=((i*90-c.t*1.5)%(W+60)+W+60)%(W+60)-30;cloud(Math.round(x),30+i*22,1+(i%2));}
+  for(const b of c.balls)drawImg(SPR.cannonball,Math.round(b.x-4),Math.round(b.y-4));
+  if(!(c.flash>0&&Math.floor(c.flash/2)%2)){const s=flipOf(SPR.squawk);ctx.drawImage(s,Math.round(c.bx-20),Math.round(c.by-18));}
+  if(!(c.inv>0&&Math.floor(c.inv/3)%2)){if(c.dashT>0){ctx.fillStyle='rgba(255,216,58,0.5)';ctx.fillRect(Math.round(c.x-40),Math.round(c.y-4),40,6);}
+    drawPip(stage(),3,Math.floor(c.t/5)%2,true,Math.round(c.x),Math.round(c.y+8),1);}
+  for(let i=0;i<maxHearts();i++)drawImg(i<G.hearts?SPR.heart:SPR.heartE,8+i*9,8);
+  box(70,6,116,14,'#1d1430','#ff8080');txt('SQUAWKBEARD',78,10,5,'#fff8ec');for(let i=0;i<3;i++){ctx.fillStyle=i<c.hp?'#ff8080':'#4a3a66';ctx.fillRect(150+i*10,10,8,6);}
+  txt(has('dash')?'Z or SHIFT: DASH into him!':'You need DASH!',W/2,H-14,5,'#fff8ec',{align:'center',shadow:true});
+  if(c.intro>0)txt('GET READY!',W/2,100,10,'#ffd83a',{align:'center',shadow:true});
+}
+function bossWin(){
+  CH=null;state='play';G.sea.boss=4;G.flags.seas=1;G.flags.skyMap=1;
+  ents=ents.filter(e=>!['boss','barrel'].includes(e.type));
+  const o=SO.fort;P.x=o[0]*16+60;P.y=o[1]*16+8*16+12;P.inv=60;
+  reward(QUESTS.sea_boss.reward,'sea_boss');addSeeds(20,2,0);toast('Squawkbeard dropped his chest: 20 golden seeds!','#ffd83a');SFX.fanfare();save();
+  startRankUp(9,startSeaEnding);
+}
+function startSeaEnding(){
+  PIN={t:0,line:0,shown:0,lines:SEA_END_LINES,sunset:true,after:()=>{const h=SEA_NODES[0].arrive;warpTo(h.x,h.y,0,null,()=>say([{who:'me',text:"Captain of the Seas! And a map of the SKY... I wonder what Elda's egg is up to?"}]));}};
+  state='pinch';fade=0;SFX.fanfare();
+}
+const SEA_END_LINES=["YARRR! Ye did it, Captain Pip! The Pirate Seas be safe!","Squawkbeard dropped his treasure chest. Golden seeds, and... what's this?","An ANCIENT MAP! It shows CLOUDS, floating islands and a great storm!","And I hear Elda's egg is about to hatch. The sky awaits ye, Pip!","TO BE CONTINUED... THE SKY KINGDOM"];
+
+function seaHint(){
+  if(!G.flags.pinchMap)return null;
+  if(G.q.sea_cove===0)return "Capn Pinch is at the city harbor with a treasure map. Talk to him!";
+  for(const id of ORDER5)if(G.q[id]===1&&QUESTS[id].check())return "Go tell "+NAMES[QUEST_GIVER[id]]+" the good news!";
+  for(const k in TRAIN){const t=TRAIN[k];if(t.phase===5&&G.train[k]===1)return t.hint();}
+  for(const id of ORDER5)if(G.q[id]===1)return QUESTS[id].hint();
+  if(!G.flags.seas)return G.sea.lv.cannon?"Sail to Squawkbeard's ship when you're ready!":"Upgrade your ship at the harbor: sails, hull and a seed cannon!";
+  return null;
+}
+
+/* ===== src/systems/seas_draw.js ===== */
+/* ---------------- drawing for the Pirate Seas ---------------- */
+function drawSeaEnt(e,sx,sy){
+  switch(e.type){
+    case 'gullp':{if(e.gone>0)break;if(e.flash>0&&Math.floor(e.flash/2)%2)break;let s=SPR.gullp;if(e.flip)s=flipOf(s);
+      if(e.st==='tell'||e.st==='dive'){ctx.fillStyle='rgba(0,0,0,0.25)';ctx.fillRect(Math.round(e.tx-camX)-6,Math.round(e.ty-camY+HUD)+8,12,3);}
+      const off=e.st==='rest'?0:Math.round(Math.sin(tick/5)*1.5);drawImg(s,sx-(s.width>>1),sy-s.height+off);
+      if(e.st==='tell'){ctx.fillStyle='#ff4040';ctx.fillRect(sx-1,sy-s.height-9,2,5);ctx.fillRect(sx-1,sy-s.height-3,2,2);}break;}
+    case 'jelly':{ctx.globalAlpha=0.85;const s=SPR.jelly,b=Math.round(Math.sin(tick/9+e.ph)*1.5);if(!(e.flash>0&&Math.floor(e.flash/2)%2))drawImg(s,sx-(s.width>>1),sy-s.height+b);ctx.globalAlpha=1;
+      if(e.stun>0&&e.stun%20<10){ctx.fillStyle='#ffd83a';ctx.fillRect(sx-4,sy-14,2,2);ctx.fillRect(sx+3,sy-14,2,2);}break;}
+    case 'spark':{if(e.up){drawImg(SPR.spark,sx-2,sy-5);ctx.fillStyle='rgba(255,180,60,0.35)';ctx.beginPath();ctx.arc(sx,sy-3,7,0,7);ctx.fill();}
+      else if(tick%50<25){ctx.fillStyle='#ffb030';ctx.fillRect(sx-1,sy-1,2,2);}break;}
+    case 'bubbles':{if(e.cool>0)break;for(let i=0;i<4;i++){const t=(tick*0.6+i*13)%40;ctx.globalAlpha=1-t/50;drawImg(SPR.bubble,sx-4+(i%2)*5,sy-t*0.7-(i*3));}ctx.globalAlpha=1;break;}
+    case 'swarp':{
+      if(e.dive){const r=7+Math.sin(tick/10)*1.5;ctx.fillStyle='#1f55a8';ctx.beginPath();ctx.ellipse(sx,sy,14,8,0,0,7);ctx.fill();ctx.strokeStyle='#a6e0ff';ctx.lineWidth=1;
+        for(let i=0;i<2;i++){ctx.beginPath();ctx.ellipse(sx,sy,r+i*4,(r+i*4)*0.55,tick/30,0,5);ctx.stroke();}
+        if(has('dive')){txt('DIVE',sx,sy-18,5,'#a6e0ff',{align:'center'});}else txt('?',sx,sy-18,6,'#a6e0ff',{align:'center'});}
+      else if(e.up){for(let i=0;i<5;i++){const t=(tick*0.5+i*9)%36;ctx.globalAlpha=1-t/40;ctx.drawImage(SPR.bubble,sx-2+(i%2)*4,sy-t);}ctx.globalAlpha=1;txt('UP',sx,sy+4,5,'#fff8ec',{align:'center'});}
+      else if(e.id==='cave_in'){ctx.fillStyle='#21142b';ctx.fillRect(sx-12,sy-18,24,22);ctx.fillStyle='#0d0814';ctx.fillRect(sx-9,sy-15,18,19);ctx.fillStyle='#3a2a2a';ctx.fillRect(sx-12,sy-18,24,3);txt('CAVE',sx,sy-26,5,'#ffd83a',{align:'center'});}
+      else if(e.id==='cave_out'){ctx.fillStyle='#ffe7a0';ctx.fillRect(sx-12,sy-4,24,8);ctx.fillStyle='#fff6d0';ctx.fillRect(sx-8,sy,16,4);txt('EXIT',sx,sy-10,5,'#fff8ec',{align:'center'});}
+      break;}
+    case 'shipdock':{const b=Math.round(Math.sin(tick/20+e.x)*1.5);shadow(sx,sy+2,14);ctx.drawImage(SPR.shipIcon,sx-17,sy-26+b);if(G.sea.open&&tick%90<45)txt('SHIP',sx,sy-34,4,'#ffd83a',{align:'center'});break;}
+    case 'xmark':drawImg(SPR.xmark,sx-(SPR.xmark.width>>1),sy-SPR.xmark.height);if(senseNear(e.x,e.y)&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx+4,sy-9,2,2);}break;
+    case 'seachest':{const s=SPR.chestSea;drawImg(s,sx-(s.width>>1),sy-s.height+1);if(G.sea.chest===1&&tick%50<5){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-s.height,1,1);}if(G.sea.chest===2){ctx.fillStyle='rgba(30,20,40,0.35)';ctx.fillRect(sx-5,sy-s.height,11,s.height);}break;}
+    case 'brazier':{shadow(sx,sy+1,8);ctx.fillStyle='#8a8a9a';ctx.fillRect(sx-7,sy-3,14,4);ctx.fillStyle='#6a6a7a';ctx.fillRect(sx-6,sy-2,12,2);
+      const s=e.lit?SPR.brazierLit:SPR.brazier;drawImg(s,sx-(s.width>>1),sy-4-s.height);
+      if(e.lit){const f=Math.round(Math.sin(tick/4)*1.5);ctx.fillStyle='rgba(255,200,80,0.28)';ctx.beginPath();ctx.arc(sx,sy-12,11+f,0,7);ctx.fill();}
+      // symbol on the slab
+      ctx.fillStyle=e.lit?'#ffd83a':'#c8c8d8';
+      if(e.sym==='sun'){ctx.fillRect(sx-2,sy+3,5,5);ctx.fillRect(sx-4,sy+5,9,1);ctx.fillRect(sx,sy+1,1,9);}
+      else if(e.sym==='moon'){ctx.fillRect(sx-3,sy+3,5,6);ctx.fillStyle='#21142b';ctx.fillRect(sx,sy+4,3,4);}
+      else if(e.sym==='star'){ctx.fillRect(sx,sy+2,1,8);ctx.fillRect(sx-4,sy+5,9,1);ctx.fillRect(sx-2,sy+3,5,5);}
+      else{ctx.fillRect(sx-5,sy+5,4,2);ctx.fillRect(sx-1,sy+3,4,2);ctx.fillRect(sx+3,sy+5,3,2);}
+      break;}
+    case 'boss':{const B=BOSS;let s=SPR.squawk;if(e.flip)s=flipOf(s);
+      if(e.st==='tell'||e.st==='dive'){const r=e.st==='tell'?Math.min(18,e.t/2.5):18;ctx.fillStyle='rgba(120,10,10,'+(0.25+(e.st==='tell'?e.t/120:0.3))+')';ctx.beginPath();ctx.ellipse(Math.round(e.tx-camX),Math.round(e.ty-camY+HUD),r,r*0.55,0,0,7);ctx.fill();}
+      if(!(e.flash>0&&Math.floor(e.flash/2)%2)){ctx.globalAlpha=e.st==='dazed'?0.7:1;
+        ctx.drawImage(s,Math.round(sx-20),Math.round(sy-(e.st==='land'?24:30)));ctx.globalAlpha=1;}
+      if(e.st==='land'&&tick%20<10){ctx.fillStyle='#ffd83a';const a=tick/5;ctx.fillRect(sx+Math.round(Math.cos(a)*10),sy-30,2,2);ctx.fillRect(sx+Math.round(Math.cos(a+3)*10),sy-30,2,2);txt('PECK!',sx,sy-40,5,'#ffd83a',{align:'center'});}
+      if(e.st==='dazed')for(let i=0;i<3;i++){ctx.fillStyle='#ffd83a';ctx.fillRect(sx-10+i*10,sy-34+Math.round(Math.sin(tick/4+i)*3),3,3);}
+      if(B&&B.intro>0)txt('CAPTAIN SQUAWKBEARD!',W/2,50,7,'#ff8080',{align:'center',shadow:true});break;}
+    case 'barrel':{if(e.st==='fall'){const k=e.t/36;ctx.fillStyle='rgba(0,0,0,'+(0.15+k*0.3)+')';ctx.beginPath();ctx.ellipse(sx,sy+1,8*k+2,4*k+1,0,0,7);ctx.fill();drawImg(SPR.barrel,sx-(SPR.barrel.width>>1),sy-Math.round((1-k)*80)-SPR.barrel.height);}
+      else{shadow(sx,sy+1,7);ctx.save();ctx.translate(sx,sy-4);ctx.rotate(tick/6*(e.vx>=0?1:-1));ctx.drawImage(SPR.barrel,-SPR.barrel.width/2,-SPR.barrel.height/2);ctx.restore();}break;}
+  }
+}
+/* underwater tint and bubbles; the lit lighthouse sweeps a beam */
+function drawSeaFX(cx,cy){
+  const cl=cellAt();if(!cl)return;
+  if(cl.kind==='water'){
+    ctx.fillStyle='rgba(30,100,200,0.30)';ctx.fillRect(0,HUD,W,VH);
+    ctx.fillStyle='rgba(180,230,255,0.10)';for(let i=0;i<5;i++){const x=((i*61+tick*0.3)%(W+40))-20;ctx.beginPath();ctx.moveTo(x,HUD);ctx.lineTo(x+16,HUD);ctx.lineTo(x+60,HUD+VH);ctx.lineTo(x+30,HUD+VH);ctx.fill();}
+    for(let i=0;i<14;i++){const y=HUD+VH-((tick*0.5+i*37)%VH),x=(i*47+Math.sin(tick/30+i)*6)%W;ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fillRect(Math.round(x),Math.round(y),2,2);}
+  }
+  if(cl.region.id==='lighthouse'&&G.flags.lit){
+    const a=tick/90,bx=(cl.sx===1?7*16+8:7*16+8+256)-(cx-cl.sx*256)-0,by=HUD+20;
+    if(cl.sx===1){ctx.fillStyle='rgba(255,240,150,0.22)';ctx.beginPath();ctx.moveTo(7*16+8,by);ctx.lineTo(7*16+8+Math.cos(a)*190-14,by+Math.sin(a)*70+120);ctx.lineTo(7*16+8+Math.cos(a)*190+14,by+Math.sin(a)*70+120);ctx.fill();
+      ctx.fillStyle='rgba(255,248,200,0.6)';ctx.fillRect(7*16+4,by-8,8,6);}
+  }
+}
+
 /* ===== src/systems/city.js ===== */
 /* ---------------- city systems: treats, special seeds, parcels, museum, library, decorations ---------------- */
 /* ---- bakery buffs (one in-game day) ---- */
@@ -4195,8 +4913,8 @@ function shopBuy(price,what,fn){
 /* ===== src/ui/growth.js ===== */
 /* ---------------- growth tree ---------------- */
 let growPage=0;
-const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:SKILLS;
-function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),2];}
+const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:growPage===4?SKILLS4:SKILLS;
+function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),...(G.sea.open?[4]:[]),2];}
 function openGrow(){state='grow';SFX.menu();growMsg=null;growPage=G.part2?1:0;growSel=0;const i=TREE().findIndex(s=>!has(s.id)&&s.req.every(has));if(i>=0)growSel=i;}
 function skillState(s){if(has(s.id))return'learned';if(!s.req.every(has))return'locked';if(TRAIN[s.id]&&G.train[s.id]!==2)return'train';return'open';}
 function updateGrow(){
@@ -4255,7 +4973,7 @@ let FAINT_FAR=false;
 function updateFaint(){
   FT++;
   if(FT<=50){fade=FT/50;fadeColor='#000';}
-  if(FT===50){const far=G.part2&&inBeyond(),sp=far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
+  if(FT===50){const far=G.part2&&inBeyond(),sn=seaRegion()?SEA_NODES.find(n=>n.id===curNode()&&n.id!=='harbor'):null,sp=sn?sn.arrive:far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
     P=newPlayer(sp.x,sp.y);CS={x:Math.floor(sp.x/256),y:Math.floor(sp.y/192)};camX=CS.x*256;camY=CS.y*192;G.hearts=maxHearts();resetEnemies();TRAIL=[];FAINT_FAR=far;
     for(const d of ents)if(d.type==='duckling'&&d.mode==='follow'){d.x=P.x;d.y=P.y;}}
   if(FT>50)fade=Math.max(0,1-(FT-50)/50);
@@ -4394,7 +5112,7 @@ function drawWorld(){
   const ocx=camX,ocy=camY;camX=cx;camY=cy;
   for(const e of list){if(e.type==='player')drawPlayer();else drawEnt(e);}
   for(const p of parts){ctx.fillStyle=p.c;ctx.fillRect(Math.round(p.x-camX),Math.round(p.y-camY+HUD),2,2);}
-  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);
+  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);drawSeaFX(cx,cy);
 }
 function drawPlayer(){
   const st=stage(),sx=Math.round(P.x-camX),sy=Math.round(P.y-camY+HUD);
@@ -4438,6 +5156,7 @@ function drawEnt(e){
       if(tick%90<8){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-9,1,1);}break;}
     case 'fmound':case 'star':case 'flag':case 'vane':case 'cduck':case 'decor':case 'exhibit':case 'easel':case 'nook':drawCityEnt(e,sx,sy);break;
     case 'vpad':case 'vnode':case 'vsheep':case 'vmail':case 'vboard':case 'vwhistle':case 'vcontest':case 'windmill':case 'scarecrow':case 'vsculpt':drawVillageEnt(e,sx,sy);break;
+    case 'gullp':case 'jelly':case 'spark':case 'bubbles':case 'swarp':case 'shipdock':case 'xmark':case 'seachest':case 'brazier':case 'boss':case 'barrel':drawSeaEnt(e,sx,sy);break;
     case 'worm':{const s=SPR.worm[Math.floor((tick+e.phase)/12)%2];drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'carrot':{const s=SPR.carrot,w=Math.floor((tick+e.x)/40)%2;drawImg(s,sx-(s.width>>1)+w,sy+2-s.height);break;}
     case 'mound':{const s=SPR.mound;drawImg(s,sx-(s.width>>1),sy+2-s.height);if(senseNear(e.x,e.y)&&(e.has==='seed'||e.has==='bone')&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx-1,sy-8,2,2);ctx.fillRect(sx+4,sy-5,1,1);}break;}
@@ -4460,7 +5179,7 @@ function drawEnt(e){
     case 'stump':{const s=SPR.stump;shadow(sx,sy+1,12);drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'berry':{const s=SPR.berryBush;shadow(sx,sy+1,12);drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
     case 'ffly':{const on=Math.sin(e.p*4)>-0.4;ctx.fillStyle=on?'#f4ff8a':'#a8c850';ctx.fillRect(sx-1,sy-9,3,3);if(on){ctx.fillStyle='#fff';ctx.fillRect(sx,sy-8,1,1);}break;}
-    case 'item':{const s=SPR[e.kind];shadow(sx,sy,8);const fl=e.kind==='feather'||e.kind==='seed'?Math.round(Math.sin((tick+e.x)/12)):0;
+    case 'item':{const s=SPR[e.kind];if(cellAt()&&cellAt().kind==='water'&&!wearing('pirate')&&Math.hypot(P.x-e.x,P.y-e.y)>64){if(tick%50<8){ctx.fillStyle='rgba(255,255,255,0.5)';ctx.fillRect(sx,sy-6,2,2);}break;}shadow(sx,sy,8);const fl=e.kind==='feather'||e.kind==='seed'?Math.round(Math.sin((tick+e.x)/12)):0;
       drawImg(s,sx-(s.width>>1),sy-s.height-Math.round(e.z)+fl-1);
       if((tick+((e.x*7)|0))%50<4){ctx.fillStyle='#fff';ctx.fillRect(sx+3,sy-s.height-2,1,1);}break;}
     case 'duckling':{let s=SPR.duckling;if(e.flip)s=flipOf(s);const inW=tileAt(Math.floor(e.x/16),Math.floor((e.y-2)/16))==='W';
@@ -4497,6 +5216,8 @@ function drawHUD(){
    if(cl&&cl.region.id==='secrets'){txt('SECRET!',232,7,5,'#d890ff',{align:'center'});txt(cl.label,232,18,5,'#ffd83a',{align:'center'});return;}}
   if(inBeyond()){
     const cl0=cellAt(),rid=cl0.region.id;
+    if(cl0.kind==='water'){txt('DEEP REEF',252,7,5,'#a6e0ff',{align:'right'});ctx.fillStyle='#21142b';ctx.fillRect(168,16,84,8);ctx.fillStyle='#3a70c8';ctx.fillRect(169,17,82,6);const f=(G.air==null?AIR_MAX:G.air)/AIR_MAX;ctx.fillStyle=f>0.25?'#a6e0ff':(Math.floor(tick/6)%2?'#ff8080':'#fff8ec');ctx.fillRect(169,17,Math.round(82*f),6);txt('AIR',208,25,4,'#fff8ec',{align:'center'});return;}
+    if(rid==='fortress'&&bossActive()&&BOSS){txt('SQUAWKBEARD',252,7,5,'#ff8080',{align:'right'});for(let i=0;i<BOSS.max;i++){ctx.fillStyle=i<BOSS.hp?'#ff8080':'#4a3a66';ctx.fillRect(252-(BOSS.max-i)*10,17,8,7);}return;}
     if(rid==='cityin'||rid==='rooftops'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b8a8d8',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffd83a',{align:'right'});return;}
     const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#94dc64',{align:'right'});txt(a==='coop'?'HOME':a==='village'&&G.vil.open?seasonNow().name:'F: FLY',220,18,5,'#ffd83a',{align:'right'});
     // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
@@ -4540,10 +5261,10 @@ function drawBubble(){
 function drawGrow(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);
   if(growPage===2){drawJournal();return;}
-  const gcol=growPage===1?'#a6e0ff':growPage===3?'#94dc64':'#ffd83a';
+  const gcol=growPage===1?'#a6e0ff':growPage===3?'#94dc64':growPage===4?'#46b8c8':'#ffd83a';
   box(4,4,W-8,H-8,'#241838',gcol);
   const SKILLS=TREE();
-  txt(growPage===1?'SKY TREE':growPage===3?'VILLAGE TREE':'GROWTH TREE',W/2,10,9,gcol,{align:'center',shadow:true});
+  txt(growPage===1?'SKY TREE':growPage===3?'VILLAGE TREE':growPage===4?'SEA TREE':'GROWTH TREE',W/2,10,9,gcol,{align:'center',shadow:true});
   txt('X: next page',W/2,22,5,'#8a7ab0',{align:'center'});
   const big=lvlAnim>0?1:0;drawPip(stage(),0,Math.floor(tick/12)%2,lvlAnim>60,28,46,1+big);
   txt(RANKS[G.rank-1].name,48,24,6,'#ffd83a');txt('LV '+level()+'   GROWTH '+G.gp,48,34,5,'#b8a8d8');
@@ -4584,6 +5305,7 @@ function drawQuests(){
   if(questPage===2){drawTrainingPage();return;}
   if(questPage===3){drawCityPage();return;}
   if(questPage===5){drawVillagePage();return;}
+  if(questPage===6){drawSeasPage();return;}
   if(questPage===4){drawSleuthPage();return;}
   txt(questPage===1?'QUESTS - PART 2':'QUESTS',W/2,12,9,'#ffd83a',{align:'center',shadow:true});
   if(questPage){
@@ -4671,6 +5393,9 @@ function render(){
   else if(state==='p2intro')drawP2Intro();
   else if(state==='festival')drawFestival();
   else if(state==='pinch')drawPinch();
+  else if(state==='sail')drawSail();
+  else if(state==='voyage')drawVoyage();
+  else if(state==='chase')drawChase();
   else if(state==='credits')drawCredits();
   else if(state==='map'){drawWorld();drawEnvFX();drawHUD();TQ=[];drawMap();}
   else{
@@ -4702,14 +5427,14 @@ function render(){
 
 let _mmCache=null;
 function MINIMAP_BEYOND(){
-  if(_mmCache)return _mmCache;
-  const cells=REGION_LIST.filter(r=>r.beyond&&r.area).flatMap(r=>r.cells);
+  const sea=seaRegion();if(!_mmCache)_mmCache={};if(_mmCache[sea])return _mmCache[sea];
+  const cells=REGION_LIST.filter(r=>r.beyond&&r.area&&!!r.sea===sea).flatMap(r=>r.cells);
   const xs=cells.map(c=>c.sx),ys=cells.map(c=>c.sy),x0=Math.min(...xs),y0=Math.min(...ys);
-  return _mmCache={cells,x0,y0,cols:Math.max(...xs)-x0+1,rows:Math.max(...ys)-y0+1};
+  return _mmCache[sea]={cells,x0,y0,cols:Math.max(...xs)-x0+1,rows:Math.max(...ys)-y0+1};
 }
 
 // quest-log pages: 0 farm, 1 part 2, 3 city, 2 training, 4 detective notes (only while a Detective Cap is owned)
-function questPages(){const p=[0];if(G.part2)p.push(1,3);if(G.vil.open)p.push(5);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
+function questPages(){const p=[0];if(G.part2)p.push(1,3);if(G.vil.open)p.push(5);if(G.sea.open)p.push(6);p.push(2);if(G.outfits.includes('detective'))p.push(4);return p;}
 function drawCityPage(){
   ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#ff9cd0');
   txt('QUESTS - CITY',W/2,12,9,'#ff9cd0',{align:'center',shadow:true});
@@ -4751,6 +5476,19 @@ function drawVillagePage(){
   txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
 }
 
+// quest log page for the seas
+function drawSeasPage(){
+  ctx.fillStyle='rgba(18,10,30,0.94)';ctx.fillRect(0,0,W,H);box(4,4,W-8,H-8,'#241838','#a6e0ff');
+  txt('QUESTS - PIRATE SEAS',W/2,10,9,'#a6e0ff',{align:'center',shadow:true});
+  ORDER5.forEach((id,i)=>{const y=21+i*15,q=QUESTS[id],st=G.q[id];
+    box(10,y,W-20,13,st===2?'#23402a':'#1d1430',st===2?'#94dc64':(st===1?'#ffd83a':'#4a3a66'));
+    if(st===0){txt('???',16,y+4,5,'#6a5a90');txt(id==='sea_cove'||id==='sea_boss'?'see Capn Pinch':'sail to meet them',W-16,y+4,5,'#6a5a90',{align:'right'});return;}
+    txt(q.title,16,y+4,5,st===2?'#94dc64':'#fff8ec');
+    txt(st===2?'DONE!':q.prog(),W-16,y+4,5,st===2?'#94dc64':(q.check()?'#ffd83a':'#d8c8f8'),{align:'right'});});
+  txt('SHIP: '+SEA_LEVEL_NAMES[Math.min(3,shipLevel())]+'   SAILCLOTH '+G.sea.salv.sailcloth+'  PLANKS '+G.sea.salv.hullplank+'  PARTS '+G.sea.salv.cannonpart,W/2,H-21,4,'#c49a5c',{align:'center'});
+  txt('X: next page     Q: close',W/2,H-12,5,'#b8a8d8',{align:'center'});
+}
+
 /* ===== src/main.js ===== */
 /* ---------------- loop ---------------- */
 function update(){
@@ -4772,6 +5510,9 @@ function update(){
     case 'plant':updatePlant();break;
     case 'festival':updateFestival();break;
     case 'pinch':updatePinch();break;
+    case 'sail':updateSail();break;
+    case 'voyage':updateVoyage();break;
+    case 'chase':updateChase();break;
     case 'credits':updateCredits();break;
     case 'grow':updateGrow();updateAmbient();break;
     case 'quests':if(pressed.b){{const pg=questPages();questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;

@@ -4,7 +4,7 @@ window.walkTo=function(tx,ty,maxFrames=9000){
   const c=window.__chick,G=c.G,S=4,key=(x,y)=>x+','+y,start={x:Math.round(P.x/S)*S,y:Math.round(P.y/S)*S},goal={x:Math.round(tx/S)*S,y:Math.round(ty/S)*S};
   const q=[start],prev=new Map([[key(start.x,start.y),null]]);let found=null;
   while(q.length){const n=q.shift();if(Math.abs(n.x-goal.x)<=S&&Math.abs(n.y-goal.y)<=S){found=n;break;}
-    for(const [dx,dy] of [[S,0],[-S,0],[0,S],[0,-S]]){const x=n.x+dx,y=n.y+dy;if(x<8||x>MW*16-8||y<8||y>MH*16-8)continue;const k=key(x,y);if(prev.has(k)||pBlocked(x,y))continue;prev.set(k,n);q.push({x,y});}}
+    for(const [dx,dy] of [[S,0],[-S,0],[0,S],[0,-S]]){const x=n.x+dx,y=n.y+dy;if(x<8||x>MW*16-8||y<8||y>MH*16-8)continue;const k=key(x,y);if(prev.has(k)||pBlocked(x,y)||(window.WALK_AVOID&&window.WALK_AVOID.includes(tileAt(Math.floor(x/16),Math.floor((y-3)/16)))))continue;prev.set(k,n);q.push({x,y});}}
   if(!found)return {ok:false,why:'no path'};
   const path=[];for(let n=found;n;n=prev.get(key(n.x,n.y)))path.unshift(n);
   let h0=G.hearts,dmg=0,i=0,f=0,stuck=0;

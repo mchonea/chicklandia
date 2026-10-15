@@ -96,3 +96,13 @@ Object.assign(TALK,{
     it(G.flags.village?"The village is the pride of Chicklandia, Pip! And you built it.":"I'm Foreman Barnaby. I run the building site. Pads in the square, wood and stone at the riverside. Happy building!");},
   dash:(e,{it})=>{if(!G.vil.open)return false;if(trainTalk(e,it))return;it(G.flags.village?"Woof! Everything's peaceful. Even the sheep have a schedule now.":"Woof! I herd the sheep. Pebbles make great whistles, you know!");}
 });
+
+// ---- the seas ----
+Object.assign(TALK,{
+  pinch:(e,{it,ask})=>{
+    if(!G.flags.pinchMap||G.q.pinch!==2||G.q.sea_cove===0)return false;
+    if(G.q.sea_cove===1&&QUESTS.sea_cove.check())return false;
+    if(G.q.sea_boss===0&&G.flags.lit&&G.sea.lv.cannon>=1)return false;
+    if(G.q.sea_boss===1&&QUESTS.sea_boss.check())return false;
+    ask("Ready to sail, Captain? Upgrade the ship, or set sail?",['Ship menu','Not now'],i=>{if(i===0)openCatalog('ship');});}
+});

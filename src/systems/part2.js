@@ -12,6 +12,7 @@ function hint2(){
   for(const id of ORDER3){if(G.q[id]===1&&QUESTS[id].check())return "Go tell "+NAMES[QUEST_GIVER[id]||id]+" the good news!";}
   for(const id of ORDER3){if(G.q[id]===1)return QUESTS[id].hint();}
   {const vh=villageHint();if(vh)return vh;}
+  {const sh=seaHint();if(sh)return sh;}
   if(G.coop&&G.coop.lv<4)return "Upgrade your coop! Read the sign next to it.";
   if(!G.flags.festival)return festivalReady()?"Talk to Granny Shell in the forest: it's time for the festival!":"Almost there! Keep growing: the city has shops and homes to explore, and garden harvests and the snack bowl help too.";
   return "Your Dream Coop is finished! What a journey, little one.";

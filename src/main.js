@@ -19,6 +19,9 @@ function update(){
     case 'plant':updatePlant();break;
     case 'festival':updateFestival();break;
     case 'pinch':updatePinch();break;
+    case 'sail':updateSail();break;
+    case 'voyage':updateVoyage();break;
+    case 'chase':updateChase();break;
     case 'credits':updateCredits();break;
     case 'grow':updateGrow();updateAmbient();break;
     case 'quests':if(pressed.b){{const pg=questPages();questPage=pg[(pg.indexOf(questPage)+1)%pg.length];}SFX.menu();}else if(pressed.quest||pressed.back||pressed.a||pressed.grow){state='play';SFX.menu();}break;

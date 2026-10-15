@@ -1,8 +1,8 @@
 'use strict';
 /* ---------------- growth tree ---------------- */
 let growPage=0;
-const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:SKILLS;
-function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),2];}
+const TREE=()=>growPage===1?SKILLS2:growPage===3?SKILLS3:growPage===4?SKILLS4:SKILLS;
+function growPages(){return [0,...(G.part2?[1]:[]),...(G.vil.open?[3]:[]),...(G.sea.open?[4]:[]),2];}
 function openGrow(){state='grow';SFX.menu();growMsg=null;growPage=G.part2?1:0;growSel=0;const i=TREE().findIndex(s=>!has(s.id)&&s.req.every(has));if(i>=0)growSel=i;}
 function skillState(s){if(has(s.id))return'learned';if(!s.req.every(has))return'locked';if(TRAIN[s.id]&&G.train[s.id]!==2)return'train';return'open';}
 function updateGrow(){
@@ -61,7 +61,7 @@ let FAINT_FAR=false;
 function updateFaint(){
   FT++;
   if(FT<=50){fade=FT/50;fadeColor='#000';}
-  if(FT===50){const far=G.part2&&inBeyond(),sp=far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
+  if(FT===50){const far=G.part2&&inBeyond(),sn=seaRegion()?SEA_NODES.find(n=>n.id===curNode()&&n.id!=='harbor'):null,sp=sn?sn.arrive:far?(G.coop?coopExit():{x:136,y:1067}):{x:56,y:76};
     P=newPlayer(sp.x,sp.y);CS={x:Math.floor(sp.x/256),y:Math.floor(sp.y/192)};camX=CS.x*256;camY=CS.y*192;G.hearts=maxHearts();resetEnemies();TRAIL=[];FAINT_FAR=far;
     for(const d of ents)if(d.type==='duckling'&&d.mode==='follow'){d.x=P.x;d.y=P.y;}}
   if(FT>50)fade=Math.max(0,1-(FT-50)/50);

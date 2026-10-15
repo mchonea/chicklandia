@@ -3,7 +3,7 @@
 const keys={},pressed={};
 const KEYMAP={ArrowUp:'up',KeyW:'up',ArrowDown:'down',KeyS:'down',ArrowLeft:'left',KeyA:'left',ArrowRight:'right',KeyD:'right',
   KeyZ:'a',Space:'a',KeyJ:'a',Enter:'a',NumpadEnter:'a',KeyX:'b',KeyK:'b',KeyE:'grow',Tab:'grow',KeyG:'grow',KeyQ:'quest',
-  KeyM:'mute',KeyC:'wear',KeyF:'fly',Escape:'back',KeyP:'pause',Backspace:'back'};
+  KeyM:'mute',KeyC:'wear',KeyF:'fly',Escape:'back',KeyP:'pause',ShiftLeft:'dash',ShiftRight:'dash',KeyV:'dash',Backspace:'back'};
 function press(k){if(!keys[k])pressed[k]=true;keys[k]=true;}
 addEventListener('keydown',e=>{const k=KEYMAP[e.code];initAudio();if(!k)return;e.preventDefault();if(e.repeat&&k!=='up'&&k!=='down'&&k!=='left'&&k!=='right')return;press(k);});
 addEventListener('keyup',e=>{const k=KEYMAP[e.code];if(k)keys[k]=false;});
@@ -46,6 +46,7 @@ function updateTouchUI(){
   const menus=state==='grow'||state==='quests';
   show('menu',state!=='title'&&state!=='ending'&&state!=='p2intro'&&state!=='flying'&&state!=='egg');
   show('btnB',(state==='play'&&has('flap'))||(menus&&G&&G.part2));
+  show('btnD',(state==='play'||state==='chase')&&!!G&&has('dash'));
   show('btnMap',!!(G&&G.part2));
   let la='PECK',lb=menus?'PAGE':'FLAP';
   if(state==='title'||state==='ending'||state==='p2intro')la='START';

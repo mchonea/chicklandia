@@ -44,6 +44,7 @@
   <div id="dpad"><div class="arm u">&#9650;</div><div class="arm d">&#9660;</div><div class="arm l">&#9664;</div><div class="arm r">&#9654;</div><div class="hub"></div></div>
   <button class="act" id="btnA" data-k="a"><b>A</b><small>PECK</small></button>
   <button class="act" id="btnB" data-k="b"><b>B</b><small>FLAP</small></button>
+  <button class="act" id="btnD" data-k="dash"><b>D</b><small>DASH</small></button>
   <div id="menu">
     <button data-k="grow">GROW</button><button data-k="quest">QUESTS</button><button data-k="wear">OUTFIT</button><button data-k="fly" id="btnMap">MAP</button>
     <button data-k="pause">&#9776;</button><button data-k="back">&#10005;</button><button data-k="mute">&#9835;</button><button data-k="full" id="btnFull">&#9974;</button>
@@ -64,6 +65,7 @@
 <script src="src/regions/cityin.js"></script>
 <script src="src/regions/rooftops.js"></script>
 <script src="src/regions/village.js"></script>
+<script src="src/regions/seas.js"></script>
 <script src="src/world/tilemap.js"></script>
 <script src="src/content/skills.js"></script>
 <script src="src/content/outfits.js"></script>
@@ -73,17 +75,21 @@
 <script src="src/content/coop.js"></script>
 <script src="src/content/city.js"></script>
 <script src="src/content/village.js"></script>
+<script src="src/content/seas.js"></script>
 <script src="src/content/world_data.js"></script>
 <script src="src/content/ranks.js"></script>
 <script src="src/content/quests_city.js"></script>
 <script src="src/content/shops.js"></script>
 <script src="src/content/quests_village.js"></script>
+<script src="src/content/quests_seas.js"></script>
 <script src="src/content/characters.js"></script>
 <script src="src/content/dialogue.js"></script>
 <script src="src/entities/sprites.js"></script>
 <script src="src/entities/sprites_city.js"></script>
 <script src="src/entities/sprites_village.js"></script>
+<script src="src/entities/sprites_seas.js"></script>
 <script src="src/engine/settings.js"></script>
+<script src="src/engine/tracks_seas.js"></script>
 <script src="src/engine/audio.js"></script>
 <script src="src/engine/input.js"></script>
 <script src="src/engine/state.js"></script>
@@ -97,6 +103,9 @@
 <script src="src/systems/festival.js"></script>
 <script src="src/systems/city2.js"></script>
 <script src="src/systems/village.js"></script>
+<script src="src/systems/seas.js"></script>
+<script src="src/systems/seas2.js"></script>
+<script src="src/systems/seas_draw.js"></script>
 <script src="src/systems/city.js"></script>
 <script src="src/systems/shops.js"></script>
 <script src="src/ui/growth.js"></script>

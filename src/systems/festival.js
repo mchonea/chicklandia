@@ -94,28 +94,29 @@ function drawCredits(){
 /* ---- Cap'n Pinch sails in with the treasure map (end of the village chapter) ---- */
 let PIN=null;
 const PINCH_LINES=["Ahoy, Pip! Cap'n Pinch be here! I sailed all night to find ye!","While scrubbin' me ship's hold, I found an OLD TREASURE MAP!","It leads to the PIRATE SEAS! Gold, volcanoes... and a gull named Captain Squawkbeard!","Get yer sea legs ready, matey. A grand adventure awaits ye!"];
-function startPinch(){PIN={t:0,line:0,shown:0};state='pinch';fade=0;SFX.fanfare();}
+function startPinch(){PIN={t:0,line:0,shown:0,lines:PINCH_LINES,after:pinchAfter};state='pinch';fade=0;SFX.fanfare();}
+function pinchAfter(){G.flags.pinchMap=1;G.flags.seasReady=1;save();state='play';
+  const sq={x:40*16+8,y:89*16+12};P.x=sq.x;P.y=sq.y+24;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;
+  say([{who:'me',text:"The Pirate Seas! I wonder what's out there... Cap'n Pinch will be at the city harbor, next to his ship."}]);}
 function updatePinch(){
   const p=PIN;p.t++;if(p.t<40){fade=1-p.t/40;return;}fade=0;
-  if(p.t<260){if(p.t%30===0)SFX.flap();return;}
-  const L=PINCH_LINES[p.line];
+  if(p.t<(p.sunset?60:260)){if(p.t%30===0)SFX.flap();return;}
+  const L=p.lines[p.line];
   if(p.shown<L.length){p.shown+=TEXT_SPEED_MUL[SET.speed];if(pressed.a)p.shown=L.length;}
   else if(pressed.a){p.line++;p.shown=0;SFX.menu();
-    if(p.line>=PINCH_LINES.length){PIN=null;G.flags.pinchMap=1;G.flags.seasReady=1;save();state='play';
-      const sq={x:40*16+8,y:89*16+12};P.x=sq.x;P.y=sq.y+24;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;
-      say([{who:'me',text:"The Pirate Seas! I wonder what's out there... Cap'n Pinch said to meet at the city harbor when I'm ready."}]);}}
+    if(p.line>=p.lines.length){const after=p.after;PIN=null;after();}}
 }
 function drawPinch(){
   const p=PIN;
   for(let i=0;i<9;i++){ctx.fillStyle=['#ff8a60','#ff9a6a','#ffaa78','#ffba88','#ffca98','#ffd8a8','#ffe0b8','#ffe8c8','#fff0d8'][i];ctx.fillRect(0,i*14,W,14);}
   ctx.fillStyle='#fff3a0';ctx.beginPath();ctx.arc(190,110,16,0,7);ctx.fill();
   ctx.fillStyle='#2a5fb0';ctx.fillRect(0,120,W,H-120);ctx.fillStyle='#3a70c8';for(let x=0;x<W;x+=10)ctx.fillRect(x,122+Math.round(Math.sin((x+tick*2)/9)*2),6,2);
-  const sx=Math.round(lerp(300,110,Math.min(1,p.t/240))),sy=134+Math.round(Math.sin(tick/14)*2);
+  const sx=Math.round(lerp(300,110,Math.min(1,p.t/(p.sunset?40:240)))),sy=134+Math.round(Math.sin(tick/14)*2);
   ctx.fillStyle='#21142b';ctx.fillRect(sx-4,sy-52,3,52);ctx.fillStyle='#fff8ec';ctx.beginPath();ctx.moveTo(sx,sy-50);ctx.lineTo(sx+34,sy-14);ctx.lineTo(sx,sy-14);ctx.fill();
   ctx.fillStyle='#e03838';ctx.fillRect(sx-4,sy-56,12,5);
   for(let i=0;i<5;i++)ctx.drawImage(TILE.ship,sx-40+i*16,sy-12,16,16);
   drawImg(SPR.crab,sx-12,sy-12-SPR.crab.height+4+Math.round(Math.sin(tick/9)*1));
-  if(p.t>=260){const L=PINCH_LINES[p.line];box(10,150,W-20,60,'#fff8ec','#21142b');txt("CAP'N PINCH",16,155,5,'#ec6c24');
+  if(p.t>=(p.sunset?60:260)){const L=p.lines[p.line];box(10,150,W-20,60,'#fff8ec','#21142b');txt("CAP'N PINCH",16,155,5,'#ec6c24');
     wrap(L.slice(0,Math.floor(p.shown)),5,W-36).forEach((l,i)=>txt(l,16,166+i*10,5,'#21142b'));
     if(p.shown>=L.length&&Math.floor(tick/15)%2)txt('v',W-22,198,5,'#ec6c24');}
 }

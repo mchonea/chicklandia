@@ -13,7 +13,7 @@
      ground    'grass'|'snow'|'sand'|'cobble' (what shows under transparent tiles)   beyond: true for Part 2 areas
      kinds     optional per-screen kind override   labels: optional per-screen names (rooms, secrets)
      area      key used by the fly map / area discovery (defaults to none)                                  */
-const REGIONS={},REGION_LIST=[],CELL={},WALK=new Set();
+const REGIONS={},REGION_LIST=[],CELL={},WALK=new Set(),ROAM=new Set();   // WALK = outdoor screens, ROAM = screens you can walk between (outdoor + roam regions like caves)
 let MW=0,MH=0,MAP=[];
 const AREA_IDS=['farm','mountains','coop','forest','city','beach'];
 function defineRegion(d){REGIONS[d.id]=d;REGION_LIST.push(d);}
@@ -39,6 +39,7 @@ function buildWorld(){
       const cell={region:r,sx:cx,sy:cy,gx,gy,i,rows:Array.isArray(sc)?sc:sc.rows,meta,id:meta.id,kind:meta.kind||(r.kinds&&r.kinds[i])||r.kind,label:meta.label||(r.labels&&r.labels[i])};
       CELL[cx+','+cy]=cell;r.cells.push(cell);maxX=Math.max(maxX,cx);maxY=Math.max(maxY,cy);
       if(cell.kind==='outdoor')WALK.add(cx+','+cy);
+      if(cell.kind==='outdoor'||r.roam)ROAM.add(cx+','+cy);
     }
   }
   MW=(maxX+1)*16;MH=(maxY+1)*12;MAP=[];

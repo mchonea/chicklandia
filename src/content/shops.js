@@ -37,6 +37,9 @@ const JOB_TARGETS=[
   ['sandy','LIFEGUARD SANDY','on the beach'],['rocco','ROCCO','by the city fountain (daytime)'],['cleo','CLEO','in the market (daytime)']];
 
 const SHOPS={
+  ship:{title:"CAPN PINCH'S SHIP",owner:'crab',color:'#a6e0ff',leave:'LEAVE',bye:'Fair winds, Captain!',
+    items:()=>[{name:'SET SAIL',tag:'GO',icon:'shipIcon',desc:'Open the sea chart and choose where to sail.',act:()=>{SH=null;openSailMap();}},
+      ...SHIP_UPGRADES.map(u=>({name:u.name,price:G.sea.lv[u.id]?null:u.seeds,tag:G.sea.lv[u.id]?'DONE':null,own:!!G.sea.lv[u.id],icon:u.icon,desc:u.desc+' NEEDS: '+costTextSeas(u)+'.',act:()=>buyUpgrade(u)}))]},
   build:{title:'BUILD HERE',owner:'beaver',color:'#c49a5c',leave:'CANCEL',bye:'Take your time. Good builders plan!',
     items:()=>BUILD_ORDER.map(k=>{const t=BUILDING_TYPES[k],c=costOf(k),pad=VB&&VB.pad;
       return {name:t.name,price:c.seeds,icon:'b_'+k,desc:t.desc+' NEEDS: '+costText(Object.assign({},c,{seeds:0})).replace(/^, /,'')+'.',bonus:'Village happiness +'+t.happy+(has('master')?'. Master Builder: half the time!':''),

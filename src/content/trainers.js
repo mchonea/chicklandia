@@ -41,5 +41,19 @@ const TRAIN={
     intro:["Ho ho! Two buildings already? Bucky's cousin is impressed!","A master builder works fast and wastes no wood. I'll show you the tricks!","Bring me 3 FINE PLANKS from the riverside. Straight and strong. Then class begins!"],
     remind:()=>Math.min(3,G.items.plank)+"/3 fine planks. They're scattered around the riverside!",
     done:["Beautiful planks! Hammer like this, measure twice, cut once!","Now learn MASTER BUILDER in the Village Tree. Press E!"],
-    hint:()=>"Find 3 fine planks at the riverside for Foreman Barnaby."}
+    hint:()=>"Find 3 fine planks at the riverside for Foreman Barnaby."},
+  dive:{phase:5,who:'coral',whoName:'CORAL',skill:'DIVE',title:'Bubble Lessons',avail:()=>!!G.sea.visited.reef,item:'conch',need:3,noun:'conch shells',
+    spawn:[['cn0',69,112],['cn1',73,116],['cn2',67,113]],
+    lock:"Sail to the Coral Reef. Coral the octopus will teach you to DIVE!",
+    intro:["Bloop! A chick on my reef! I'm Coral, and I teach bubble breathing.","To dive, you need to listen to the sea. And what listens best? CONCH SHELLS!","Find 3 conch shells on the east beach of the reef, and I'll teach you!"],
+    remind:()=>Math.min(3,G.items.conch)+"/3 conch shells. Look around the east beach of the reef!",
+    done:["Lovely shells! Hold one to your ear... hear the sea? That's the secret!","Now learn DIVE in your Sea Tree. Press E! Mind your AIR down there."],
+    hint:()=>"Find 3 conch shells on the Coral Reef's east beach for Coral."},
+  cpeck:{phase:5,who:'ember',whoName:'EMBER',skill:'CANNON PECK',title:'Powder Keg Practice',avail:()=>!!G.sea.visited.volcano&&has('dash'),item:'powderkeg',need:3,noun:'powder kegs',
+    spawn:[['kg0',13,138],['kg1',20,135],['kg2',27,134]],
+    lock:"Learn DASH, then ask Ember on Volcano Isle to teach you the CANNON PECK!",
+    intro:["Hot stuff! I'm Ember. I teach the CANNON PECK: all your strength in one peck!","First you must learn what a big bang feels like. Three POWDER KEGS are scattered around the island.","Bring them to me (carefully!) and I'll show you how to charge a peck."],
+    remind:()=>Math.min(3,G.items.powderkeg)+"/3 powder kegs. They're on both parts of the island, on the dark paths!",
+    done:["Perfect kegs! Now: hold your peck, feel the power build... and RELEASE!","Learn CANNON PECK in your Sea Tree. Press E! Hold the peck button to charge."],
+    hint:()=>"Find 3 powder kegs on Volcano Isle for Ember."}
 };

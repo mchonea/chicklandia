@@ -12,7 +12,7 @@ function hint(){
   if(!has('fly'))return "You've grown so much! Keep spending seeds in your Growth Tree until you learn FLIGHT!";
   return "Go on, fly over that Big Fence! Mama is so proud of you!";
 }
-function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id)||ORDER4.includes(id))?2:1,(ORDER3.includes(id)||ORDER4.includes(id))?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
+function reward(n,id){const base=n;if(wearing('crown'))n++;addSeeds(n,(ORDER2.includes(id)||ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?2:1,(ORDER3.includes(id)||ORDER4.includes(id)||ORDER5.includes(id))?0:base);G.q[id]=2;SFX.questDone();toast('+'+n+' SEEDS!');questGP(id);save();}
 function say(lines,onEnd){lines.forEach(l=>l.text=tt(l.text));dlg={lines,i:0,shown:0,onEnd};state='talk';}
 function talkTo(e){
   const L=[];const it=(t,fx)=>L.push({who:e,text:t,fx});const me=t=>L.push({who:'me',text:t});
@@ -31,7 +31,8 @@ function talkTo(e){
   }
   const ask=(t,choices,cb)=>L.push({who:e,text:t,choices,cb});
   const spec=TALK[e.id];if(spec&&spec(e,{it,me,ask})!==false){say(L);return;}
-  let qid=QUEST_OF[e.id]||e.id;const base=qid;if(FOLLOWUP[e.id]&&G.q[e.id]===2&&G.q[FOLLOWUP[e.id]]!==2&&(!FOLLOW_GATE[e.id]||FOLLOW_GATE[e.id]()))qid=FOLLOWUP[e.id];
+  let qid=QUEST_OF[e.id]||e.id;const base=qid;
+  {let prev=base;for(const fq of [].concat(FOLLOWUP[e.id]||[])){if(G.q[prev]!==2)break;if(G.q[fq]!==2){if((!FOLLOW_GATE[e.id]||FOLLOW_GATE[e.id]())&&(!FOLLOW_GATE[fq]||FOLLOW_GATE[fq]()))qid=fq;break;}prev=fq;}}
   if(qid===base&&trainTalk(e,it)){say(L);return;}
   const q=QUESTS[qid];if(!q)return;
   const pushLine=l=>typeof l==='string'?it(l):(l.me?me(l.me):it(l.t,l.fx));

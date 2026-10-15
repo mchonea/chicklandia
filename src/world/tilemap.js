@@ -15,7 +15,7 @@ const EXITS=[{x:56,y:76},{x:328,y:76},{x:568,y:76}];
 buildWorld();
 let tiles=MAP.map(r=>r.split(''));
 function tileAt(c,r){if(c<0||r<0||c>=MW||r>=MH)return'F';return tiles[r][c];}
-const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456'.split(''));
+const SOLID=new Set('FHTAhRCLBbDcvKsu#iktenfyPSjJIO%&G0NEMqx2(UQal|$[1569456)\\'.split(''));
 const FLOORISH=new Set('_:XoP'.split(''));
 function solidTile(ch,forPlayer=true){
   if(ch==='W')return !(forPlayer&&has('flutter'));
@@ -79,6 +79,16 @@ function drawTile(ch,c,r,sx,sy,wf){
     case 'x':img=TILE.dam[wf];break;
     case 'a':img=TILE.roofC;break;
     case '1':img=TILE.brickDoor;break;
+    case ')':img=TILE.coral;break;
+    case ']':img=TILE.seaweed;break;
+    case '<':img=TILE.curL[Math.floor(tick/8)%4];break;
+    case '>':img=TILE.curR[Math.floor(tick/8)%4];break;
+    case '{':img=TILE.lava[Math.floor(tick/20+c+r)%2];break;
+    case '}':img=TILE.spring[Math.floor(tick/24+c)%2];break;
+    case '"':img=TILE.obsidian;break;
+    case '`':img=TILE.deck;break;
+    case '\\':img=TILE.wreck;break;
+    case '/':img=TILE.wreckDeck;break;
     case '7':img=TILE.pad;break;
     case '5':img=TILE.ship;break;
     case '6':img=TILE.stackCrate;break;

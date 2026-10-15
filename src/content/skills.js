@@ -24,3 +24,10 @@ const SKILLS3=[
   {id:'whistle',name:'WHISTLE',cost:6,req:['carry'],x:112,y:62,desc:'Whistle at the village whistle post for a helper to bring wool or wood. Taught by Dash.',learn:'Whistle for helpers at the post!'},
   {id:'green',name:'GREEN WINGS',cost:6,req:['carry'],x:112,y:130,desc:'Flap over crop rows to water them and make them grow faster!',learn:'Flap over crops to water them!'},
   {id:'master',name:'MASTER BUILDER',cost:8,req:['whistle','green'],x:196,y:96,desc:'Buildings go up twice as fast and need less wood. Taught by Foreman Barnaby.',learn:'Buildings finish twice as fast!'}];
+
+// Sea Tree: dive and cpeck are taught by Coral and Ember (see trainers.js)
+const SKILLS4=[
+  {id:'dive',name:'DIVE',cost:6,req:[],x:44,y:72,desc:'Dive into the dive pools at the Coral Reef. Watch your AIR meter! Taught by Coral.',learn:'You can dive underwater!'},
+  {id:'dash',name:'DASH',cost:5,req:[],x:44,y:124,desc:'Press SHIFT (or the DASH button) for a quick burst of speed that slips past danger!',learn:'Shift to DASH!'},
+  {id:'cpeck',name:'CANNON PECK',cost:7,req:['dash'],x:120,y:124,desc:'Hold the peck button, then let go: a mighty peck that knocks enemies far back! Taught by Ember.',learn:'Hold to charge a CANNON PECK!'},
+  {id:'sealegs',name:'SEA LEGS',cost:6,req:['dive'],x:204,y:96,desc:'No knockback on ship decks, and strong currents cannot push you around.',learn:'Steady on your feet!'}];

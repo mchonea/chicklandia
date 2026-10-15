@@ -31,6 +31,7 @@ function layoutTouch(){
     const a=Math.min(88,pad*0.56),b=Math.round(a*0.78);
     S('btnA',{right:'16px',left:'auto',bottom:safe(16+pad*0.42),width:a,height:a});
     S('btnB',{right:(24+a)+'px',left:'auto',bottom:safe(14),width:b,height:b});
+    S('btnD',{right:(32+a+b)+'px',left:'auto',bottom:safe(14),width:b,height:b});
   }else{
     const bar=gx,big=bar>=130;
     const pad=Math.min(big?bar-24:150,vh*0.48,170);
@@ -38,6 +39,7 @@ function layoutTouch(){
     const a=Math.min(84,big?bar*0.46:78),b=Math.round(a*0.78);
     S('btnA',{right:(big?(bar-a)/2:16)+'px',left:'auto',bottom:safe(24+b),width:a,height:a});
     S('btnB',{right:(big?Math.max(6,(bar-a)/2-b*0.35):24+a)+'px',left:'auto',bottom:safe(12),width:b,height:b});
+    S('btnD',{right:(big?(bar-a)/2:16)+'px',left:'auto',bottom:safe(32+a+b),width:b,height:b});
     if(big)S('menu',{left:(vw-bar+8)+'px',right:'8px',top:'8px',justifyContent:'center'});
     else S('menu',{left:'8px',right:'8px',top:'6px',justifyContent:'flex-end'});
   }
