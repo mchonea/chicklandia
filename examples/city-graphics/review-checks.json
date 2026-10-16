@@ -1,0 +1,49 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "district": "gate",
+      "label": "City Gate · proposed neighborhood"
+    },
+    {
+      "district": "street",
+      "label": "Main Street · rowhouse storefronts"
+    },
+    {
+      "district": "park",
+      "label": "City Park · proposed neighborhood"
+    },
+    {
+      "district": "market",
+      "label": "Market Square · proposed neighborhood"
+    },
+    {
+      "district": "homes",
+      "label": "Residential · proposed neighborhood"
+    },
+    {
+      "district": "harbor",
+      "label": "Harbor · existing harbor retained"
+    }
+  ],
+  "variantChanged": true,
+  "returned": true,
+  "controls": [
+    "labels",
+    "residents"
+  ],
+  "toggles": {
+    "labels": true,
+    "residents": true
+  },
+  "sizes": [
+    {
+      "width": 704,
+      "scroll": 704
+    },
+    {
+      "width": 288,
+      "scroll": 288
+    }
+  ]
+}

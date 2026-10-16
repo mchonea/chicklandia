@@ -93,7 +93,7 @@ Object.assign(TALK,{
       it("Pip! Every friend is home and the whole village is smiling!");it("It's time for the GRAND HARVEST FESTIVAL!");
       ask('Start the festival?',['Yes!','Not yet'],i=>{if(i===0)startFestival('harvest');});return;}
     if(trainTalk(e,it))return;
-    it(G.flags.village?"The village is the pride of Chicklandia, Pip! And you built it.":"I'm Foreman Barnaby. I run the building site. Pads in the square, wood and stone at the riverside. Happy building!");},
+    it(G.flags.village?"The village is the pride of Chicklandia, Pip! And you built it.":"I'm Foreman Barnaby. Pads wait around the green, square and cottage lane. Find wood at Bucky's yard and stone by the mill. Happy building!");},
   dash:(e,{it})=>{if(!G.vil.open)return false;if(trainTalk(e,it))return;it(G.flags.village?"Woof! Everything's peaceful. Even the sheep have a schedule now.":"Woof! I herd the sheep. Pebbles make great whistles, you know!");}
 });
 

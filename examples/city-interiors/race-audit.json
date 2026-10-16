@@ -1,0 +1,63 @@
+{
+  "stops": [
+    {
+      "x": 72,
+      "y": 66,
+      "reached": true,
+      "stars": 1
+    },
+    {
+      "x": 56,
+      "y": 130,
+      "reached": true,
+      "stars": 2
+    },
+    {
+      "x": 120,
+      "y": 98,
+      "reached": true,
+      "stars": 3
+    },
+    {
+      "x": 200,
+      "y": 82,
+      "reached": true,
+      "stars": 4
+    },
+    {
+      "x": 216,
+      "y": 130,
+      "reached": true,
+      "stars": 5
+    },
+    {
+      "x": 296,
+      "y": 98,
+      "reached": true,
+      "stars": 6
+    },
+    {
+      "x": 392,
+      "y": 98,
+      "reached": true,
+      "stars": 7
+    },
+    {
+      "x": 504,
+      "y": 130,
+      "reached": true,
+      "stars": 8
+    },
+    {
+      "x": 552,
+      "y": 98,
+      "reached": true,
+      "stars": 9
+    }
+  ],
+  "starsBeforeFinish": 9,
+  "frames": 1501,
+  "hopFrames": 0,
+  "won": true,
+  "bestSeconds": 24
+}

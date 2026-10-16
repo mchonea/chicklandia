@@ -1,0 +1,39 @@
+{
+  "coastal": {
+    "quest_routes_do_not_require_swimming": true,
+    "routeFailures": [],
+    "board_ship_harbor": true,
+    "board_ship_cove": true,
+    "board_ship_reef": true,
+    "board_ship_volcano": true,
+    "board_ship_lighthouse": true,
+    "harbor_opens_to_the_ocean": true,
+    "world_screens_have_valid_dimensions": true,
+    "upgrades_change_the_ship_independently": true,
+    "old_save_on_new_railing_returns_to_landing": true,
+    "map_text_fits_0_false": true,
+    "map_text_fits_1_false": true,
+    "map_text_fits_2_false": true,
+    "map_text_fits_3_false": true,
+    "map_text_fits_4_false": true,
+    "map_text_fits_5_false": true,
+    "map_text_fits_0_true": true,
+    "map_text_fits_1_true": true,
+    "map_text_fits_2_true": true,
+    "map_text_fits_3_true": true,
+    "map_text_fits_4_true": true,
+    "map_text_fits_5_true": true,
+    "allPass": true
+  },
+  "standalone": {
+    "allPass": true
+  },
+  "mobile": {
+    "layout": true,
+    "painted": true,
+    "setSail": true,
+    "closeMap": true,
+    "allPass": true
+  },
+  "errors": []
+}

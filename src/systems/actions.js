@@ -3,6 +3,7 @@
 function frontPoint(){const [dx,dy]=DIRV[P.dir];return {x:P.x+dx*10,y:P.y-4+dy*10,dx,dy};}
 function action(){
   const f=frontPoint();
+  if(cityInteriorAction(f))return;
   for(const e of ents){if(e.type!=='npc'||!onCur(e))continue;
     if(Math.abs(f.x-e.x)<e.w/2+7&&f.y>e.y-20&&f.y<e.y+7){talkTo(e);return;}}
   if(villageAction(f))return;
@@ -103,7 +104,7 @@ function wingFlap(){
       parts.push({x:c*16+8,y:r*16+10,vx:dx*s+(Math.random()-.5)*1.5,vy:dy*s-Math.random()*1.5,g:0.03,life:40,c:['#ec6c24','#eb6654','#c98a00','#a66c46'][i%4]});}
       revealHidden(c,r);save();}
   }
-  hazardFlap(dx,dy);greenWings(dx,dy);seaFlap(dx,dy);
+  hazardFlap(dx,dy);greenWings(dx,dy);seaFlap(dx,dy);cityFlap(dx,dy);
   for(const e of ents){
     if(!((e.type==='fox'&&!e.gone)||(e.type==='goose'&&!e.blown)))continue;
     const vx=e.x-P.x,vy=e.y-P.y,along=vx*dx+vy*dy,lat=Math.abs(vx*dy-vy*dx);
@@ -154,6 +155,7 @@ function checkPlates(){
   else if(on>0)SFX.click();
 }
 function bump(ix,iy){
+  if(roofBump(ix,iy))return;
   if(tryPush(ix,iy))return;
   if(skyBump(ix,iy))return;
   if(has('hop')&&tryHop(ix,iy))return;
@@ -259,7 +261,7 @@ function updateEnts(){
     if(e.type==='block'&&e.sl){const s=e.sl;s.t++;const p=Math.min(1,s.t/8);e.x=lerp(s.x0,e.bc*16+8,p);e.y=lerp(s.y0,e.br*16+16,p);if(s.t>=8){e.sl=null;checkPlates();}continue;}
     if(!onCur(e)&&!(e.type==='fox'&&e.gone)&&!(e.type==='goose'&&e.blown))continue;
     if(e.type==='fox')updFox(e);else if(e.type==='goose')updGoose(e);else if(e.type==='item')updItem(e);else if(e.type==='puff')updPuff(e);
-    else if(e.type==='gullp')updGull(e);else if(e.type==='jelly')updJelly(e);else if(e.type==='spark')updSpark(e);else if(e.type==='bubbles')updBubbles(e);else if(e.type==='boss')updBoss(e);else if(e.type==='barrel')updBarrel(e);
+    else if(e.type==='roofgull')updateRoofGull(e);else if(e.type==='gullp')updGull(e);else if(e.type==='jelly')updJelly(e);else if(e.type==='spark')updSpark(e);else if(e.type==='bubbles')updBubbles(e);else if(e.type==='boss')updBoss(e);else if(e.type==='barrel')updBarrel(e);
     else if(e.type==='bees')updBees(e);else if(e.type==='snowball')updBall(e);else if(e.type==='crab')updCrab(e);
   }
   ents=ents.filter(e=>!e.dead);
@@ -292,7 +294,7 @@ function updateTrans(){
 
 /* ---------------- main play update ---------------- */
 function updatePlay(){
-  if(trans){updateTrans();updateAmbient();return;}
+  if(trans){if(G.race)updateRace();if(state!=='play')return;updateTrans();updateAmbient();return;}
   if(G.autoMom>0&&--G.autoMom===0){const m=ents.find(e=>e.id==='mom');if(m){talkTo(m);return;}}
   if(pressed.pause||pressed.back){openPause();return;}
   if(checkRankUp())return;

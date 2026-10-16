@@ -32,9 +32,7 @@ SPR.barrel=makeSprite(['.bbbbb.','bTtTtTb','bbbbbbb','bTtTtTb','.bbbbb.']);
 SPR.bubble=makeSprite(['.cc.','c..c','c..c','.cc.']);
 SPR.cannonball=makeSprite(['.kk.','kEEk','kEEk','.kk.']);
 // ship for the sail map and docks
-SPR.shipIcon=mk(34,30,x=>{const R=(c,i,j,w,h)=>{x.fillStyle=c;x.fillRect(i,j,w,h);};
-  R('#202840',16,2,2,20);R('#fff8ec',18,3,12,12);R('#e8e8f0',18,13,12,2);R('#202840',17,3,1,12);R('#eb6654',16,0,6,3);
-  R('#202840',3,20,28,7);R('#a66c46',4,21,26,5);R('#594437',4,24,26,2);R('#ffd21e',8,22,2,2);R('#ffd21e',14,22,2,2);R('#ffd21e',20,22,2,2);});
+SPR.shipIcon=mk(38,34,x=>x.drawImage(coastalShipSprite(),0,0,38,34));
 // Sea Tree icons
 Object.assign(ICON,{
   dive:makeSprite(['..cc....','.cwwc...','.cw.cc..','..cccuu.','.uuuuuuu','uuuuuuuu','.uuUUuu.','..uuuu..']),

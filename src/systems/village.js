@@ -26,15 +26,18 @@ function openVillage(){
 /* ---- entities ---- */
 function padCenter(p){return {x:(p.c+1)*16,y:(p.r+2)*16-2};}
 function makeVillageEnts(){
-  for(const p of PADS){const q=padCenter(p);addEnt({type:'vpad',id:p.id,pad:p,x:q.x,y:q.y,w:30});}
+  for(const p of PADS){const q=padCenter(p);addEnt({type:'vpad',id:p.id,pad:p,x:q.x,y:q.y,w:30,solid:!!G.vil.b[p.id]});
+    if(!p.river)addEnt({type:'vprop',id:'gardenFence_'+p.id,kind:'fence',x:q.x-22,y:q.y+4,w:16,solid:true});}
+  for(const p of VILLAGE_PROPS)addEnt({type:'vprop',...p,...at(p.c,p.r)});
+  for(const p of VILLAGE_SIGNS)addEnt({type:'vinfo',...p,...at(p.c,p.r),w:8,solid:true});
   for(const n of NODES)addEnt({type:'vnode',id:n.id,kind:n.kind,x:n.c*16+8,y:n.r*16+12});
   for(const s of VSHEEP)addEnt({type:'vsheep',id:s.id,x:s.c*16+8,y:s.r*16+12,ph:s.c*3,solid:true,w:14});
   for(const [c,r] of CROP_ROWS)addPlot(c,r,false);
-  addEnt({type:'vmail',x:37*16+8,y:88*16+12});
-  addEnt({type:'vboard',x:41*16+8,y:88*16+12});
-  addEnt({type:'vwhistle',x:44*16+8,y:90*16+12});
-  addEnt({type:'vcontest',x:21*16+8,y:88*16+12});
-  addEnt({type:'windmill',x:29*16+8,y:89*16+14,solid:true,w:26});
+  addEnt({type:'vmail',x:44*16+8,y:91*16+12});
+  addEnt({type:'vboard',x:44*16+8,y:93*16+12});
+  addEnt({type:'vwhistle',x:45*16+8,y:94*16+12});
+  addEnt({type:'vcontest',x:18*16+8,y:91*16+12});
+  addEnt({type:'windmill',x:29*16+8,y:90*16+14,solid:true,w:26});
   addEnt({type:'scarecrow',x:37*16+8,y:100*16+12});
   addEnt({type:'vsculpt',x:24*16+8,y:90*16+12,solid:true,w:16});
   spawnSeasonItems();
@@ -42,13 +45,31 @@ function makeVillageEnts(){
 }
 function relocateResidents(){
   for(const id in G.vil.res){const e=ents.find(x=>x.id===id),p=PADS.find(q=>q.id===G.vil.res[id]);if(!e||!p)continue;
-    const q=padCenter(p),k=Object.keys(G.vil.res).indexOf(id);Object.assign(e,{x:q.x-10+(k%3)*10,y:q.y+14,sched:null});e.vres=true;}
+    const q=padCenter(p),k=Object.keys(G.vil.res).indexOf(id),home=[(q.x-10+(k%3)*10-8)/16,(q.y+14-12)/16];
+    const visit={whiskers:[12,90],penny:[5,92]}[id];
+    Object.assign(e,{x:q.x-10+(k%3)*10,y:q.y+14,sched:visit?{day:visit,night:home}:null,at:visit?'night':'day',vres:true});}
+  refreshVillageWishes();
+}
+function refreshVillageWishes(){
+  ents=ents.filter(e=>!e.wish);
+  for(const [who,id] of Object.entries(G.vil.res)){
+    const b=G.vil.b[id],p=PADS.find(p=>p.id===id),art=VILLAGE_WISH_ART[who];if(!b||!b.done||!p||!art)continue;
+    const q=padCenter(p);addEnt({type:'vprop',id:'wish_'+who,kind:art[0],x:q.x+art[1],y:q.y+art[2],wish:who});
+  }
+}
+function restoreVillageLanding(){
+  if(!regionAt()||regionAt().area!=='village')return;
+  const clear=(x,y)=>{const b=pBox(x,y);return x>=16&&x<=1008&&y>=1360&&y<=1712&&!rectTiles(b.x,b.y,b.w,b.h,true)&&!ents.some(e=>e.solid&&ov(b,entBox(e)));};
+  if(clear(P.x,P.y))return;
+  const ox=P.x,oy=P.y;for(let r=8;r<=192;r+=8)for(let dy=-r;dy<=r;dy+=8)for(const dx of Math.abs(dy)===r?Array.from({length:r/4+1},(_,i)=>-r+i*8):[-r,r]){
+    if(clear(ox+dx,oy+dy)){P.x=ox+dx;P.y=oy+dy;CS={x:Math.floor(P.x/256),y:Math.floor((P.y-1)/192)};camX=CS.x*256;camY=CS.y*192;return;}}
+  P.x=39*16+8;P.y=90*16+12;CS={x:2,y:7};camX=512;camY=1344;
 }
 /* ---- per-frame upkeep (called from updatePlay) ---- */
 function spawnSeasonItems(){
   ents=ents.filter(e=>!(e.type==='item'&&e.kind==='snowball'));
   const sc=seasonNow();
-  if(sc.name==='WINTER'&&!contestDone())[[4,87],[11,89],[13,92]].forEach(([c,r],i)=>spawnItem('sb'+i+'_'+sc.year,'snowball',c*16+8,r*16+12));
+  if(sc.name==='WINTER'&&!contestDone())[[6,91],[13,94],[26,93]].forEach(([c,r],i)=>spawnItem('sb'+i+'_'+sc.year,'snowball',c*16+8,r*16+12));
 }
 let lastSeason=-1;
 function updateVillage(){
@@ -129,6 +150,7 @@ function villagePeck(e,f,pr){
 /* ---- other interactables ---- */
 function villageAction(f){
   for(const e of ents){if(!onCur(e))continue;
+    if(e.type==='vinfo'&&Math.abs(f.x-e.x)<15&&Math.abs(f.y-(e.y-5))<14){say([{who:e,text:e.text}]);return true;}
     if(e.type==='vpad'&&Math.abs(f.x-e.x)<26&&Math.abs(f.y-(e.y-10))<24){padAction(e);return true;}
     if(e.type==='vmail'&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-5))<14){mailboxAction();return true;}
     if(e.type==='vboard'&&Math.abs(f.x-e.x)<16&&Math.abs(f.y-(e.y-5))<14){openCatalog('board');return true;}
@@ -203,14 +225,16 @@ function pumpkinWeigh(plotState){   // returns weight in pounds
 /* ---- drawing the village entities ---- */
 function drawVillageEnt(e,sx,sy){
   switch(e.type){
+    case 'vprop':drawVillageProp(e,sx,sy);break;
+    case 'vinfo':drawImg(SPR.board,sx-(SPR.board.width>>1),sy-SPR.board.height+1);break;
     case 'vpad':{
       const b=G.vil.b[e.id];e.solid=!!b;
       if(!b){if(G.vil.open&&tick%90<40){ctx.fillStyle='rgba(255,236,140,0.8)';ctx.fillRect(sx-1,sy-14,2,6);ctx.fillRect(sx-3,sy-12,6,2);}break;}
-      const img=SPR['b_'+b.kind];
-      if(b.done){shadow(sx,sy+1,14);ctx.drawImage(img,sx-16,sy-30);if(b.kind==='bakery'&&tick%20<10){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillRect(sx+8,sy-34-(tick%30)/5|0,3,3);}}
-      else{const k=Math.min(1,(G.clock-b.t0)/b.dur),h=Math.max(1,Math.round(34*k));
-        ctx.drawImage(img,0,34-h,32,h,sx-16,sy-30+34-h,32,h);ctx.drawImage(SPR.scaffold,sx-16,sy-30);
-        ctx.fillStyle='#202840';ctx.fillRect(sx-12,sy-36,24,5);ctx.fillStyle='#a1d970';ctx.fillRect(sx-11,sy-35,Math.round(22*k),3);
+      const img=SPR['b_'+b.kind],left=sx-img.anchorX,top=sy-img.anchorY;
+      if(b.done){shadow(sx,sy+1,14);ctx.drawImage(img,left,top);if(img.smoke&&tick%20<10){ctx.fillStyle='rgba(255,255,255,0.7)';ctx.fillRect(left+img.smoke.x,Math.round(top+img.smoke.y-(tick%30)/5),3,3);}}
+      else{const k=clamp((G.clock-b.t0)/b.dur,0,1),h=Math.max(1,Math.round(img.height*k));
+        ctx.drawImage(img,0,img.height-h,img.width,h,left,top+img.height-h,img.width,h);ctx.drawImage(SPR['scaffold_'+b.kind],left,top);
+        const barY=Math.max(HUD+2,top-6);ctx.fillStyle='#202840';ctx.fillRect(sx-12,barY,24,5);ctx.fillStyle='#a1d970';ctx.fillRect(sx-11,barY+1,Math.round(22*k),3);
         if(tick%16===0)puff(e.x+(Math.random()-.5)*20,e.y-14,1,['#b69965','#fff8ec'],0.8,0.05);}
       break;}
     case 'vnode':{if(G.vil.nodes[e.id]===dayNum())break;const s=SPR['node_'+e.kind];shadow(sx,sy+1,7);drawImg(s,sx-(s.width>>1),sy+1-s.height);

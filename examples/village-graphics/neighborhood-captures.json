@@ -1,0 +1,17 @@
+{
+  "standalone": {
+    "allPass": true
+  },
+  "gallery": {
+    "controls": true,
+    "fitsPhone": true,
+    "allPass": true
+  },
+  "mobile": {
+    "opens": true,
+    "builds": true,
+    "completes": true,
+    "allPass": true
+  },
+  "errors": []
+}

@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chicklandia — Market Village buildings</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101923;color:#fff8ec;font:16px/1.5 system-ui,sans-serif}main{max-width:1240px;margin:auto;padding:28px 20px}header{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:24px}small{color:#b2e7e0;letter-spacing:2px;text-transform:uppercase}h1{font-size:30px;line-height:1.2;margin:4px 0 8px}p{color:#b2c9d8;margin:0}a{color:#b2e7e0}a.play{display:inline-block;background:#ffe05a;color:#202840;text-decoration:none;padding:12px 18px;border-radius:5px;font-weight:600}figure{margin:0;background:#192639}img{display:block;width:100%;height:auto;image-rendering:pixelated}figcaption{padding:12px 14px;color:#d5e5eb}.atlas{margin-bottom:24px}nav{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:24px 0 16px}button{font:inherit;cursor:pointer;padding:9px 16px;border:1px solid #7896ae;border-radius:4px;background:#192639;color:#fff8ec}button[aria-pressed=true]{background:#ffe05a;border-color:#ffe05a;color:#202840}button:focus-visible,a:focus-visible{outline:3px solid #b2e7e0;outline-offset:4px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.river{grid-column:1/-1;max-width:588px;justify-self:center}.details{margin-top:24px}footer{margin-top:24px;color:#b2c9d8}footer p{margin-top:8px}@media(max-width:700px){main{padding:20px 12px}h1{font-size:25px}.grid{grid-template-columns:1fr;gap:16px}.river{grid-column:auto}.atlas figcaption{font-size:14px}}
+</style>
+<main>
+<header><div><small>Chicklandia · building update</small><h1>Market Village buildings</h1><p>Six new building sprites, shown in the existing village.</p></div><a class="play" href="../../index.html">Play Chicklandia</a></header>
+<figure class="atlas"><img src="implemented-buildings.png" alt="The six new sprites: a gabled home with flower boxes, a bakery with a striped awning and bread counter, a timber watermill with a paddle wheel, an open bandstand, a school with a bell tower, and a clinic with a cross and porch"><figcaption>Warm walls, steep gables and clear building identities. The home, bakery, watermill, bandstand, school and clinic each have their own details.</figcaption></figure>
+<nav aria-label="Compare village buildings"><span>Compare:</span><button type="button" data-version="before" aria-pressed="false">Before</button><button type="button" data-version="after" aria-pressed="true">Market Village</button></nav>
+<div class="grid" id="comparison">
+<figure><img data-before="current-square.png" data-after="implemented-square.png" src="implemented-square.png" alt="Village square with new homes, bakery and bandstand"><figcaption>Village square · homes, bakery and bandstand</figcaption></figure>
+<figure><img data-before="current-square-east.png" data-after="implemented-east.png" src="implemented-east.png" alt="East village square with new school, clinic and homes"><figcaption>East square · bell tower, clinic porch and flower boxes</figcaption></figure>
+<figure class="river"><img data-before="current-river.png" data-after="implemented-river.png" src="implemented-river.png" alt="Existing riverside lots with timber watermills and large paddle wheels"><figcaption>Riverside · timber framing, paddle wheels and flour sacks</figcaption></figure>
+</div>
+<div class="grid details">
+<figure><img src="implemented-construction.png" alt="A partially built home inside timber scaffolding"><figcaption>Construction · scaffolding fits the new silhouettes</figcaption></figure>
+<figure><img src="implemented-catalog.png" alt="Build menu showing the new watermill sprite"><figcaption>Build menu · the same artwork appears in the preview</figcaption></figure>
+</div>
+<footer><p>Actual game captures. Existing paths, landscape, building locations, costs and interactions are retained.</p><p><a href="review.html">Earlier village concepts</a></p></footer>
+</main>
+<script>
+for(const b of document.querySelectorAll('[data-version]'))b.addEventListener('click',()=>{
+ for(const other of document.querySelectorAll('[data-version]'))other.setAttribute('aria-pressed',String(other===b));
+ for(const img of document.querySelectorAll('#comparison img')){img.src=img.dataset[b.dataset.version];img.alt=(b.dataset.version==='before'?'Original buildings: ':'Market Village buildings: ')+img.closest('figure').querySelector('figcaption').textContent;}
+});
+</script>
+</html>

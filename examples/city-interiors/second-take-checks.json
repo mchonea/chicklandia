@@ -1,0 +1,27 @@
+{
+  "errors": [],
+  "uniqueSections": 3,
+  "phaseNames": [
+    "Gull: swooping",
+    "Gull: settling",
+    "Gull: perched",
+    "Gull: warning"
+  ],
+  "uniqueGullPhases": 4,
+  "controlChanges": {
+    "enemy": true,
+    "obstacles": true,
+    "yardDetails": true
+  },
+  "sizes": [
+    {
+      "width": 704,
+      "scroll": 704
+    },
+    {
+      "width": 288,
+      "scroll": 288
+    }
+  ],
+  "allPass": true
+}

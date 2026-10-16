@@ -1,0 +1,13 @@
+{
+  "gallery": {
+    "images": true,
+    "fitsPhone": true
+  },
+  "mobile": {
+    "entersShop": true,
+    "talkButton": true,
+    "bigTextFits": true
+  },
+  "errors": [],
+  "allPass": true
+}

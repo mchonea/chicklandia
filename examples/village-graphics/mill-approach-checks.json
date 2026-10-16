@@ -1,0 +1,51 @@
+{
+  "village_layout": {
+    "ten_stable_lot_ids": true,
+    "all_eight_places_named": true,
+    "wishes_wait_for_move_in": true,
+    "green_yard_garden_signs_reachable": true,
+    "unreachableSigns": [],
+    "solid_scenery_on_land": true,
+    "sceneryOnBlockedTiles": [],
+    "all_finished_front_doors_reachable": true,
+    "unreachablePads": [],
+    "gathering_sheep_and_every_crop_reachable": true,
+    "unreachableResources": [],
+    "all_training_pickups_reachable": true,
+    "unreachableTraining": [],
+    "winter_pickups_reachable": true,
+    "unreachableSnow": [],
+    "mailbox_walk": true,
+    "mailbox_action": true,
+    "contest_walk": true,
+    "contest_action": true,
+    "clinic_walk": true,
+    "clinic_heals": true,
+    "mill_walk": true,
+    "mill_pays": true,
+    "all_resident_wishes_visible": true,
+    "neighbour_visits_green": true,
+    "visitors_do_not_vanish_on_screen": true,
+    "neighbour_returns_home": true,
+    "old_save_recovers_from_new_obstacle": true,
+    "load_keeps_buildings_and_construction": true,
+    "load_keeps_materials_residents_and_crops": true,
+    "load_restores_wish_scenery": true,
+    "allPass": true
+  },
+  "standalone": {
+    "allPass": true
+  },
+  "gallery": {
+    "controls": true,
+    "fitsPhone": true,
+    "allPass": true
+  },
+  "mobile": {
+    "opens": true,
+    "builds": true,
+    "completes": true,
+    "allPass": true
+  },
+  "errors": []
+}

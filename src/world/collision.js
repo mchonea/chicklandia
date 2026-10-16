@@ -6,6 +6,7 @@ function rectTiles(x,y,w,h,forPlayer){
 }
 const ov=(a,b)=>a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 function entBox(e){
+  if(e.type==='cityprop'){const h=e.p.hit;return {x:e.ox+h[0],y:e.oy+h[1],w:h[2],h:h[3]};}
   if(e.type==='goose')return {x:e.x-7,y:e.y-12,w:14,h:16};
   if(e.type==='block')return {x:e.x-8,y:e.y-16,w:16,h:16};
   if(e.type==='chest')return {x:e.x-8,y:e.y-8,w:16,h:9};
@@ -13,7 +14,7 @@ function entBox(e){
 }
 function pBox(x,y){return {x:x-5,y:y-5,w:10,h:6};}
 function pBlocked(x,y){
-  const b=pBox(x,y);if(rectTiles(b.x,b.y,b.w,b.h,true))return true;
+  const b=pBox(x,y),city=cityLayoutBlocked(b);if(city===true||(city===null&&rectTiles(b.x,b.y,b.w,b.h,true)))return true;
   const cur=pBox(P.x,P.y);
   for(const e of ents){if(!e.solid||e.blown)continue;const eb=entBox(e);if(ov(b,eb)&&!ov(cur,eb))return true;}
   return false;

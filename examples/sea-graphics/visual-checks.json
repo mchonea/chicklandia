@@ -1,0 +1,95 @@
+{
+  "errors": [],
+  "pixels": [
+    {
+      "design": "coastal",
+      "scene": "map",
+      "colors": 1492
+    },
+    {
+      "design": "coastal",
+      "scene": "sailing",
+      "colors": 928
+    },
+    {
+      "design": "coastal",
+      "scene": "harbor",
+      "colors": 812
+    },
+    {
+      "design": "coastal",
+      "scene": "islands",
+      "colors": 1079
+    },
+    {
+      "design": "chart",
+      "scene": "map",
+      "colors": 871
+    },
+    {
+      "design": "chart",
+      "scene": "sailing",
+      "colors": 945
+    },
+    {
+      "design": "chart",
+      "scene": "harbor",
+      "colors": 812
+    },
+    {
+      "design": "chart",
+      "scene": "islands",
+      "colors": 595
+    },
+    {
+      "design": "miniature",
+      "scene": "map",
+      "colors": 1520
+    },
+    {
+      "design": "miniature",
+      "scene": "sailing",
+      "colors": 1445
+    },
+    {
+      "design": "miniature",
+      "scene": "harbor",
+      "colors": 1859
+    },
+    {
+      "design": "miniature",
+      "scene": "islands",
+      "colors": 1158
+    },
+    {
+      "design": "current",
+      "scene": "map",
+      "colors": 496
+    },
+    {
+      "design": "current",
+      "scene": "sailing",
+      "colors": 463
+    },
+    {
+      "design": "current",
+      "scene": "harbor",
+      "colors": 38
+    },
+    {
+      "design": "current",
+      "scene": "islands",
+      "colors": 47
+    }
+  ],
+  "overflow": {
+    "scroll": 288,
+    "client": 288,
+    "frames": [
+      288,
+      288,
+      288,
+      288
+    ]
+  }
+}

@@ -1,0 +1,189 @@
+{
+  "village": {
+    "road_closed_at_first": true,
+    "bucky_waits_for_festival": true,
+    "village_opens": true,
+    "walk_market_to_square": true,
+    "all_areas_reachable": true,
+    "material_spots_reachable": true,
+    "pads_reachable": true,
+    "stone_needs_carry": true,
+    "wood_gathered": true,
+    "node_once_a_day": true,
+    "node_respawns": true,
+    "shear_wool": true,
+    "stone_with_carry": true,
+    "whistle_locked_until_dash": true,
+    "dash_starts_training": true,
+    "dash_done": true,
+    "whistle_brings_wool": true,
+    "build_home": true,
+    "building_costs": true,
+    "building_finishes": true,
+    "mill_only_by_river": true,
+    "mill_on_river": true,
+    "all_built": true,
+    "happiness_counts": true,
+    "master_builder": true,
+    "letters_arrive": true,
+    "everyone_moves_in": true,
+    "each_home_unique": true,
+    "resident_relocated": true,
+    "wishes_cost_materials": true,
+    "move_in_quests_done": true,
+    "spring": true,
+    "summer": true,
+    "autumn": true,
+    "winter": true,
+    "year_two": true,
+    "contest_win_counts": true,
+    "contest_once_per_season": true,
+    "pumpkin_contest": true,
+    "snowballs_appear_in_winter": true,
+    "winter_plots_slower": true,
+    "snow_sculpture": true,
+    "finale_needs_happiness": true,
+    "barnaby_offers_festival": true,
+    "festival_choice": true,
+    "harvest_starts": true,
+    "harvest_to_rank8": true,
+    "pinch_scene": true,
+    "pinch_gives_map": true,
+    "save_has_village": true,
+    "load_keeps_village": true,
+    "allPass": true
+  },
+  "smoke": {
+    "spot_spot_forest": true,
+    "spot_spot_peak": true,
+    "spot_spot_beach": true,
+    "spot_spot_city": true,
+    "sp2_after_spots": true,
+    "bees_chase": true,
+    "flap_scatters": true,
+    "pos_56_76": true,
+    "pos_128_555": true,
+    "pos_648_731": true,
+    "pos_640_939": true,
+    "pos_100_1300": true,
+    "pos_700_1300": true,
+    "save_roundtrip": true,
+    "newgame_confirm": true,
+    "pause_toggle": true,
+    "gp_quest": true,
+    "gp_taste_once": true,
+    "gp_minigame": true,
+    "gp_outfit_once": true,
+    "gp_bowl": true,
+    "rankup_starts": true,
+    "rank_applied": true,
+    "rank5_needs_flight": true,
+    "rank5_with_flight": true,
+    "festival_ready": true,
+    "festival_starts": true,
+    "festival_to_rank7": true,
+    "rank7_perks": true,
+    "accessory_slot": true,
+    "allPass": true
+  },
+  "art": {
+    "sprites": [
+      {
+        "kind": "home",
+        "width": 48,
+        "height": 54,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 2,
+        "bounds": [
+          2,
+          3,
+          46,
+          52
+        ]
+      },
+      {
+        "kind": "bakery",
+        "width": 52,
+        "height": 54,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 2,
+        "bounds": [
+          2,
+          2,
+          50,
+          52
+        ]
+      },
+      {
+        "kind": "mill",
+        "width": 66,
+        "height": 56,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 3,
+        "bounds": [
+          4,
+          4,
+          63,
+          53
+        ]
+      },
+      {
+        "kind": "band",
+        "width": 54,
+        "height": 50,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 3,
+        "bounds": [
+          2,
+          2,
+          52,
+          47
+        ]
+      },
+      {
+        "kind": "school",
+        "width": 48,
+        "height": 62,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 2,
+        "bounds": [
+          2,
+          1,
+          46,
+          60
+        ]
+      },
+      {
+        "kind": "clinic",
+        "width": 54,
+        "height": 52,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 2,
+        "bounds": [
+          2,
+          2,
+          52,
+          50
+        ]
+      }
+    ],
+    "construction": true,
+    "allPass": true
+  },
+  "standalone": {
+    "allPass": true
+  },
+  "errors": []
+}

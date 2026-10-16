@@ -11,4 +11,4 @@ const SIGNS={'10,9':{name:'SIGN',text:'CHICKEN COOP - Home sweet home! (Press E 
   '45,16':{name:'SIGN',text:'THE BIG FENCE. No chicken has ever flown over it. Beyond it lies... THE WHOLE WIDE WORLD!'}};
 
 SIGNS['28,7']={name:'SIGN',text:"MAGGIE'S BOUTIQUE has moved to MAIN STREET in the city! (Past the forest, in Part 2.)"};
-SIGNS['70,76']={name:'DOCK SIGN',text:"CAP'N PINCH'S SHIP. Not ready to sail yet... but adventure is coming! Come back soon!"};
+SIGNS['70,76']={name:'DOCK SIGN',get text(){return G&&G.sea.open?"CAP'N PINCH'S SHIP. Follow the pier to the gangplank and press Z to set sail, or talk to Cap'n Pinch on the quay.":"CAP'N PINCH'S SHIP. A little boat, a big ocean! Cap'n Pinch will bring a sea chart after the village celebration.";}};

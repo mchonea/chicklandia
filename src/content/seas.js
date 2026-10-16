@@ -7,12 +7,12 @@ const stile=(o,c,r)=>[SO[o][0]+c,SO[o][1]+r];                    // -> [col,row]
 const spx=(o,c,r)=>({x:(SO[o][0]+c)*16+8,y:(SO[o][1]+r)*16+12});   // -> pixel position (feet)
 // sail map: nodes are drawn on a little sea chart. arrive = where Pip lands (the dock)
 const SEA_NODES=[
-  {id:'harbor',name:'CITY HARBOR',mx:36,my:48,arrive:{x:69*16+8,y:78*16+12},need:()=>true},
-  {id:'cove',name:'PIRATE COVE',mx:100,my:92,arrive:spx('cove',3,8),need:()=>true},
-  {id:'reef',name:'CORAL REEF',mx:176,my:56,arrive:spx('reef',3,8),need:()=>true},
-  {id:'volcano',name:'VOLCANO ISLE',mx:58,my:158,arrive:spx('volc',3,8),need:()=>G.sea.lv.sails>=1,lock:'Needs BETTER SAILS'},
-  {id:'lighthouse',name:'LIGHTHOUSE ROCK',mx:150,my:172,arrive:spx('light',3,8),need:()=>G.sea.lv.hull>=1,lock:'Needs a STRONGER HULL'},
-  {id:'fortress',name:"SQUAWKBEARD'S SHIP",mx:222,my:128,arrive:spx('fort',3,8),need:()=>G.sea.lv.cannon>=1&&!!G.flags.lit,lock:'Needs the SEED CANNON and a lit lighthouse'}];
+  {id:'harbor',name:'CITY HARBOR',mx:28,my:58,arrive:{x:69*16+8,y:78*16+12},need:()=>true},
+  {id:'cove',name:'PIRATE COVE',mx:101,my:103,arrive:spx('cove',3,8),need:()=>true},
+  {id:'reef',name:'CORAL REEF',mx:180,my:61,arrive:spx('reef',3,8),need:()=>true},
+  {id:'volcano',name:'VOLCANO ISLE',mx:52,my:159,arrive:spx('volc',3,8),need:()=>G.sea.lv.sails>=1,lock:'Needs BETTER SAILS'},
+  {id:'lighthouse',name:'LIGHTHOUSE ROCK',mx:155,my:160,arrive:spx('light',3,8),need:()=>G.sea.lv.hull>=1,lock:'Needs a STRONGER HULL'},
+  {id:'fortress',name:"SQUAWKBEARD'S SHIP",mx:223,my:117,arrive:spx('fort',3,8),need:()=>G.sea.lv.cannon>=1&&!!G.flags.lit,lock:'Needs the SEED CANNON and a lit lighthouse'}];
 // ship upgrades: seeds + salvage. Each unlocks a farther place.
 const SHIP_UPGRADES=[
   {id:'sails',name:'BETTER SAILS',seeds:18,salv:{sailcloth:3},icon:'sailcloth',desc:'Faster and bolder! Unlocks VOLCANO ISLE.'},

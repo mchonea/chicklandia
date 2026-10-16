@@ -26,8 +26,8 @@ function drawWorld(){
     if(G.puddle>0.05&&(r<24||(r>=60&&r<84))&&'.,d=~'.includes(ch)&&hash2(c,r)%9===0){const pw=Math.round(10*G.puddle)+2,ph=Math.round(5*G.puddle)+1;
       ctx.fillStyle='#5d8fd8';ctx.fillRect((sx+8-pw/2)|0,(sy+9-ph/2)|0,pw,ph);ctx.fillStyle='#a6d0ff';ctx.fillRect((sx+9-pw/2)|0,(sy+9-ph/2)|0,Math.max(1,pw-3),1);}
   }
-  drawSunbeam(cx,cy);
-  for(const b of BUILDINGS){const px=b.door[0]*16+8-cx,py=b.door[1]*16-cy+HUD;if(px<-24||px>W+24||py<HUD-16||py>H)continue;
+  drawCoastalScenery(cx,cy);drawVillageGround(cx,cy);drawSunbeam(cx,cy);
+  for(const b of BUILDINGS){if(drawCitySign(b,cx,cy))continue;const px=b.door[0]*16+8-cx,py=b.door[1]*16-cy+HUD;if(px<-24||px>W+24||py<HUD-16||py>H)continue;
     const open=buildingOpen(b),lab=open?b.sign:'CLOSED',w=Math.ceil(measure(lab,5))+6;
     ctx.fillStyle='#202840';ctx.fillRect(Math.round(px-w/2),py-10,w,10);ctx.fillStyle=open?'#f2dca0':'#ffc8c8';ctx.fillRect(Math.round(px-w/2)+1,py-9,w-2,8);
     txt(lab,px,py-8,5,open?'#594437':'#c02020',{align:'center'});}
@@ -38,11 +38,11 @@ function drawWorld(){
     for(let r=r0;r<=r0+12;r++)for(let c=c0;c<=c0+16;c++){const k=c+','+r,ch=tileAt(c,r),h=HIDDEN[k];
       const secret=(h&&!G.collected.has(h.id)&&'RCL'.includes(ch))||(c===18&&r===16&&ch==='L')||ch==='Z';
       if(secret&&senseNear(c*16+8,r*16+8)){const sx=c*16-cx,sy=r*16-cy+HUD,o=(tick/6+c*3+r)%12|0;ctx.fillRect(sx+2+o,sy+3,1,1);ctx.fillRect((sx+12-o/2)|0,sy+9,1,1);ctx.fillRect(sx+7,sy+1+(o%5),1,1);}}}
-  for(const e of ents)if(e.type==='hole'&&onCur(e)){const hx=Math.round(e.x-cx),hy=Math.round(e.y-cy+HUD);
+  for(const e of ents)if(e.type==='hole'&&onCur(e)&&(!e.arcade||MG?.type==='bonk')){const hx=Math.round(e.x-cx),hy=Math.round(e.y-cy+HUD);
     ctx.fillStyle=PAL.B;ctx.fillRect(hx-7,hy-5,14,6);ctx.fillStyle='#140a08';ctx.fillRect(hx-6,hy-4,12,4);
     if(e.up>0){const s=e.gold?SPR.carrotG:SPR.carrot,rise=Math.min(7,e.up,e.max-e.up+1),vis=Math.min(s.height,rise+1);
       ctx.drawImage(s,0,0,s.width,vis,hx-s.width,hy-1-vis*2,s.width*2,vis*2);}}
-  const list=ents.filter(e=>e.type!=='hole'&&Math.abs(e.x-camX-128)<160&&Math.abs(e.y-camY-96)<130);
+  const list=ents.filter(e=>e.type!=='hole'&&(cellAt()?.kind!=='indoor'||onCur(e))&&Math.abs(e.x-camX-128)<160&&Math.abs(e.y-camY-96)<130);
   list.push({type:'player',y:P.y});
   list.sort((a,b)=>a.y-b.y);
   const ocx=camX,ocy=camY;camX=cx;camY=cy;
@@ -55,7 +55,7 @@ function drawPlayer(){
   const overWater=tileAt(Math.floor(P.x/16),Math.floor((P.y-2)/16))==='W';
   const flap=overWater||P.flapAnim>0||P.flying;
   const fr=flap?Math.floor(tick/5)%2:(P.moving?Math.floor(tick/7)%2:0);
-  const under=tileAt(Math.floor(P.x/16),Math.floor((P.y-2)/16)),swim=under==='w'||under==='x',glide=under==='z';
+  const under=tileAt(Math.floor(P.x/16),Math.floor((P.y-2)/16)),swim=under==='w'||under==='x',glide=regionAt()?.id==='rooftops'?overChasm():under==='z';
   if(!swim&&!glide)shadow(sx,sy+1,10+st*2-(P.z>4?2:0));
   if(P.inv>0&&Math.floor(P.inv/4)%2)return;
   let ox=0,oy=0;if(P.peckT>6){ox=DIRV[P.dir][0]*3;oy=DIRV[P.dir][1]*3;}
@@ -82,6 +82,9 @@ function trainerMarker(e){
 function drawEnt(e){
   const sx=Math.round(e.x-camX),sy=Math.round(e.y-camY+HUD);
   switch(e.type){
+    case 'cityprop':drawCityProp(e);break;
+    case 'roofgull':drawRoofGull(e,sx,sy);break;
+    case 'roofprop':drawRoofProp(e);break;
     case 'npc':{let s=SPR[e.spr];if(e.flip)s=flipOf(s);const bob=Math.floor((tick+e.phase)/32)%2;
       shadow(sx,sy+1,Math.min(18,s.width-4));const top=sy+2-s.height;drawImg(s,sx-(s.width>>1),top+bob);
       if(e.id==='daisy'&&G.q.daisy===2)drawImg(SPR.bell,sx-5,top+10+bob);
@@ -92,7 +95,7 @@ function drawEnt(e){
       ctx.fillStyle='#e8c88a';ctx.fillRect(sx-3,sy-7,2,2);ctx.fillRect(sx,sy-8,2,2);ctx.fillRect(sx+2,sy-7,2,2);ctx.fillRect(sx-4,sy-6,2,1);
       if(tick%90<8){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-9,1,1);}break;}
     case 'fmound':case 'star':case 'flag':case 'vane':case 'cduck':case 'decor':case 'exhibit':case 'easel':case 'nook':drawCityEnt(e,sx,sy);break;
-    case 'vpad':case 'vnode':case 'vsheep':case 'vmail':case 'vboard':case 'vwhistle':case 'vcontest':case 'windmill':case 'scarecrow':case 'vsculpt':drawVillageEnt(e,sx,sy);break;
+    case 'vpad':case 'vnode':case 'vsheep':case 'vmail':case 'vboard':case 'vwhistle':case 'vcontest':case 'windmill':case 'scarecrow':case 'vsculpt':case 'vprop':case 'vinfo':drawVillageEnt(e,sx,sy);break;
     case 'gullp':case 'jelly':case 'spark':case 'bubbles':case 'swarp':case 'shipdock':case 'xmark':case 'seachest':case 'brazier':case 'boss':case 'barrel':drawSeaEnt(e,sx,sy);break;
     case 'spad':case 'svent':case 'sport':case 'sgate':case 'gchime':case 'skychest':case 'snest':case 'sbell':case 'scrys':case 'sdragon':drawSkyEnt(e,sx,sy);break;
     case 'worm':{const s=SPR.worm[Math.floor((tick+e.phase)/12)%2];drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}
@@ -139,6 +142,7 @@ function drawEnt(e){
 }
 function drawHUD(){
   ctx.fillStyle='#192639';ctx.fillRect(0,0,W,HUD);ctx.fillStyle='#29465b';ctx.fillRect(0,HUD-2,W,2);
+  if(G.race&&regionAt()?.id==='rooftops'){drawRoofRaceHUD();return;}
   const mh=maxHearts();for(let i=0;i<mh;i++)drawImg(i<G.hearts?SPR.heart:SPR.heartE,6+i*9,5);
   drawImg(SPR.seed,6,17);txt('x'+G.seeds,16,19,7,'#fff8ec');
   drawImg(nightAmt()>0.5?ICO.moon:(duskAmt()>0.3?ICO.dusk:ICO.sun),40,17);

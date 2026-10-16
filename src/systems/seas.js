@@ -29,45 +29,61 @@ function updateVoyage(){
     if(n.id==='fortress'){warpTo(n.arrive.x,n.arrive.y,3,null,()=>fortressArrive());}
     else warpTo(n.arrive.x,n.arrive.y,3,null,()=>toast('Welcome to '+n.name+'!','#b2e7e0'));}
 }
-const SEA_COL={harbor:'#b69965',cove:'#f2dca0',reef:'#ff9cd0',volcano:'#e8683c',lighthouse:'#e8e8f0',fortress:'#8a8a9a'};
+function drawCoastalOcean(top=0,bottom=H){
+  const bands=['#204a74','#255780','#306a9d','#347aa7'];
+  bands.forEach((col,i)=>coastRect(ctx,col,0,top+i*(bottom-top)/4,W,(bottom-top)/4+1));
+  for(let i=0;i<65;i++){const x=(i*47+tick*(i%3===0?.28:.12))%W,y=top+(i*29)%(bottom-top);
+    coastRect(ctx,i%7===0?COAST.foam:'#4a92b8',x,y,3+i%4,1);}
+}
 function drawSea(sel,shipAt){
-  for(let i=0;i<14;i++){ctx.fillStyle=['#1f4fa0','#2358ac','#2860b8','#2c68c0','#306fc8','#3476cf','#387dd6','#3c84dc','#408be2','#4492e8','#4899ee','#4ca0f2','#50a7f6','#54aefa'][i];ctx.fillRect(0,i*16,W,16);}
-  for(let k=0;k<30;k++){const x=(k*47+tick*0.4)%W,y=(k*29)%H;ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillRect(Math.round(x),y,6,1);ctx.fillRect(Math.round(x)+2,y+1,3,1);}
-  const nodes=SEA_NODES;
-  ctx.strokeStyle='rgba(255,248,236,0.45)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
-  for(const n of nodes){if(n.id==='harbor')continue;const from=n.id==='volcano'||n.id==='cove'||n.id==='reef'?nodes[0]:n.id==='lighthouse'?nodes[3]:nodes[4];
-    if(!n.need())continue;ctx.beginPath();ctx.moveTo(from.mx,from.my);ctx.lineTo(n.mx,n.my);ctx.stroke();}
-  ctx.setLineDash([]);
-  nodes.forEach((n,i)=>{const open=n.need(),s=i===sel;
-    if(s){ctx.fillStyle=Math.floor(tick/10)%2?'#ff6fae':'#fff8ec';ctx.beginPath();ctx.arc(n.mx,n.my,19,0,7);ctx.fill();}
-    ctx.fillStyle='#202840';ctx.beginPath();ctx.arc(n.mx,n.my,17,0,7);ctx.fill();
-    ctx.fillStyle=open?SEA_COL[n.id]:'#4a5a7a';ctx.beginPath();ctx.arc(n.mx,n.my,15,0,7);ctx.fill();
-    if(open){ctx.fillStyle='#202840';
-      if(n.id==='volcano'){ctx.beginPath();ctx.moveTo(n.mx-9,n.my+8);ctx.lineTo(n.mx,n.my-9);ctx.lineTo(n.mx+9,n.my+8);ctx.fill();ctx.fillStyle='#ffb030';ctx.fillRect(n.mx-2,n.my-9,4,3);}
-      else if(n.id==='lighthouse'){ctx.fillRect(n.mx-3,n.my-9,6,17);ctx.fillStyle='#eb6654';ctx.fillRect(n.mx-3,n.my-3,6,4);ctx.fillStyle='#ffe05a';ctx.fillRect(n.mx-2,n.my-11,4,3);}
-      else if(n.id==='fortress'){ctx.fillStyle='#fff8ec';ctx.fillRect(n.mx-4,n.my-5,8,7);ctx.fillStyle='#202840';ctx.fillRect(n.mx-3,n.my-3,2,2);ctx.fillRect(n.mx+1,n.my-3,2,2);ctx.fillRect(n.mx-1,n.my+2,2,2);}
-      else if(n.id==='reef'){ctx.fillStyle='#eb6654';ctx.fillRect(n.mx-6,n.my,3,8);ctx.fillRect(n.mx-1,n.my-5,3,13);ctx.fillRect(n.mx+4,n.my+1,3,7);}
-      else if(n.id==='cove'){ctx.fillStyle='#2d664e';ctx.fillRect(n.mx-1,n.my-8,3,12);ctx.fillRect(n.mx-7,n.my-8,14,3);}
-      else{ctx.fillStyle='#a66c46';ctx.fillRect(n.mx-8,n.my+2,16,4);ctx.fillRect(n.mx-6,n.my-6,3,8);ctx.fillRect(n.mx+3,n.my-6,3,8);}}
-    else txt('?',n.mx,n.my-4,8,'#c8d0e8',{align:'center'});
+  drawCoastalOcean();const nodes=SEA_NODES,cur=nodes.find(n=>n.id===shipAt)||nodes[0];
+  ctx.save();ctx.setLineDash([2,4]);
+  for(const n of nodes){if(n.id==='harbor'||!n.need())continue;
+    const from=n.id==='lighthouse'?nodes[3]:n.id==='fortress'?nodes[4]:nodes[0];
+    coastLine(ctx,'#799fb3',[[from.mx,from.my],[n.mx,n.my]],1);}
+  const selected=nodes[sel];if(selected&&selected.id!==cur.id)coastLine(ctx,selected.need()?COAST.gold:COAST.red,[[cur.mx,cur.my],[selected.mx,selected.my]],1);
+  ctx.restore();
+  nodes.forEach((n,i)=>{
+    const open=n.need(),s=i===sel,z=n.id==='harbor'?.85:n.id==='fortress'?.7:.8;
+    ctx.save();ctx.globalAlpha=open?1:.35;ctx.drawImage(coastalIslandSprite(n.id,!!G.flags.lit),Math.round(n.mx-38*z),Math.round(n.my-41*z),76*z,76*z);ctx.restore();
+    if(!open){coastRect(ctx,COAST.ink,n.mx-4,n.my-5,8,10);txt('?',n.mx,n.my-3,6,COAST.rockLight,{align:'center'});}
+    const name=n.id==='harbor'?'HARBOR':n.id==='lighthouse'?'LIGHTHOUSE':n.id==='fortress'?'SQUAWKBEARD':n.name;
+    txt(open?name:'???',n.mx,n.my+24,5,s?COAST.gold:open?COAST.paper:'#98b3c7',{align:'center',shadow:true});
+    if(s){const color=open?COAST.gold:COAST.red;coastPoly(ctx,color,[[n.mx-28,n.my-4],[n.mx-24,n.my],[n.mx-28,n.my+4]]);coastPoly(ctx,color,[[n.mx+28,n.my-4],[n.mx+24,n.my],[n.mx+28,n.my+4]]);}
   });
-  const at=nodes.find(n=>n.id===shipAt);if(at&&!VOY)ctx.drawImage(SPR.shipIcon,at.mx-12,at.my-28);
+  if(shipAt)coastTopShip(ctx,cur.mx+(cur.id==='harbor'?20:-23),cur.my+5,.35,G.sea.lv);
+  coastLine(ctx,COAST.foam,[[222,152],[222,178]],1);coastLine(ctx,COAST.foam,[[210,165],[234,165]],1);
+  coastPoly(ctx,COAST.foam,[[222,154],[219,168],[222,165],[225,168]]);txt('N',222,144,4,COAST.foam,{align:'center'});
 }
 function drawSail(){
   drawSea(SAIL.sel,curNode());
-  box(8,8,W-16,16,'#192639','#b2e7e0');txt('WHERE TO, CAPTAIN?',W/2,13,7,'#b2e7e0',{align:'center'});
-  const n=SEA_NODES[SAIL.sel];box(8,H-34,W-16,26,'#192639','#7896ae');
-  txt(n.need()?n.name:'???',W/2,H-30,7,n.need()?'#fff8ec':'#98b3c7',{align:'center'});
-  txt(n.need()?(n.id===curNode()?'You are here.':'Z: set sail     ESC: close'):n.lock,W/2,H-19,5,n.need()?'#b9d1dd':'#ff8080',{align:'center'});
-  txt('SHIP: '+SEA_LEVEL_NAMES[Math.min(3,shipLevel())],W-14,28,5,'#ffe05a',{align:'right'});
+  txt('WHERE TO, CAPTAIN?',W/2,10,7,COAST.paper,{align:'center',shadow:true});
+  txt('SHIP: '+SEA_LEVEL_NAMES[Math.min(3,shipLevel())],W-10,26,4,COAST.foam,{align:'right'});
+  const n=SEA_NODES[SAIL.sel];box(6,192,W-12,28,'#192639','#7896ae');
+  txt(n.need()?n.name:'UNCHARTED WATERS',W/2,197,6,n.need()?COAST.paper:'#98b3c7',{align:'center'});
+  const hint=n.need()?(n.id===curNode()?'You are here.':TOUCH?'A: set sail   MAP: close':'Z: set sail   ESC: close'):n.lock;
+  wrap(hint,SET.big?6:5,W-24).slice(0,2).forEach((s,i)=>txt(s,W/2,207+i*6,5,n.need()?COAST.foam:COAST.red,{align:'center'}));
 }
 function drawVoyage(){
-  const v=VOY,k=Math.min(1,v.t/v.dur),x=lerp(v.from.mx,v.to.mx,k),y=lerp(v.from.my,v.to.my,k);
-  drawSea(-1,null);ctx.drawImage(SPR.shipIcon,Math.round(x-17),Math.round(y-28+Math.sin(tick/6)*2));
-  for(let i=0;i<5;i++){const t=(v.t*1.5+i*9)%40;ctx.fillStyle='rgba(255,255,255,'+(1-t/40)+')';ctx.fillRect(Math.round(x-t*0.6+6),Math.round(y+3+i%2),2,1);}
-  txt('Sailing to '+v.to.name+'...',W/2,H-20,6,'#fff8ec',{align:'center',shadow:true});
+  const v=VOY,k=Math.min(1,v.t/v.dur),x=lerp(119,147,k),y=152+Math.round(Math.sin(tick/9)*2),z=1.8;
+  coastRect(ctx,'#94cdd1',0,0,W,89);coastRect(ctx,'#c3dfd6',0,62,W,27);coastRect(ctx,COAST.sandLight,29,30,20,15);
+  const cloud=155-(tick*.08)%60;coastRect(ctx,'#dbece0',cloud,29,42,4);coastRect(ctx,'#dbece0',cloud+17,25,14,4);
+  drawCoastalOcean(89,H);coastRect(ctx,COAST.foam,0,89,W,1);
+  const destination=coastalIslandSprite(v.to.id,!!G.flags.lit),dz=.6+k*.45;
+  ctx.drawImage(destination,Math.round(211-38*dz),Math.round(89-41*dz*.45),76*dz,76*dz*.45);
+  for(let i=0;i<14;i++){const t=(tick*1.5+i*9)%78;coastRect(ctx,i%3===0?COAST.foam:COAST.shallow,x-59-t*.7,y+9+i%4*3,14-t*.12,1);}
+  coastRect(ctx,'#173f5e',x-51,y+13,107,4);ctx.drawImage(coastalShipSprite(G.sea.lv),Math.round(x-37*z),Math.round(y-57*z),76*z,68*z);
+  drawPip(stage(),3,0,false,x-34,y-26,.65);
+  txt('PIRATE SEAS',12,12,6,COAST.ink);txt('Fair winds, Captain!',12,23,4,COAST.ink);
+  box(6,190,W-12,30,'#192639','#7896ae');txt('SAILING TO '+v.to.name,W/2,197,6,COAST.paper,{align:'center'});
+  coastRect(ctx,'#344e65',18,210,W-36,3);coastRect(ctx,COAST.foam,18,210,Math.round((W-36)*k),3);
 }
 function fortressArrive(){if(G.sea.boss<4)fortressStart();else toast("Squawkbeard's old ship. It's quiet now. Press F to sail home.",'#b2e7e0');}
+function restoreCoastalLanding(){
+  const r=regionAt();if(!r||!(r.sea&&r.kind==='outdoor'||r.id==='city'&&CS.x===4&&CS.y===6))return;
+  const b=pBox(P.x,P.y);if(!rectTiles(b.x,b.y,b.w,b.h,true))return;
+  const n=SEA_NODES.find(n=>n.id===curNode());if(n){P.x=n.arrive.x;P.y=n.arrive.y;}
+}
 /* ---- ship upgrades (used by the ship menu) ---- */
 function upgradeNeeds(u){return costTextSeas(u);}
 function costTextSeas(u){return u.seeds+' SEEDS, '+Object.entries(u.salv).map(([k,n])=>n+' '+SALV_NAME[k]+' (have '+G.sea.salv[k]+')').join(', ');}
@@ -81,8 +97,9 @@ function buyUpgrade(u){
 /* ---- entities ---- */
 function makeSeaEnts(){
   // docks: your ship waits at the end of each island's pier
-  for(const [o,c,r,key] of [['cove',0,8,'cove'],['reef',0,8,'reef'],['volc',0,8,'volcano'],['light',0,8,'lighthouse']]){const p=spx(o,c,r);addEnt({type:'shipdock',x:p.x,y:p.y+4,node:key});}
-  {const p=ents.find(e=>e.id==='pinch');if(G.flags.pinchMap&&p)Object.assign(p,at(69,78));}
+  for(const [o,key] of [['cove','cove'],['reef','reef'],['volc','volcano'],['light','lighthouse']]){const p=spx(o,1,9);addEnt({type:'shipdock',x:p.x,y:p.y,node:key});}
+  addEnt({type:'shipdock',...at(71,80),node:'harbor'});
+  {const p=ents.find(e=>e.id==='pinch');if(G.flags.pinchMap&&p)Object.assign(p,at(69,77));}
   for(const w of SEA_WARPS){const a=spx(...w.at),b=spx(...w.to);addEnt({type:'swarp',id:w.id,x:a.x,y:a.y,to:b,label:w.label,dive:w.dive,up:w.up});}
   for(const [id,kind,o,c,r] of SEA_ITEMS){const p=spx(o,c,r);spawnItem(id,kind,p.x,p.y);}
   for(const [id,o,c,r] of XMARKS){if(!G.sea.dug[id]){const p=spx(o,c,r);addEnt({type:'xmark',id,x:p.x,y:p.y+2});}}

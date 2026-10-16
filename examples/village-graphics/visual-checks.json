@@ -1,0 +1,116 @@
+{
+  "errors": [],
+  "interactions": {
+    "available": true,
+    "seasonChangesScene": true,
+    "constructionChangesScene": true
+  },
+  "mobile": {
+    "width": 288,
+    "scroll": 288,
+    "atlasWidth": 256,
+    "atlasHeight": 224
+  },
+  "pixels": [
+    {
+      "design": "hamlet",
+      "scene": "square",
+      "colors": 801
+    },
+    {
+      "design": "hamlet",
+      "scene": "river",
+      "colors": 1375
+    },
+    {
+      "design": "hamlet",
+      "scene": "hill",
+      "colors": 1324
+    },
+    {
+      "design": "hamlet",
+      "scene": "meadow",
+      "colors": 862
+    },
+    {
+      "design": "hamlet",
+      "scene": "buildings",
+      "colors": 1209
+    },
+    {
+      "design": "market",
+      "scene": "square",
+      "colors": 1327
+    },
+    {
+      "design": "market",
+      "scene": "river",
+      "colors": 1357
+    },
+    {
+      "design": "market",
+      "scene": "hill",
+      "colors": 1623
+    },
+    {
+      "design": "market",
+      "scene": "meadow",
+      "colors": 861
+    },
+    {
+      "design": "market",
+      "scene": "buildings",
+      "colors": 1213
+    },
+    {
+      "design": "woodland",
+      "scene": "square",
+      "colors": 795
+    },
+    {
+      "design": "woodland",
+      "scene": "river",
+      "colors": 1457
+    },
+    {
+      "design": "woodland",
+      "scene": "hill",
+      "colors": 1404
+    },
+    {
+      "design": "woodland",
+      "scene": "meadow",
+      "colors": 997
+    },
+    {
+      "design": "woodland",
+      "scene": "buildings",
+      "colors": 1272
+    },
+    {
+      "design": "current",
+      "scene": "square",
+      "colors": 89
+    },
+    {
+      "design": "current",
+      "scene": "river",
+      "colors": 87
+    },
+    {
+      "design": "current",
+      "scene": "hill",
+      "colors": 230
+    },
+    {
+      "design": "current",
+      "scene": "meadow",
+      "colors": 79
+    },
+    {
+      "design": "current",
+      "scene": "buildings",
+      "colors": 178
+    }
+  ]
+}

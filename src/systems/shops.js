@@ -34,7 +34,8 @@ function drawCatalog(){
   if(SH.top>0)txt('^',138,34,5,'#b9d1dd');if(SH.top+5<rows.length)txt('v',138,141,5,'#b9d1dd');
   box(150,40,94,100,'#2e2048','#7896ae');
   const cur=rows[SH.sel];
-  if(cur&&cur.outfit)drawPip(stage(),[0,2,1,3][Math.floor(tick/50)%4],Math.floor(tick/12)%2,false,197,128,3,cur.outfit);
+  if(SH.id==='ship'&&cur&&cur.icon==='shipIcon'){const s=coastalShipSprite(G.sea.lv);ctx.drawImage(s,159,55,76,68);}
+  else if(cur&&cur.outfit)drawPip(stage(),[0,2,1,3][Math.floor(tick/50)%4],Math.floor(tick/12)%2,false,197,128,3,cur.outfit);
   else if(cur&&cur.icon&&SPR[cur.icon]){const s=SPR[cur.icon],z=Math.min(6,Math.floor(70/Math.max(s.width,s.height)));ctx.drawImage(s,Math.round(197-s.width*z/2),Math.round(90-s.height*z/2),s.width*z,s.height*z);}
   else if(cur&&cur.leave&&SPR[S.owner]){const s=SPR[S.owner];ctx.drawImage(s,Math.round(197-s.width*2),Math.round(100-s.height*2),s.width*4,s.height*4);}
   box(12,148,W-24,66,'#192639','#7896ae');

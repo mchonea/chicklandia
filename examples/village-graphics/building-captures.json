@@ -1,0 +1,108 @@
+{
+  "art": {
+    "sprites": [
+      {
+        "kind": "home",
+        "width": 48,
+        "height": 54,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 2,
+        "bounds": [
+          2,
+          3,
+          46,
+          52
+        ]
+      },
+      {
+        "kind": "bakery",
+        "width": 52,
+        "height": 54,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 2,
+        "bounds": [
+          2,
+          2,
+          50,
+          52
+        ]
+      },
+      {
+        "kind": "mill",
+        "width": 66,
+        "height": 56,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 3,
+        "bounds": [
+          4,
+          4,
+          63,
+          53
+        ]
+      },
+      {
+        "kind": "band",
+        "width": 54,
+        "height": 50,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 3,
+        "bounds": [
+          2,
+          2,
+          52,
+          47
+        ]
+      },
+      {
+        "kind": "school",
+        "width": 48,
+        "height": 62,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 2,
+        "bounds": [
+          2,
+          1,
+          46,
+          60
+        ]
+      },
+      {
+        "kind": "clinic",
+        "width": 54,
+        "height": 52,
+        "unclipped": true,
+        "crisp": true,
+        "fitsCatalog": true,
+        "foot": 2,
+        "bounds": [
+          2,
+          2,
+          52,
+          50
+        ]
+      }
+    ],
+    "construction": true,
+    "allPass": true
+  },
+  "standalone": {
+    "allPass": true
+  },
+  "gallery": {
+    "before": true,
+    "after": true,
+    "fitsPhone": true,
+    "allPass": true
+  },
+  "errors": []
+}

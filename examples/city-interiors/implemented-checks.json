@@ -1,0 +1,99 @@
+{
+  "gameplay": {
+    "accessDiagnostics": [
+      {
+        "room": "cleo",
+        "dx": 0,
+        "dy": 14,
+        "route": {
+          "ok": true,
+          "pos": [
+            1913.6664,
+            1110.9638999999997
+          ]
+        },
+        "state": "talk",
+        "target": [
+          1912,
+          1096
+        ],
+        "front": {
+          "x": 1913.6664,
+          "y": 1096.9638999999997,
+          "dx": 0,
+          "dy": -1
+        }
+      }
+    ],
+    "blockedEntries": [],
+    "unreachableResidents": [],
+    "all_thirteen_entries_clear": true,
+    "all_thirteen_native_rooms_render": true,
+    "every_room_resident_reachable_and_talks": true,
+    "furniture_has_physical_footprints": true,
+    "library_reading_corner_reachable": true,
+    "nookDiagnostic": {
+      "state": "talk",
+      "stories": 1,
+      "pos": [
+        1616.9851999999992,
+        1317.0927000000001
+      ],
+      "nook": {
+        "type": "nook",
+        "x": 1616,
+        "y": 1298
+      },
+      "front": {
+        "x": 1616.9851999999992,
+        "y": 1303.0927000000001,
+        "dx": 0,
+        "dy": -1
+      }
+    },
+    "reading_corner_still_tells_a_story": true,
+    "stairs_approach_reachable": true,
+    "stairsDiagnostic": {
+      "state": "warp",
+      "pos": [
+        214.356200000002,
+        166.0061999999998
+      ],
+      "door": [
+        109,
+        69
+      ],
+      "tile": "1"
+    },
+    "stairsAfter": {
+      "state": "play",
+      "region": "rooftops",
+      "pos": [
+        1323,
+        1452
+      ]
+    },
+    "real_toy_stairs_enter_rooftops": true,
+    "real_roof_stairs_return_to_toy": true,
+    "low_pipe_blocks_walking": true,
+    "low_pipe_hops_with_real_input": true,
+    "alley_requires_glide": true,
+    "glide_crosses_to_next_roof": true,
+    "gull_warns_before_swooping": true,
+    "gull_warning_is_generous": true,
+    "gull_commits_to_warned_target": true,
+    "peck_stuns_gull": true,
+    "wing_flap_stuns_gull": true,
+    "one_swoop_causes_at_most_one_hit": true,
+    "moving_out_of_warned_path_dodges_gull": true,
+    "all_six_arcade_holes_can_be_pecked": true,
+    "raceRouteFailures": [],
+    "full_race_wins_by_walking": true,
+    "timeout_returns_to_clear_toy_floor": true,
+    "old_room_and_roof_saves_recover": true,
+    "allPass": true
+  },
+  "standalone": true,
+  "errors": [],
+  "allPass": true
+}

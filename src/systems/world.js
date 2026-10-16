@@ -90,7 +90,9 @@ function drawEnvFX(){
       if(ch==='I')light(x,y+2,26);else if(ch==='f')light(x,y+4,48);else if(ch==='*')light(x,y,16);else if(ch==='@')light(x,y,22);
       else if(ch==='|')light(x,y-4,34);else if(ch==='Q')light(x,y+4,18);}
     for(const f of flies)light(f.x-camX,f.y-camY,10);
-    for(const e of ents)if(e.type==='ffly'&&onCur(e))light(e.x-camX,e.y-camY-8,12);
+    for(const e of ents){if(e.type==='ffly'&&onCur(e))light(e.x-camX,e.y-camY-8,12);
+      if(e.type==='cityprop'&&e.p.kind==='lamp')light(e.ox+e.p.args[0]-camX,e.oy+e.p.args[1]-23-camY,34);}
+    if(regionAt()?.id==='city')for(const b of CITY_LOTS){const x=512+b.screen%3*256+b.x+b.w/2-camX,y=960+Math.floor(b.screen/3)*192+b.y-43-camY;if(x>-40&&x<W+40&&y>-40&&y<VH+40)light(x,y,21);}
     ctx.drawImage(lightC,0,HUD);
   }
   ctx.fillStyle='#f4ff8a';for(const f of flies)if(Math.sin(f.p*3)>-0.3)ctx.fillRect(Math.round(f.x-camX),Math.round(f.y-camY+HUD),2,2);

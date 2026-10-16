@@ -1,0 +1,27 @@
+{
+  "city_layout": {
+    "six_named_districts": true,
+    "thirteen_stable_building_ids": true,
+    "unreachableDoors": [],
+    "entryFailures": [],
+    "exitFailures": [],
+    "all_door_approaches_reachable": true,
+    "all_doors_enter_real_interiors": true,
+    "all_interiors_return_to_clear_pavement": true,
+    "unreachableRoutes": [],
+    "district_forest_village_and_harbor_connections": true,
+    "blockedSpines": [],
+    "three_northern_approaches_are_clear": true,
+    "unreachablePickups": [],
+    "all_city_quest_items_and_finds_reachable": true,
+    "unreachableParkStops": [],
+    "all_duckling_stops_and_sunbeam_reachable": true,
+    "daytime_city_residents_clear": true,
+    "old_positions_recover_without_losing_progress": true,
+    "allPass": true
+  },
+  "standalone": {
+    "allPass": true
+  },
+  "errors": []
+}

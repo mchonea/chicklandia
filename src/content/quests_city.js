@@ -69,7 +69,7 @@ const EXHIBITS=[
 const FINDS=[
   ...[[5,74],[8,76],[12,75],[20,74],[28,77]].map(([c,r],i)=>({id:'ms'+i,kind:'seashell',c,r})),
   ...[[24,15],[4,70],[12,50],[75,64]].map(([c,r],i)=>({id:'mp'+i,kind:'plume',c,r})),
-  ...[[2,57],[14,62],[14,73],[50,80]].map(([c,r],i)=>({id:'mf'+i,kind:'fossilmound',c,r}))];
+  ...[[2,57],[14,62],[14,73],[51,82]].map(([c,r],i)=>({id:'mf'+i,kind:'fossilmound',c,r}))];
 // things Rocco borrowed, and where they are hidden
 const BORROWED=[{id:'b_hat',kind:'hat',item:'bhat',owner:'pidge',c:66,r:67,name:"Pidge's hat",flag:'hat'},
   {id:'b_whisk',kind:'whisk',item:'bwhisk',owner:'remy',c:70,r:74,name:"Remy's whisk",flag:'whisk'},

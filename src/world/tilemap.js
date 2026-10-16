@@ -27,6 +27,11 @@ function solidTile(ch,forPlayer=true){
 
 function drawTile(ch,c,r,sx,sy,wf){
   const h=hash2(c,r);let img;
+  const region=regionOfPos(c*16+8,r*16+8);
+  if(region&&drawCityRoomTile(c,r,sx,sy,region))return;
+  if(region&&region.id==='city'&&drawCityTile(ch,c,r,sx,sy))return;
+  if(region&&region.area==='village'&&drawVillageTile(ch,c,r,sx,sy,wf))return;
+  if(region&&((region.sea&&region.kind==='outdoor')||(region.id==='city'&&c>=64&&r>=72))&&drawCoastalTile(ch,c,r,sx,sy,region))return;
   switch(ch){
     case '.':img=TILE.grass[h%3];break;
     case ',':img=TILE.flower[h%2];break;
@@ -98,7 +103,8 @@ function drawTile(ch,c,r,sx,sy,wf){
     case '`':img=TILE.deck;break;
     case '\\':img=TILE.wreck;break;
     case '/':img=TILE.wreckDeck;break;
-    case '7':img=TILE.pad;break;
+    case '7':{const pad=PADS.find(p=>c>=p.c&&c<p.c+2&&r>=p.r&&r<p.r+2);
+      img=pad&&G.vil.b[pad.id]&&G.vil.b[pad.id].done?groundFor(c,r,h):TILE.pad;break;}
     case '5':img=TILE.ship;break;
     case '6':img=TILE.stackCrate;break;
     case '8':img=TILE.roofWalk;break;

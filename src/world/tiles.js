@@ -137,6 +137,9 @@ TILE.lava=[0,1].map(f=>mk(16,16,x=>{P_(x,'#a8301c',0,0,16,16);for(let n=0;n<8;n+
 TILE.spring=[0,1].map(f=>mk(16,16,x=>{P_(x,'#46b8c8',0,0,16,16);P_(x,'#8ae0e8',2+f*3,3,4,2);P_(x,'#8ae0e8',9-f*2,9,4,2);P_(x,'#fff8ec',5+f*4,6,1,1);P_(x,'#2a8aa0',0,15,16,1);P_(x,'#e8e0d0',0,0,16,1);}));
 TILE.obsidian=mk(16,16,x=>{P_(x,'#3a2a4a',0,0,16,16);const r=mulberry(777);for(let n=0;n<8;n++)P_(x,'#5a4a6a',(r()*13)|0,(r()*14)|0,3,1);P_(x,'#1a0e24',0,0,16,1);P_(x,'#7a6a8a',2,3,2,1);});
 TILE.deck=mk(16,16,x=>{P_(x,'#b8844c',0,0,16,16);for(let i=0;i<16;i+=4)P_(x,'#8a5c30',i,0,1,16);P_(x,'#d0a068',1,2,2,1);P_(x,'#d0a068',9,9,2,1);});
+TILE.basalt=[0,1].map(f=>mk(16,16,x=>{P_(x,'#665567',0,0,16,16);for(const [i,j] of [[2+f*3,4],[10-f*2,11]]){P_(x,'#493e52',i,j,4,1);P_(x,'#847083',i,j-1,3,1);}P_(x,'#514255',7,7,2,1);}));
+TILE.coastStone=[0,1].map(f=>mk(16,16,x=>{P_(x,'#a9b3b8',0,0,16,16);P_(x,'#cbd0c8',2+f*3,3,5,1);P_(x,'#85929f',8-f*2,11,5,1);P_(x,'#939fa5',3,8,2,1);}));
+TILE.seaCliff=mk(16,16,x=>{P_(x,'#64758b',0,0,16,16);P_(x,'#a9b7c5',1,1,14,6);P_(x,'#cbd0c8',2,1,11,1);P_(x,'#7f919f',3,7,11,3);P_(x,'#46596f',2,12,13,4);P_(x,'#46596f',5,8,1,4);P_(x,'#2d664e',2,4,3,1);} );
 TILE.wreck=mk(16,16,x=>{P_(x,'k',0,0,16,16);P_(x,'#4a3a2a',1,1,14,14);for(let j=3;j<16;j+=4)P_(x,'#2a1c10',1,j,14,1);P_(x,'#6a5a3a',3,5,3,1);P_(x,'#2a6a4a',2,12,5,2);});
 TILE.wreckDeck=mk(16,16,x=>{P_(x,'#6a5a3a',0,0,16,16);for(let i=0;i<16;i+=5)P_(x,'#3a2c1c',i,0,1,16);P_(x,'#8a7a5a',2,4,2,1);});
 // sky tiles
@@ -149,6 +152,9 @@ TILE.stormCrystal=mk(16,16,x=>{x.drawImage(TILE.cloud[0],0,0);P_(x,'k',3,5,5,10)
 TILE.rainWall=[0,1].map(f=>mk(16,16,x=>{P_(x,'#4a5a7a',0,0,16,16);for(let i=0;i<16;i+=3){const o=(i*5+f*4)%16;P_(x,'#a6c8ff',i,o,1,5);P_(x,'#8aa8e8',i+1,(o+8)%16,1,4);}P_(x,'#2a3a5a',0,0,16,2);}));
 TILE.barrier=mk(16,16,x=>{P_(x,'k',0,0,16,16);P_(x,'#d8e0ec',1,1,14,14);P_(x,'#ffffff',2,2,6,3);P_(x,'#a8b4c8',1,10,14,5);P_(x,'#a8b4c8',9,5,5,3);P_(x,'#8898b0',1,14,14,1);});
 function groundFor(c,r,h){
+  const coastal=regionOfPos(c*16+8,r*16+8);
+  if(coastal&&coastal.id==='volcano')return TILE.basalt[h%2];
+  if(coastal&&coastal.id==='lighthouse')return TILE.coastStone[h%2];
   switch(groundOf(c,r)){
     case 'snow':return TILE.snow[h%2];
     case 'cobble':return TILE.cobble;

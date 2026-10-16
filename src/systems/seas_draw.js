@@ -1,5 +1,66 @@
 'use strict';
 /* ---------------- drawing for the Pirate Seas ---------------- */
+function coastalLand(ch){return '~=(N2aU1)F`'.includes(ch);}
+function drawCoastalTile(ch,c,r,sx,sy,region){
+  const R=(color,x,y,w,h)=>coastRect(ctx,color,x,y,w,h),h=hash2(c,r);
+  const adjacent=[[0,-1],[1,0],[0,1],[-1,0]],water=(dc,dr)=>tileAt(c+dc,r+dr)==='w';
+  if(ch==='w'||ch==='5'){
+    R('#255780',sx,sy,16,16);
+    const land=(dc,dr)=>{const nr=regionOfPos((c+dc)*16+8,(r+dr)*16+8);return nr===region&&coastalLand(tileAt(c+dc,r+dr));};
+    for(let i=0;i<4;i++){const [dc,dr]=adjacent[i];if(!land(dc,dr))continue;
+      const ship=region.id==='fortress',col=ship?'#172f49':COAST.shallow;
+      if(i===0)R(col,sx,sy,16,6);if(i===1)R(col,sx+10,sy,6,16);if(i===2)R(col,sx,sy+10,16,6);if(i===3)R(col,sx,sy,6,16);
+      const f=Math.floor(tick/20+c+r)%3;
+      if(!ship){if(i===0)R(COAST.foam,sx+2+f,sy+3,6,1);if(i===1)R(COAST.foam,sx+13,sy+3+f,1,6);if(i===2)R(COAST.foam,sx+5-f,sy+12,6,1);if(i===3)R(COAST.foam,sx+2,sy+4-f,1,6);}
+    }
+    if(h%3===0){const f=Math.floor(tick/28)%3;R('#4a92b8',sx+3+f,sy+5+(h%7),5,1);if(h%7===0)R(COAST.foam,sx+4+f,sy+6+(h%7),2,1);}
+    return true;
+  }
+  if(ch==='3'){
+    R(COAST.woodDark,sx,sy,16,16);R(COAST.woodLight,sx+1,sy,14,16);
+    for(let j=1;j<16;j+=4){R(COAST.sand,sx+1,sy+j,14,1);R(COAST.wood,sx+1,sy+j+2,14,1);}
+    if(water(-1,0)){R(COAST.woodDark,sx,sy+3,3,9);R(COAST.sand,sx,sy+3,3,2);}
+    if(water(1,0)){R(COAST.woodDark,sx+13,sy+3,3,9);R(COAST.sand,sx+13,sy+3,3,2);}
+    return true;
+  }
+  if(ch==='F'&&region.id==='fortress'){
+    ctx.drawImage(TILE.deck,sx,sy);R(COAST.woodDark,sx,sy+4,16,6);R(COAST.gold,sx,sy+4,16,1);R(COAST.ink,sx+3,sy+2,3,12);R(COAST.woodLight,sx+3,sy+2,3,2);return true;
+  }
+  if(region.id==='lighthouse'&&'aU1'.includes(ch)){ctx.drawImage(TILE.coastStone[h%2],sx,sy);return true;}
+  if(ch==='('||ch==='R'){
+    ctx.drawImage(region.id==='volcano'?TILE.basalt[h%2]:region.id==='lighthouse'?TILE.coastStone[h%2]:TILE.sand[h%2],sx,sy);
+    coastPoly(ctx,COAST.ink,[[sx+2,sy+7],[sx+5,sy+3],[sx+11,sy+3],[sx+15,sy+8],[sx+14,sy+13],[sx+10,sy+15],[sx+4,sy+14],[sx+1,sy+11]]);
+    coastPoly(ctx,COAST.rockLight,[[sx+3,sy+7],[sx+6,sy+4],[sx+10,sy+4],[sx+14,sy+8],[sx+13,sy+12],[sx+5,sy+12],[sx+2,sy+10]]);
+    R(COAST.rock,sx+5,sy+12,8,2);R(COAST.paper,sx+5,sy+5,3,1);
+    if(ch==='R')coastLine(ctx,COAST.ink,[[sx+9,sy+4],[sx+8,sy+8],[sx+10,sy+10]],1);return true;
+  }
+  if(ch==='N'){ctx.drawImage(TILE.seaCliff,sx,sy);return true;}
+  if(ch!=='~'&&ch!=='=')return false;
+  ctx.drawImage(ch==='~'?TILE.sand[h%2]:region.id==='volcano'?TILE.basalt[h%2]:region.id==='lighthouse'?TILE.coastStone[h%2]:TILE.cobble,sx,sy);
+  const rim=ch==='~'?COAST.sandShadow:region.id==='volcano'?'#443a4c':'#64758b';
+  if(water(0,-1))R(rim,sx,sy,16,2);if(water(1,0))R(rim,sx+14,sy,2,16);
+  if(water(0,1)){R(rim,sx,sy+13,16,3);R(ch==='~'?COAST.sandLight:COAST.rockLight,sx+1,sy+12,14,1);}
+  if(water(-1,0))R(rim,sx,sy,2,16);
+  return true;
+}
+function drawCoastalScenery(cx,cy){
+  const region=regionAt();if(!region||!region.sea)return;
+  ctx.save();ctx.beginPath();ctx.rect(0,HUD,W,VH);ctx.clip();
+  if(region.id==='lighthouse'){
+    const x=SO.lightE[0]*16+120-cx,y=SO.lightE[1]*16+58-cy+HUD;
+    ctx.save();ctx.translate(Math.round(x),Math.round(y));ctx.scale(2.5,2.5);coastLighthouse(ctx,0,0,!!G.flags.lit);coastRect(ctx,COAST.ink,-2,8,4,6);ctx.restore();
+  }
+  if(region.id==='fortress'){
+    const x=SO.fort[0]*16-cx,y=SO.fort[1]*16-cy+HUD;
+    // Rigging stays along the rail so every boss tell and barrel lane remains visible.
+    coastLine(ctx,'#e8cd98',[[x+65,y+24],[x+185,y+24]],1);
+    coastRect(ctx,COAST.ink,x+184,y+2,3,32);coastPoly(ctx,COAST.red,[[x+187,y+3],[x+211,y+7],[x+200,y+15],[x+187,y+13]]);
+    coastRect(ctx,COAST.woodDark,x+48,y+27,32,13);coastRect(ctx,COAST.woodLight,x+49,y+27,30,3);coastRect(ctx,COAST.foam,x+53,y+33,5,4);coastRect(ctx,COAST.foam,x+69,y+33,5,4);
+    for(const yy of [67,119]){coastRect(ctx,COAST.ink,x+18,y+yy,17,7);coastRect(ctx,COAST.rock,x+18,y+yy,13,3);coastRect(ctx,COAST.gold,x+30,y+yy+6,3,3);}
+    coastLine(ctx,'rgba(89,68,55,0.25)',[[x+110,y+54],[x+157,y+131]],2);
+  }
+  ctx.restore();
+}
 function drawSeaEnt(e,sx,sy){
   switch(e.type){
     case 'gullp':{if(e.gone>0)break;if(e.flash>0&&Math.floor(e.flash/2)%2)break;let s=SPR.gullp;if(e.flip)s=flipOf(s);
@@ -19,7 +80,18 @@ function drawSeaEnt(e,sx,sy){
       else if(e.id==='cave_in'){ctx.fillStyle='#202840';ctx.fillRect(sx-12,sy-18,24,22);ctx.fillStyle='#0d0814';ctx.fillRect(sx-9,sy-15,18,19);ctx.fillStyle='#3a2a2a';ctx.fillRect(sx-12,sy-18,24,3);txt('CAVE',sx,sy-26,5,'#ffe05a',{align:'center'});}
       else if(e.id==='cave_out'){ctx.fillStyle='#ffe7a0';ctx.fillRect(sx-12,sy-4,24,8);ctx.fillStyle='#fff6d0';ctx.fillRect(sx-8,sy,16,4);txt('EXIT',sx,sy-10,5,'#fff8ec',{align:'center'});}
       break;}
-    case 'shipdock':{const b=Math.round(Math.sin(tick/20+e.x)*1.5);shadow(sx,sy+2,14);ctx.drawImage(SPR.shipIcon,sx-17,sy-26+b);if(G.sea.open&&tick%90<45)txt('SHIP',sx,sy-34,4,'#ffe05a',{align:'center'});break;}
+    case 'shipdock':{
+      const b=Math.round(Math.sin(tick/20+e.x)),lv=G.sea.lv;
+      if(e.node==='harbor'){
+        coastPoly(ctx,'#173f5e',[[sx+10,sy-28],[sx+39,sy-23],[sx+44,sy+12],[sx+24,sy+36],[sx+9,sy+12]]);
+        coastLine(ctx,COAST.sand,[[sx-26,sy-27],[sx+17,sy-18+b]],1);coastLine(ctx,COAST.sand,[[sx-26,sy+18],[sx+12,sy+16+b]],1);
+        ctx.drawImage(coastalShipSprite(lv,true),sx+4,sy-28+b);
+        if(G.sea.open)txt('SHIP',sx+24,sy-40,5,COAST.gold,{align:'center',shadow:true});
+      }else{
+        coastRect(ctx,'#173f5e',sx-20,sy+17,48,4);coastLine(ctx,COAST.sand,[[sx-16,sy-1],[sx-10,sy+10+b]],1);
+        ctx.drawImage(coastalShipSprite(lv),sx-21,sy-25+b,52,46);
+        if(G.sea.open)txt('SHIP',sx+4,sy-34,5,COAST.gold,{align:'center',shadow:true});
+      }break;}
     case 'xmark':drawImg(SPR.xmark,sx-(SPR.xmark.width>>1),sy-SPR.xmark.height);if(senseNear(e.x,e.y)&&tick%24<12){ctx.fillStyle='#ffd21e';ctx.fillRect(sx+4,sy-9,2,2);}break;
     case 'seachest':{const s=SPR.chestSea;drawImg(s,sx-(s.width>>1),sy-s.height+1);if(G.sea.chest===1&&tick%50<5){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-s.height,1,1);}if(G.sea.chest===2){ctx.fillStyle='rgba(30,20,40,0.35)';ctx.fillRect(sx-5,sy-s.height,11,s.height);}break;}
     case 'brazier':{shadow(sx,sy+1,8);ctx.fillStyle='#8a8a9a';ctx.fillRect(sx-7,sy-3,14,4);ctx.fillStyle='#6a6a7a';ctx.fillRect(sx-6,sy-2,12,2);

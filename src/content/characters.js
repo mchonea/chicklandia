@@ -25,9 +25,9 @@ const CHARACTERS=[
   {id:'mo',name:'MO',spr:'marmot',c:10,r:52,voice:900,w:10},
   {id:'elda',name:'ELDA',spr:'eagle',c:20,r:52,voice:450,w:12},
   {id:'pidge',name:'POSTMASTER PIDGE',spr:'pigeon',c:87,r:52,voice:800,w:10,night:[88,78]},
-  {id:'rocco',name:'ROCCO',spr:'raccoon',c:43,r:68,voice:420,w:12,night:[104,53]},
-  {id:'remy',name:'CHEF REMY',spr:'chef',c:40,r:77,voice:1100,w:10,night:[117,52]},
-  {id:'cleo',name:'CLEO',spr:'catO',c:35,r:78,voice:520,w:12,night:[120,65]},
+  {id:'rocco',name:'ROCCO',spr:'raccoon',c:42,r:69,voice:420,w:12,night:[104,53]},
+  {id:'remy',name:'CHEF REMY',spr:'chef',c:35,r:78,voice:1100,w:10,night:[117,52]},
+  {id:'cleo',name:'CLEO',spr:'catO',c:37,r:82,voice:520,w:12,night:[120,65]},
   {id:'pinch',name:'CAPN PINCH',spr:'crab',c:13,r:75,voice:350,w:12},
   {id:'sandy',name:'LIFEGUARD SANDY',spr:'gull',c:6,r:74,voice:900,w:10},
   // ---- the city: shopkeepers and neighbours (inside their buildings) ----
@@ -39,7 +39,7 @@ const CHARACTERS=[
   {id:'sheldon',name:'CURATOR SHELDON',spr:'curator',c:120,r:78,voice:210,w:16},
   {id:'pablo',name:'PABLO PEACOCK',spr:'peacock',c:137,r:66,voice:700,w:12},
   {id:'waddles',name:'MRS. WADDLES',spr:'duck',c:152,r:65,voice:780,w:14},
-  {id:'barnaby',name:'FOREMAN BARNABY',spr:'beaver',c:38,r:89,voice:520,w:12},
+  {id:'barnaby',name:'FOREMAN BARNABY',spr:'beaver',c:42,r:93,voice:520,w:12},
   {id:'dash',name:'DASH',spr:'dog',c:56,r:101,voice:340,w:14},
   {id:'nibbles2',name:'NIBBLES',spr:'chef',c:123,r:53,voice:1100,w:10},
 ];

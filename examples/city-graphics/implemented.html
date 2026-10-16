@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Chicklandia — Market-town city</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#101923;color:#fff8ec;font:16px/1.5 system-ui,sans-serif}main{max-width:1200px;margin:auto;padding:28px 20px}header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;margin-bottom:24px}small{color:#b2e7e0;letter-spacing:2px;text-transform:uppercase}h1{font-size:32px;line-height:1.2;margin:6px 0 10px}h2{font-size:25px;margin:0 0 16px}p{margin:0;color:#b2c9d8}a{color:#b2e7e0}a.play{display:inline-block;background:#ffe05a;color:#202840;text-decoration:none;padding:12px 18px;border-radius:5px;font-weight:600}button{font:inherit;cursor:pointer;padding:10px 15px;border:1px solid #597286;border-radius:4px;background:#192639;color:#fff8ec}button[aria-pressed=true]{background:#ffe05a;color:#202840;border-color:#ffe05a}button:hover{border-color:#fff8ec}button:focus-visible,a:focus-visible{outline:3px solid #b2e7e0;outline-offset:4px}.toolbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:16px 0}.overview{background:#192639;padding:10px}img{display:block;width:100%;height:auto;image-rendering:pixelated}.caption{padding:10px 4px 2px;font-size:14px}.places{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0 28px}.places button{text-align:left}.places span{display:block;opacity:.7;font-size:12px;letter-spacing:1px}.detail{display:grid;grid-template-columns:minmax(0,2fr) minmax(240px,1fr);gap:24px;background:#192639;align-items:center}.description{padding:20px 24px 20px 0}.description p{margin-bottom:15px}.note,footer{font-size:14px}footer{margin:24px 0;color:#b2c9d8}footer p{margin-top:10px}@media(max-width:800px){.detail{grid-template-columns:1fr;gap:0}.description{padding:20px}}@media(max-width:500px){main{padding:20px 12px}h1{font-size:28px}.places{grid-template-columns:repeat(2,minmax(0,1fr))}.places button{font-size:14px;padding:10px}.overview{padding:4px}}
+</style>
+<main>
+<header><div><small>Chicklandia · city update</small><h1>Market-town city</h1><p>Attached Main Street rowhouses, distinct neighborhoods, and clear stone routes.</p></div><a class="play" href="../../index.html">Play Chicklandia</a></header>
+<div class="toolbar" aria-label="Time of day"><span>View:</span><button data-time="day" aria-pressed="true">Day</button><button data-time="night" aria-pressed="false">Night</button></div>
+<div class="overview"><img id="overview" src="implemented-day-overview.png" alt="Actual city map: gate and fountain, attached shop row, cultural park, organized market, residential courtyard and open harbor"><p class="caption">Actual game scenes joined into one map.</p></div>
+<nav class="places" aria-label="City districts">
+<button data-scene="gate" aria-pressed="false"><span>NORTHWEST</span>City Gate</button><button data-scene="street" aria-pressed="true"><span>NORTH</span>Main Street</button><button data-scene="park" aria-pressed="false"><span>NORTHEAST</span>City Park</button>
+<button data-scene="market" aria-pressed="false"><span>SOUTHWEST</span>Market Square</button><button data-scene="homes" aria-pressed="false"><span>SOUTH</span>Residential Lane</button><button data-scene="harbor" aria-pressed="false"><span>SOUTHEAST</span>Harbor Docks</button>
+</nav>
+<section class="detail" aria-labelledby="place-title"><img id="scene" src="implemented-day-street.png" alt="Main Street's attached brick rowhouses with different shopfronts"><div class="description"><h2 id="place-title">Main Street</h2><p id="place-copy">Four attached brick rowhouses share a roofline, cornice and upper windows. Boutique, seed shop, bakery and toy shop have individual awnings and window displays.</p><p id="place-extra">The front walk and the stone route to Residential Lane stay open.</p><div class="toolbar" aria-label="Compare city"><button data-mode="before" aria-pressed="false">Before</button><button data-mode="after" aria-pressed="true">Now</button></div><p class="note">Before views show the city in daylight.</p></div></section>
+<footer><p>All 13 city interiors, shops and existing activities remain part of these neighborhoods. The park still includes the duckling walk and Cleo's sunbeam; the toy shop still leads to the rooftop race.</p><p><a href="review.html">City concepts</a> · <a href="../village-graphics/neighborhoods.html">Village neighborhoods</a></p></footer>
+</main>
+<script>
+const places={
+ gate:['City Gate','The post office and Rocco’s den frame the entrance. An octagonal fountain, seating and flower beds form a civic green.','The fountain sits beside the through route to Market Square.'],
+ street:['Main Street','Four attached brick rowhouses share a roofline, cornice and upper windows. Boutique, seed shop, bakery and toy shop have individual awnings and window displays.','The front walk and the stone route to Residential Lane stay open.'],
+ park:['City Park','The library and museum have their own facades. A gazebo, shaped pond, bandstand and planted paths give the park recognizable destinations.','The duckling stops and Cleo’s sunbeam are reachable on foot.'],
+ market:['Market Square','Remy’s bistro, aligned stalls, cafe tables and a street clock sit along the square’s edges. The middle stays clear.','One paved route connects the city gate with the village.'],
+ homes:['Residential Lane','Distinct home facades overlook a shared courtyard with flower beds, a laundry line and a bench.','The northern approach runs between the homes. Each front door still leads to its original interior.'],
+ harbor:['Harbor Docks','The Coastal Adventure harbor keeps its open ocean frontage, working pier, gangplank and moored ship.','The quay connects with the city park and residential street.']
+};
+const q=new URLSearchParams(location.search);let selected=q.get('scene') in places?q.get('scene'):'street',mode='after',time='day';
+function render(){
+ const p=places[selected];document.getElementById('scene').src=mode==='before'?'current-'+selected+'.png':'implemented-'+time+'-'+selected+'.png';document.getElementById('scene').alt=(mode==='before'?'Before: ':'Updated: ')+p[0];document.getElementById('place-title').textContent=p[0];document.getElementById('place-copy').textContent=p[1];document.getElementById('place-extra').textContent=p[2];document.getElementById('overview').src='implemented-'+time+'-overview.png';
+ for(const b of document.querySelectorAll('[data-scene]'))b.setAttribute('aria-pressed',String(b.dataset.scene===selected));
+ for(const b of document.querySelectorAll('[data-mode]'))b.setAttribute('aria-pressed',String(b.dataset.mode===mode));
+ for(const b of document.querySelectorAll('[data-time]'))b.setAttribute('aria-pressed',String(b.dataset.time===time));
+}
+for(const b of document.querySelectorAll('[data-scene]'))b.addEventListener('click',()=>{selected=b.dataset.scene;render();});
+for(const b of document.querySelectorAll('[data-mode]'))b.addEventListener('click',()=>{mode=b.dataset.mode;render();});
+for(const b of document.querySelectorAll('[data-time]'))b.addEventListener('click',()=>{time=b.dataset.time;render();});
+render();
+</script>
+</html>

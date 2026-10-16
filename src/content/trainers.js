@@ -29,7 +29,7 @@ const TRAIN={
     done:["Look at those splinters! You've got the power, kid!","Now you can learn SUPER PECK in your Sky Tree. Press E!"],
     hint:()=>"Smash the 3 old tree stumps in the forest for Bucky."},
   whistle:{phase:4,who:'dash',whoName:'DASH',skill:'WHISTLE',title:'Sheepdog School',avail:()=>G.vil.open&&has('carry'),item:'pebble',need:3,noun:'whistle pebbles',
-    spawn:[['pb0',56,99],['pb1',62,106],['pb2',51,102]],
+    spawn:[['pb0',56,99],['pb1',61,103],['pb2',51,102]],
     lock:"Learn CARRY first. Then Dash the sheepdog, out in the meadow pasture, will teach you to WHISTLE!",
     intro:["Woof! You're the chick who started the village! I'm Dash, the sheepdog.","A good whistle can call every helper in the meadow. I'll teach you!","First, find 3 smooth WHISTLE PEBBLES in the meadow. They make the best whistle sound!"],
     remind:()=>Math.min(3,G.items.pebble)+"/3 whistle pebbles. Look around the pasture and the meadow paths!",

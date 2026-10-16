@@ -1,0 +1,46 @@
+{
+  "date": "2026-10-16",
+  "gameplay": {
+    "city_layout": {
+      "checks": 11,
+      "allPass": true
+    },
+    "city": {
+      "checks": 58,
+      "allPass": true
+    },
+    "smoke": {
+      "checks": 30,
+      "allPass": true
+    },
+    "village_layout": {
+      "checks": 25,
+      "allPass": true
+    },
+    "village": {
+      "checks": 51,
+      "allPass": true
+    },
+    "coastal": {
+      "checks": 22,
+      "allPass": true
+    },
+    "seas": {
+      "checks": 73,
+      "allPass": true
+    },
+    "sky": {
+      "checks": 184,
+      "allPass": true
+    },
+    "city_interiors": {
+      "checks": 24,
+      "allPass": true
+    }
+  },
+  "totalGameplayChecks": 478,
+  "standalone": true,
+  "galleryAndMobile": true,
+  "browserErrors": [],
+  "allPass": true
+}
