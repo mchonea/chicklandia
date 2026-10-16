@@ -22,7 +22,7 @@ const TRAIN={
     done:["My life rings! Okay: kick your feet, paddle your wings, and keep your beak up!","Now you can learn SWIM in your Sky Tree. Press E. Squawk!"],
     hint:()=>"Lifeguard Sandy's life rings are on the beach and in the tide pools."},
   super:{phase:2,who:'bucky',whoName:'BUCKY',skill:'SUPER PECK',title:'Stump Smashing',avail:()=>G.q.bucky===2,item:'stump',need:3,noun:'stumps',
-    stumps:[['stump0',3,66],['stump1',29,63],['stump2',17,64]],
+    stumps:[['stump0',9,63],['stump1',27,70],['stump2',17,66]],
     lock:"Help BUCKY the beaver in the deep woods, and he'll teach you SUPER PECK!",
     intro:["Hey hey! Wanna know the secret to my super-strong teeth? PRACTICE!","There are 3 old tree stumps in the forest that need clearing out. Peck 'em to splinters!","Do that, and I'll teach you the SUPER PECK!"],
     remind:()=>Math.min(3,G.items.stump)+"/3 stumps smashed. They're around the forest edge and the deep woods!",

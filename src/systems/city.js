@@ -5,7 +5,7 @@ function buffActive(id){const b=G&&G.buff;return !!b&&G.clock<b.until&&(!id||b.i
 function checkBuffExpiry(){
   if(G.buff&&G.clock>=G.buff.until){G.buff=null;G.hearts=Math.min(G.hearts,maxHearts());toast('Your treat has worn off.','#b9d1dd');}
 }
-function overChasm(){return regionAt()?.id==='rooftops'?roofAlleyAt(P.x,P.y):tileAt(Math.floor(P.x/16),Math.floor((P.y-3)/16))==='z';}
+function overChasm(){return regionAt()?.id==='rooftops'?roofAlleyAt(P.x,P.y):forestFootTile(P.x,P.y-3)==='z';}
 
 /* ---- garden: special seeds ---- */
 let PL=null;   // planting menu

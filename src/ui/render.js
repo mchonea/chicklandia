@@ -52,10 +52,10 @@ function drawWorld(){
 }
 function drawPlayer(){
   const st=stage(),sx=Math.round(P.x-camX),sy=Math.round(P.y-camY+HUD);
-  const overWater=tileAt(Math.floor(P.x/16),Math.floor((P.y-2)/16))==='W';
+  const overWater=forestFootTile(P.x,P.y-2)==='W';
   const flap=overWater||P.flapAnim>0||P.flying;
   const fr=flap?Math.floor(tick/5)%2:(P.moving?Math.floor(tick/7)%2:0);
-  const under=tileAt(Math.floor(P.x/16),Math.floor((P.y-2)/16)),swim=under==='w'||under==='x',glide=regionAt()?.id==='rooftops'?overChasm():under==='z';
+  const under=forestFootTile(P.x,P.y-2),swim=under==='w'||under==='x',glide=regionAt()?.id==='rooftops'?overChasm():under==='z';
   if(!swim&&!glide)shadow(sx,sy+1,10+st*2-(P.z>4?2:0));
   if(P.inv>0&&Math.floor(P.inv/4)%2)return;
   let ox=0,oy=0;if(P.peckT>6){ox=DIRV[P.dir][0]*3;oy=DIRV[P.dir][1]*3;}
@@ -82,6 +82,8 @@ function trainerMarker(e){
 function drawEnt(e){
   const sx=Math.round(e.x-camX),sy=Math.round(e.y-camY+HUD);
   switch(e.type){
+    case 'forestprop':drawForestProp(e);break;
+    case 'landscapeprop':drawLandscapeProp(e);break;
     case 'cityprop':drawCityProp(e);break;
     case 'roofgull':drawRoofGull(e,sx,sy);break;
     case 'roofprop':drawRoofProp(e);break;
@@ -106,15 +108,15 @@ function drawEnt(e){
     case 'chest':{const s=G.chest?SPR.chestOpen:SPR.chest;drawImg(s,sx-(s.width>>1),sy+1-s.height);
       if(!G.chest&&(tick%60)<4){ctx.fillStyle='#fff';ctx.fillRect(sx+4,sy-s.height,1,1);}break;}
     case 'follower':{let s=e.kind==='fawn'?SPR.fawn:SPR.turtle;if(e.flip)s=flipOf(s);ctx.globalAlpha=e.alpha==null?1:Math.max(0,e.alpha);
-      const wet='wW'.includes(tileAt(Math.floor(e.x/16),Math.floor((e.y-2)/16)));if(!wet)shadow(sx,sy+1,8);
+      const wet='wW'.includes(forestFootTile(e.x,e.y-2));if(!wet)shadow(sx,sy+1,8);
       const hop=e.mode==='follow'&&P.moving?Math.floor(tick/6)%2:0;drawImg(s,sx-(s.width>>1),sy+2-s.height-hop+(wet?3:0));ctx.globalAlpha=1;break;}
-    case 'plot':{const st=G.plots[e.id];if(!st){if(G.thumb&&tick%90<45){ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillRect(sx-1,sy-6,2,2);}break;}
+    case 'plot':{if(drawForestPlot(e,sx,sy))break;const st=G.plots[e.id];if(!st){if(G.thumb&&tick%90<45){ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillRect(sx-1,sy-6,2,2);}break;}
       const s=SPR.plant[st.p>=1?2:st.p>=0.33?1:0],pk=st.k||'plain',big=pk==='giant'?(0.7+0.5*Math.min(1,st.p)):1;
       if(big!==1){ctx.drawImage(s,Math.round(sx-s.width*big/2),Math.round(sy+1-s.height*big),Math.round(s.width*big),Math.round(s.height*big));}else drawImg(s,sx-(s.width>>1),sy+1-s.height);
       if(pk==='moon'){ctx.fillStyle='rgba(150,170,255,'+(st.p>=1?0.5:0.25)+')';ctx.fillRect(sx-5,sy-s.height-1,10,s.height);}
       if(pk==='speedy'&&tick%20<10){ctx.fillStyle='#ffe05a';ctx.fillRect(sx+4,sy-s.height+2,1,2);}
       if(st.p>=1&&(tick+((e.x*3)|0))%40<6){ctx.fillStyle='#fff';ctx.fillRect(sx+3,sy-s.height,1,1);}break;}
-    case 'fishspot':{const w=Math.round(Math.sin(tick/20)*4);ctx.fillStyle='rgba(20,40,90,0.55)';ctx.fillRect(sx-4+w,sy-6,8,3);ctx.fillRect(sx+4+w,sy-7,2,5);
+    case 'fishspot':{if(landscapeKind(e.x,e.y)==='beach'){LANDSCAPE_ART.paint(ctx,'fish',sx,sy);break;}const w=Math.round(Math.sin(tick/20)*4);ctx.fillStyle='rgba(20,40,90,0.55)';ctx.fillRect(sx-4+w,sy-6,8,3);ctx.fillRect(sx+4+w,sy-7,2,5);
       if(tick%80<6){ctx.fillStyle='#fff';ctx.fillRect(sx+w,sy-9,1,1);}break;}
     case 'puff':{const s=SPR.puff;drawImg(s,sx-(s.width>>1),sy-14-s.height+Math.round(Math.sin(e.p*2)*2));ctx.fillStyle='rgba(20,10,30,0.18)';ctx.fillRect(sx-3,sy,6,1);break;}
     case 'stump':{const s=SPR.stump;shadow(sx,sy+1,12);drawImg(s,sx-(s.width>>1),sy+2-s.height);break;}

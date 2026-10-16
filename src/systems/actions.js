@@ -11,7 +11,8 @@ function action(){
   for(const e of ents){if(e.type==='nook'&&onCur(e)&&Math.abs(f.x-e.x)<16&&Math.abs(f.y-(e.y-4))<12){useNook();return;}}
   for(const e of ents){if(e.type==='bowl'&&has('fly')&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){useBowl(e);return;}}
   for(const e of ents){if(e.type==='chest'&&onCur(e)&&Math.abs(f.x-e.x)<14&&Math.abs(f.y-(e.y-4))<12){openChest();return;}}
-  for(const e of ents){if(e.type==='plot'&&onCur(e)&&Math.abs(f.x-e.x)<11&&Math.abs(f.y-(e.y-5))<11){P.peckT=10;usePlot(e);return;}}
+  const plot=ents.filter(e=>e.type==='plot'&&onCur(e)&&Math.abs(f.x-e.x)<11&&Math.abs(f.y-(e.y-5))<11).sort((a,b)=>Math.hypot(f.x-a.x,f.y-a.y+5)-Math.hypot(f.x-b.x,f.y-b.y+5))[0];
+  if(plot){P.peckT=10;usePlot(plot);return;}
   const c=Math.floor(f.x/16),r=Math.floor(f.y/16);
   if(tileAt(c,r)==='n'){trySleep();return;}
   if(tileAt(c,r)==='s'&&siteFor(c,r)){siteSign(siteFor(c,r),c,r);return;}
@@ -50,14 +51,16 @@ function peck(f){
     if(e.type==='berry'&&Math.abs(e.x-f.x)<13&&Math.abs(e.y-5-f.y)<13){
       if(G.items.snowberry){float(e.x,e.y-16,'You have a snowberry!');SFX.clunk();}
       else{G.items.snowberry=1;tasteFood('snowberry');SFX.pick();puff(e.x,e.y-6,6,['#fff8ec','#2d664e']);toast('Picked a SNOWBERRY!');save();}return;}
-    if(e.type==='fishspot'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<14){
+    if(e.type==='fishspot'&&Math.abs(e.x-f.x)<16&&Math.abs(e.y-6-f.y)<(landscapeKind(e.x,e.y)==='beach'?24:14)){
       if(G.items.fish){float(e.x,e.y-16,'You already have a fish!');SFX.clunk();}
       else{G.items.fish=1;tasteFood('fish');SFX.splash();puff(e.x,e.y-4,10,['#a6d0ff','#fff8ec'],1.2,0.08);toast('Caught a FISH!');save();}return;}
   }
+  if(forestTreePeck(f))return;
+  if(landscapeBoulderPeck(f))return;
   const c=Math.floor(f.x/16),r=Math.floor(f.y/16),t=tileAt(c,r);
   if(t==='R'||t==='C'){if(has('peck'))breakTile(c,r,t);else{SFX.clunk();float(c*16+8,r*16,'Too hard!');}}
   else if(t==='A'){if(has('peck'))shakeTree(c,r,f);else{SFX.clunk();float(c*16+8,r*16,'*wobble*');}}
-  else if(t==='q')shakeTree(c,r,f,'acorn');
+  else if(t==='q'&&regionOfPos(f.x,f.y)?.id!=='forest')shakeTree(c,r,f,'acorn');
   else if(t==='M'){if(has('super')){setTile(c,r,'g');SFX.brk();shake=8;puff(c*16+8,r*16+8,18,['#a9b7c5','#64758b','#fff8ec'],2,0.08);save();if(!G.flags.mo&&c<16&&r>=48&&r<60)freeMo();}
     else{SFX.clunk();float(c*16+8,r*16,'Too big! Need SUPER PECK');}}
   else if(t==='Z'){if(has('peck')){setTile(c,r,'Y');SFX.brk();shake=4;puff(c*16+8,r*16+8,12,['#a66c46','#594437','#b69965'],1.4,0.08);toast('A secret trapdoor!');save();}
@@ -251,7 +254,7 @@ function collect(e){
 }
 function checkPickups(){
   if(P.hop)return;
-  for(const e of ents)if(e.type==='item'&&!e.dead&&e.delay<=0&&e.z<3&&Math.abs(e.x-P.x)<11&&Math.abs(e.y-P.y)<11)collect(e);
+  for(const e of ents)if(e.type==='item'&&!e.dead&&e.delay<=0&&e.z<3&&Math.abs(e.x-P.x)<11&&Math.abs(e.y+(e.pickupOffset||0)-P.y)<11)collect(e);
 }
 function updateEnts(){
   for(const e of ents){

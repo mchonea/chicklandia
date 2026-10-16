@@ -1,0 +1,34 @@
+{
+  "errors": [],
+  "uniqueLandscapeScenes": 6,
+  "uniqueRefreshScenes": 6,
+  "progressChanges": {
+    "landscape-forest0": true,
+    "landscape-forest1": true,
+    "landscape-beach0": true,
+    "landscape-beach1": false,
+    "landscape-mountains0": true,
+    "landscape-mountains1": true,
+    "refresh-forest0": true,
+    "refresh-forest1": true,
+    "refresh-beach0": true,
+    "refresh-beach1": false,
+    "refresh-mountains0": true,
+    "refresh-mountains1": true
+  },
+  "controls": {
+    "residents": true,
+    "routeGuide": true
+  },
+  "sizes": [
+    {
+      "width": 704,
+      "scroll": 704
+    },
+    {
+      "width": 288,
+      "scroll": 288
+    }
+  ],
+  "allPass": true
+}

@@ -1,0 +1,1586 @@
+{
+ "commit": "2f1dcad",
+ "note": "Saves written by save() at commit 2f1dcad. Each puts Pip on ground that was clear then.",
+ "saves": {
+  "forest_house": {
+   "pos": [
+    40,
+    1035
+   ],
+   "save": {
+    "sv": 3,
+    "pos": {
+     "region": "forest",
+     "x": 40,
+     "y": 75
+    },
+    "seeds": 37,
+    "skills": [
+     "peck",
+     "quick",
+     "hop",
+     "flap",
+     "super",
+     "swim"
+    ],
+    "hearts": 3,
+    "q": {
+     "mom": 0,
+     "daisy": 0,
+     "pig": 0,
+     "duck": 0,
+     "sheep": 0,
+     "rooster": 0,
+     "penny": 0,
+     "clyde": 0,
+     "squeaks": 0,
+     "biscuit": 0,
+     "whiskers": 0,
+     "granny": 2,
+     "bucky": 2,
+     "doe": 2,
+     "mo": 2,
+     "elda": 2,
+     "pidge": 2,
+     "remy": 2,
+     "pinch": 2,
+     "sandy": 2,
+     "rocco": 0,
+     "cleo": 0,
+     "cookoff": 0,
+     "vane": 0,
+     "babysit": 0,
+     "portrait": 0,
+     "sea_cove": 0,
+     "sea_xmarks": 0,
+     "sea_smug": 0,
+     "sea_pearl": 0,
+     "sea_wreck": 0,
+     "sea_springs": 0,
+     "sea_forge": 0,
+     "sea_light": 0,
+     "sea_boss": 0,
+     "vfound": 0,
+     "v_pig": 0,
+     "v_whiskers": 0,
+     "v_clyde": 0,
+     "v_daisy": 0,
+     "v_doe": 0,
+     "v_penny": 0,
+     "v_rooster": 0,
+     "vharvest": 0,
+     "sk_hatch": 0,
+     "sk_lambs": 0,
+     "sk_gust": 0,
+     "sk_moon": 0,
+     "sk_chimes": 0,
+     "sk_cake": 0,
+     "sk_boutique": 0,
+     "sk_rods": 0,
+     "sk_boss": 0
+    },
+    "items": {
+     "worm": 0,
+     "bell": 0,
+     "apple": 0,
+     "feather": 0,
+     "carrot": 0,
+     "bone": 0,
+     "yarn": 0,
+     "letter": 0,
+     "cheese": 0,
+     "acorn": 1,
+     "stick": 0,
+     "shell": 5,
+     "fish": 0,
+     "snowberry": 0,
+     "eagleEgg": 0,
+     "horseshoe": 0,
+     "puff": 0,
+     "ring": 0,
+     "stump": 0,
+     "bhat": 0,
+     "bwhisk": 0,
+     "bbell": 0,
+     "pepper": 0,
+     "salt": 0,
+     "mushroom": 0,
+     "pebble": 0,
+     "plank": 0,
+     "snowball": 0,
+     "pearl": 0,
+     "wreckbell": 0,
+     "crate": 0,
+     "sunstone": 0,
+     "ironore": 0,
+     "powderkeg": 0,
+     "conch": 0,
+     "lamb": 0,
+     "skyfeather": 0,
+     "chime": 0,
+     "peg": 0,
+     "cloudpuff": 0,
+     "bolt": 0,
+     "rod": 0,
+     "starfruit": 0
+    },
+    "collected": [
+     "stick0",
+     "stump0",
+     "stump1",
+     "stump2"
+    ],
+    "mods": {
+     "14,67": "V",
+     "14,68": "V",
+     "9,67": "V",
+     "10,67": "V",
+     "9,68": "V",
+     "10,68": "V",
+     "12,66": "V",
+     "13,66": "V",
+     "14,66": "V",
+     "9,66": "V",
+     "10,66": "V",
+     "14,69": "V"
+    },
+    "picked": {
+     "11,61": [
+      184,
+      988,
+      "acorn"
+     ]
+    },
+    "foxGone": false,
+    "gooseGone": false,
+    "sp1": 0,
+    "sp2": 0,
+    "earned": 0,
+    "gp": 430,
+    "rank": 7,
+    "taste": {},
+    "secrets": {},
+    "mgFirst": {},
+    "mgDay": {
+     "d": -1,
+     "n": 0
+    },
+    "acc": null,
+    "accessoryUnlocked": false,
+    "snackFirst": false,
+    "snackEaten": 0,
+    "sacks": {
+     "speedy": 0,
+     "giant": 0,
+     "moon": 0,
+     "star": 0
+    },
+    "vil": {
+     "open": false,
+     "b": {},
+     "mat": {
+      "wood": 0,
+      "stone": 0,
+      "wool": 0,
+      "clay": 0
+     },
+     "res": {},
+     "letters": [],
+     "nodes": {},
+     "shear": {},
+     "whistle": {},
+     "skills": 0,
+     "contest": {},
+     "decor": {}
+    },
+    "sea": {
+     "open": false,
+     "lv": {
+      "sails": 0,
+      "hull": 0,
+      "cannon": 0
+     },
+     "salv": {
+      "sailcloth": 0,
+      "hullplank": 0,
+      "cannonpart": 0
+     },
+     "visited": {},
+     "dug": {},
+     "chest": 0,
+     "lamps": 0,
+     "boss": 0
+    },
+    "sky": {
+     "open": 0,
+     "hatched": 0,
+     "name": "",
+     "harv": {
+      "moon": 0,
+      "star": 0
+     },
+     "chimes": 0,
+     "boss": 0,
+     "crys": 0,
+     "nest": 0,
+     "metBoss": 0,
+     "dbTip": 0
+    },
+    "decor": {},
+    "buff": null,
+    "jobs": {
+     "day": 0,
+     "list": []
+    },
+    "hold": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "museum": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "time": 0,
+    "met": [],
+    "home": [],
+    "sibs": [],
+    "visited": [
+     "0,0",
+     "0,5"
+    ],
+    "won": false,
+    "clock": 1260,
+    "weather": "clear",
+    "outfits": [],
+    "wear": null,
+    "best": {
+     "egg": 0,
+     "bonk": 0,
+     "ffly": 0,
+     "race": 0
+    },
+    "cellar": false,
+    "chest": false,
+    "part2": true,
+    "areas": [
+     "farm"
+    ],
+    "thumb": true,
+    "coop": {
+     "site": "forest",
+     "lv": 4,
+     "extra": 4
+    },
+    "plots": {
+     "plot_5_64": {
+      "p": 0.42,
+      "k": "moon",
+      "w": 2
+     },
+     "plot_6_64": {
+      "p": 1,
+      "k": "plain"
+     },
+     "plot_14_67": {
+      "p": 0.5,
+      "k": "giant"
+     },
+     "plot_14_69": {
+      "p": 0.2,
+      "k": "speedy"
+     }
+    },
+    "mail": {
+     "rocco": 0,
+     "cleo": 0,
+     "granny": 0
+    },
+    "flags": {
+     "dam": true,
+     "fawn": true,
+     "mo": true
+    },
+    "turtles": [
+     "turtle0",
+     "turtle1",
+     "turtle2"
+    ],
+    "harvests": 0,
+    "train": {},
+    "ov": 2
+   }
+  },
+  "forest_grove": {
+   "pos": [
+    24,
+    1110
+   ],
+   "save": {
+    "sv": 3,
+    "pos": {
+     "region": "forest",
+     "x": 24,
+     "y": 150
+    },
+    "seeds": 37,
+    "skills": [
+     "peck",
+     "quick",
+     "hop",
+     "flap",
+     "super",
+     "swim"
+    ],
+    "hearts": 3,
+    "q": {
+     "mom": 0,
+     "daisy": 0,
+     "pig": 0,
+     "duck": 0,
+     "sheep": 0,
+     "rooster": 0,
+     "penny": 0,
+     "clyde": 0,
+     "squeaks": 0,
+     "biscuit": 0,
+     "whiskers": 0,
+     "granny": 2,
+     "bucky": 2,
+     "doe": 2,
+     "mo": 2,
+     "elda": 2,
+     "pidge": 2,
+     "remy": 2,
+     "pinch": 2,
+     "sandy": 2,
+     "rocco": 0,
+     "cleo": 0,
+     "cookoff": 0,
+     "vane": 0,
+     "babysit": 0,
+     "portrait": 0,
+     "sea_cove": 0,
+     "sea_xmarks": 0,
+     "sea_smug": 0,
+     "sea_pearl": 0,
+     "sea_wreck": 0,
+     "sea_springs": 0,
+     "sea_forge": 0,
+     "sea_light": 0,
+     "sea_boss": 0,
+     "vfound": 0,
+     "v_pig": 0,
+     "v_whiskers": 0,
+     "v_clyde": 0,
+     "v_daisy": 0,
+     "v_doe": 0,
+     "v_penny": 0,
+     "v_rooster": 0,
+     "vharvest": 0,
+     "sk_hatch": 0,
+     "sk_lambs": 0,
+     "sk_gust": 0,
+     "sk_moon": 0,
+     "sk_chimes": 0,
+     "sk_cake": 0,
+     "sk_boutique": 0,
+     "sk_rods": 0,
+     "sk_boss": 0
+    },
+    "items": {
+     "worm": 0,
+     "bell": 0,
+     "apple": 0,
+     "feather": 0,
+     "carrot": 0,
+     "bone": 0,
+     "yarn": 0,
+     "letter": 0,
+     "cheese": 0,
+     "acorn": 1,
+     "stick": 0,
+     "shell": 5,
+     "fish": 0,
+     "snowberry": 0,
+     "eagleEgg": 0,
+     "horseshoe": 0,
+     "puff": 0,
+     "ring": 0,
+     "stump": 0,
+     "bhat": 0,
+     "bwhisk": 0,
+     "bbell": 0,
+     "pepper": 0,
+     "salt": 0,
+     "mushroom": 0,
+     "pebble": 0,
+     "plank": 0,
+     "snowball": 0,
+     "pearl": 0,
+     "wreckbell": 0,
+     "crate": 0,
+     "sunstone": 0,
+     "ironore": 0,
+     "powderkeg": 0,
+     "conch": 0,
+     "lamb": 0,
+     "skyfeather": 0,
+     "chime": 0,
+     "peg": 0,
+     "cloudpuff": 0,
+     "bolt": 0,
+     "rod": 0,
+     "starfruit": 0
+    },
+    "collected": [
+     "stick0",
+     "stump0",
+     "stump1",
+     "stump2"
+    ],
+    "mods": {
+     "14,67": "V",
+     "14,68": "V",
+     "9,67": "V",
+     "10,67": "V",
+     "9,68": "V",
+     "10,68": "V",
+     "12,66": "V",
+     "13,66": "V",
+     "14,66": "V",
+     "9,66": "V",
+     "10,66": "V",
+     "14,69": "V"
+    },
+    "picked": {
+     "11,61": [
+      184,
+      988,
+      "acorn"
+     ]
+    },
+    "foxGone": false,
+    "gooseGone": false,
+    "sp1": 0,
+    "sp2": 0,
+    "earned": 0,
+    "gp": 430,
+    "rank": 7,
+    "taste": {},
+    "secrets": {},
+    "mgFirst": {},
+    "mgDay": {
+     "d": -1,
+     "n": 0
+    },
+    "acc": null,
+    "accessoryUnlocked": false,
+    "snackFirst": false,
+    "snackEaten": 0,
+    "sacks": {
+     "speedy": 0,
+     "giant": 0,
+     "moon": 0,
+     "star": 0
+    },
+    "vil": {
+     "open": false,
+     "b": {},
+     "mat": {
+      "wood": 0,
+      "stone": 0,
+      "wool": 0,
+      "clay": 0
+     },
+     "res": {},
+     "letters": [],
+     "nodes": {},
+     "shear": {},
+     "whistle": {},
+     "skills": 0,
+     "contest": {},
+     "decor": {}
+    },
+    "sea": {
+     "open": false,
+     "lv": {
+      "sails": 0,
+      "hull": 0,
+      "cannon": 0
+     },
+     "salv": {
+      "sailcloth": 0,
+      "hullplank": 0,
+      "cannonpart": 0
+     },
+     "visited": {},
+     "dug": {},
+     "chest": 0,
+     "lamps": 0,
+     "boss": 0
+    },
+    "sky": {
+     "open": 0,
+     "hatched": 0,
+     "name": "",
+     "harv": {
+      "moon": 0,
+      "star": 0
+     },
+     "chimes": 0,
+     "boss": 0,
+     "crys": 0,
+     "nest": 0,
+     "metBoss": 0,
+     "dbTip": 0
+    },
+    "decor": {},
+    "buff": null,
+    "jobs": {
+     "day": 0,
+     "list": []
+    },
+    "hold": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "museum": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "time": 0,
+    "met": [],
+    "home": [],
+    "sibs": [],
+    "visited": [
+     "0,0",
+     "0,5"
+    ],
+    "won": false,
+    "clock": 1260,
+    "weather": "clear",
+    "outfits": [],
+    "wear": null,
+    "best": {
+     "egg": 0,
+     "bonk": 0,
+     "ffly": 0,
+     "race": 0
+    },
+    "cellar": false,
+    "chest": false,
+    "part2": true,
+    "areas": [
+     "farm"
+    ],
+    "thumb": true,
+    "coop": {
+     "site": "forest",
+     "lv": 4,
+     "extra": 4
+    },
+    "plots": {
+     "plot_5_64": {
+      "p": 0.42,
+      "k": "moon",
+      "w": 2
+     },
+     "plot_6_64": {
+      "p": 1,
+      "k": "plain"
+     },
+     "plot_14_67": {
+      "p": 0.5,
+      "k": "giant"
+     },
+     "plot_14_69": {
+      "p": 0.2,
+      "k": "speedy"
+     }
+    },
+    "mail": {
+     "rocco": 0,
+     "cleo": 0,
+     "granny": 0
+    },
+    "flags": {
+     "dam": true,
+     "fawn": true,
+     "mo": true
+    },
+    "turtles": [
+     "turtle0",
+     "turtle1",
+     "turtle2"
+    ],
+    "harvests": 0,
+    "train": {},
+    "ov": 2
+   }
+  },
+  "forest_deep": {
+   "pos": [
+    470,
+    1128
+   ],
+   "save": {
+    "sv": 3,
+    "pos": {
+     "region": "forest",
+     "x": 470,
+     "y": 168
+    },
+    "seeds": 37,
+    "skills": [
+     "peck",
+     "quick",
+     "hop",
+     "flap",
+     "super",
+     "swim"
+    ],
+    "hearts": 3,
+    "q": {
+     "mom": 0,
+     "daisy": 0,
+     "pig": 0,
+     "duck": 0,
+     "sheep": 0,
+     "rooster": 0,
+     "penny": 0,
+     "clyde": 0,
+     "squeaks": 0,
+     "biscuit": 0,
+     "whiskers": 0,
+     "granny": 2,
+     "bucky": 2,
+     "doe": 2,
+     "mo": 2,
+     "elda": 2,
+     "pidge": 2,
+     "remy": 2,
+     "pinch": 2,
+     "sandy": 2,
+     "rocco": 0,
+     "cleo": 0,
+     "cookoff": 0,
+     "vane": 0,
+     "babysit": 0,
+     "portrait": 0,
+     "sea_cove": 0,
+     "sea_xmarks": 0,
+     "sea_smug": 0,
+     "sea_pearl": 0,
+     "sea_wreck": 0,
+     "sea_springs": 0,
+     "sea_forge": 0,
+     "sea_light": 0,
+     "sea_boss": 0,
+     "vfound": 0,
+     "v_pig": 0,
+     "v_whiskers": 0,
+     "v_clyde": 0,
+     "v_daisy": 0,
+     "v_doe": 0,
+     "v_penny": 0,
+     "v_rooster": 0,
+     "vharvest": 0,
+     "sk_hatch": 0,
+     "sk_lambs": 0,
+     "sk_gust": 0,
+     "sk_moon": 0,
+     "sk_chimes": 0,
+     "sk_cake": 0,
+     "sk_boutique": 0,
+     "sk_rods": 0,
+     "sk_boss": 0
+    },
+    "items": {
+     "worm": 0,
+     "bell": 0,
+     "apple": 0,
+     "feather": 0,
+     "carrot": 0,
+     "bone": 0,
+     "yarn": 0,
+     "letter": 0,
+     "cheese": 0,
+     "acorn": 1,
+     "stick": 0,
+     "shell": 5,
+     "fish": 0,
+     "snowberry": 0,
+     "eagleEgg": 0,
+     "horseshoe": 0,
+     "puff": 0,
+     "ring": 0,
+     "stump": 0,
+     "bhat": 0,
+     "bwhisk": 0,
+     "bbell": 0,
+     "pepper": 0,
+     "salt": 0,
+     "mushroom": 0,
+     "pebble": 0,
+     "plank": 0,
+     "snowball": 0,
+     "pearl": 0,
+     "wreckbell": 0,
+     "crate": 0,
+     "sunstone": 0,
+     "ironore": 0,
+     "powderkeg": 0,
+     "conch": 0,
+     "lamb": 0,
+     "skyfeather": 0,
+     "chime": 0,
+     "peg": 0,
+     "cloudpuff": 0,
+     "bolt": 0,
+     "rod": 0,
+     "starfruit": 0
+    },
+    "collected": [
+     "stick0",
+     "stump0",
+     "stump1",
+     "stump2"
+    ],
+    "mods": {
+     "14,67": "V",
+     "14,68": "V",
+     "9,67": "V",
+     "10,67": "V",
+     "9,68": "V",
+     "10,68": "V",
+     "12,66": "V",
+     "13,66": "V",
+     "14,66": "V",
+     "9,66": "V",
+     "10,66": "V",
+     "14,69": "V"
+    },
+    "picked": {
+     "11,61": [
+      184,
+      988,
+      "acorn"
+     ]
+    },
+    "foxGone": false,
+    "gooseGone": false,
+    "sp1": 0,
+    "sp2": 0,
+    "earned": 0,
+    "gp": 430,
+    "rank": 7,
+    "taste": {},
+    "secrets": {},
+    "mgFirst": {},
+    "mgDay": {
+     "d": -1,
+     "n": 0
+    },
+    "acc": null,
+    "accessoryUnlocked": false,
+    "snackFirst": false,
+    "snackEaten": 0,
+    "sacks": {
+     "speedy": 0,
+     "giant": 0,
+     "moon": 0,
+     "star": 0
+    },
+    "vil": {
+     "open": false,
+     "b": {},
+     "mat": {
+      "wood": 0,
+      "stone": 0,
+      "wool": 0,
+      "clay": 0
+     },
+     "res": {},
+     "letters": [],
+     "nodes": {},
+     "shear": {},
+     "whistle": {},
+     "skills": 0,
+     "contest": {},
+     "decor": {}
+    },
+    "sea": {
+     "open": false,
+     "lv": {
+      "sails": 0,
+      "hull": 0,
+      "cannon": 0
+     },
+     "salv": {
+      "sailcloth": 0,
+      "hullplank": 0,
+      "cannonpart": 0
+     },
+     "visited": {},
+     "dug": {},
+     "chest": 0,
+     "lamps": 0,
+     "boss": 0
+    },
+    "sky": {
+     "open": 0,
+     "hatched": 0,
+     "name": "",
+     "harv": {
+      "moon": 0,
+      "star": 0
+     },
+     "chimes": 0,
+     "boss": 0,
+     "crys": 0,
+     "nest": 0,
+     "metBoss": 0,
+     "dbTip": 0
+    },
+    "decor": {},
+    "buff": null,
+    "jobs": {
+     "day": 0,
+     "list": []
+    },
+    "hold": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "museum": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "time": 0,
+    "met": [],
+    "home": [],
+    "sibs": [],
+    "visited": [
+     "0,0",
+     "1,5"
+    ],
+    "won": false,
+    "clock": 1260,
+    "weather": "clear",
+    "outfits": [],
+    "wear": null,
+    "best": {
+     "egg": 0,
+     "bonk": 0,
+     "ffly": 0,
+     "race": 0
+    },
+    "cellar": false,
+    "chest": false,
+    "part2": true,
+    "areas": [
+     "farm"
+    ],
+    "thumb": true,
+    "coop": {
+     "site": "forest",
+     "lv": 4,
+     "extra": 4
+    },
+    "plots": {
+     "plot_5_64": {
+      "p": 0.42,
+      "k": "moon",
+      "w": 2
+     },
+     "plot_6_64": {
+      "p": 1,
+      "k": "plain"
+     },
+     "plot_14_67": {
+      "p": 0.5,
+      "k": "giant"
+     },
+     "plot_14_69": {
+      "p": 0.2,
+      "k": "speedy"
+     }
+    },
+    "mail": {
+     "rocco": 0,
+     "cleo": 0,
+     "granny": 0
+    },
+    "flags": {
+     "dam": true,
+     "fawn": true,
+     "mo": true
+    },
+    "turtles": [
+     "turtle0",
+     "turtle1",
+     "turtle2"
+    ],
+    "harvests": 0,
+    "train": {},
+    "ov": 2
+   }
+  },
+  "mountain_ridge": {
+   "pos": [
+    72,
+    792
+   ],
+   "save": {
+    "sv": 3,
+    "pos": {
+     "region": "mountains",
+     "x": 72,
+     "y": 24
+    },
+    "seeds": 37,
+    "skills": [
+     "peck",
+     "quick",
+     "hop",
+     "flap",
+     "super",
+     "swim"
+    ],
+    "hearts": 3,
+    "q": {
+     "mom": 0,
+     "daisy": 0,
+     "pig": 0,
+     "duck": 0,
+     "sheep": 0,
+     "rooster": 0,
+     "penny": 0,
+     "clyde": 0,
+     "squeaks": 0,
+     "biscuit": 0,
+     "whiskers": 0,
+     "granny": 2,
+     "bucky": 2,
+     "doe": 2,
+     "mo": 2,
+     "elda": 2,
+     "pidge": 2,
+     "remy": 2,
+     "pinch": 2,
+     "sandy": 2,
+     "rocco": 0,
+     "cleo": 0,
+     "cookoff": 0,
+     "vane": 0,
+     "babysit": 0,
+     "portrait": 0,
+     "sea_cove": 0,
+     "sea_xmarks": 0,
+     "sea_smug": 0,
+     "sea_pearl": 0,
+     "sea_wreck": 0,
+     "sea_springs": 0,
+     "sea_forge": 0,
+     "sea_light": 0,
+     "sea_boss": 0,
+     "vfound": 0,
+     "v_pig": 0,
+     "v_whiskers": 0,
+     "v_clyde": 0,
+     "v_daisy": 0,
+     "v_doe": 0,
+     "v_penny": 0,
+     "v_rooster": 0,
+     "vharvest": 0,
+     "sk_hatch": 0,
+     "sk_lambs": 0,
+     "sk_gust": 0,
+     "sk_moon": 0,
+     "sk_chimes": 0,
+     "sk_cake": 0,
+     "sk_boutique": 0,
+     "sk_rods": 0,
+     "sk_boss": 0
+    },
+    "items": {
+     "worm": 0,
+     "bell": 0,
+     "apple": 0,
+     "feather": 0,
+     "carrot": 0,
+     "bone": 0,
+     "yarn": 0,
+     "letter": 0,
+     "cheese": 0,
+     "acorn": 1,
+     "stick": 0,
+     "shell": 5,
+     "fish": 0,
+     "snowberry": 0,
+     "eagleEgg": 0,
+     "horseshoe": 0,
+     "puff": 0,
+     "ring": 0,
+     "stump": 0,
+     "bhat": 0,
+     "bwhisk": 0,
+     "bbell": 0,
+     "pepper": 0,
+     "salt": 0,
+     "mushroom": 0,
+     "pebble": 0,
+     "plank": 0,
+     "snowball": 0,
+     "pearl": 0,
+     "wreckbell": 0,
+     "crate": 0,
+     "sunstone": 0,
+     "ironore": 0,
+     "powderkeg": 0,
+     "conch": 0,
+     "lamb": 0,
+     "skyfeather": 0,
+     "chime": 0,
+     "peg": 0,
+     "cloudpuff": 0,
+     "bolt": 0,
+     "rod": 0,
+     "starfruit": 0
+    },
+    "collected": [
+     "stick0",
+     "stump0",
+     "stump1",
+     "stump2"
+    ],
+    "mods": {
+     "14,67": "V",
+     "14,68": "V",
+     "9,67": "V",
+     "10,67": "V",
+     "9,68": "V",
+     "10,68": "V",
+     "12,66": "V",
+     "13,66": "V",
+     "14,66": "V",
+     "9,66": "V",
+     "10,66": "V",
+     "14,69": "V"
+    },
+    "picked": {
+     "11,61": [
+      184,
+      988,
+      "acorn"
+     ]
+    },
+    "foxGone": false,
+    "gooseGone": false,
+    "sp1": 0,
+    "sp2": 0,
+    "earned": 0,
+    "gp": 430,
+    "rank": 7,
+    "taste": {},
+    "secrets": {},
+    "mgFirst": {},
+    "mgDay": {
+     "d": -1,
+     "n": 0
+    },
+    "acc": null,
+    "accessoryUnlocked": false,
+    "snackFirst": false,
+    "snackEaten": 0,
+    "sacks": {
+     "speedy": 0,
+     "giant": 0,
+     "moon": 0,
+     "star": 0
+    },
+    "vil": {
+     "open": false,
+     "b": {},
+     "mat": {
+      "wood": 0,
+      "stone": 0,
+      "wool": 0,
+      "clay": 0
+     },
+     "res": {},
+     "letters": [],
+     "nodes": {},
+     "shear": {},
+     "whistle": {},
+     "skills": 0,
+     "contest": {},
+     "decor": {}
+    },
+    "sea": {
+     "open": false,
+     "lv": {
+      "sails": 0,
+      "hull": 0,
+      "cannon": 0
+     },
+     "salv": {
+      "sailcloth": 0,
+      "hullplank": 0,
+      "cannonpart": 0
+     },
+     "visited": {},
+     "dug": {},
+     "chest": 0,
+     "lamps": 0,
+     "boss": 0
+    },
+    "sky": {
+     "open": 0,
+     "hatched": 0,
+     "name": "",
+     "harv": {
+      "moon": 0,
+      "star": 0
+     },
+     "chimes": 0,
+     "boss": 0,
+     "crys": 0,
+     "nest": 0,
+     "metBoss": 0,
+     "dbTip": 0
+    },
+    "decor": {},
+    "buff": null,
+    "jobs": {
+     "day": 0,
+     "list": []
+    },
+    "hold": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "museum": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "time": 0,
+    "met": [],
+    "home": [],
+    "sibs": [],
+    "visited": [
+     "0,0",
+     "0,4"
+    ],
+    "won": false,
+    "clock": 1260,
+    "weather": "clear",
+    "outfits": [],
+    "wear": null,
+    "best": {
+     "egg": 0,
+     "bonk": 0,
+     "ffly": 0,
+     "race": 0
+    },
+    "cellar": false,
+    "chest": false,
+    "part2": true,
+    "areas": [
+     "farm"
+    ],
+    "thumb": true,
+    "coop": {
+     "site": "forest",
+     "lv": 4,
+     "extra": 4
+    },
+    "plots": {
+     "plot_5_64": {
+      "p": 0.42,
+      "k": "moon",
+      "w": 2
+     },
+     "plot_6_64": {
+      "p": 1,
+      "k": "plain"
+     },
+     "plot_14_67": {
+      "p": 0.5,
+      "k": "giant"
+     },
+     "plot_14_69": {
+      "p": 0.2,
+      "k": "speedy"
+     }
+    },
+    "mail": {
+     "rocco": 0,
+     "cleo": 0,
+     "granny": 0
+    },
+    "flags": {
+     "dam": true,
+     "fawn": true,
+     "mo": true
+    },
+    "turtles": [
+     "turtle0",
+     "turtle1",
+     "turtle2"
+    ],
+    "harvests": 0,
+    "train": {},
+    "ov": 2
+   }
+  },
+  "beach_palms": {
+   "pos": [
+    24,
+    1176
+   ],
+   "save": {
+    "sv": 3,
+    "pos": {
+     "region": "beach",
+     "x": 24,
+     "y": 24
+    },
+    "seeds": 37,
+    "skills": [
+     "peck",
+     "quick",
+     "hop",
+     "flap",
+     "super",
+     "swim"
+    ],
+    "hearts": 3,
+    "q": {
+     "mom": 0,
+     "daisy": 0,
+     "pig": 0,
+     "duck": 0,
+     "sheep": 0,
+     "rooster": 0,
+     "penny": 0,
+     "clyde": 0,
+     "squeaks": 0,
+     "biscuit": 0,
+     "whiskers": 0,
+     "granny": 2,
+     "bucky": 2,
+     "doe": 2,
+     "mo": 2,
+     "elda": 2,
+     "pidge": 2,
+     "remy": 2,
+     "pinch": 2,
+     "sandy": 2,
+     "rocco": 0,
+     "cleo": 0,
+     "cookoff": 0,
+     "vane": 0,
+     "babysit": 0,
+     "portrait": 0,
+     "sea_cove": 0,
+     "sea_xmarks": 0,
+     "sea_smug": 0,
+     "sea_pearl": 0,
+     "sea_wreck": 0,
+     "sea_springs": 0,
+     "sea_forge": 0,
+     "sea_light": 0,
+     "sea_boss": 0,
+     "vfound": 0,
+     "v_pig": 0,
+     "v_whiskers": 0,
+     "v_clyde": 0,
+     "v_daisy": 0,
+     "v_doe": 0,
+     "v_penny": 0,
+     "v_rooster": 0,
+     "vharvest": 0,
+     "sk_hatch": 0,
+     "sk_lambs": 0,
+     "sk_gust": 0,
+     "sk_moon": 0,
+     "sk_chimes": 0,
+     "sk_cake": 0,
+     "sk_boutique": 0,
+     "sk_rods": 0,
+     "sk_boss": 0
+    },
+    "items": {
+     "worm": 0,
+     "bell": 0,
+     "apple": 0,
+     "feather": 0,
+     "carrot": 0,
+     "bone": 0,
+     "yarn": 0,
+     "letter": 0,
+     "cheese": 0,
+     "acorn": 1,
+     "stick": 0,
+     "shell": 5,
+     "fish": 0,
+     "snowberry": 0,
+     "eagleEgg": 0,
+     "horseshoe": 0,
+     "puff": 0,
+     "ring": 0,
+     "stump": 0,
+     "bhat": 0,
+     "bwhisk": 0,
+     "bbell": 0,
+     "pepper": 0,
+     "salt": 0,
+     "mushroom": 0,
+     "pebble": 0,
+     "plank": 0,
+     "snowball": 0,
+     "pearl": 0,
+     "wreckbell": 0,
+     "crate": 0,
+     "sunstone": 0,
+     "ironore": 0,
+     "powderkeg": 0,
+     "conch": 0,
+     "lamb": 0,
+     "skyfeather": 0,
+     "chime": 0,
+     "peg": 0,
+     "cloudpuff": 0,
+     "bolt": 0,
+     "rod": 0,
+     "starfruit": 0
+    },
+    "collected": [
+     "stick0",
+     "stump0",
+     "stump1",
+     "stump2"
+    ],
+    "mods": {
+     "14,67": "V",
+     "14,68": "V",
+     "9,67": "V",
+     "10,67": "V",
+     "9,68": "V",
+     "10,68": "V",
+     "12,66": "V",
+     "13,66": "V",
+     "14,66": "V",
+     "9,66": "V",
+     "10,66": "V",
+     "14,69": "V"
+    },
+    "picked": {
+     "11,61": [
+      184,
+      988,
+      "acorn"
+     ]
+    },
+    "foxGone": false,
+    "gooseGone": false,
+    "sp1": 0,
+    "sp2": 0,
+    "earned": 0,
+    "gp": 430,
+    "rank": 7,
+    "taste": {},
+    "secrets": {},
+    "mgFirst": {},
+    "mgDay": {
+     "d": -1,
+     "n": 0
+    },
+    "acc": null,
+    "accessoryUnlocked": false,
+    "snackFirst": false,
+    "snackEaten": 0,
+    "sacks": {
+     "speedy": 0,
+     "giant": 0,
+     "moon": 0,
+     "star": 0
+    },
+    "vil": {
+     "open": false,
+     "b": {},
+     "mat": {
+      "wood": 0,
+      "stone": 0,
+      "wool": 0,
+      "clay": 0
+     },
+     "res": {},
+     "letters": [],
+     "nodes": {},
+     "shear": {},
+     "whistle": {},
+     "skills": 0,
+     "contest": {},
+     "decor": {}
+    },
+    "sea": {
+     "open": false,
+     "lv": {
+      "sails": 0,
+      "hull": 0,
+      "cannon": 0
+     },
+     "salv": {
+      "sailcloth": 0,
+      "hullplank": 0,
+      "cannonpart": 0
+     },
+     "visited": {},
+     "dug": {},
+     "chest": 0,
+     "lamps": 0,
+     "boss": 0
+    },
+    "sky": {
+     "open": 0,
+     "hatched": 0,
+     "name": "",
+     "harv": {
+      "moon": 0,
+      "star": 0
+     },
+     "chimes": 0,
+     "boss": 0,
+     "crys": 0,
+     "nest": 0,
+     "metBoss": 0,
+     "dbTip": 0
+    },
+    "decor": {},
+    "buff": null,
+    "jobs": {
+     "day": 0,
+     "list": []
+    },
+    "hold": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "museum": {
+     "seashell": 0,
+     "plume": 0,
+     "fossil": 0,
+     "petal": 0,
+     "shard": 0,
+     "cloudbloom": 0
+    },
+    "time": 0,
+    "met": [],
+    "home": [],
+    "sibs": [],
+    "visited": [
+     "0,0",
+     "0,6"
+    ],
+    "won": false,
+    "clock": 1260,
+    "weather": "clear",
+    "outfits": [],
+    "wear": null,
+    "best": {
+     "egg": 0,
+     "bonk": 0,
+     "ffly": 0,
+     "race": 0
+    },
+    "cellar": false,
+    "chest": false,
+    "part2": true,
+    "areas": [
+     "farm"
+    ],
+    "thumb": true,
+    "coop": {
+     "site": "forest",
+     "lv": 4,
+     "extra": 4
+    },
+    "plots": {
+     "plot_5_64": {
+      "p": 0.42,
+      "k": "moon",
+      "w": 2
+     },
+     "plot_6_64": {
+      "p": 1,
+      "k": "plain"
+     },
+     "plot_14_67": {
+      "p": 0.5,
+      "k": "giant"
+     },
+     "plot_14_69": {
+      "p": 0.2,
+      "k": "speedy"
+     }
+    },
+    "mail": {
+     "rocco": 0,
+     "cleo": 0,
+     "granny": 0
+    },
+    "flags": {
+     "dam": true,
+     "fawn": true,
+     "mo": true
+    },
+    "turtles": [
+     "turtle0",
+     "turtle1",
+     "turtle2"
+    ],
+    "harvests": 0,
+    "train": {},
+    "ov": 2
+   }
+  }
+ }
+}

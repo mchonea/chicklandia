@@ -14,6 +14,9 @@ function walkTo(tx,ty,maxFrames=6000){
   const path=[];for(let n=found;n;n=prev.get(key(n.x,n.y)))path.unshift(n);
   const G=c.G;let h0=G.hearts,dmg=0,i=0,f=0,stuck=0;
   while(i<path.length&&f<maxFrames){if(state==='faint'||state==='talk')break;
+    // Use the normal defensive peck around the relocated shore crabs.
+    const crab=ents.find(e=>e.type==='crab'&&onCur(e)&&e.stun<=0&&Math.abs(e.x-P.x)<24&&Math.abs(e.y-P.y)<14);
+    if(crab&&!trans&&P.kt<=0){for(const k of ['up','down','left','right'])keys[k]=false;const dx=crab.x-P.x,dy=crab.y-P.y;P.dir=Math.abs(dx)>Math.abs(dy)?(dx<0?2:3):(dy<0?1:0);pressed.a=true;c.step(1);f++;continue;}
     const w=path[i],dx=w.x-P.x,dy=w.y-P.y;if(Math.abs(dx)<2&&Math.abs(dy)<2){i++;continue;}
     keys.left=dx<-1.5;keys.right=dx>1.5;keys.up=dy<-1.5;keys.down=dy>1.5;
     const px=P.x,py=P.y;c.step(1);f++;
@@ -32,7 +35,8 @@ ok('sp2_after_spots',G.sp2===SPOTS.length);
 // 2. hazards
 G.hearts=3;P.kt=0;P.inv=0;c.tp(12*16+8,66*16);fade=0;state='play';c.step(2);
 const bz=c.ents.find(e=>e.type==='bees');bz.cool=0;P.x=bz.hx;P.y=bz.hy+30;c.step(4);ok('bees_chase',bz.st==='chase');
-G.skills.add('flap');P.flapCd=0;P.dir=1;pressed.b=true;c.step(1);ok('flap_scatters',bz.st==='return');
+// A swarm already beside its hive can finish returning in this same update.
+G.skills.add('flap');P.flapCd=0;P.dir=1;pressed.b=true;c.step(1);ok('flap_scatters',['return','home'].includes(bz.st)&&bz.cool>200);
 // 3. region mapping & save round trip
 for(const [x,y] of [[56,76],[128,555],[648,731],[640,939],[100,1300],[700,1300]]){const b=fromRegionPos(toRegionPos(x,y));ok('pos_'+x+'_'+y,b.x===x&&b.y===y);}
 c.tp(136,1067);c.step(2);save();const before=[P.x,P.y];c.continueGame();ok('save_roundtrip',P.x===before[0]&&P.y===before[1]);

@@ -1,0 +1,10 @@
+{
+  "exampleStates": 10,
+  "allImagesLoad": true,
+  "fits320": true,
+  "mobileTalkButton": true,
+  "mobilePlantingButton": true,
+  "dayNightAndLargeTextFits": true,
+  "errors": [],
+  "allPass": true
+}

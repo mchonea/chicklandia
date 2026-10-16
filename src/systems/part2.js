@@ -30,6 +30,7 @@ function trainMsg(k){const t=TRAIN[k],st=G.train[k]||0;
 function spawnTrain(k){
   const t=TRAIN[k];
   if(t.spawn)t.spawn.forEach(([id,c,r])=>spawnItem(id,t.item,c*16+8,r*16+12));
+  if(k==='swim')for(const e of ents)if(e.kind==='ring')placeLandscapeEntity(e);
   if(t.stumps)t.stumps.forEach(([id,c,r])=>{if(!G.collected.has(id)&&!ents.some(e=>e.id===id))addEnt({type:'stump',id,x:c*16+8,y:r*16+12,solid:true,w:14});});
   if(t.puffs){const have=ents.filter(e=>e.type==='puff').length;
     for(let i=have;i<t.need-trainCount(k);i++)addEnt({type:'puff',x:290+Math.random()*190,y:220+Math.random()*140,vx:(Math.random()<0.5?-1:1)*(0.35+Math.random()*0.3),p:Math.random()*6});}
@@ -117,8 +118,12 @@ function updFollower(e){
   if(e.mode==='swim'){e.y+=0.5;e.alpha=(e.alpha==null?1:e.alpha)-0.01;if(e.alpha<=0)e.dead=true;return;}
   if(e.mode==='follow'){
     const p=TRAIL[Math.max(0,TRAIL.length-1-(e.fi+1)*12)];
-    if(p){if(Math.abs(p.x-e.x)>0.3)e.flip=p.x>e.x;e.x+=(p.x-e.x)*0.5;e.y+=(p.y-e.y)*0.5;}
-    if(e.kind==='turtle'&&Math.floor(e.y/16)>=80&&e.x<512){
+    // At the bank, turtles take the last few steps into the waves themselves.
+    // Their delayed follow trail otherwise stops short when Pip waits on dry sand.
+    if(e.kind==='turtle'&&landscapeKind(P.x,P.y)==='beach'&&P.y-1152>=beachShoreY(P.x)-6&&Math.hypot(P.x-e.x,P.y-e.y)<64)e.toSurf=true;
+    if(e.toSurf)e.y+=.6;
+    else if(p){if(Math.abs(p.x-e.x)>0.3)e.flip=p.x>e.x;e.x+=(p.x-e.x)*0.5;e.y+=(p.y-e.y)*0.5;}
+    if(e.kind==='turtle'&&landscapeKind(e.x,e.y)==='beach'&&e.y-1152>=beachShoreY(e.x)-3){
       e.mode='swim';G.turtles.push(e.id);SFX.splash();float(e.x,e.y-12,'Bye bye! '+G.turtles.length+'/3','#b2e7e0');reindexFollowers();
       if(G.turtles.length>=3&&G.q.sandy===1)toast('All turtles safe! Tell Sandy.');save();}
     if(e.kind==='fawn'){const d=ents.find(n=>n.id==='doe');
@@ -128,7 +133,7 @@ function updFollower(e){
 }
 function freeMo(){
   G.flags.mo=true;SFX.questDone();toast('The baby marmots are free!');
-  ents.filter(e=>e.deco2).forEach((e,i)=>{puff(e.x,e.y-4,6,['#a66c46','#fff8ec']);Object.assign(e,at(11+i,53));});save();
+  ents.filter(e=>e.deco2).forEach(e=>puff(e.x,e.y-4,6,['#a66c46','#fff8ec']));placeMountainKids();save();
 }
 /* ---- fly map ---- */
 const DEST={farm:{x:584,y:283,mx:40,my:110,icon:'door'},forest:{x:136,y:1067,mx:128,my:110,icon:'oak'},mountains:{x:136,y:923,mx:128,my:62,icon:'pine'},

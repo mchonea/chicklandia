@@ -1,0 +1,38 @@
+{
+  "fingerprint": "cc24e96751fc5548aadcc8ff6d308133aa5dc1a2d58714e4248bdf12864a4b9c",
+  "results": {
+    "smoke": {
+      "spot_spot_forest": true,
+      "spot_spot_peak": true,
+      "spot_spot_beach": true,
+      "spot_spot_city": true,
+      "sp2_after_spots": true,
+      "bees_chase": true,
+      "flap_scatters": true,
+      "pos_56_76": true,
+      "pos_128_555": true,
+      "pos_648_731": true,
+      "pos_640_939": true,
+      "pos_100_1300": true,
+      "pos_700_1300": true,
+      "save_roundtrip": true,
+      "newgame_confirm": true,
+      "pause_toggle": true,
+      "gp_quest": true,
+      "gp_taste_once": true,
+      "gp_minigame": true,
+      "gp_outfit_once": true,
+      "gp_bowl": true,
+      "rankup_starts": true,
+      "rank_applied": true,
+      "rank5_needs_flight": true,
+      "rank5_with_flight": true,
+      "festival_ready": true,
+      "festival_starts": true,
+      "festival_to_rank7": true,
+      "rank7_perks": true,
+      "accessory_slot": true,
+      "allPass": true
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "errors": [],
+  "uniqueRevisedScenes": 4,
+  "uniqueBaselines": 4,
+  "exactTrees": {
+    "tree": true,
+    "oak": true
+  },
+  "controls": {
+    "landmarks": true,
+    "groves": true,
+    "residents": true
+  },
+  "sizes": [
+    {
+      "width": 704,
+      "scroll": 704
+    },
+    {
+      "width": 288,
+      "scroll": 288
+    }
+  ],
+  "allPass": true
+}

@@ -63,7 +63,7 @@ function continueGame(){
   camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
   G.train=Object.assign({},s.train||{});migrateSave(s);
   G.sacks=Object.assign(G.sacks,s.sacks||{});if(s.vil)G.vil=Object.assign(G.vil,s.vil);if(s.sea)G.sea=Object.assign(G.sea,s.sea);if(s.sky){G.sky=Object.assign(G.sky,s.sky);G.sky.harv=Object.assign({moon:0,star:0},s.sky.harv||{});}G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
-  migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();restoreCoastalLanding();restoreVillageLanding();restoreCityLanding();restoreCityInteriorLanding();state='play';fade=1;fadeColor='#000';
+  migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();restoreCoastalLanding();restoreVillageLanding();restoreCityLanding();restoreCityInteriorLanding();restoreForestLanding();restoreLandscapeLanding();state='play';fade=1;fadeColor='#000';
   if(G.growMsgOnLoad){G.growMsgOnLoad=false;toast("You've grown! You are now a "+RANKS[G.rank-1].name+'!','#a1d970');}
 }
 
@@ -103,6 +103,8 @@ function makeEnts(){
   makeVillageEnts();
   makeSeaEnts();
   makeSkyEnts();
+  makeForestEnts();
+  makeLandscapeEnts();
   if(!G.foxGone){const p=at(27,16);addEnt({type:'fox',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:1,sy:1,hp:3,wt:0,wx:0,wy:0,kt:0,stun:0,cool:0,flash:0,flip:false});}
   if(!G.gooseGone){const p=at(43,18);addEnt({type:'goose',x:p.x,y:p.y,hx:p.x,hy:p.y,sx:2,sy:1,st:'idle',t:0,kt:0,cool:0,flash:0,flip:false,solid:true,w:14});}
 }
@@ -125,15 +127,15 @@ function makeP2Ents(){
   makeHazards();
   for(const k in TRAIN)if(G.train[k]===1)spawnTrain(k);
 }
-function addPlot(c,r,coop){const id='plot_'+c+'_'+r;if(!ents.some(e=>e.id===id))addEnt({type:'plot',id,x:c*16+8,y:r*16+12,coop});}
+function addPlot(c,r,coop){const id='plot_'+c+'_'+r;if(!ents.some(e=>e.id===id)){const e=addEnt({type:'plot',id,x:c*16+8,y:r*16+12,coop});placeForestPlot(e);}}
 function applyCoop(fresh){
   const S=SITES[G.coop.site],c=S.c,r=S.r;
   if(fresh)[[0,0,'v'],[1,0,'v'],[2,0,'v'],[0,1,'c'],[1,1,'K'],[2,1,'c']].forEach(([dx,dy,ch])=>setTile(c+dx,r+dy,ch));
-  DOORS[(c+1)+','+(r+1)]=COOP_IN;
+  const door=S.door||[c+1,r+1];DOORS[door.join(',')]=COOP_IN;
   S.plots.slice(0,G.coop.lv*2).concat(extraPlotTiles()).forEach(([pc,pr])=>{if(tileAt(pc,pr)!=='V')setTile(pc,pr,'V');addPlot(pc,pr,true);});
   relocateFamily();
 }
-function coopExit(){const S=SITES[G.coop.site];return {x:(S.c+1)*16+8,y:(S.r+2)*16+11};}
+function coopExit(){const S=SITES[G.coop.site];return S.exit||{x:(S.c+1)*16+8,y:(S.r+2)*16+11};}
 function relocateFamily(){
   if(!G.coop)return;const lv=G.coop.lv;
   for(const e of ents){if(e.type!=='npc')continue;

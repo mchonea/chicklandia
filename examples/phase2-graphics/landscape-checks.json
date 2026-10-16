@@ -1,0 +1,160 @@
+{
+  "gameplay": {
+    "original_palms_pines_and_terrain_remain_native": true,
+    "region_positions_and_two_screens_preserved": true,
+    "routes": [
+      {
+        "ok": true,
+        "pos": [
+          132,
+          1180.4850000000024
+        ]
+      },
+      {
+        "ok": true,
+        "pos": [
+          364.63099999999946,
+          1254.9935000000014
+        ]
+      },
+      {
+        "ok": true,
+        "pos": [
+          531.067299999998,
+          1247.5702
+        ]
+      },
+      {
+        "ok": true,
+        "pos": [
+          132,
+          920.4974999999968
+        ]
+      },
+      {
+        "ok": true,
+        "pos": [
+          349.83229999999963,
+          866.895199999999
+        ]
+      }
+    ],
+    "forest_shore_tide_pools_city_and_mountain_connections_walkable": true,
+    "all_three_residents_reachable_and_talkable": true,
+    "turtles": [
+      {
+        "id": "turtle0",
+        "reached": true,
+        "follow": true,
+        "led": true,
+        "safe": true
+      },
+      {
+        "id": "turtle1",
+        "reached": true,
+        "follow": true,
+        "led": true,
+        "safe": true
+      },
+      {
+        "id": "turtle2",
+        "reached": true,
+        "follow": true,
+        "led": true,
+        "safe": true
+      }
+    ],
+    "all_three_turtles_can_be_escorted_to_visible_surf_without_swim_or_flutter": true,
+    "three_dry_land_shells_collect_without_water_skills": true,
+    "two_offshore_shells_still_require_swimming": true,
+    "flutter_does_not_bypass_deep_water": true,
+    "swimming_collects_both_remaining_shells": true,
+    "all_three_training_rings_collect_before_learning_swim": true,
+    "fishing_perch_catches_existing_soup_ingredient": true,
+    "snowberry_bush_still_yields_existing_soup_ingredient": true,
+    "rockslide_rejects_normal_peck": true,
+    "super_peck_frees_marmots_and_opens_visible_rockslide": true,
+    "visible_glide_gap_blocks_walking_and_flutter": true,
+    "flutter_cannot_cross_glide_gap": true,
+    "egg_plateau_has_no_walking_bypass": true,
+    "egg": {
+      "crossed": true,
+      "eggReach": true,
+      "items": 1,
+      "pos": [
+        465.1159999999981,
+        844.4839999999986
+      ],
+      "blocked": false
+    },
+    "glide_crosses_visible_gap_and_collects_eagles_egg": true,
+    "secrets": [
+      {
+        "id": "spot_beach",
+        "reached": true,
+        "dug": true,
+        "seed": true,
+        "pos": [
+          191.19480000000033,
+          1276.734800000002
+        ],
+        "front": {
+          "x": 191.19480000000033,
+          "y": 1262.734800000002,
+          "dx": 0,
+          "dy": -1
+        },
+        "target": [
+          192,
+          1263
+        ]
+      },
+      {
+        "id": "spot_peak",
+        "reached": true,
+        "dug": true,
+        "seed": true,
+        "pos": [
+          296.1185000000004,
+          950.3635000000004
+        ],
+        "front": {
+          "x": 296.1185000000004,
+          "y": 936.3635000000004,
+          "dx": 0,
+          "dy": -1
+        },
+        "target": [
+          296,
+          937
+        ]
+      }
+    ],
+    "both_existing_secret_spots_can_be_reached_and_dug": true,
+    "inaccessibleFinds": [],
+    "museum_finds_sticks_and_cookoff_ingredients_accessible": true,
+    "older_saves_recover_clear_positions_and_keep_progress_and_plateau_side": true,
+    "relocated_crabs_still_respond_to_peck": true,
+    "ball": {
+      "st": "smashed",
+      "pos": [
+        216,
+        876
+      ],
+      "front": {
+        "x": 212,
+        "y": 876,
+        "dx": 1,
+        "dy": 0
+      },
+      "state": "play"
+    },
+    "snowballs_keep_existing_super_peck_response": true,
+    "allPass": true
+  },
+  "standalone": {
+    "allPass": true
+  },
+  "errors": [],
+  "allPass": true
+}

@@ -1,0 +1,30 @@
+{
+  "errors": [],
+  "uniqueAreas": 4,
+  "progress": {
+    "beach0": true,
+    "beach1": false,
+    "mountains0": true,
+    "mountains1": true
+  },
+  "exactTrees": {
+    "palm": true,
+    "pine": true
+  },
+  "controls": {
+    "regroupTrees": true,
+    "landmarks": true,
+    "residents": true
+  },
+  "sizes": [
+    {
+      "width": 704,
+      "scroll": 704
+    },
+    {
+      "width": 288,
+      "scroll": 288
+    }
+  ],
+  "allPass": true
+}

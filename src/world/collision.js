@@ -1,6 +1,11 @@
 'use strict';
 /* ---------------- collision ---------------- */
 function rectTiles(x,y,w,h,forPlayer){
+  // The painted forest, beach and mountains own pixel collision: split boxes that cross their borders.
+  if(x<512&&x+w>512&&y<1344&&y+h>768)return rectTiles(x,y,512-x,h,forPlayer)||rectTiles(512,y,x+w-512,h,forPlayer);
+  if(x<512)for(const b of [768,960,1152,1344])if(y<b&&y+h>b)return rectTiles(x,y,w,b-y,forPlayer)||rectTiles(x,b,w,y+h-b,forPlayer);
+  const landscape=landscapeRectBlocked(x,y,w,h,forPlayer);if(landscape!==null)return landscape;
+  const forest=forestRectBlocked(x,y,w,h,forPlayer);if(forest!==null)return forest;
   const c0=Math.floor(x/16),c1=Math.floor((x+w-0.01)/16),r0=Math.floor(y/16),r1=Math.floor((y+h-0.01)/16);
   for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++)if(solidTile(tileAt(c,r),forPlayer))return true;return false;
 }

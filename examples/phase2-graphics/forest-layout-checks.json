@@ -1,0 +1,41 @@
+{
+  "forest_layout": {
+    "original_tree_sprites_remain_native": true,
+    "two_forest_screens_remain": true,
+    "unreachableConnections": [],
+    "mountain_beach_and_city_connections_walkable": true,
+    "unreachableResidents": [],
+    "all_forest_residents_reachable_and_talkable": true,
+    "harvestedOakKeys": [
+      "10,60",
+      "11,60",
+      "15,62"
+    ],
+    "three_oaks_can_be_walked_to_pecked_and_collected": true,
+    "coop_site_sign_reachable": true,
+    "normal_sign_choice_builds_coop": true,
+    "new_coop_door_enters_existing_interior": true,
+    "coop_exit_returns_to_clear_yard": true,
+    "all_four_coop_levels_unlock_existing_plot_counts": true,
+    "all_four_purchased_extra_plots_remain": true,
+    "inaccessiblePlots": [],
+    "all_fourteen_plots_can_be_walked_to_and_harvested": true,
+    "broken_dam_keeps_swimming_gate": true,
+    "swimming_allows_the_visible_water": true,
+    "original_reward_repairs_visible_bridge": true,
+    "repaired_dam_can_be_crossed_without_swimming": true,
+    "clover_follows_over_bridge_and_reunites": true,
+    "inaccessibleFinds": [],
+    "forest_items_secret_and_training_stumps_accessible": true,
+    "existing_bees_still_respond_to_wing_flap": true,
+    "older_positions_recover_and_keep_quest_crop_and_collectible_progress": true,
+    "new_game_cannot_enter_unbuilt_coop": true,
+    "allPass": true
+  },
+  "standalone": {
+    "allPass": true
+  },
+  "errors": [],
+  "allPass": true,
+  "gameplayChecks": 21
+}

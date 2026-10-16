@@ -4,10 +4,9 @@
    Mountains: rolling snowballs on set lanes (Super Peck smashes them)
    Beach: snappy crabs near the shells (Peck knocks them back)
    City: safe.  Ninja stealth shrinks how far away they notice Pip.            */
-const HIVES=[[12,63],[27,61]];
 const SNOW_LANES=[ // horizontal: roll along a row from one column to another; vertical: along a column
-  {axis:'x',fixed:56,from:13,to:1,delay:150},
-  {axis:'y',fixed:21,from:49,to:58,delay:210}];
+  {axis:'x',fixed:54,from:13,to:1,delay:150},
+  {axis:'y',fixed:17,from:51,to:56,delay:210}];
 const CRABS=[[6,77,3],[11,76,3],[24,74,2]];
 const SPOTS=[
   {id:'spot_forest',kind:'log',c:20,r:62,name:'a hollow log'},
@@ -15,7 +14,7 @@ const SPOTS=[
   {id:'spot_beach',kind:'sandmound',c:11,r:75,name:'a sand mound'},
   {id:'spot_city',kind:'planter',c:46,r:81,name:'a rooftop garden'}];
 function makeHazards(){
-  HIVES.forEach(([c,r],i)=>{const x=c*16+8,y=r*16+12;
+  FOREST_HIVES.forEach(([fx,fy],i)=>{const x=fx,y=960+fy;
     addEnt({type:'hive',x,y,sx:Math.floor(x/256),sy:Math.floor(y/192),solid:true,w:12});
     addEnt({type:'bees',x:x,y:y-6,hx:x,hy:y-6,sx:Math.floor(x/256),sy:Math.floor(y/192),st:'home',t:0,cool:0,ph:i*40});});
   SNOW_LANES.forEach((L,i)=>{const e={type:'snowball',lane:L,st:'wait',t:L.delay*0.5,x:0,y:0};
@@ -95,9 +94,7 @@ function hazardFlap(dx,dy){
 
 function drawHaz(e,sx,sy){
   switch(e.type){
-    case 'hive':{ctx.fillStyle='#202840';ctx.fillRect(sx-7,sy-14,14,15);ctx.fillStyle='#e8a02c';ctx.fillRect(sx-6,sy-13,12,13);
-      ctx.fillStyle='#c98a00';for(let j=0;j<3;j++)ctx.fillRect(sx-6,sy-10+j*4,12,1);ctx.fillStyle='#202840';ctx.fillRect(sx-2,sy-5,4,5);
-      ctx.fillStyle='#594437';ctx.fillRect(sx-1,sy-17,2,3);break;}
+    case 'hive':FOREST_ART.paint(ctx,'hive',sx,sy,false);break;
     case 'bees':{const n=5;for(let i=0;i<n;i++){const a=e.ph/5+i*1.3,bx=Math.round(sx+Math.cos(a*1.3)*5+(i-2)*2),by=Math.round(sy-4+Math.sin(a)*4);
         ctx.fillStyle='#202840';ctx.fillRect(bx,by,3,2);ctx.fillStyle='#ffe05a';ctx.fillRect(bx+(i%2),by,1,2);ctx.fillStyle='#fff8ec';ctx.fillRect(bx,by-1,1+((e.ph>>1)%2),1);}
       break;}
@@ -117,6 +114,9 @@ function drawHaz(e,sx,sy){
       break;}
     case 'spot':{
       const pir=senseNear(e.x,e.y),twinkle=tick%48<24;
+      if(e.id==='spot_peak'||e.id==='spot_beach'){
+        LANDSCAPE_ART.paint(ctx,e.skind,sx,sy);if(pir&&twinkle){ctx.fillStyle='#ffd21e';ctx.fillRect(sx+6,sy-12,2,2);}break;
+      }
       if(e.skind==='log'){ctx.fillStyle='#202840';ctx.fillRect(sx-8,sy-8,16,9);ctx.fillStyle='#a66c46';ctx.fillRect(sx-7,sy-7,14,7);ctx.fillStyle='#594437';ctx.fillRect(sx-7,sy-3,14,3);ctx.fillStyle='#202840';ctx.fillRect(sx+3,sy-6,4,5);ctx.fillStyle='#b69965';ctx.fillRect(sx-6,sy-7,6,1);}
       else if(e.skind==='ice'){const glow=wearing('astronaut')||pir;ctx.fillStyle='#202840';ctx.fillRect(sx-8,sy-9,16,10);ctx.fillStyle='#e8f0f8';ctx.fillRect(sx-7,sy-8,14,8);ctx.fillStyle='#cfdcec';ctx.fillRect(sx-5,sy-5,10,5);
         ctx.fillStyle=glow?(twinkle?'#b2e7e0':'#6ab4ff'):'#2a3a5a';ctx.fillRect(sx-3,sy-6,6,6);ctx.fillStyle=glow?'#fff8ec':'#202840';ctx.fillRect(sx-1,sy-4,2,3);}
