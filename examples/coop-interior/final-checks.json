@@ -1,0 +1,14 @@
+{
+  "allPass": true,
+  "regressionChecks": 571,
+  "coopChecks": 30,
+  "galleryStates": 14,
+  "standalone": true,
+  "mobileStairsAndInspection": true,
+  "largeTextAndNight": true,
+  "sources": {
+    "regression": "regression-checks.json",
+    "coop": "checks.json",
+    "ui": "ui-checks.json"
+  }
+}

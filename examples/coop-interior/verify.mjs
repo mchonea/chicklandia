@@ -21,6 +21,6 @@ try{
   await fs.writeFile(out('captures.json'),JSON.stringify(captures));
   await page.goto('http://127.0.0.1:8082/dist/chicklandia.html?debug=1');await page.waitForFunction(()=>!!window.__chick);
   report.standalone=await page.evaluate(()=>{newGame();G.coop={site:'forest',lv:4};makeEnts();const o=coopRoomOrigin('loft');__chick.tp(o.x+128,o.y+136);fade=0;render();return {allPass:regionAt()?.id==='cooploft'&&COOP_TROPHIES.length===10&&!pBlocked(P.x,P.y)};});
-  report.errors=errors;report.allPass=report.gameplay?.allPass!==false&&report.standalone.allPass&&!errors.length;await fs.writeFile(out('checks.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({allPass:report.allPass,errors}));if(!report.allPass)process.exitCode=1;
+  report.errors=errors;report.allPass=report.gameplay?.allPass!==false&&report.standalone.allPass&&!errors.length;await fs.writeFile(out(process.argv.includes('--captures-only')?'capture-checks.json':'checks.json'),JSON.stringify(report,null,2));console.log(JSON.stringify({allPass:report.allPass,errors}));if(!report.allPass)process.exitCode=1;
  }
 }finally{await browser.close();}
