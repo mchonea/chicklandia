@@ -455,7 +455,98 @@ function art(id){if(!cache.has(id)){const c=mk(256,192,()=>{});roomScene(id,'fur
 return {art,hits(id){art(id);return boxes.get(id);}};
 })();
 
+/* ===== src/engine/coop_interior_art.js ===== */
+/* Warm timber rooms and small, individually drawn honors at the game's native resolution. */
+const COOP_INTERIOR_ART=(()=>{
+ let g;const cache=new Map(),C={ink:'#202840',cream:'#ead6aa',paper:'#fff8ec',wall:'#dfc7a6',wood:'#ae784f',light:'#cfaa78',dark:'#594437',blue:'#467b95',teal:'#407f83',glass:'#99c5d0',gold:'#ffe05a',red:'#d45d50',green:'#5b9e64'};
+ const R=(c,x,y,w=1,h=1)=>{g.fillStyle=c;g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h));};
+ function poly(c,p){g.fillStyle=c;g.beginPath();p.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();}
+ function text(s,x,y,color=C.paper,size=6){g.fillStyle=color;g.font=size+'px monospace';g.textAlign='center';g.textBaseline='top';g.fillText(s,x,y);}
+ function windowAt(x,y,w,h,loft){
+  R(C.dark,x-2,y-2,w+4,h+5);R(C.cream,x-1,y-1,w+2,h+2);R(C.blue,x,y,w,h);R('#9ccbd1',x+2,y+2,w-4,h-4);
+  poly('#75a778',[[x+2,y+h-3],[x+w*.3,y+h-9],[x+w*.6,y+h-5],[x+w-2,y+h-10],[x+w-2,y+h-2]]);
+  R(C.paper,x+3,y+3,2,h-6);R(C.cream,x+w/2-1,y,2,h);R(C.cream,x,y+h/2,w,1);R(C.light,x-3,y+h+2,w+6,3);
+  if(!loft){R(C.teal,x-5,y,3,h);R(C.teal,x+w+2,y,3,h);R(C.cream,x-5,y+3,3,1);R(C.cream,x+w+2,y+3,3,1);}
+ }
+ function rug(x,y,w,h,c){R(C.dark,x-1,y-1,w+2,h+2);R(C.cream,x,y,w,h);R(c,x+2,y+2,w-4,h-4);for(let xx=x+3;xx<x+w-2;xx+=5){R(C.cream,xx,y-2,2,2);R(C.cream,xx,y+h,2,2);}R('#ffffff25',x+5,y+5,w-10,1);R('#ffffff25',x+5,y+h-6,w-10,1);}
+ function ground(floor,lv){const key='ground'+floor+lv;if(cache.has(key))return cache.get(key);const art=mk(256,192,target=>{
+  g=target;const loft=floor==='loft',x=lv===1?24:16,w=256-x*2;
+  R('#273744',0,0,256,192);R(C.ink,x-3,9,w+6,178);R(C.wall,x,12,w,165);
+  for(let xx=x+5;xx<x+w;xx+=12){R('#cfb18a',xx,13,1,38);R('#e8d5b7',xx+1,13,1,38);}
+  R(C.dark,x,50,w,4);R(lv===4?C.gold:C.teal,x,45,w,5);R(C.paper,x,45,w,1);
+  R('#bf9c71',x+4,54,w-8,122);
+  for(let y=54;y<176;y+=8){R('#a58763',x+4,y,w-8,1);for(let xx=x+4+(y%16?17:0);xx<x+w-4;xx+=35){R('#a58763',xx,y,1,8);R('#d1b486',xx+4,y+2,12,1);}}
+  R(C.dark,x,52,4,126);R(C.cream,x+2,52,2,126);R(C.dark,x+w-4,52,4,126);R(C.cream,x+w-4,52,2,126);
+  R(C.ink,x,176,w,10);R(C.wood,x+3,178,w-6,6);R(C.cream,x+3,178,w-6,1);
+  if(loft){
+   poly(C.dark,[[x,12],[x+12,12],[x+40,45],[x+32,45]]);poly(C.dark,[[x+w-12,12],[x+w,12],[x+w-32,45],[x+w-40,45]]);
+   windowAt(101,18,54,23,true);windowAt(32,22,27,18,true);windowAt(197,22,27,18,true);
+   rug(82,59,92,112,lv===4?'#8c4e57':'#51798c');
+   R(C.dark,82,45,92,8);R(lv===4?C.gold:C.cream,83,45,90,1);text('TROPHY ROOM',128,46,C.paper,6);
+   for(const xx of [24,229]){R(C.dark,xx,58,3,111);R(lv===4?C.gold:C.cream,xx+1,58,1,111);}
+   if(lv===4)for(const xx of [75,179]){R(C.dark,xx-5,17,10,22);R(C.red,xx-4,18,8,18);poly(C.gold,[[xx-3,35],[xx,38],[xx+3,35]]);R(C.gold,xx-2,22,5,5);}
+  }else{
+   windowAt(37,22,35,19,false);windowAt(183,22,35,19,false);
+   rug(87,96,81,68,lv===4?'#8c4e57':C.teal);
+   R(C.dark,103,17,49,24);R(C.light,105,19,45,20);R(C.cream,108,22,39,14);
+   poly(C.blue,[[110,34],[119,26],[126,30],[133,25],[145,34]]);R(C.gold,136,24,4,4);R(C.paper,115,25,6,1);
+   R(C.ink,115,176,26,12);R('#d6c7ac',117,176,22,12);R(C.cream,116,174,24,3);R(C.light,117,185,22,2);
+   if(lv===1){R(C.dark,187,45,43,8);text('LOFT: LV 2',208,46,C.cream,5);}
+   // The Dream Coop's celebration stays on its family floor.
+   if(lv===4)for(let i=0;i<14;i++){const xx=25+i*15;R(C.dark,xx,14,15,1);poly([C.red,C.gold,C.blue,C.green][i%4],[[xx+2,15],[xx+10,15],[xx+6,21]]);}
+  }
+ });cache.set(key,art);return art;}
+ function books(w,h){R(C.ink,0,0,w,h);R(C.dark,2,2,w-4,h-4);for(let y=3;y<h-4;y+=11){for(let x=4;x<w-4;x+=5){R([C.red,C.teal,C.cream,C.blue][(x+y)%4],x,y+1,3,7);R(C.paper,x+1,y+2,1,1);}R(C.light,2,y+9,w-4,2);}R(C.wood,0,0,2,h);R(C.light,w-2,0,2,h);R(C.light,0,0,w,2);}
+ function trophy(icon,c,x,y){
+  if(icon==='cup'){R(C.dark,x-5,y+8,11,2);R(c,x-3,y+7,7,2);R(c,x-1,y+2,3,6);poly(c,[[x-6,y-7],[x+7,y-7],[x+5,y+1],[x,y+4],[x-4,y+1]]);R(C.paper,x-4,y-6,3,5);for(const dx of [-9,7]){R(c,x+dx,y-6,3,7);R(c,x+dx,y,4,2);}}
+  else if(icon==='wing'){poly(c,[[x-10,y+3],[x-8,y-5],[x-4,y-1],[x-1,y-7],[x+2,y-2],[x+8,y-8],[x+10,y-5],[x+6,y+4],[x,y+7]]);R(C.paper,x-5,y+1,10,1);R(c,x-1,y+5,2,4);}
+  else if(icon==='acorn'){poly(C.wood,[[x-5,y-2],[x+6,y-2],[x+5,y+6],[x,y+9],[x-4,y+5]]);R(c,x-7,y-5,14,5);R(C.dark,x-5,y-5,2,2);R(C.dark,x+1,y-4,2,2);R(C.gold,x,y-8,2,3);R(C.paper,x-2,y+1,2,4);}
+  else if(icon==='flower'){R(C.green,x-1,y,2,10);poly(C.green,[[x,y+7],[x-7,y+2],[x-6,y+7],[x,y+9]]);for(const [dx,dy] of [[-5,-6],[0,-9],[5,-6],[-5,-1],[5,-1],[0,2]])R(c,x+dx-2,y+dy-2,5,5);R(C.dark,x-3,y-6,7,7);R(C.wood,x-2,y-5,5,5);R(C.paper,x-1,y-4,2,2);}
+  else if(icon==='home'||icon==='village'){const house=(xx,yy,ww)=>{R(C.cream,xx-ww/2,yy,ww,8);poly(c,[[xx-ww/2-2,yy],[xx,yy-7],[xx+ww/2+2,yy]]);R(C.dark,xx-1,yy+3,3,5);R(C.blue,xx-ww/2+2,yy+2,2,2);};if(icon==='home')house(x,y,16);else{house(x-5,y+1,10);house(x+6,y-3,9);}}
+  else if(icon==='flag'){R(C.cream,x-6,y-9,2,18);R(C.dark,x-9,y+8,9,2);R(c,x-4,y-9,14,10);for(let yy=0;yy<3;yy++)for(let xx=0;xx<4;xx++)if((xx+yy)%2)R(C.ink,x-4+xx*3,y-9+yy*3,3,3);}
+  else if(icon==='museum'){R(C.cream,x-9,y+6,19,3);R(c,x-8,y-4,17,2);poly(c,[[x-10,y-5],[x,y-10],[x+10,y-5]]);for(const xx of [-6,0,6]){R(C.paper,x+xx-1,y-1,3,7);R(c,x+xx,y,1,5);}}
+  else if(icon==='wheel'){for(let i=0;i<8;i++){const a=i*Math.PI/4;R(c,x+Math.round(Math.cos(a)*9)-1,y+Math.round(Math.sin(a)*9)-1,3,3);}g.strokeStyle=c;g.lineWidth=2;g.beginPath();g.arc(x,y,6,0,Math.PI*2);g.stroke();R(c,x-1,y-7,2,15);R(c,x-7,y-1,15,2);R(C.paper,x-1,y-1,3,3);}
+  else{poly(c,[[x,y-10],[x+3,y-3],[x+10,y-3],[x+5,y+2],[x+7,y+9],[x,y+5],[x-7,y+9],[x-5,y+2],[x-10,y-3],[x-3,y-3]]);R(C.paper,x-2,y-4,2,6);R(C.paper,x-4,y-2,6,2);}
+ }
+ function prop(p,lv,earned=false){const key=p.kind+p.id+lv+earned;if(cache.has(key))return cache.get(key);const art=mk(p.w,p.h,target=>{
+  g=target;const w=p.w,h=p.h,gold=lv===4?C.gold:C.cream;
+  if(p.kind==='kitchen'){
+   R(C.ink,0,5,w,h-5);R(C.wood,1,7,w-2,h-8);R(C.dark,2,h-4,w-4,3);R(C.cream,0,4,w,5);R(C.paper,1,4,w-2,1);
+   for(let x=3;x<w-8;x+=17){R(C.light,x,13,13,1);R(C.dark,x+12,10,1,9);R(C.gold,x+8,16,2,1);}
+   R(C.dark,6,1,15,4);R(C.glass,7,2,13,2);R(C.dark,26,0,2,5);R(C.paper,38,0,6,5);R(C.teal,46,1,5,4);
+  }else if(p.kind==='hearth'){
+   R(C.dark,4,0,w-8,h);R('#a99b91',5,1,w-10,h-2);for(let y=5;y<h-3;y+=6){R('#877d7c',5,y,w-10,1);R('#d3c7af',8,y-2,8,1);}
+   R(C.cream,0,12,w,4);R(C.paper,1,12,w-2,1);R(C.ink,9,20,w-18,16);R(C.red,12,28,w-24,7);R(C.gold,16,24,5,11);R(C.paper,18,26,2,7);R(C.cream,0,h-3,w,3);
+  }else if(p.kind==='sofa'||p.kind==='bench'){
+   const color=p.kind==='sofa'?C.teal:C.blue;R(C.dark,2,0,w-4,h-3);R(color,4,2,w-8,h-6);R(C.paper,6,3,w-12,2);R(C.cream,0,7,5,h-9);R(C.cream,w-5,7,5,h-9);R(C.dark,4,h-4,3,4);R(C.dark,w-7,h-4,3,4);R(C.light,5,h-10,w-10,2);R(C.cream,10,6,8,7);R(C.red,11,7,6,5);
+  }else if(p.kind==='stairsup'){
+   R(C.ink,0,0,w,h);R(C.dark,3,8,w-6,h-8);for(let i=0;i<7;i++){R(C.wood,6,12+i*6,w-12,6);R(C.light,6,12+i*6,w-12,2);R(C.cream,7,12+i*6,w-14,1);}
+   R(C.cream,1,8,3,h-8);R(C.cream,w-4,8,3,h-8);R(gold,0,0,w,10);text('UP',w/2,1,C.dark,7);
+  }else if(p.kind==='stairsdown'){
+   R(C.ink,0,0,w,h);R(C.dark,3,3,w-6,h-6);for(let i=0;i<5;i++){const xx=5+i;R(C.wood,xx,5+i*5,w-xx*2,4);R(C.light,xx,5+i*5,w-xx*2,1);}R(gold,0,0,3,h);R(gold,w-3,0,3,h);R(C.cream,0,h-3,w,3);R(C.ink,6,0,w-12,9);text('DOWN',w/2,1,C.paper,6);
+  }else if(p.kind==='books')books(w,h);
+  else if(p.kind==='nests'){
+   const rows=lv>=3?2:1,cols=lv>=2?2:1;R(C.dark,0,0,w,h-2);R(C.light,1,1,w-2,h-4);R(C.cream,2,2,w-4,2);
+   for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){const nx=3+c*(w-6)/cols,ny=6+r*(h-10)/rows,nw=(w-6)/cols-2,nh=(h-10)/rows-2;R(C.dark,nx,ny,nw,nh);R('#d8b970',nx+1,ny+2,nw-2,nh-3);R(C.cream,nx+3,ny+3,Math.max(5,nw-6),4);R(r===0?C.blue:C.teal,nx+2,ny+nh-7,nw-4,5);for(let i=0;i<3;i++)R('#efcf87',nx+2+i*5,ny+nh-2,4,1);}
+   R(gold,0,h-4,w,2);R(C.dark,2,h-2,3,2);R(C.dark,w-5,h-2,3,2);
+  }else if(p.kind==='table'||p.kind==='desk'){
+   R(C.dark,3,4,w-6,h-4);R(C.dark,4,h-5,3,5);R(C.dark,w-7,h-5,3,5);R(C.ink,0,0,w,h-5);R(C.light,1,1,w-2,h-7);R(C.cream,2,1,w-4,2);
+   if(p.kind==='desk'){R(C.paper,5,5,19,9);R(C.blue,7,8,13,1);R(C.blue,9,10,9,1);R(C.red,28,5,5,7);R(C.gold,29,6,3,1);}
+   else{R(C.cream,7,6,10,7);R(C.red,10,8,4,3);R(C.cream,w-17,6,10,7);R(C.gold,w-14,8,4,3);R(C.teal,w/2-2,3,4,6);R(C.green,w/2-3,1,6,3);}
+  }else if(p.kind==='chair'){R(C.dark,2,0,w-4,h);R(C.teal,4,2,w-8,7);R(C.light,0,10,w,3);R(C.teal,3,13,w-6,4);R(C.dark,2,h-3,3,3);R(C.dark,w-5,h-3,3,3);}
+  else if(p.kind==='plant'){R(C.dark,1,10,w-2,7);R(C.red,2,11,w-4,5);R(C.cream,0,9,w,2);R(C.green,1,4,w-2,5);R('#a1cb7c',5,0,4,10);R(C.gold,8,3,3,3);}
+  else if(p.kind==='display'){
+   R(C.ink,0,20,w,12);R(lv===4?'#bda36a':C.wood,1,21,w-2,10);R(C.dark,2,29,w-4,2);R(C.cream,1,20,w-2,2);R(C.dark,9,25,12,3);R(earned?C.gold:'#8a857b',10,26,10,1);
+   R(C.dark,1,0,w-2,20);R('#24394b',3,2,w-6,17);R('#93c4d533',3,2,w-6,17);R(C.paper,3,2,2,10);R(C.glass,3,2,w-6,1);
+   if(earned){trophy(p.trophy.icon,p.trophy.color,15,11);R('#ffffff25',4,3,22,1);}else{R('#73848b',12,9,6,5);R('#89979c',13,8,4,1);R('#73848b',14,14,2,3);R('#73848b',11,17,8,1);}
+   R(lv===4?C.gold:C.light,1,19,w-2,2);
+  }
+ });cache.set(key,art);return art;}
+ return {ground,prop};
+})();
+
 /* ===== src/engine/forest_art.js ===== */
+'use strict';
 /* Native forest landmark art, taken from the approved original-tree study.
    Tree, grass, path and water art continues to use the existing TILE assets. */
 const FOREST_ART=(()=>{
@@ -1043,22 +1134,13 @@ defineRegion({id:'mountains',name:'MOUNTAINS',kind:'outdoor',origin:[0,4],grid:[
 /* ===== src/regions/coop.js ===== */
 /* region: coop */
 defineRegion({id:'coop',name:'MY COOP',kind:'indoor',origin:[2,4],grid:[1,1],ground:'grass',beyond:true,
- screens:[
- [ // inside YOUR coop
-  '################',
-  '################',
-  '##i###i##i###i##',
-  '##nn::::::::nn##',
-  '##::::::::::::##',
-  '##::::::::::::##',
-  '##::::oooo::::##',
-  '##::::oooo::::##',
-  '##::::::::::::##',
-  '##n::::::::::n##',
-  '##::::::::::::##',
-  '#######XX#######']]});
+ screens:[grid('#',[['r',1,3,14,10,'_'],['r',7,11,8,11,'X']])]});
+// A separate room keeps the original ground-floor save coordinates and exterior door stable.
+defineRegion({id:'cooploft',name:'TROPHY ROOM',area:'coop',kind:'indoor',origin:[3,4],grid:[1,1],ground:'grass',beyond:true,
+ screens:[grid('#',[['r',1,3,14,10,'_']])]});
 
 /* ===== src/regions/forest.js ===== */
+'use strict';
 /* Original 16px trees regrouped around the approved forest clearings.
    Shared pixel anchors drive collision, oak interactions and depth sorting. */
 const FOREST_TREES=[];
@@ -1413,7 +1495,10 @@ function islandScreen(kind,half,ops){
   const g=rows.map(spans=>Array.from({length:16},(_,c)=>spans.some(([a,b])=>c+half*16>=a&&c+half*16<=b)?ground:'w'));
   for(const o of ops){const rect=o[0]==='r',c0=o[1],r0=o[2],c1=rect?o[3]:c0,r1=rect?o[4]:r0,ch=rect?o[5]:o[3];
     for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++)if(ch==='3'||g[r][c]!=='w')g[r][c]=ch;
-  }return g.map(row=>row.join(''));
+  }
+  // the village sits right above the cove and the reef on the map grid: a coral reef wall closes their north edge
+  if(kind==='cove'||kind==='reef')g[0]=g[0].map(()=>')');
+  return g.map(row=>row.join(''));
 }
 const dock=(r0=8)=>['r',0,r0,3,r0+1,'3'];
 defineRegion({id:'cove',name:'PIRATE COVE',kind:'outdoor',origin:[0,9],grid:[2,1],ground:'sand',beyond:true,area:'cove',music:'cove',sea:true,mm:'sea',
@@ -1490,6 +1575,7 @@ defineRegion({id:'skyin',name:'CLOUD CITY',kind:'indoor',origin:[3,21],grid:[5,1
   {id:'sk_nursery',label:'SKY NURSERY',rows:room([['p',3,3,'n'],['p',4,3,'n'],['p',12,3,'n'],['p',13,3,'n'],['r',6,7,9,8,'o']])}]});
 
 /* ===== src/world/tilemap.js ===== */
+'use strict';
 /* ---------------- tile map: built from the regions, plus door/solid/hidden data ---------------- */
 // F fence  H big fence  T tree  A apple tree  W water  h hay bale  R rock  C crate  L leaf pile
 // b/B/D barn roof/wall/door  v/c/K coop roof/wall/door  s sign  u bush  . grass  , flowers
@@ -1519,6 +1605,7 @@ function solidTile(ch,forPlayer=true){
 function drawTile(ch,c,r,sx,sy,wf){
   const h=hash2(c,r);let img;
   const region=regionOfPos(c*16+8,r*16+8);
+  if(region?.id==='coop'||region?.id==='cooploft')return drawCoopTile(c,r,sx,sy,region.id==='coop'?'home':'loft');
   if(region?.id==='beach'||region?.id==='mountains')return drawLandscapeTile(c,r,sx,sy,wf,region.id);
   if(region?.id==='forest')return drawForestTile(c,r,sx,sy,wf);
   if(region&&drawCityRoomTile(c,r,sx,sy,region))return;
@@ -1859,6 +1946,7 @@ const INTRO2={granny:"Granny Shell the tortoise lives by her garden in the fores
   doe:"A worried deer is pacing in the deep woods.",pinch:"Cap'n Pinch the crab is on the sandy shore.",elda:"An eagle lives up on the snowy peak.",mo:"A marmot is squeaking for help on the mountain trail."};
 
 /* ===== src/content/trainers.js ===== */
+'use strict';
 /* content: skill trainers (trainings that unlock locked skills) */
 const TRAIN={
   hop:{phase:1,who:'clyde',whoName:'CLYDE',skill:'HOP',title:'Hurdle Training',avail:()=>G.q.clyde===2,item:'horseshoe',need:3,noun:'horseshoes',
@@ -1919,6 +2007,7 @@ const TRAIN={
 };
 
 /* ===== src/content/coop.js ===== */
+'use strict';
 /* content: coop sites, upgrades and where the family moves to */
 const SITES={
   forest:{name:'FOREST',c:11,r:67,sign:[15,67],door:[12,69],exit:{x:206,y:1129},plots:[[14,67],[14,68],[9,67],[10,67],[9,68],[10,68],[12,66],[13,66]],extraPlots:[[14,66],[9,66],[10,66],[14,69]]}};
@@ -1941,11 +2030,48 @@ function migrateSave(s){
     G.coop.site='forest';G.coop.fresh=true;}
 }
 const COOP_IN={x:640,y:939};
-const FAMILY_POS={mom:[39,52],penny:[42,53],peep:[37,54],cheep:[38,55],tweet:[41,55]};
+const FAMILY_POS=Object.fromEntries(Object.entries({mom:[93,97],penny:[169,121],peep:[92,149],cheep:[169,153],tweet:[180,164]}).map(([id,[x,y]])=>[id,[(512+x-8)/16,(768+y-12)/16]]));
 // upgrades unlock as you help animals out here (need = Part 2 quests done), and cost a few seeds
-const UPGRADES=[null,null,{cost:6,need:2,text:'A bigger coop, 2 more garden plots, and MAMA HEN moves in!'},
-  {cost:9,need:5,text:'A family wing, 2 more plots, faster growing, and PENNY & the TRIPLETS move in!'},
-  {cost:12,need:9,text:'The DREAM COOP! A golden roof, 2 more plots, super-fast growing, and a big party!'}];
+const UPGRADES=[null,null,{cost:6,need:2,text:'A bigger coop, an UPSTAIRS TROPHY ROOM, 2 more garden plots, and MAMA HEN moves in!'},
+  {cost:9,need:5,text:'A family wing, 3 more trophy displays, 2 more plots, faster growing, and PENNY & the TRIPLETS move in!'},
+  {cost:12,need:9,text:'The DREAM COOP! A grand trophy room, golden roof, 2 more plots, super-fast growing, and a big party!'}];
+
+/* ===== src/content/coop_rooms.js ===== */
+/* Home upgrades reveal a second floor; honors read existing progress, including older saves. */
+const COOP_TROPHIES=[
+ {id:'flight',name:'FIRST FLIGHT',icon:'wing',color:'#ffe05a',earned:()=>G.part2||G.won,story:'The day a tiny farm chick spread their wings and set off into the world.',hint:()=> 'Fly beyond the farm to begin your adventure.'},
+ {id:'friends',name:'HELPING WINGS',icon:'acorn',color:'#a1d970',earned:()=>ORDER2.every(id=>G.q[id]===2),story:'For every friend you helped beyond the farm. A small kindness can change a whole world.',hint:()=> 'Help all 9 friends beyond the farm. You have helped '+ORDER2.filter(id=>G.q[id]===2).length+'/9.'},
+ {id:'garden',name:'GOLDEN GARDENER',icon:'flower',color:'#ffe05a',earned:()=>G.harvests>=10,story:'Ten harvests, from one little seed. Your garden has grown along with you!',hint:()=> 'Harvest 10 garden plots. Your harvests: '+Math.min(10,G.harvests)+'/10.'},
+ {id:'games',name:'ARCADE ACE',icon:'cup',color:'#eb6654',earned:()=>['egg','bonk','ffly'].every(k=>G.mgFirst[k]),story:'Egg Catch, Carrot Bonk and Firefly Chase: you won them all!',hint:()=> 'Win Egg Catch, Carrot Bonk and Firefly Chase. Wins: '+['egg','bonk','ffly'].filter(k=>G.mgFirst[k]).length+'/3.'},
+ {id:'home',name:'DREAM BUILDER',icon:'home',color:'#ffe05a',earned:()=>G.coop?.lv>=4,story:'A golden roof, a home for your family, and a place for every memory.',hint:()=> 'Upgrade your coop to level 4.'},
+ {id:'race',name:'ROOF RUNNER',icon:'flag',color:'#b2e7e0',earned:()=>G.best.race>0,story:()=> 'For finishing Roofline Run. Your best time is '+G.best.race+' seconds!',hint:()=> 'Win Roofline Run at the city toy shop.'},
+ {id:'museum',name:'MUSEUM KEEPER',icon:'museum',color:'#c9b0df',earned:()=>EXHIBITS.every(e=>(G.museum[e.id]||0)>=e.need),story:'A complete museum collection, shared with everyone in Chicklandia.',hint:()=> 'Complete all '+EXHIBITS.length+' museum collections. Completed: '+EXHIBITS.filter(e=>(G.museum[e.id]||0)>=e.need).length+'/'+EXHIBITS.length+'.'},
+ {id:'village',name:'VILLAGE HERO',icon:'village',color:'#a1d970',earned:()=>!!G.flags.village,story:'From an empty meadow to a village full of friends. This home is part of something bigger.',hint:()=> 'Finish the village chapter and celebrate the Harvest Festival.'},
+ {id:'seas',name:'SEA CAPTAIN',icon:'wheel',color:'#b2e7e0',earned:()=>!!G.flags.seas,story:'For your courage on the Pirate Seas and your victory over Captain Squawkbeard.',hint:()=> 'Complete the Pirate Seas adventure.'},
+ {id:'sky',name:'SKY LEGEND',icon:'star',color:'#ffe05a',earned:()=>!!G.flags.sky,story:'The skies are peaceful again. A little chick from the farm became a legend.',hint:()=> 'Complete the Sky Kingdom adventure.'}
+];
+const COOP_TROPHY_SLOTS=[[48,84],[100,84],[152,84],[204,84],[48,124],[100,124],[152,124],[48,160],[100,160],[152,160]];
+const COOP_ROOM_LAYOUTS=new Map();
+function coopDisplayCount(lv=G.coop?.lv||1){return lv>=4?10:lv>=3?7:lv>=2?4:0;}
+function coopRoomOrigin(floor){const r=REGIONS[floor==='loft'?'cooploft':'coop'];return {x:r.origin[0]*256,y:r.origin[1]*192};}
+function coopRoomProps(floor,lv){
+ const key=floor+lv;if(COOP_ROOM_LAYOUTS.has(key))return COOP_ROOM_LAYOUTS.get(key);
+ const p=[],add=(id,kind,x,y,w,h,hit=[0,0,w,h],extra={})=>p.push({id,kind,x,y,w,h,hit,...extra});
+ if(floor==='home'){
+  add('kitchen','kitchen',29,57,57,25,[0,6,57,19]);add('hearth','hearth',108,41,36,38,[0,14,36,24]);
+  add('sofa','sofa',30,90,48,25,[0,6,48,19]);
+  if(lv>=2)add('up','stairsup',188,52,40,54);else add('future','books',191,58,35,43);
+  add('nests','nests',lv===1?34:29,lv>=3?118:128,lv===1?40:50,lv>=3?45:32);
+  add('table','table',107,109,42,23,[0,3,42,20]);add('chair','chair',119,137,18,20,[0,5,18,15]);
+  if(lv>=3)add('books','books',205,126,25,27);
+  add('plant','plant',219,158,13,17,[1,8,11,9]);
+ }else{
+  add('down','stairsdown',188,143,40,33);
+  if(lv===2)add('curation','desk',109,113,40,22);
+  if(lv<4)add('bench','bench',29,145,45,20,[0,6,45,14]);
+  COOP_TROPHIES.slice(0,coopDisplayCount(lv)).forEach((t,i)=>{const [x,y]=COOP_TROPHY_SLOTS[i];add(t.id,'display',x-15,y-30,30,32,[1,20,28,12],{trophy:t});});
+ }COOP_ROOM_LAYOUTS.set(key,p);return p;
+}
 
 /* ===== src/content/city.js ===== */
 /* content: the city's buildings. Door tiles are derived from CITY_LOTS in regions/city.js.
@@ -2008,7 +2134,7 @@ const PADS=VILLAGE_LOTS;
 // gathering spots: wood, stone, clay come back every in-game day; stone needs CARRY
 const NODES=[
   {id:'nw0',kind:'wood',c:3,r:101},{id:'nw1',kind:'wood',c:10,r:100},{id:'nw2',kind:'wood',c:4,r:105},{id:'nw3',kind:'wood',c:9,r:105},
-  {id:'ns0',kind:'stone',c:28,r:98},{id:'ns1',kind:'stone',c:30,r:103},{id:'ns2',kind:'stone',c:25,r:101},
+  {id:'ns0',kind:'stone',c:28,r:98},{id:'ns1',kind:'stone',c:30,r:103},{id:'ns2',kind:'stone',c:28,r:101},
   {id:'nc0',kind:'clay',c:18,r:105},{id:'nc1',kind:'clay',c:19,r:106},{id:'nc2',kind:'clay',c:28,r:104}];
 const NODE_YIELD={wood:2,stone:2,clay:2};
 // sheep to shear (2 wool each, once a day) in the meadow pasture
@@ -3610,6 +3736,7 @@ function updateTouchUI(){
   if(state==='title'||state==='ending'||state==='p2intro')la='START';
   else if(state==='talk')la=dlg&&dlg.lines[dlg.i]&&dlg.lines[dlg.i].choices?'OK':'NEXT';
   else if(state!=='play')la='OK';else if(G&&P&&facingTalk())la='TALK';
+  if(state==='play'&&G&&P&&coopActionLabel())la=coopActionLabel();
   const a=document.querySelector('#btnA small'),b=document.querySelector('#btnB small');
   if(a&&a.textContent!==la)a.textContent=la;if(b&&b.textContent!==lb)b.textContent=lb;
 }
@@ -3686,7 +3813,7 @@ function continueGame(){
   camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
   G.train=Object.assign({},s.train||{});migrateSave(s);
   G.sacks=Object.assign(G.sacks,s.sacks||{});if(s.vil)G.vil=Object.assign(G.vil,s.vil);if(s.sea)G.sea=Object.assign(G.sea,s.sea);if(s.sky){G.sky=Object.assign(G.sky,s.sky);G.sky.harv=Object.assign({moon:0,star:0},s.sky.harv||{});}G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
-  migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();restoreCoastalLanding();restoreVillageLanding();restoreCityLanding();restoreCityInteriorLanding();restoreForestLanding();restoreLandscapeLanding();state='play';fade=1;fadeColor='#000';
+  migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();restoreCoastalLanding();restoreVillageLanding();restoreCityLanding();restoreCityInteriorLanding();restoreForestLanding();restoreLandscapeLanding();restoreCoopInteriorLanding();state='play';fade=1;fadeColor='#000';
   if(G.growMsgOnLoad){G.growMsgOnLoad=false;toast("You've grown! You are now a "+RANKS[G.rank-1].name+'!','#a1d970');}
 }
 
@@ -3757,6 +3884,7 @@ function applyCoop(fresh){
   const door=S.door||[c+1,r+1];DOORS[door.join(',')]=COOP_IN;
   S.plots.slice(0,G.coop.lv*2).concat(extraPlotTiles()).forEach(([pc,pr])=>{if(tileAt(pc,pr)!=='V')setTile(pc,pr,'V');addPlot(pc,pr,true);});
   relocateFamily();
+  makeCoopInteriorEnts();restoreCoopInteriorLanding();
 }
 function coopExit(){const S=SITES[G.coop.site];return S.exit||{x:(S.c+1)*16+8,y:(S.r+2)*16+11};}
 function relocateFamily(){
@@ -3786,8 +3914,10 @@ function onCur(e){return Math.floor(e.x/256)===CS.x&&Math.floor((e.y-1)/192)===C
 
 
 /* ===== src/world/collision.js ===== */
+'use strict';
 /* ---------------- collision ---------------- */
 function rectTiles(x,y,w,h,forPlayer){
+  const coop=coopInteriorBlocked({x,y,w,h});if(coop!==null)return coop;
   // The painted forest, beach and mountains own pixel collision: split boxes that cross their borders.
   if(x<512&&x+w>512&&y<1344&&y+h>768)return rectTiles(x,y,512-x,h,forPlayer)||rectTiles(512,y,x+w-512,h,forPlayer);
   if(x<512)for(const b of [768,960,1152,1344])if(y<b&&y+h>b)return rectTiles(x,y,w,b-y,forPlayer)||rectTiles(x,b,w,y+h-b,forPlayer);
@@ -3805,7 +3935,11 @@ function entBox(e){
   return {x:e.x-e.w/2,y:e.y-6,w:e.w,h:7};
 }
 function pBox(x,y){return {x:x-5,y:y-5,w:10,h:6};}
+// The land, the sea islands and the sky are separate worlds. Some screens of one touch screens of another on the map grid, so walking or swimming off an edge must never carry Pip across.
+function worldKey(cs){const r=regionAt(cs);return r?(r.sea?'sea':r.sky?'sky':'land'):null;}
+function crossesWorld(x,y){const cur=cellAt();if(!cur)return false;const cs={x:Math.floor(x/256),y:Math.floor((y-1)/192)};if(cs.x===CS.x&&cs.y===CS.y)return false;const n=cellAt(cs);return !!n&&worldKey(cs)!==worldKey(CS);}
 function pBlocked(x,y){
+  if(!trans&&state!=='warp'&&crossesWorld(x,y-3))return true;
   const b=pBox(x,y),city=cityLayoutBlocked(b);if(city===true||(city===null&&rectTiles(b.x,b.y,b.w,b.h,true)))return true;
   const cur=pBox(P.x,P.y);
   for(const e of ents){if(!e.solid||e.blown)continue;const eb=entBox(e);if(ov(b,eb)&&!ov(cur,eb))return true;}
@@ -3931,6 +4065,7 @@ function forestClearNear(ox,oy,player=true){
 function restoreForestLanding(){if(regionAt()?.id==='forest'){const p=forestClearNear(P.x,P.y);if(p){P.x=p.x;P.y=p.y;}}}
 
 /* ===== src/systems/landscapes.js ===== */
+'use strict';
 const LANDSCAPE_GROUND=new Map();
 function landscapeKind(x,y){return x>=0&&x<512?(y>=768&&y<960?'mountains':y>=1152&&y<1344?'beach':null):null;}
 function landscapeOrigin(kind){return kind==='beach'?1152:768;}
@@ -3987,6 +4122,65 @@ function landscapeClearNear(ox,oy){
 }
 function restoreLandscapeLanding(){if(landscapeKind(P.x,P.y)){const p=landscapeClearNear(P.x,P.y);if(p){P.x=p.x;P.y=p.y;CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;}}}
 
+/* ===== src/systems/coop_interior.js ===== */
+function coopFloor(){const id=regionAt()?.id;return id==='coop'?'home':id==='cooploft'?'loft':null;}
+function coopRoomAt(x,y){const id=regionOfPos(x,y)?.id;return id==='coop'?'home':id==='cooploft'?'loft':null;}
+function drawCoopTile(c,r,sx,sy,floor){const o=coopRoomOrigin(floor);ctx.drawImage(COOP_INTERIOR_ART.ground(floor,G.coop?.lv||1),c*16-o.x,r*16-o.y,16,16,sx,sy,16,16);}
+function coopInteriorBlocked(b){
+ const floor=coopRoomAt(b.x+b.w/2,b.y+b.h/2);if(!floor)return null;
+ const lv=G.coop?.lv||1;if(floor==='loft'&&(!G.coop||lv<2))return true;
+ const o=coopRoomOrigin(floor),x=b.x-o.x,y=b.y-o.y,edge=lv===1?29:21,local={x,y,w:b.w,h:b.h};
+ if(x<edge||x+b.w>256-edge||y<54||y+b.h>192)return true;
+ if(y+b.h>176&&(floor==='loft'||x<116||x+b.w>140))return true;
+ return coopRoomProps(floor,lv).some(p=>ov(local,{x:p.x+p.hit[0],y:p.y+p.hit[1],w:p.hit[2],h:p.hit[3]}));
+}
+function makeCoopInteriorEnts(){
+ ents=ents.filter(e=>e.type!=='coopprop');if(!G.coop)return;
+ for(const floor of G.coop.lv>=2?['home','loft']:['home']){const o=coopRoomOrigin(floor);for(const p of coopRoomProps(floor,G.coop.lv))addEnt({type:'coopprop',id:'coop_'+floor+'_'+p.id,prop:p,floor,x:o.x+p.x+p.w/2,y:o.y+p.y+p.h,solid:false});}
+}
+function drawCoopProp(e){
+ const p=e.prop,lv=G.coop?.lv||1,earned=p.trophy?!!p.trophy.earned():false,o=coopRoomOrigin(e.floor),x=o.x+p.x-camX,y=o.y+p.y-camY+HUD;
+ drawImg(COOP_INTERIOR_ART.prop(p,lv,earned),x,y);
+ if(p.kind==='display'&&earned&&(tick+COOP_TROPHIES.indexOf(p.trophy)*11)%90<9){coastRect(ctx,'#fff8ec',x+20,y+4,1,3);coastRect(ctx,'#fff8ec',x+19,y+5,3,1);}
+ if(p.kind==='hearth'){coastRect(ctx,tick%18<9?'#ffe05a':'#fff8ec',x+18,y+25-(tick%18<9?2:0),2,8);}
+}
+function coopStairsReady(dir){
+ const floor=coopFloor();if(!floor||!G.coop)return false;const o=coopRoomOrigin(floor),x=P.x-o.x,y=P.y-o.y;
+ return x>=194&&x<=222&&(floor==='home'?G.coop.lv>=2&&dir===1&&y>=106&&y<=126:dir===0&&y>=124&&y<=144);
+}
+function useCoopStairs(){const up=coopFloor()==='home',o=coopRoomOrigin(up?'loft':'home');warpTo(o.x+208,o.y+(up?132:116),up?1:0);}
+function coopBump(dx,dy){if(dy&&coopStairsReady(dy<0?1:0)){useCoopStairs();return true;}return false;}
+function coopFacingProp(f){
+ const floor=coopFloor();if(!floor||!G.coop)return null;const o=coopRoomOrigin(floor);
+ return coopRoomProps(floor,G.coop.lv).filter(p=>['display','nests'].includes(p.kind)||p.id==='future').find(p=>f.x-o.x>=p.x-4&&f.x-o.x<=p.x+p.w+4&&f.y-o.y>=p.y+(p.kind==='display'?14:0)-4&&f.y-o.y<=p.y+p.h+5);
+}
+function coopActionLabel(){
+ if(coopStairsReady(P.dir))return coopFloor()==='home'?'UP':'DOWN';
+ const p=coopFacingProp(frontPoint());return p?(p.kind==='nests'?'REST':'LOOK'):null;
+}
+function coopInteriorAction(f){
+ if(!coopFloor()||!G.coop)return false;
+ if(coopStairsReady(P.dir)){useCoopStairs();return true;}
+ const p=coopFacingProp(f);if(!p)return false;
+ if(p.kind==='nests'){trySleep();return true;}
+ if(p.id==='future'){say([{who:'me',text:'A cozy reading corner for now. The level 2 coop upgrade adds stairs to my own upstairs trophy room!'}]);return true;}
+ const t=p.trophy,earned=!!t.earned(),o=coopRoomOrigin('loft');
+ say([{who:{x:o.x+p.x+p.w/2,y:o.y+p.y-10,name:t.name},text:earned?'EARNED! '+(typeof t.story==='function'?t.story():t.story):'A place for the '+t.name+' trophy. '+t.hint()}]);return true;
+}
+function drawCoopInteriorDetails(){
+ if(coopFloor()!=='loft')return;const earned=COOP_TROPHIES.filter(t=>t.earned()).length;
+ txt('HONORS '+earned+'/'+COOP_TROPHIES.length,26,HUD+186,5,'#ead6aa');
+ const label=coopActionLabel();if(label)txt(label==='DOWN'?'Z: downstairs':'Z: inspect',230,HUD+186,5,'#fff8ec',{align:'right'});
+}
+function restoreCoopInteriorLanding(){
+ const floor=coopFloor();if(!floor)return;
+ if(!G.coop||floor==='loft'&&G.coop.lv<2){const o=coopRoomOrigin('home');if(G.coop){P.x=o.x+128;P.y=o.y+171;}else{P.x=132;P.y=1068;}CS={x:Math.floor(P.x/256),y:Math.floor(P.y/192)};camX=CS.x*256;camY=CS.y*192;return;}
+ const o=coopRoomOrigin(floor),clear=(x,y)=>x>=o.x+26&&x<=o.x+230&&y>=o.y+60&&y<=o.y+174&&!coopInteriorBlocked(pBox(x,y))&&!ents.some(e=>e.solid&&ov(pBox(x,y),entBox(e)));
+ if(clear(P.x,P.y))return;const ox=P.x,oy=P.y;
+ for(let d=4;d<=256;d+=4)for(let dy=-d;dy<=d;dy+=4)for(const dx of Math.abs(dy)===d?Array.from({length:d/2+1},(_,i)=>-d+i*4):[-d,d])if(clear(ox+dx,oy+dy)){P.x=ox+dx;P.y=oy+dy;return;}
+ P.x=o.x+128;P.y=o.y+168;
+}
+
 /* ===== src/systems/dialogue.js ===== */
 /* ---------------- dialogue engine: say/talkTo/hints/rewards. Lines live in src/content/. ---------------- */
 function hint(){
@@ -4033,7 +4227,7 @@ function talkTo(e){
 }
 function speakerPos(who){
   if(who==='me'){const s=getChick(stage(),0,0,false);return {x:P.x-camX,top:P.y-camY+HUD+2-s.height-P.z,bot:P.y-camY+HUD+3,name:'PIP',voice:900};}
-  if(who.type){const s=SPR[who.spr];return {x:who.x-camX,top:who.y-camY+HUD+2-s.height,bot:who.y-camY+HUD+3,name:who.name,voice:who.voice};}
+  if(who.type&&SPR[who.spr]){const s=SPR[who.spr];return {x:who.x-camX,top:who.y-camY+HUD+2-s.height,bot:who.y-camY+HUD+3,name:who.name,voice:who.voice};}
   return {x:who.x-camX,top:who.y-camY+HUD,bot:who.y-camY+HUD+16,name:who.name,voice:300};
 }
 function updateTalk(){
@@ -4061,11 +4255,13 @@ function closedSign(b){
 function enteredBuilding(b){if(!G.flags.visited)G.flags.visited={};if(!G.flags.visited[b.id]){G.flags.visited[b.id]=1;}if(b.id==='artist')G.flags.posed=false;}
 
 /* ===== src/systems/actions.js ===== */
+'use strict';
 /* ---------------- player actions ---------------- */
 function frontPoint(){const [dx,dy]=DIRV[P.dir];return {x:P.x+dx*10,y:P.y-4+dy*10,dx,dy};}
 function action(){
   const f=frontPoint();
   if(cityInteriorAction(f))return;
+  if(coopInteriorAction(f))return;
   for(const e of ents){if(e.type!=='npc'||!onCur(e))continue;
     if(Math.abs(f.x-e.x)<e.w/2+7&&f.y>e.y-20&&f.y<e.y+7){talkTo(e);return;}}
   if(villageAction(f))return;
@@ -4220,6 +4416,7 @@ function checkPlates(){
   else if(on>0)SFX.click();
 }
 function bump(ix,iy){
+  if(coopBump(ix,iy))return;
   if(roofBump(ix,iy))return;
   if(tryPush(ix,iy))return;
   if(skyBump(ix,iy))return;
@@ -4347,7 +4544,7 @@ function checkEdges(){
     return;}
   const L=CS.x*256,R=L+256,T=CS.y*192,B=T+192;let d=null;
   if(P.x-4<L)d=[-1,0];else if(P.x+4>R)d=[1,0];else if(P.y-6<T)d=[0,-1];else if(P.y>B)d=[0,1];
-  if(d&&ROAM.has((CS.x+d[0])+','+(CS.y+d[1])))startTrans(d[0],d[1]);
+  if(d&&ROAM.has((CS.x+d[0])+','+(CS.y+d[1]))&&worldKey(CS)===worldKey({x:CS.x+d[0],y:CS.y+d[1]}))startTrans(d[0],d[1]);
 }
 function startTrans(dx,dy){trans={dx,dy,t:0,d:40,px0:P.x,py0:P.y,px1:P.x+dx*14,py1:P.y+dy*12};}
 function updateTrans(){
@@ -4492,6 +4689,8 @@ function drawEnvFX(){
     for(let r=r0;r<=r0+12;r++)for(let c=c0;c<=c0+16;c++){const ch=tileAt(c,r),x=c*16-camX+8,y=r*16-camY+8;
       if(ch==='I')light(x,y+2,26);else if(ch==='f')light(x,y+4,48);else if(ch==='*')light(x,y,16);else if(ch==='@')light(x,y,22);
       else if(ch==='|')light(x,y-4,34);else if(ch==='Q')light(x,y+4,18);}
+    if(coopFloor()==='home')light(126,70,49);
+    if(coopFloor()==='loft'){light(35,61,30);light(220,61,30);}
     for(const f of flies)light(f.x-camX,f.y-camY,10);
     for(const e of ents){if(e.type==='ffly'&&onCur(e))light(e.x-camX,e.y-camY-8,12);
       if(e.type==='cityprop'&&e.p.kind==='lamp')light(e.ox+e.p.args[0]-camX,e.oy+e.p.args[1]-23-camY,34);}
@@ -4695,6 +4894,7 @@ function updateSleep(){
 
 
 /* ===== src/systems/part2.js ===== */
+'use strict';
 /* =====================================================================
    PART 2: BEYOND THE FARM
    ===================================================================== */
@@ -4785,7 +4985,7 @@ function upgradeCoop(){
   G.seeds-=cost;G.coop.lv++;gainGP(GP.coop);applyCoop(false);shake=8;SFX.lvl();
   const S=SITES[G.coop.site];for(let i=0;i<40;i++)puff((S.c+1.5)*16,(S.r+1)*16,1,['#ffe05a','#fff8ec','#ff6fae','#b2e7e0'],2.4,0.05);
   const lv=G.coop.lv;toast('COOP LEVEL '+lv+'!');save();
-  const msg=lv===2?"Mama Hen moved into my coop! She's inside right now!":lv===3?"Penny and the triplets moved in! The whole family is together again!":"A GOLDEN ROOF! It's my DREAM COOP! Everyone's inside for a party!";
+  const msg=lv===2?"Mama Hen moved in! And there's a second floor! My first four trophy displays are upstairs.":lv===3?"Penny and the triplets moved in! My family has cozy nests, and there are three more trophy displays upstairs!":"A GOLDEN ROOF! My DREAM COOP has a grand trophy room with ten displays. Time for a family party!";
   say([{who:'me',text:msg}]);
 }
 /* ---- garden plots ---- */
@@ -4905,6 +5105,7 @@ function drawP2Intro(){
 
 
 /* ===== src/systems/hazards.js ===== */
+'use strict';
 /* ---------------- Part 2 hazards (gentle!) and secret spots ----------------
    Forest: grumpy bees near 2 hives (Wing Flap scatters them)
    Mountains: rolling snowballs on set lanes (Super Peck smashes them)
@@ -6514,6 +6715,7 @@ function drawSeaFX(cx,cy){
 }
 
 /* ===== src/systems/city.js ===== */
+'use strict';
 /* ---------------- city systems: treats, special seeds, parcels, museum, library, decorations ---------------- */
 /* ---- bakery buffs (one in-game day) ---- */
 function buffActive(id){const b=G&&G.buff;return !!b&&G.clock<b.until&&(!id||b.id===id);}
@@ -7303,6 +7505,7 @@ function drawPause(){
 }
 
 /* ===== src/ui/render.js ===== */
+'use strict';
 /* =====================================================================
    RENDERING
    ===================================================================== */
@@ -7335,9 +7538,6 @@ function drawWorld(){
     const open=buildingOpen(b),lab=open?b.sign:'CLOSED',w=Math.ceil(measure(lab,5))+6;
     ctx.fillStyle='#202840';ctx.fillRect(Math.round(px-w/2),py-10,w,10);ctx.fillStyle=open?'#f2dca0':'#ffc8c8';ctx.fillRect(Math.round(px-w/2)+1,py-9,w-2,8);
     txt(lab,px,py-8,5,open?'#594437':'#c02020',{align:'center'});}
-  if(G.coop&&G.coop.lv>=4&&regionAt().id==='coop'){const cols=['#eb6654','#ffe05a','#409dc5','#a1d970','#ff6fae'];
-    for(let i=0;i<30;i++){const bx=34+i*6.4,by=HUD+48+Math.round(Math.sin(i/2.5)*2);ctx.fillStyle=cols[i%5];ctx.fillRect(bx|0,by,5,2);ctx.fillRect((bx+1)|0,by+2,3,2);ctx.fillRect((bx+2)|0,by+4,1,1);}
-    if(tick%8===0)parts.push({x:camX+40+Math.random()*176,y:camY+50,vx:(Math.random()-.5)*0.4,vy:0.4+Math.random()*0.4,g:0,life:120,c:cols[(Math.random()*5)|0]});}
   if((wearing('pirate')||rankAtLeast(3))&&Math.floor(tick/8)%3){ctx.fillStyle=Math.floor(tick/16)%2?'#ffd21e':'#fff8ec';
     for(let r=r0;r<=r0+12;r++)for(let c=c0;c<=c0+16;c++){const k=c+','+r,ch=tileAt(c,r),h=HIDDEN[k];
       const secret=(h&&!G.collected.has(h.id)&&'RCL'.includes(ch))||(c===18&&r===16&&ch==='L')||ch==='Z';
@@ -7352,7 +7552,7 @@ function drawWorld(){
   const ocx=camX,ocy=camY;camX=cx;camY=cy;
   for(const e of list){if(e.type==='player')drawPlayer();else drawEnt(e);}
   for(const p of parts){ctx.fillStyle=p.c;ctx.fillRect(Math.round(p.x-camX),Math.round(p.y-camY+HUD),2,2);}
-  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);drawSeaFX(cx,cy);drawSkyFX(cx,cy);
+  camX=ocx;camY=ocy;drawCoopInteriorDetails();drawSeasonFX(cx,cy);drawSeaFX(cx,cy);drawSkyFX(cx,cy);
 }
 function drawPlayer(){
   const st=stage(),sx=Math.round(P.x-camX),sy=Math.round(P.y-camY+HUD);
@@ -7387,6 +7587,7 @@ function drawEnt(e){
   const sx=Math.round(e.x-camX),sy=Math.round(e.y-camY+HUD);
   switch(e.type){
     case 'forestprop':drawForestProp(e);break;
+    case 'coopprop':drawCoopProp(e);break;
     case 'landscapeprop':drawLandscapeProp(e);break;
     case 'cityprop':drawCityProp(e);break;
     case 'roofgull':drawRoofGull(e,sx,sy);break;
@@ -7468,7 +7669,7 @@ function drawHUD(){
     if(rid==='fortress'&&bossActive()&&BOSS){txt('SQUAWKBEARD',252,7,5,'#ff8080',{align:'right'});for(let i=0;i<BOSS.max;i++){ctx.fillStyle=i<BOSS.hp?'#ff8080':'#425b72';ctx.fillRect(252-(BOSS.max-i)*10,17,8,7);}return;}
     if(rid==='lair'&&skyBossActive()&&SKB){drawSkyBossHUD();return;}
     if(rid==='cityin'||rid==='rooftops'||rid==='skyin'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b9d1dd',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffe05a',{align:'right'});return;}
-    const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#a1d970',{align:'right'});txt(a==='coop'?'HOME':a==='village'&&G.vil.open?seasonNow().name:seaRegion()?'F: SAIL':'F: FLY',220,18,5,'#ffe05a',{align:'right'});
+    const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#a1d970',{align:'right'});txt(a==='coop'?(rid==='cooploft'?'TROPHIES':'HOME'):a==='village'&&G.vil.open?seasonNow().name:seaRegion()?'F: SAIL':'F: FLY',220,18,5,'#ffe05a',{align:'right'});
     // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
     const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor((31-(cs.cols-1))/cs.cols)),h=Math.min(8,Math.floor((27-(cs.rows-1))/cs.rows));
     for(const c of cs.cells){const cur=CS.x===c.sx&&CS.y===c.sy,vis=G.visited.has(c.sx+','+c.sy);

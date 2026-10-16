@@ -44,7 +44,7 @@ function talkTo(e){
 }
 function speakerPos(who){
   if(who==='me'){const s=getChick(stage(),0,0,false);return {x:P.x-camX,top:P.y-camY+HUD+2-s.height-P.z,bot:P.y-camY+HUD+3,name:'PIP',voice:900};}
-  if(who.type){const s=SPR[who.spr];return {x:who.x-camX,top:who.y-camY+HUD+2-s.height,bot:who.y-camY+HUD+3,name:who.name,voice:who.voice};}
+  if(who.type&&SPR[who.spr]){const s=SPR[who.spr];return {x:who.x-camX,top:who.y-camY+HUD+2-s.height,bot:who.y-camY+HUD+3,name:who.name,voice:who.voice};}
   return {x:who.x-camX,top:who.y-camY+HUD,bot:who.y-camY+HUD+16,name:who.name,voice:300};
 }
 function updateTalk(){

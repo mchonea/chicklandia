@@ -89,6 +89,8 @@ function drawEnvFX(){
     for(let r=r0;r<=r0+12;r++)for(let c=c0;c<=c0+16;c++){const ch=tileAt(c,r),x=c*16-camX+8,y=r*16-camY+8;
       if(ch==='I')light(x,y+2,26);else if(ch==='f')light(x,y+4,48);else if(ch==='*')light(x,y,16);else if(ch==='@')light(x,y,22);
       else if(ch==='|')light(x,y-4,34);else if(ch==='Q')light(x,y+4,18);}
+    if(coopFloor()==='home')light(126,70,49);
+    if(coopFloor()==='loft'){light(35,61,30);light(220,61,30);}
     for(const f of flies)light(f.x-camX,f.y-camY,10);
     for(const e of ents){if(e.type==='ffly'&&onCur(e))light(e.x-camX,e.y-camY-8,12);
       if(e.type==='cityprop'&&e.p.kind==='lamp')light(e.ox+e.p.args[0]-camX,e.oy+e.p.args[1]-23-camY,34);}

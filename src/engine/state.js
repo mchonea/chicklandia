@@ -63,7 +63,7 @@ function continueGame(){
   camX=CS.x*256;camY=CS.y*192;trans=null;TRAIL=[];parts=[];floats=[];toasts=[];
   G.train=Object.assign({},s.train||{});migrateSave(s);
   G.sacks=Object.assign(G.sacks,s.sacks||{});if(s.vil)G.vil=Object.assign(G.vil,s.vil);if(s.sea)G.sea=Object.assign(G.sea,s.sea);if(s.sky){G.sky=Object.assign(G.sky,s.sky);G.sky.harv=Object.assign({moon:0,star:0},s.sky.harv||{});}G.decor=s.decor||{};G.buff=s.buff||null;G.jobs=s.jobs||{day:0,list:[]};G.hold=Object.assign(G.hold,s.hold||{});G.museum=Object.assign(G.museum,s.museum||{});
-  migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();restoreCoastalLanding();restoreVillageLanding();restoreCityLanding();restoreCityInteriorLanding();restoreForestLanding();restoreLandscapeLanding();state='play';fade=1;fadeColor='#000';
+  migrateSeeds(s);migrateGrowth(s);G.hearts=Math.max(1,Math.min(G.hearts,maxHearts()));makeEnts();restoreCoastalLanding();restoreVillageLanding();restoreCityLanding();restoreCityInteriorLanding();restoreForestLanding();restoreLandscapeLanding();restoreCoopInteriorLanding();state='play';fade=1;fadeColor='#000';
   if(G.growMsgOnLoad){G.growMsgOnLoad=false;toast("You've grown! You are now a "+RANKS[G.rank-1].name+'!','#a1d970');}
 }
 
@@ -134,6 +134,7 @@ function applyCoop(fresh){
   const door=S.door||[c+1,r+1];DOORS[door.join(',')]=COOP_IN;
   S.plots.slice(0,G.coop.lv*2).concat(extraPlotTiles()).forEach(([pc,pr])=>{if(tileAt(pc,pr)!=='V')setTile(pc,pr,'V');addPlot(pc,pr,true);});
   relocateFamily();
+  makeCoopInteriorEnts();restoreCoopInteriorLanding();
 }
 function coopExit(){const S=SITES[G.coop.site];return S.exit||{x:(S.c+1)*16+8,y:(S.r+2)*16+11};}
 function relocateFamily(){

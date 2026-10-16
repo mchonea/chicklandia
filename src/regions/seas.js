@@ -18,7 +18,10 @@ function islandScreen(kind,half,ops){
   const g=rows.map(spans=>Array.from({length:16},(_,c)=>spans.some(([a,b])=>c+half*16>=a&&c+half*16<=b)?ground:'w'));
   for(const o of ops){const rect=o[0]==='r',c0=o[1],r0=o[2],c1=rect?o[3]:c0,r1=rect?o[4]:r0,ch=rect?o[5]:o[3];
     for(let r=r0;r<=r1;r++)for(let c=c0;c<=c1;c++)if(ch==='3'||g[r][c]!=='w')g[r][c]=ch;
-  }return g.map(row=>row.join(''));
+  }
+  // the village sits right above the cove and the reef on the map grid: a coral reef wall closes their north edge
+  if(kind==='cove'||kind==='reef')g[0]=g[0].map(()=>')');
+  return g.map(row=>row.join(''));
 }
 const dock=(r0=8)=>['r',0,r0,3,r0+1,'3'];
 defineRegion({id:'cove',name:'PIRATE COVE',kind:'outdoor',origin:[0,9],grid:[2,1],ground:'sand',beyond:true,area:'cove',music:'cove',sea:true,mm:'sea',

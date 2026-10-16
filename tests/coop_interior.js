@@ -1,0 +1,43 @@
+/* The upgraded home, stairs, family, earned honors and pre-existing saves. */
+(async()=>{
+ const c=window.__chick,R={},ok=(k,v)=>R[k]=!!v;
+ const reset=()=>{state='play';dlg=null;SH=null;PL=null;MG=null;trans=null;fade=0;P.kt=0;P.inv=99999;G.autoMom=0;SET.music=0;SET.sound=0;for(const k in keys)keys[k]=false;};
+ const fresh=(lv=1,floor='home')=>{c.newGame();G.part2=true;G.rank=7;G.gp=420;G.skills=new Set(['peck','quick','fly']);G.seeds=80;G.coop={site:'forest',lv};G.sibs=['peep','cheep','tweet'];G.q.mom=G.q.penny=2;G.clock=DAY*.3;G.weather='clear';G.wInt=0;reset();makeEnts();const o=coopRoomOrigin(floor);c.tp(o.x+128,o.y+(floor==='home'?168:136));};
+ const position=(floor='home')=>{reset();const o=coopRoomOrigin(floor);c.tp(o.x+128,o.y+(floor==='home'?168:136));};
+ const walk=(x,y)=>{const r=walkTo(x,y);if(!r.ok)return r;for(let i=0;i<90&&(Math.abs(P.x-x)>1||Math.abs(P.y-y)>1);i++){keys.left=P.x>x+1;keys.right=P.x<x-1;keys.up=P.y>y+1;keys.down=P.y<y-1;c.step(1);}for(const k of ['left','right','up','down'])keys[k]=false;return {ok:Math.abs(P.x-x)<=1&&Math.abs(P.y-y)<=1,pos:[P.x,P.y]};};
+ const hold=(k,n)=>{keys[k]=true;c.step(n);keys[k]=false;};
+ const honor=(id)=>COOP_TROPHIES.find(t=>t.id===id);
+ fresh();ok('original_home_region_and_door_coordinates_stable',REGIONS.coop.origin.join(',')==='2,4'&&REGIONS.coop.grid.join(',')==='1,1'&&COOP_IN.x===640&&COOP_IN.y===939);
+ ok('upstairs_uses_an_unoccupied_indoor_room',REGIONS.cooploft.origin.join(',')==='3,4'&&REGIONS.cooploft.kind==='indoor'&&REGIONS.cooploft.area==='coop');
+ ok('starter_coop_has_no_active_stairs_or_displays',!ents.some(e=>e.type==='coopprop'&&(e.floor==='loft'||e.prop.kind==='stairsup'))&&coopDisplayCount()===0&&rectTiles(890,880,10,6,true));
+ const future=walk(720,883).ok;P.dir=1;action();ok('starter_coop_explains_level_two_loft',future&&state==='talk'&&dlg.lines[0].text.includes('level 2'));
+ fresh();for(const id of ORDER2)G.q[id]=2;const levels=[],costs=[],plots=[],capacities=[];
+ for(let lv=2;lv<=4;lv++){const before=G.seeds;upgradeCoop();reset();levels.push(G.coop.lv);costs.push(before-G.seeds);plots.push(ents.filter(e=>e.type==='plot'&&e.coop).length);capacities.push(ents.filter(e=>e.type==='coopprop'&&e.prop.kind==='display').length);}
+ ok('normal_upgrades_unlock_both_floors_at_levels_two_three_four',levels.join(',')==='2,3,4'&&capacities.join(',')==='4,7,10');
+ ok('existing_upgrade_costs_and_garden_growth_preserved',costs.join(',')==='6,9,12'&&plots.join(',')==='4,6,8'&&UPGRADES.slice(2).map(u=>u.need).join(',')==='2,5,9');
+ const stairs=[];for(const lv of [2,3,4]){
+  fresh(lv);const route=walk(720,884),pos=[P.x,P.y];let reach=route.ok;hold('up',65);const up=coopFloor()==='loft'&&!pBlocked(P.x,P.y);reset();const o=coopRoomOrigin('loft');reach=reach&&walk(o.x+208,o.y+132).ok;hold('down',65);const down=coopFloor()==='home'&&!pBlocked(P.x,P.y);stairs.push({lv,route,pos,reach,up,down});
+ }R.stairs=stairs;ok('real_movement_uses_stairs_both_directions_at_each_upgrade',stairs.every(s=>s.reach&&s.up&&s.down));
+ fresh(2);walk(720,884);P.dir=1;action();c.step(35);ok('action_button_also_uses_upstairs',coopFloor()==='loft');reset();const loft=coopRoomOrigin('loft');c.tp(loft.x+208,loft.y+132);P.dir=0;action();c.step(35);ok('action_button_returns_downstairs',coopFloor()==='home');
+ const doors=[];for(const lv of [1,2,3,4]){fresh(lv);c.tp(206,1129);hold('up',65);const entered=coopFloor()==='home';hold('down',85);doors.push(entered&&regionAt()?.id==='forest'&&!pBlocked(P.x,P.y));}ok('all_four_exterior_entries_and_exits_still_work',doors.every(Boolean));
+ const residents=[];for(const lv of [2,3,4]){fresh(lv);for(const id of lv===2?['mom']:['mom','penny','peep','cheep','tweet']){position();const e=ents.find(e=>e.id===id);let reached=false;for(const [dx,dy,dir] of [[0,14,1],[14,0,2],[-14,0,3],[0,-14,0]]){if(pBlocked(e.x+dx,e.y+dy)||!walk(e.x+dx,e.y+dy).ok)continue;P.dir=dir;action();if(state==='talk'&&dlg.lines[0].who===e){reached=true;break;}reset();}residents.push({lv,id,reached});}}R.residents=residents;ok('family_move_ins_remain_reachable_and_talkable',residents.every(n=>n.reached));
+ fresh(4);const penny=ents.find(e=>e.id==='penny');G.vil.res.penny=1;penny.x=1500;penny.y=1500;applyCoop(false);ok('village_move_ins_are_not_pulled_back_home',penny.x===1500&&penny.y===1500);
+ const sleeping=[];for(const lv of [1,2,3,4]){fresh(lv);const reach=walk(566,940).ok;P.dir=1;action();const day=state==='talk'&&dlg.lines[0].text.includes('daytime');reset();G.clock=DAY*.8;P.dir=1;action();const night=state==='talk'&&!!dlg.lines[0].choices;if(night){dlg.shown=dlg.lines[0].text.length;pressed.a=true;c.step(1);G.hearts=1;c.step(110);}sleeping.push({lv,reach,day,night,healed:G.hearts===maxHearts()&&dayT()<.06&&state==='play'});}R.sleeping=sleeping;ok('nests_offer_daytime_dialogue_and_sleep_heal_at_night',sleeping.every(s=>s.reach&&s.day&&s.night&&s.healed));
+ fresh(4,'loft');ok('only_completed_milestones_show_trophies',COOP_TROPHIES.filter(t=>t.earned()).map(t=>t.id).join(',')==='flight,home');
+ const snapshot=()=>JSON.stringify({seeds:G.seeds,gp:G.gp,rank:G.rank,items:G.items,q:G.q,collected:[...G.collected],plots:G.plots,flags:G.flags});
+ const before=snapshot();const first=coopRoomProps('loft',4).find(p=>p.trophy);walk(loft.x+first.x+15,loft.y+first.y+first.h+13);P.dir=1;action();ok('earned_display_explains_the_memory',state==='talk'&&dlg.lines[0].who.name==='FIRST FLIGHT'&&dlg.lines[0].text.includes('EARNED!'));reset();ok('inspecting_trophies_adds_no_rewards_or_progress',snapshot()===before);
+ position('loft');const garden=coopRoomProps('loft',4).find(p=>p.id==='garden');walk(loft.x+garden.x+15,loft.y+garden.y+garden.h+13);P.dir=1;action();ok('empty_display_explains_the_actual_goal',state==='talk'&&dlg.lines[0].text.includes('Harvest 10')&&!dlg.lines[0].text.includes('EARNED!'));reset();
+ const gardenProp=ents.find(e=>e.prop?.id==='garden');const emptyArt=COOP_INTERIOR_ART.prop(gardenProp.prop,4,false).toDataURL();G.harvests=10;const fullArt=COOP_INTERIOR_ART.prop(gardenProp.prop,4,!!honor('garden').earned()).toDataURL();ok('earned_progress_updates_the_display_without_reloading',honor('garden').earned()&&emptyArt!==fullArt);
+ G.mgFirst={egg:1,bonk:1};ok('arcade_trophy_requires_all_three_games',!honor('games').earned());G.mgFirst.ffly=1;ok('arcade_trophy_recognizes_existing_wins',honor('games').earned());
+ G.best.race=42;ok('rooftop_trophy_uses_existing_best_time',honor('race').earned()&&honor('race').story().includes('42'));
+ for(const id of ORDER2)G.q[id]=2;ok('helping_trophy_requires_all_nine_existing_quests',honor('friends').earned());G.q.mo=1;ok('incomplete_helping_quest_keeps_display_empty',!honor('friends').earned());G.q.mo=2;
+ for(const e of EXHIBITS)G.museum[e.id]=e.need;ok('museum_trophy_counts_every_collection_including_the_sky',honor('museum').earned()&&EXHIBITS.length===6);G.museum[EXHIBITS.at(-1).id]--;ok('museum_trophy_rejects_partial_collection',!honor('museum').earned());G.museum[EXHIBITS.at(-1).id]++;
+ G.flags.village=G.flags.seas=G.flags.sky=1;ok('chapter_trophies_use_existing_story_completions',COOP_TROPHIES.every(t=>t.earned()));
+ const inaccessible=[];for(const t of COOP_TROPHIES){position('loft');const p=coopRoomProps('loft',4).find(p=>p.trophy===t);const reach=walk(loft.x+p.x+15,loft.y+p.y+p.h+8).ok;P.dir=1;action();if(!reach||state!=='talk'||dlg.lines[0].who.name!==t.name)inaccessible.push(t.id);}R.inaccessibleTrophies=inaccessible;ok('all_ten_displays_can_be_walked_to_and_inspected',!inaccessible.length);
+ const loads=[];for(const [lv,floor,x,y] of [[1,'home',50,65],[2,'home',208,80],[3,'home',52,145],[4,'home',128,119],[2,'loft',48,84],[4,'loft',208,155],[4,'loft',128,136]]){
+  fresh(lv,floor);G.flags.sentinel=17;G.harvests=18;G.best.race=41;G.collected.add('shell0');G.plots.plot_5_64={p:.42,k:'moon',w:2};const o=coopRoomOrigin(floor);c.tp(o.x+x,o.y+y);save();c.continueGame();reset();loads.push(!pBlocked(P.x,P.y)&&G.flags.sentinel===17&&G.harvests===18&&G.best.race===41&&G.collected.has('shell0')&&G.plots.plot_5_64.p===.42&&honor('garden').earned()&&honor('race').earned()&&coopFloor()===floor);
+ }ok('old_positions_recover_and_keep_quests_crops_and_earned_honors',loads.every(Boolean));
+ fresh(4,'loft');save();c.continueGame();reset();ok('saving_upstairs_returns_to_the_same_floor',coopFloor()==='loft'&&toRegionPos(P.x,P.y).region==='cooploft');
+ fresh(1);const o=coopRoomOrigin('loft');c.tp(o.x+128,o.y+136);save();c.continueGame();reset();ok('locked_upstairs_save_recovers_to_the_family_floor',coopFloor()==='home'&&!pBlocked(P.x,P.y));
+ R.allPass=Object.entries(R).filter(([,v])=>typeof v==='boolean').every(([,v])=>v);return R;
+})()

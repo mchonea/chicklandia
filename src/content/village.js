@@ -17,7 +17,7 @@ const PADS=VILLAGE_LOTS;
 // gathering spots: wood, stone, clay come back every in-game day; stone needs CARRY
 const NODES=[
   {id:'nw0',kind:'wood',c:3,r:101},{id:'nw1',kind:'wood',c:10,r:100},{id:'nw2',kind:'wood',c:4,r:105},{id:'nw3',kind:'wood',c:9,r:105},
-  {id:'ns0',kind:'stone',c:28,r:98},{id:'ns1',kind:'stone',c:30,r:103},{id:'ns2',kind:'stone',c:25,r:101},
+  {id:'ns0',kind:'stone',c:28,r:98},{id:'ns1',kind:'stone',c:30,r:103},{id:'ns2',kind:'stone',c:28,r:101},
   {id:'nc0',kind:'clay',c:18,r:105},{id:'nc1',kind:'clay',c:19,r:106},{id:'nc2',kind:'clay',c:28,r:104}];
 const NODE_YIELD={wood:2,stone:2,clay:2};
 // sheep to shear (2 wool each, once a day) in the meadow pasture

@@ -1,6 +1,7 @@
 'use strict';
 /* ---------------- collision ---------------- */
 function rectTiles(x,y,w,h,forPlayer){
+  const coop=coopInteriorBlocked({x,y,w,h});if(coop!==null)return coop;
   // The painted forest, beach and mountains own pixel collision: split boxes that cross their borders.
   if(x<512&&x+w>512&&y<1344&&y+h>768)return rectTiles(x,y,512-x,h,forPlayer)||rectTiles(512,y,x+w-512,h,forPlayer);
   if(x<512)for(const b of [768,960,1152,1344])if(y<b&&y+h>b)return rectTiles(x,y,w,b-y,forPlayer)||rectTiles(x,b,w,y+h-b,forPlayer);
@@ -18,7 +19,11 @@ function entBox(e){
   return {x:e.x-e.w/2,y:e.y-6,w:e.w,h:7};
 }
 function pBox(x,y){return {x:x-5,y:y-5,w:10,h:6};}
+// The land, the sea islands and the sky are separate worlds. Some screens of one touch screens of another on the map grid, so walking or swimming off an edge must never carry Pip across.
+function worldKey(cs){const r=regionAt(cs);return r?(r.sea?'sea':r.sky?'sky':'land'):null;}
+function crossesWorld(x,y){const cur=cellAt();if(!cur)return false;const cs={x:Math.floor(x/256),y:Math.floor((y-1)/192)};if(cs.x===CS.x&&cs.y===CS.y)return false;const n=cellAt(cs);return !!n&&worldKey(cs)!==worldKey(CS);}
 function pBlocked(x,y){
+  if(!trans&&state!=='warp'&&crossesWorld(x,y-3))return true;
   const b=pBox(x,y),city=cityLayoutBlocked(b);if(city===true||(city===null&&rectTiles(b.x,b.y,b.w,b.h,true)))return true;
   const cur=pBox(P.x,P.y);
   for(const e of ents){if(!e.solid||e.blown)continue;const eb=entBox(e);if(ov(b,eb)&&!ov(cur,eb))return true;}

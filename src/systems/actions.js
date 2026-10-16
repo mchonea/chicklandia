@@ -4,6 +4,7 @@ function frontPoint(){const [dx,dy]=DIRV[P.dir];return {x:P.x+dx*10,y:P.y-4+dy*1
 function action(){
   const f=frontPoint();
   if(cityInteriorAction(f))return;
+  if(coopInteriorAction(f))return;
   for(const e of ents){if(e.type!=='npc'||!onCur(e))continue;
     if(Math.abs(f.x-e.x)<e.w/2+7&&f.y>e.y-20&&f.y<e.y+7){talkTo(e);return;}}
   if(villageAction(f))return;
@@ -158,6 +159,7 @@ function checkPlates(){
   else if(on>0)SFX.click();
 }
 function bump(ix,iy){
+  if(coopBump(ix,iy))return;
   if(roofBump(ix,iy))return;
   if(tryPush(ix,iy))return;
   if(skyBump(ix,iy))return;
@@ -285,7 +287,7 @@ function checkEdges(){
     return;}
   const L=CS.x*256,R=L+256,T=CS.y*192,B=T+192;let d=null;
   if(P.x-4<L)d=[-1,0];else if(P.x+4>R)d=[1,0];else if(P.y-6<T)d=[0,-1];else if(P.y>B)d=[0,1];
-  if(d&&ROAM.has((CS.x+d[0])+','+(CS.y+d[1])))startTrans(d[0],d[1]);
+  if(d&&ROAM.has((CS.x+d[0])+','+(CS.y+d[1]))&&worldKey(CS)===worldKey({x:CS.x+d[0],y:CS.y+d[1]}))startTrans(d[0],d[1]);
 }
 function startTrans(dx,dy){trans={dx,dy,t:0,d:40,px0:P.x,py0:P.y,px1:P.x+dx*14,py1:P.y+dy*12};}
 function updateTrans(){

@@ -28,6 +28,7 @@ function solidTile(ch,forPlayer=true){
 function drawTile(ch,c,r,sx,sy,wf){
   const h=hash2(c,r);let img;
   const region=regionOfPos(c*16+8,r*16+8);
+  if(region?.id==='coop'||region?.id==='cooploft')return drawCoopTile(c,r,sx,sy,region.id==='coop'?'home':'loft');
   if(region?.id==='beach'||region?.id==='mountains')return drawLandscapeTile(c,r,sx,sy,wf,region.id);
   if(region?.id==='forest')return drawForestTile(c,r,sx,sy,wf);
   if(region&&drawCityRoomTile(c,r,sx,sy,region))return;

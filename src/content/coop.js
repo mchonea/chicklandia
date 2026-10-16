@@ -21,8 +21,8 @@ function migrateSave(s){
     G.coop.site='forest';G.coop.fresh=true;}
 }
 const COOP_IN={x:640,y:939};
-const FAMILY_POS={mom:[39,52],penny:[42,53],peep:[37,54],cheep:[38,55],tweet:[41,55]};
+const FAMILY_POS=Object.fromEntries(Object.entries({mom:[93,97],penny:[169,121],peep:[92,149],cheep:[169,153],tweet:[180,164]}).map(([id,[x,y]])=>[id,[(512+x-8)/16,(768+y-12)/16]]));
 // upgrades unlock as you help animals out here (need = Part 2 quests done), and cost a few seeds
-const UPGRADES=[null,null,{cost:6,need:2,text:'A bigger coop, 2 more garden plots, and MAMA HEN moves in!'},
-  {cost:9,need:5,text:'A family wing, 2 more plots, faster growing, and PENNY & the TRIPLETS move in!'},
-  {cost:12,need:9,text:'The DREAM COOP! A golden roof, 2 more plots, super-fast growing, and a big party!'}];
+const UPGRADES=[null,null,{cost:6,need:2,text:'A bigger coop, an UPSTAIRS TROPHY ROOM, 2 more garden plots, and MAMA HEN moves in!'},
+  {cost:9,need:5,text:'A family wing, 3 more trophy displays, 2 more plots, faster growing, and PENNY & the TRIPLETS move in!'},
+  {cost:12,need:9,text:'The DREAM COOP! A grand trophy room, golden roof, 2 more plots, super-fast growing, and a big party!'}];

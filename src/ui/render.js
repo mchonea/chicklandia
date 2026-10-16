@@ -31,9 +31,6 @@ function drawWorld(){
     const open=buildingOpen(b),lab=open?b.sign:'CLOSED',w=Math.ceil(measure(lab,5))+6;
     ctx.fillStyle='#202840';ctx.fillRect(Math.round(px-w/2),py-10,w,10);ctx.fillStyle=open?'#f2dca0':'#ffc8c8';ctx.fillRect(Math.round(px-w/2)+1,py-9,w-2,8);
     txt(lab,px,py-8,5,open?'#594437':'#c02020',{align:'center'});}
-  if(G.coop&&G.coop.lv>=4&&regionAt().id==='coop'){const cols=['#eb6654','#ffe05a','#409dc5','#a1d970','#ff6fae'];
-    for(let i=0;i<30;i++){const bx=34+i*6.4,by=HUD+48+Math.round(Math.sin(i/2.5)*2);ctx.fillStyle=cols[i%5];ctx.fillRect(bx|0,by,5,2);ctx.fillRect((bx+1)|0,by+2,3,2);ctx.fillRect((bx+2)|0,by+4,1,1);}
-    if(tick%8===0)parts.push({x:camX+40+Math.random()*176,y:camY+50,vx:(Math.random()-.5)*0.4,vy:0.4+Math.random()*0.4,g:0,life:120,c:cols[(Math.random()*5)|0]});}
   if((wearing('pirate')||rankAtLeast(3))&&Math.floor(tick/8)%3){ctx.fillStyle=Math.floor(tick/16)%2?'#ffd21e':'#fff8ec';
     for(let r=r0;r<=r0+12;r++)for(let c=c0;c<=c0+16;c++){const k=c+','+r,ch=tileAt(c,r),h=HIDDEN[k];
       const secret=(h&&!G.collected.has(h.id)&&'RCL'.includes(ch))||(c===18&&r===16&&ch==='L')||ch==='Z';
@@ -48,7 +45,7 @@ function drawWorld(){
   const ocx=camX,ocy=camY;camX=cx;camY=cy;
   for(const e of list){if(e.type==='player')drawPlayer();else drawEnt(e);}
   for(const p of parts){ctx.fillStyle=p.c;ctx.fillRect(Math.round(p.x-camX),Math.round(p.y-camY+HUD),2,2);}
-  camX=ocx;camY=ocy;drawSeasonFX(cx,cy);drawSeaFX(cx,cy);drawSkyFX(cx,cy);
+  camX=ocx;camY=ocy;drawCoopInteriorDetails();drawSeasonFX(cx,cy);drawSeaFX(cx,cy);drawSkyFX(cx,cy);
 }
 function drawPlayer(){
   const st=stage(),sx=Math.round(P.x-camX),sy=Math.round(P.y-camY+HUD);
@@ -83,6 +80,7 @@ function drawEnt(e){
   const sx=Math.round(e.x-camX),sy=Math.round(e.y-camY+HUD);
   switch(e.type){
     case 'forestprop':drawForestProp(e);break;
+    case 'coopprop':drawCoopProp(e);break;
     case 'landscapeprop':drawLandscapeProp(e);break;
     case 'cityprop':drawCityProp(e);break;
     case 'roofgull':drawRoofGull(e,sx,sy);break;
@@ -164,7 +162,7 @@ function drawHUD(){
     if(rid==='fortress'&&bossActive()&&BOSS){txt('SQUAWKBEARD',252,7,5,'#ff8080',{align:'right'});for(let i=0;i<BOSS.max;i++){ctx.fillStyle=i<BOSS.hp?'#ff8080':'#425b72';ctx.fillRect(252-(BOSS.max-i)*10,17,8,7);}return;}
     if(rid==='lair'&&skyBossActive()&&SKB){drawSkyBossHUD();return;}
     if(rid==='cityin'||rid==='rooftops'||rid==='skyin'){txt(rid==='rooftops'?'ROOFTOPS':'INSIDE',252,7,5,'#b9d1dd',{align:'right'});txt(rid==='rooftops'?'RACE!':cl0.label,252,18,5,'#ffe05a',{align:'right'});return;}
-    const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#a1d970',{align:'right'});txt(a==='coop'?'HOME':a==='village'&&G.vil.open?seasonNow().name:seaRegion()?'F: SAIL':'F: FLY',220,18,5,'#ffe05a',{align:'right'});
+    const a=areaOf();txt(AREA_LABEL[a],220,7,5,'#a1d970',{align:'right'});txt(a==='coop'?(rid==='cooploft'?'TROPHIES':'HOME'):a==='village'&&G.vil.open?seasonNow().name:seaRegion()?'F: SAIL':'F: FLY',220,18,5,'#ffe05a',{align:'right'});
     // minimap of the whole beyond-the-farm overworld (outdoor areas plus the coop room)
     const cs=MINIMAP_BEYOND(),w=Math.min(9,Math.floor((31-(cs.cols-1))/cs.cols)),h=Math.min(8,Math.floor((27-(cs.rows-1))/cs.rows));
     for(const c of cs.cells){const cur=CS.x===c.sx&&CS.y===c.sy,vis=G.visited.has(c.sx+','+c.sy);

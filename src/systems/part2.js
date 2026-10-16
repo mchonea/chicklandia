@@ -89,7 +89,7 @@ function upgradeCoop(){
   G.seeds-=cost;G.coop.lv++;gainGP(GP.coop);applyCoop(false);shake=8;SFX.lvl();
   const S=SITES[G.coop.site];for(let i=0;i<40;i++)puff((S.c+1.5)*16,(S.r+1)*16,1,['#ffe05a','#fff8ec','#ff6fae','#b2e7e0'],2.4,0.05);
   const lv=G.coop.lv;toast('COOP LEVEL '+lv+'!');save();
-  const msg=lv===2?"Mama Hen moved into my coop! She's inside right now!":lv===3?"Penny and the triplets moved in! The whole family is together again!":"A GOLDEN ROOF! It's my DREAM COOP! Everyone's inside for a party!";
+  const msg=lv===2?"Mama Hen moved in! And there's a second floor! My first four trophy displays are upstairs.":lv===3?"Penny and the triplets moved in! My family has cozy nests, and there are three more trophy displays upstairs!":"A GOLDEN ROOF! My DREAM COOP has a grand trophy room with ten displays. Time for a family party!";
   say([{who:'me',text:msg}]);
 }
 /* ---- garden plots ---- */

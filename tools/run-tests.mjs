@@ -2,7 +2,7 @@
 //   node tools/run-tests.mjs [suite ...] [--out report.json]
 // Needs Playwright with Chrome. Set PLAYWRIGHT_MODULE to its index.mjs if 'playwright' is not installed here.
 import http from 'node:http';import fs from 'node:fs';import path from 'node:path';import {pathToFileURL} from 'node:url';
-const ALL=['smoke','forest_layout','landscapes','terrain_gaps','city_interiors','city_layout','city','village_layout','village','coastal','seas','sky'];
+const ALL=['coop_interior','smoke','forest_layout','landscapes','terrain_gaps','city_interiors','city_layout','city','village_layout','village','coastal','seas','sky'];
 const args=process.argv.slice(2),outAt=args.indexOf('--out'),out=outAt>=0?args[outAt+1]:null;
 const suites=args.filter((a,i)=>!a.startsWith('--')&&i!==outAt+1);for(const s of suites)if(!ALL.includes(s))throw new Error('unknown suite '+s);
 const {chromium}=await (async()=>{

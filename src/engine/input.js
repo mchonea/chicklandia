@@ -52,6 +52,7 @@ function updateTouchUI(){
   if(state==='title'||state==='ending'||state==='p2intro')la='START';
   else if(state==='talk')la=dlg&&dlg.lines[dlg.i]&&dlg.lines[dlg.i].choices?'OK':'NEXT';
   else if(state!=='play')la='OK';else if(G&&P&&facingTalk())la='TALK';
+  if(state==='play'&&G&&P&&coopActionLabel())la=coopActionLabel();
   const a=document.querySelector('#btnA small'),b=document.querySelector('#btnB small');
   if(a&&a.textContent!==la)a.textContent=la;if(b&&b.textContent!==lb)b.textContent=lb;
 }

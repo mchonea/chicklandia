@@ -121,5 +121,8 @@ reset();c.tp(arrive('harbor').x,arrive('harbor').y);save();const sv=JSON.parse(l
 c.continueGame();G=c.G;ok('load_keeps_sea',G.sea.open&&G.sea.lv.cannon===1&&G.flags.seas===1&&G.rank===9);
 // F at sea opens the sea chart (never the sky map, which has no node for the sea) from the flagship and every island
 for(const n of ['fortress','cove','reef','volcano','lighthouse']){const a=SEA_NODES.find(x=>x.id===n).arrive;reset();c.tp(a.x,a.y);G.sea.boss=4;pressed.fly=true;c.step(1);ok('F_sails_from_'+n,state==='sail');state='play';SAIL=null;}
+// the sea must never connect to the land by swimming or walking off an edge (the village sits on the map right above the cove and the reef)
+{let crossed=0,tried=0;for(const k in CELL){const a=CELL[k];if(!a.region.sea||!ROAM.has(k))continue;for(const [dx,dy,key] of [[0,-1,'up'],[0,1,'down'],[-1,0,'left'],[1,0,'right']]){const nk=(a.sx+dx)+','+(a.sy+dy),n=CELL[nk];if(!n||n.region.sea)continue;
+  for(let t=0;t<12;t++){reset();const ex=dx===0?a.sx*256+16+t*20:(dx<0?a.sx*256+14:a.sx*256+242),ey=dy===0?a.sy*192+30+t*12:(dy<0?a.sy*192+34:a.sy*192+186);c.tp(ex,ey);if(pBlocked(P.x,P.y))continue;tried++;keys[key]=true;for(let i=0;i<150;i++)c.step(1);keys[key]=false;if(!regionAt()||!regionAt().sea)crossed++;}}}ok('sea_edges_closed',tried>10&&crossed===0);}
 R.allPass=Object.values(R).every(v=>v===true);return R;
 })()

@@ -1,0 +1,181 @@
+{
+  "gameplay": {
+    "original_home_region_and_door_coordinates_stable": true,
+    "upstairs_uses_an_unoccupied_indoor_room": true,
+    "starter_coop_has_no_active_stairs_or_displays": true,
+    "starter_coop_explains_level_two_loft": true,
+    "normal_upgrades_unlock_both_floors_at_levels_two_three_four": true,
+    "existing_upgrade_costs_and_garden_growth_preserved": true,
+    "stairs": [
+      {
+        "lv": 2,
+        "route": {
+          "ok": true,
+          "pos": [
+            720.5098000000016,
+            884.4176999999991
+          ]
+        },
+        "pos": [
+          720.5098000000016,
+          884.4176999999991
+        ],
+        "reach": true,
+        "up": true,
+        "down": true
+      },
+      {
+        "lv": 3,
+        "route": {
+          "ok": true,
+          "pos": [
+            719.6572000000015,
+            884.1740999999993
+          ]
+        },
+        "pos": [
+          719.6572000000015,
+          884.1740999999993
+        ],
+        "reach": true,
+        "up": true,
+        "down": true
+      },
+      {
+        "lv": 4,
+        "route": {
+          "ok": true,
+          "pos": [
+            719.6572000000015,
+            884.1740999999993
+          ]
+        },
+        "pos": [
+          719.6572000000015,
+          884.1740999999993
+        ],
+        "reach": true,
+        "up": true,
+        "down": true
+      }
+    ],
+    "real_movement_uses_stairs_both_directions_at_each_upgrade": true,
+    "action_button_also_uses_upstairs": true,
+    "action_button_returns_downstairs": true,
+    "all_four_exterior_entries_and_exits_still_work": true,
+    "residents": [
+      {
+        "lv": 2,
+        "id": "mom",
+        "reached": true
+      },
+      {
+        "lv": 3,
+        "id": "mom",
+        "reached": true
+      },
+      {
+        "lv": 3,
+        "id": "penny",
+        "reached": true
+      },
+      {
+        "lv": 3,
+        "id": "peep",
+        "reached": true
+      },
+      {
+        "lv": 3,
+        "id": "cheep",
+        "reached": true
+      },
+      {
+        "lv": 3,
+        "id": "tweet",
+        "reached": true
+      },
+      {
+        "lv": 4,
+        "id": "mom",
+        "reached": true
+      },
+      {
+        "lv": 4,
+        "id": "penny",
+        "reached": true
+      },
+      {
+        "lv": 4,
+        "id": "peep",
+        "reached": true
+      },
+      {
+        "lv": 4,
+        "id": "cheep",
+        "reached": true
+      },
+      {
+        "lv": 4,
+        "id": "tweet",
+        "reached": true
+      }
+    ],
+    "family_move_ins_remain_reachable_and_talkable": true,
+    "village_move_ins_are_not_pulled_back_home": true,
+    "sleeping": [
+      {
+        "lv": 1,
+        "reach": true,
+        "day": true,
+        "night": true,
+        "healed": true
+      },
+      {
+        "lv": 2,
+        "reach": true,
+        "day": true,
+        "night": true,
+        "healed": true
+      },
+      {
+        "lv": 3,
+        "reach": true,
+        "day": true,
+        "night": true,
+        "healed": true
+      },
+      {
+        "lv": 4,
+        "reach": true,
+        "day": true,
+        "night": true,
+        "healed": true
+      }
+    ],
+    "nests_offer_daytime_dialogue_and_sleep_heal_at_night": true,
+    "only_completed_milestones_show_trophies": true,
+    "earned_display_explains_the_memory": true,
+    "inspecting_trophies_adds_no_rewards_or_progress": true,
+    "empty_display_explains_the_actual_goal": true,
+    "earned_progress_updates_the_display_without_reloading": true,
+    "arcade_trophy_requires_all_three_games": true,
+    "arcade_trophy_recognizes_existing_wins": true,
+    "rooftop_trophy_uses_existing_best_time": true,
+    "helping_trophy_requires_all_nine_existing_quests": true,
+    "incomplete_helping_quest_keeps_display_empty": true,
+    "museum_trophy_counts_every_collection_including_the_sky": true,
+    "museum_trophy_rejects_partial_collection": true,
+    "chapter_trophies_use_existing_story_completions": true,
+    "inaccessibleTrophies": [],
+    "all_ten_displays_can_be_walked_to_and_inspected": true,
+    "old_positions_recover_and_keep_quests_crops_and_earned_honors": true,
+    "saving_upstairs_returns_to_the_same_floor": true,
+    "locked_upstairs_save_recovers_to_the_family_floor": true,
+    "allPass": true
+  },
+  "standalone": {
+    "allPass": true
+  },
+  "errors": [],
+  "allPass": true
+}

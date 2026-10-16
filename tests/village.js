@@ -76,5 +76,8 @@ reset();
 // 9. save round trip
 save();const sv=JSON.parse(localStorage.getItem('chicklandia_save_v2'));ok('save_has_village',!!sv.vil&&Object.keys(sv.vil.res).length===7);
 c.continueGame();G=c.G;ok('load_keeps_village',G.vil.open&&builtList().length===7&&Object.keys(G.vil.res).length===7&&tileAt(39,83)==='='&&ents.find(e=>e.id==='pig').vres===true);
+// village signs must be readable (the speech bubble once crashed on them) and no resident may stand on a gathering spot
+reset();for(const e of ents.filter(x=>x.type==='vinfo')){state='play';dlg=null;c.tp(e.x,e.y+12);P.dir=1;action();let err=null;try{render();c.step(2);}catch(x){err=x;}ok('sign_'+e.id,!err&&state==='talk');dlg=null;state='play';}
+ok('residents_dont_cover_nodes',PADS.every(p=>{const q=padCenter(p);return !ents.some(e=>e.type==='vnode'&&[0,1,2].some(k=>Math.abs(e.x-(q.x-10+k*10))<14&&Math.abs(e.y-(q.y+14))<12));}));
 R.allPass=Object.values(R).every(v=>v===true);return R;
 })()
